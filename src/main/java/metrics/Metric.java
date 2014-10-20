@@ -3,6 +3,11 @@ package metrics;
 /**
  * Created by Adrian on 15/10/2014.
  */
+
+/**
+ * This class represents a metric given its id, description and type {@link T}
+ * @param <T> Type of the metric value.
+ */
 public class Metric<T> {
     private String id;
     private String description;
@@ -24,10 +29,6 @@ public class Metric<T> {
 
     public String getDescription() {
         return description;
-    }
-
-    public String translateTo(MetricLanguage language){
-       return language.getTranslation(id);
     }
 
 

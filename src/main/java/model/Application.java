@@ -26,12 +26,10 @@ public class Application implements Module {
         return name;
     }
 
-
     @Override
     public String getId() {
         return id;
     }
-
 
     @Override
     public Collection<Module> getChildren() {
@@ -48,4 +46,20 @@ public class Application implements Module {
         return this;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Application that = (Application) o;
+
+        if (!id.equals(that.id)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

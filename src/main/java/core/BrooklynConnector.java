@@ -3,8 +3,7 @@ package core;
 import brooklyn.rest.api.SensorApi;
 import brooklyn.rest.client.BrooklynApi;
 import brooklyn.rest.domain.SensorSummary;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Lists;
 import metrics.BrooklynMetricLanguage;
 import metrics.Metric;
 import metrics.MetricCatalog;
@@ -18,17 +17,14 @@ import java.util.List;
  * @author MBarrientos
  */
 public class BrooklynConnector implements Connector {
+    private final static BrooklynMetricLanguage METRIC_TRANSLATOR = BrooklynMetricLanguage.getInstance();
+    private final static MetricCatalog METRIC_CATALOG = MetricCatalog.getInstance();
 
     private Module module;
     private BrooklynApi endpoint;
-    private final static BrooklynMetricLanguage
 
     // Metrics available in every module
     private List<Metric> availableMetrics;
-
-
-    private static final MetricCatalog METRIC_CATALOG = MetricCatalog.getInstance();
-
 
     private void  updateAvailableMetrics() throws MonitorConnectorException {
 
@@ -39,28 +35,39 @@ public class BrooklynConnector implements Connector {
             throw new MonitorConnectorException("Unable to fetch sensor catalog from Brooklyn for " + module);
 
         for(SensorSummary sensor : sensorSummaries){
-            Metric metricFound = METRICS_MAPPING.inverse().get(sensor.getName());
+            String seaCloudsMetricId  = METRIC_TRANSLATOR.getTranslation(sensor.getName());
 
-            if(metricFound != null){
-                availableMetrics.add(metricFound);
+            if(seaCloudsMetricId != null){
+                // Translation known, adding it into the available metrics for this module
+
+                /*
+                 *   NOTE:
+                 *   We assume that if a MetricLanguage has a translation, the Metric is also
+                 *   included in the MetricCatalog, so it's not necessary to check if the MetricCatalog
+                 *   returns null for the translated id.
+                 */
+                availableMetrics.add(METRIC_CATALOG.getMetric(seaCloudsMetricId));
             }else if (sensor.getName().startsWith(MetricCatalog.RUNTIME_METRIC_PREFIX)) {
+                // Translation unknown, but it's a custom metric defined by the user in runtime
                 try {
                     Metric<?> metric = METRIC_CATALOG.add(sensor.getName(), sensor.getDescription(), Class.forName(sensor.getType()));
-                    METRICS_MAPPING.put(metric, sensor.getName());
+                    METRIC_TRANSLATOR.addTranslation(sensor.getName(), sensor.getName());
                     this.availableMetrics.add(metric);
                 } catch (ClassNotFoundException e) {
                     throw new MonitorConnectorException("Unable to parse custom sensor type for " + sensor.getName() + " with type " + sensor.getType());
                 }
-            }else{
-              // Brooklyn exposes module setup as sensors, so ignoring it from now.
+            } else{
+                // Translation unknown and it is part of module setup (due Brooklyn ConfigKey), so ignoring it from now.
             }
-        }
 
+
+        }
     }
 
     public BrooklynConnector(Module module, String endpoint) throws MonitorConnectorException {
         this.module = module;
         this.endpoint = new BrooklynApi(endpoint);
+        this.availableMetrics = Lists.newArrayList();
         this.updateAvailableMetrics();
     }
 
@@ -82,16 +89,16 @@ public class BrooklynConnector implements Connector {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getValue(Metric<T> type)  throws MonitorConnectorException{
+    public <T> T getValue(Metric<T> metric)  throws MonitorConnectorException{
 
-        if(!availableMetrics.contains(type))
-            throw new MonitorConnectorException(type.getId() + " metric doesn't exist in " + module.getId() + " module");
+        if(!availableMetrics.contains(metric))
+            throw new MonitorConnectorException(metric.getId() + " metric doesn't exist in " + module.getId() + " module");
 
-        T result = (T) endpoint.getSensorApi().get(module.getParentApplication().getId(), module.getId(), METRICS_MAPPING.get(type), false);
+        T result = (T) endpoint.getSensorApi().get(module.getParentApplication().getId(), module.getId(), METRIC_TRANSLATOR.getInverseTranslation(metric.getId()), false);
 
         // It returns null if some error happened
         if (result == null)
-            throw new MonitorConnectorException("Unable to fetch " + type + " sensor from " + module);
+            throw new MonitorConnectorException("Unable to fetch " + metric + " sensor from " + module);
 
         return result;
     }

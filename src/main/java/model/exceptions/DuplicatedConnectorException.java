@@ -1,7 +1,5 @@
 package model.exceptions;
 
-import core.Connector;
-
 /**
  * @author MBarrientos
  */
