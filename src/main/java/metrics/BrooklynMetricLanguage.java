@@ -28,7 +28,7 @@ public class BrooklynMetricLanguage  extends MetricLanguage{
     @Override
     // TODO: Get all the translations from MetricCatalog.PREDEFINED_METRICS
     public String getTranslation(String input) {
-        MetricCatalog.PREDEFINED_METRICS predefined_metric = MetricCatalog.PREDEFINED_METRICS.getEnum(input);
+        MetricCatalog.PredefinedMetrics predefined_metric = MetricCatalog.PredefinedMetrics.getEnum(input);
         if(predefined_metric != null){
             switch(predefined_metric){
                 case JAVA_HEAP_USED:
@@ -63,6 +63,20 @@ public class BrooklynMetricLanguage  extends MetricLanguage{
                     return "java.metrics.pysicalmemory.total";
                 case JAVA_PHYSICAL_MEMORY_FREE:
                     return "java.metrics.physicalmemory.free";
+
+                case WEBAPP_REQUESTS_TOTAL:
+                    return "webapp.reqs.total";
+                case WEBAPP_REQUESTS_ERRORS:
+                    return "webapp.reqs.errors";
+                case WEBAPP_PROCESSING_TIME_TOTAL:
+                    return "webapp.reqs.processingTime.total";
+                case WEBAPP_PROCESING_TIME_MAX:
+                    return "webapp.reqs.processingTime.max";
+                case WEBAPP_PROCESSING_TIME_FRACTION_LAST:
+                    return "webapp.reqs.processingTime.fraction.last";
+                case WEBAPP_PROCESSING_TIME_FRACTION_WINDOWED:
+                    return "webapp.reqs.processingTime.fraction.windowed";
+
                 default:
                     throw new RuntimeException("BrooklynMetricLanguage not updated, please update " + this.getClass().getSimpleName());
             }
@@ -78,37 +92,51 @@ public class BrooklynMetricLanguage  extends MetricLanguage{
     public String getInverseTranslation(String input) {
         switch(input){
             case "java.metrics.heap.used":
-                return MetricCatalog.PREDEFINED_METRICS.JAVA_HEAP_USED.getValue().getId();
+                return MetricCatalog.PredefinedMetrics.JAVA_HEAP_USED.getValue().getId();
             case "java.metrics.heap.init":
-                return MetricCatalog.PREDEFINED_METRICS.JAVA_HEAP_INIT.getValue().getId();
+                return MetricCatalog.PredefinedMetrics.JAVA_HEAP_INIT.getValue().getId();
             case "java.metrics.heap.commited":
-                return MetricCatalog.PREDEFINED_METRICS.JAVA_HEAP_COMMITED.getValue().getId();
+                return MetricCatalog.PredefinedMetrics.JAVA_HEAP_COMMITED.getValue().getId();
             case "java.metrics.heap.max":
-                return MetricCatalog.PREDEFINED_METRICS.JAVA_HEAP_MAX.getValue().getId();
+                return MetricCatalog.PredefinedMetrics.JAVA_HEAP_MAX.getValue().getId();
             case "java.metrics.nonheap.used":
-                return MetricCatalog.PREDEFINED_METRICS.JAVA_NONHEAP_USED.getValue().getId();
+                return MetricCatalog.PredefinedMetrics.JAVA_NONHEAP_USED.getValue().getId();
             case "java.metrics.threads.current":
-                return MetricCatalog.PREDEFINED_METRICS.JAVA_THREADS_CURRENT.getValue().getId();
+                return MetricCatalog.PredefinedMetrics.JAVA_THREADS_CURRENT.getValue().getId();
             case "java.metrics.threads.max":
-                return MetricCatalog.PREDEFINED_METRICS.JAVA_THREADS_MAX.getValue().getId();
+                return MetricCatalog.PredefinedMetrics.JAVA_THREADS_MAX.getValue().getId();
             case "java.metrics.starttime":
-                return MetricCatalog.PREDEFINED_METRICS.JAVA_TIME_START.getValue().getId();
+                return MetricCatalog.PredefinedMetrics.JAVA_TIME_START.getValue().getId();
             case "java.metrics.uptime":
-                return MetricCatalog.PREDEFINED_METRICS.JAVA_TIME_UPTIME.getValue().getId();
+                return MetricCatalog.PredefinedMetrics.JAVA_TIME_UPTIME.getValue().getId();
             case "java.metrics.processCpuTime.total":
-                return MetricCatalog.PREDEFINED_METRICS.JAVA_TIME_PROCESSCPU_TOTAL.getValue().getId();
+                return MetricCatalog.PredefinedMetrics.JAVA_TIME_PROCESSCPU_TOTAL.getValue().getId();
             case "java.metrics.processCpuTime.fraction.last":
-                return MetricCatalog.PREDEFINED_METRICS.JAVA_TIME_PROCESSCPU_FRACTION_LAST.getValue().getId();
+                return MetricCatalog.PredefinedMetrics.JAVA_TIME_PROCESSCPU_FRACTION_LAST.getValue().getId();
             case "java.metrics.processCpuTime.fraction.last.windowed":
-                return MetricCatalog.PREDEFINED_METRICS.JAVA_TIME_PROCESSCPU_FRACTION_WINDOWED.getValue().getId();
+                return MetricCatalog.PredefinedMetrics.JAVA_TIME_PROCESSCPU_FRACTION_WINDOWED.getValue().getId();
             case "java.metrics.processors.available":
-                return MetricCatalog.PREDEFINED_METRICS.JAVA_PROCESSORS_AVAILABLE.getValue().getId();
+                return MetricCatalog.PredefinedMetrics.JAVA_PROCESSORS_AVAILABLE.getValue().getId();
             case "java.metrics.systemload.average":
-                return MetricCatalog.PREDEFINED_METRICS.JAVA_SYSTEMLOAD_AVERAGE.getValue().getId();
+                return MetricCatalog.PredefinedMetrics.JAVA_SYSTEMLOAD_AVERAGE.getValue().getId();
             case "java.metrics.pysicalmemory.total":
-                return MetricCatalog.PREDEFINED_METRICS.JAVA_PHYSICAL_MEMORY_TOTAL.getValue().getId();
+                return MetricCatalog.PredefinedMetrics.JAVA_PHYSICAL_MEMORY_TOTAL.getValue().getId();
             case "java.metrics.physicalmemory.free":
-                return MetricCatalog.PREDEFINED_METRICS.JAVA_PHYSICAL_MEMORY_FREE.getValue().getId();
+                return MetricCatalog.PredefinedMetrics.JAVA_PHYSICAL_MEMORY_FREE.getValue().getId();
+
+            case "webapp.reqs.total":
+                return MetricCatalog.PredefinedMetrics.WEBAPP_REQUESTS_TOTAL.getValue().getId();
+            case "webapp.reqs.errors":
+                return MetricCatalog.PredefinedMetrics.WEBAPP_REQUESTS_ERRORS.getValue().getId();
+            case "webapp.reqs.processingTime.total":
+                return MetricCatalog.PredefinedMetrics.WEBAPP_PROCESSING_TIME_TOTAL.getValue().getId();
+            case "webapp.reqs.processingTime.max":
+                return MetricCatalog.PredefinedMetrics.WEBAPP_PROCESING_TIME_MAX.getValue().getId();
+            case "webapp.reqs.processingTime.fraction.last":
+                return MetricCatalog.PredefinedMetrics.WEBAPP_PROCESSING_TIME_FRACTION_LAST.getValue().getId();
+            case "webapp.reqs.processingTime.fraction.windowed":
+                return MetricCatalog.PredefinedMetrics.WEBAPP_PROCESSING_TIME_FRACTION_WINDOWED.getValue().getId();
+
             default:
                 // The translation was created in runtime by custom metric.
                 return runtimeTranslations.inverse().get(input);

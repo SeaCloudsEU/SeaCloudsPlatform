@@ -2,7 +2,9 @@ package core;
 
 import brooklyn.rest.api.SensorApi;
 import brooklyn.rest.client.BrooklynApi;
+import brooklyn.rest.domain.ApplicationSummary;
 import brooklyn.rest.domain.SensorSummary;
+import brooklyn.rest.domain.Status;
 import com.google.common.collect.Lists;
 import metrics.BrooklynMetricLanguage;
 import metrics.Metric;
@@ -59,8 +61,6 @@ public class BrooklynConnector implements Connector {
             } else{
                 // Translation unknown and it is part of module setup (due Brooklyn ConfigKey), so ignoring it from now.
             }
-
-
         }
     }
 
@@ -96,9 +96,9 @@ public class BrooklynConnector implements Connector {
 
         T result = (T) endpoint.getSensorApi().get(module.getParentApplication().getId(), module.getId(), METRIC_TRANSLATOR.getInverseTranslation(metric.getId()), false);
 
-        // It returns null if some error happened
+        // It returns null if some error happened or sensors are not yet connected
         if (result == null)
-            throw new MonitorConnectorException("Unable to fetch " + metric + " sensor from " + module);
+            throw new MonitorConnectorException("Unable to fetch " + metric.getId() + " sensor from " + module.getId());
 
         return result;
     }

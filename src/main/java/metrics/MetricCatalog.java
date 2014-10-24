@@ -1,7 +1,6 @@
 package metrics;
 
 import com.google.common.collect.Maps;
-import model.Module;
 
 import java.util.Map;
 
@@ -14,7 +13,7 @@ public class MetricCatalog {
 
     // Predefined Metrics in SeaClouds platform
     //TODO: Add remaining metrics (Annex C in D4.1 - Definition of the multi-deployment and monitoring strategies)
-    public static enum PREDEFINED_METRICS {
+    public static enum PredefinedMetrics {
         JAVA_HEAP_USED (new Metric<>("java.heap.used", "Current heap size (bytes)", Long.class)),
         JAVA_HEAP_INIT (new Metric<>("java.heap.init", "Initial heap size (bytes)", Long.class)),
         JAVA_HEAP_COMMITED (new Metric<>("java.heap.commited", "Commited heap size (bytes)", Long.class)),
@@ -30,11 +29,20 @@ public class MetricCatalog {
         JAVA_PROCESSORS_AVAILABLE (new Metric<>("java.processors.available", "Number of processors available to the Java virtual machine", Integer.class)),
         JAVA_SYSTEMLOAD_AVERAGE (new Metric<>("java.systemload.average", "System load average for the last minute", Double.class)),
         JAVA_PHYSICAL_MEMORY_TOTAL (new Metric<>("java.physical.memory.total", "The physical memory available to the operating system", Long.class)),
-        JAVA_PHYSICAL_MEMORY_FREE (new Metric<>("java.physical.memory.free", "The free memory available to the operating system", Long.class));
+        JAVA_PHYSICAL_MEMORY_FREE (new Metric<>("java.physical.memory.free", "The free memory available to the operating system", Long.class)),
+
+        WEBAPP_REQUESTS_TOTAL (new Metric<>("webapp.reqs.total", "Request count", Integer.class)),
+        WEBAPP_REQUESTS_ERRORS (new Metric<>("webapp.reqs.errors", "Request errors", Integer.class)),
+        WEBAPP_PROCESSING_TIME_TOTAL (new Metric<>("webapp.reqs.processingTime.total", "Total processing time, reported by webserver (millis)", Integer.class)),
+        WEBAPP_PROCESING_TIME_MAX (new Metric<>("webapp.reqs.processingTime.max", "Max processing time for any single request, reported by webserver (millis)", Integer.class)),
+        WEBAPP_PROCESSING_TIME_FRACTION_LAST (new Metric<>("webapp.reqs.processingTime.fraction.last", "Fraction of time spent processing, reported by webserver (percentage, last datapoint)", Double.class)),
+        WEBAPP_PROCESSING_TIME_FRACTION_WINDOWED (new Metric<>("webapp.reqs.processingTime.fraction.windowed", "Fraction of time spent processing, reported by webserver (percentage, over time window)", Double.class)),
+
+        ;
 
         private final Metric metric;
 
-        PREDEFINED_METRICS(Metric metric){
+        PredefinedMetrics(Metric metric){
             this.metric = metric;
         }
 
@@ -42,11 +50,11 @@ public class MetricCatalog {
             return metric;
         }
 
-        public static PREDEFINED_METRICS getEnum(String name){
-            PREDEFINED_METRICS result = null;
+        public static PredefinedMetrics getEnum(String name){
+            PredefinedMetrics result = null;
 
             // Checking if the predefined metric catalog contains this id
-            for(PREDEFINED_METRICS enumMetric : PREDEFINED_METRICS.values()){
+            for(PredefinedMetrics enumMetric : PredefinedMetrics.values()){
                 if(enumMetric.getValue().getId().equals(name)){
                     result = enumMetric;
                     break;
@@ -55,9 +63,6 @@ public class MetricCatalog {
 
             return result;
         }
-
-
-
     }
 
 
@@ -92,7 +97,7 @@ public class MetricCatalog {
         Metric result = null;
 
         // Checking if the predefined metric catalog contains this id
-        for(PREDEFINED_METRICS enumMetric : PREDEFINED_METRICS.values()){
+        for(PredefinedMetrics enumMetric : PredefinedMetrics.values()){
             if(enumMetric.getValue().getId().equals(metricID)){
                 result = enumMetric.getValue();
                 break;
