@@ -5,15 +5,16 @@
 
     <groupId>eu.seaclouds</groupId>
     <artifactId>platform</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
     <modules>
         <module>monitor</module>
         <module>deployer</module>
+        <module>rest-api</module>
     </modules>
     <packaging>pom</packaging>
 
     <name>platform</name>
-    <url>http://maven.apache.org</url>
+    <url>http://www.seaclouds-project.eu</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,6 +23,19 @@
         <testng.version>6.1.1</testng.version>
         <brooklyn.version>0.7.0-SNAPSHOT</brooklyn.version>
     </properties>
+
+    <distributionManagement>
+        <repository>
+            <id>nexus-cenachero</id>
+            <name>Releases</name>
+            <url>https://nexus.scenic.uma.es/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus-cenachero</id>
+            <name>Snapshots</name>
+            <url>https://nexus.scenic.uma.es/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -47,4 +61,19 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.3</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>nexus-cenachero</serverId>
+                    <nexusUrl>https://nexus.scenic.uma.es</nexusUrl>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
