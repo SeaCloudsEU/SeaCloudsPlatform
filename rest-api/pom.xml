@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>api</artifactId>
+    <artifactId>rest-api</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
