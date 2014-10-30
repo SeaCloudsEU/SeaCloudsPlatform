@@ -1,0 +1,267 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: SeaClouds Monitor API
+  description: The Monitor API provides the functionality related with the monitoring tasks, such as retrieving information from monitoring agents or managing the active policies.
+  version: "1.0.0"
+# array of all schemes that your API supports
+schemes:
+  - https
+# will be prefixed to all paths
+basePath: /v1/monitor
+produces:
+  - application/json
+paths:
+  /catalog/monitoringAgents:
+    get:
+      summary: Retrieves the supported monitoring agent types
+      responses:
+        200:
+          description: Registered Application ID
+          schema:
+            type: array
+            items:
+              type : string
+        default:
+          description: Unexpected error
+          schema:
+            $ref: Error
+        
+  /application:
+    post:
+      summary: Registers an application in the Monitor Component
+      parameters:
+        - name: ApplicationId
+          in: query
+          description: Application unique identifier
+          required: true
+          type: string
+      responses:
+        200:
+          description: Registered Application ID
+          schema:
+            type: string
+        default:
+          description: Unexpected error
+          schema:
+            $ref: Error
+            
+  /application/{applicationId}/module/{moduleId}:
+    post:
+      summary: Attaches a MonitoringAgent to application module
+      parameters:
+        - name: applicationId
+          in: path
+          description: Application unique identifier
+          required: true
+          type: string
+        - name: moduleId
+          in: path
+          description: Module unique identifier
+          required: true
+          type: string
+        - name: MonitoringAgentType
+          in: query
+          description: Supported Monitoring Agent Type
+          required: true
+          type: string
+        - name: MonitoringAgentEndpoint
+          in: query
+          description: Monitoring Agent Endpoint
+          required: true
+          type: string
+      responses:
+        200:
+          description: Monitoring Agent ID
+          schema:
+            type: string
+        default:
+          description: Unexpected error
+          schema:
+            $ref: Error
+            
+  /application/{applicationId}/module/{moduleId}:
+    delete:
+      summary: Deataches a module (and his children) with monitoring agent 
+      parameters:
+        - name: applicationId
+          in: path
+          description: Application unique identifier
+          required: true
+          type: string
+        - name: moduleId
+          in: path
+          description: Module unique identifier
+          required: true
+          type: string
+      responses:
+        200:
+          description: Removed module Application ID
+          schema:
+            type: string
+        default:
+          description: Unexpected error
+          schema:
+            $ref: Error
+            
+  /application/{applicationId}/module/{moduleId}/policy/{policyId}:
+    get:
+      description: Fetch details from a policy
+      operationId: getPolicy
+      parameters:
+        - name: applicationId
+          in: path
+          description: Application where to attach the policy
+          required: true
+          type: string
+        - name: moduleId
+          in: path
+          description: Module where to attach the policy
+          required: true
+          type: string
+        - name: policyId
+          in: path
+          description: id from the policy
+          required: true
+          type: string
+          items:
+            type: string
+      responses:
+        200:
+          description: Policy ID
+          schema:
+            type: string
+        default:
+          description: unexpected error
+          
+  /application/{applicationId}/module/{moduleId}/policy/:
+    post:
+      description: Attach a policy to given module
+      operationId: attachPolicy
+      parameters:
+        - name: applicationId
+          in: path
+          description: Application where to attach the policy
+          required: true
+          type: string
+        - name: moduleId
+          in: path
+          description: Module where to attach the policy
+          required: true
+          type: string
+        - name: policyConfig
+          in: query
+          description: Policy configuration
+          required: true
+          type: string
+      responses:
+        200:
+          description: Policy
+          schema:
+            type: string
+        default:
+          description: unexpected error
+          schema:
+            $ref: Error
+            
+  /application/{applicationId}/module/{moduleId}/policy/{policyId}/start:
+    post:
+      description: Start executing policy on given module
+      operationId: startPolicy
+      parameters:
+        - name: applicationId
+          in: path
+          description: Application ID
+          required: true
+          type: string
+        - name: moduleId
+          in: path
+          description: Module ID
+          required: true
+          type: string
+        - name: policyId
+          in: path
+          description: Policy ID
+          required: true
+          type: string
+      responses:
+        200:
+          description: Policy ID
+          schema:
+            type: string
+        default:
+          description: unexpected error
+          schema:
+            $ref: Error
+
+  /application/{applicationId}/module/{moduleId}/policy/{policyId}/stop:
+    post:
+      description: Stop policy from executing on given module
+      operationId: startPolicy
+      parameters:
+        - name: applicationId
+          in: path
+          description: Application ID
+          required: true
+          type: string
+        - name: moduleId
+          in: path
+          description: Module ID
+          required: true
+          type: string
+        - name: policyId
+          in: path
+          description: Policy ID
+          required: true
+          type: string
+      responses:
+        200:
+          description: Policy ID
+          schema:
+            type: string
+        default:
+          description: unexpected error
+          schema:
+            $ref: Error
+            
+  /application/{applicationId}/module/{moduleId}/policy/{policyId}:
+    delete:
+      description: Remove given policy and detach it from its modules
+      operationId: deletePolicy
+      parameters:
+        - name: applicationId
+          in: path
+          description: Application ID
+          required: true
+          type: string
+        - name: moduleId
+          in: path
+          description: Module ID
+          required: true
+          type: string
+        - name: policyId
+          in: path
+          description: Policy ID
+          required: true
+          type: string
+      responses:
+        200:
+          description: Policy ID
+          schema:
+            type: string
+        default:
+          description: unexpected error
+          schema:
+            $ref: Error            
+        
+definitions:
+   Error:
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string

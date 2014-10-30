@@ -1,6 +1,5 @@
 package core;
 
-import brooklyn.rest.api.SensorApi;
 import brooklyn.rest.client.BrooklynApi;
 import brooklyn.rest.domain.ApplicationSummary;
 import brooklyn.rest.domain.SensorSummary;
@@ -71,16 +70,6 @@ public class BrooklynConnector implements Connector {
         this.updateAvailableMetrics();
     }
 
-    private List<Metric> getModuleMetricsFromBrooklyn(){ //throws MonitorConnectorException {
-        ArrayList<Metric> result = Lists.newArrayList();
-        SensorApi sensorApi = this.endpoint.getSensorApi();
-        List<SensorSummary> summaryList = sensorApi.list(module.getParentApplication().getId(), module.getId());
-        for(SensorSummary s: summaryList){
-
-        }
-
-        return result;
-    }
 
     @Override
     public List<Metric> getAvailableMetrics() {
