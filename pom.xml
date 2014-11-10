@@ -10,6 +10,7 @@
         <module>monitor</module>
         <module>deployer</module>
         <module>rest-api</module>
+        <module>planner</module>
     </modules>
     <packaging>pom</packaging>
 
