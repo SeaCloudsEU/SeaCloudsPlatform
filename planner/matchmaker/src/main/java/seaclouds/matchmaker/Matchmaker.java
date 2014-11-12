@@ -12,6 +12,11 @@ import java.util.Set;
 import seaclouds.utils.TOSCAYamlParser;
 
 public class Matchmaker {
+	
+	
+		
+	
+
 
 	public void match(List requirementsList) throws FileNotFoundException {
 		// TODO Auto-generated method stub
@@ -88,6 +93,7 @@ public class Matchmaker {
    		//2. matchmaking properties (reqDescripion vs serviceDescription) //3. matchmaking values	
 		List reqProperties = (List) reqDescription.get("constraints");
 		Map <String, Object> serviceProperties= (Map) serviceDescription.get("properties");
+		boolean isSuitable = true;
 		
 		for (int i = 0; i < reqProperties.size(); i++){
 			//each property is a map
@@ -95,16 +101,130 @@ public class Matchmaker {
 			//read property name
 			for (String name : property.keySet()){
 				if (serviceProperties.containsKey(name)){
-					System.out.println("Property found: " + name);
+					//System.out.println("Property found: " + name);
+					//extract property values
+					Object reqValue = property.get(name);
+					Object offValue = serviceProperties.get(name);
+					String reqClass = reqValue.getClass().getSimpleName();
+					String offClass = offValue.getClass().getSimpleName();		
+					
+					if (reqClass.equals(offClass)){
+						if (reqClass.equals("Integer") || reqClass.equals("String") || reqClass.equals("Boolean")) {
+							//exact matchmaking
+							isSuitable = exactMatch (reqValue, offValue);
+						}
+						else if (reqClass.equals("LinkedHashmap")){
+							isSuitable = operatorMatch (reqValue, offValue);
+						}
+						else {
+							//TODO: handle exception
+							System.err.println("Requested property not recognized");
+							isSuitable = false;
+						}
+					}
+					else {
+						//reqClass different form offCLass
+						if (reqClass.equals("LinkedHashMap") || offClass.equals("LinkedHashMap")){
+							isSuitable = operatorMatch (reqValue, offValue);
+						}
+						else isSuitable = false;		
+					}
 				}
+				else isSuitable = false;
+				
 			}
 			
 
 		}
 		
+		if (isSuitable) System.out.println("Service suitable");
+		else System.out.println("Service not suitable");
+		
+		return isSuitable;
+	}
+
+	private boolean operatorMatch(Object reqValue, Object offValue) {
+
+		// TODO Auto-generated method stub
+		if(reqValue.getClass().getSimpleName().equals("LinkedHashMap")){
+			//extract operator
+			Map<String, Object> map = (Map<String, Object>) reqValue;	
+			Entry<String, String>[] entry = (Entry<String, String>[]) map.entrySet().toArray(new Map.Entry[map.size()]);
+			String operator =  entry[0].getKey();
+			Object value = entry[0].getValue();
+			
+			switch (operator) {
+			
+			case "equal":
+				//value any
+				break;
+				
+			case "greater_then":
+				//value comparable
+				break;
+				
+			case "greater_or_equal":
+				//value comparable
+				break;
+
+			case "less_than":
+				//value comparable
+				break;
+
+			case "less_or_equal":
+				//value comparable
+				break;
+
+			case "in_range":
+				//dual scalar comparable
+				break;
+
+			case "valid_values":
+				//any
+				break;
+
+			case "length":
+				//string in the specification (?) integer
+				break;
+
+			case "min_length":
+				//as above
+				break;
+
+			case "max_length":
+				//as above
+				break;
+			default:
+				//TODO: handle exception
+				System.out.println("Operator not implemented yet");
+				break;
+			}
+			
+			map = null;
+			
+			
+			
+
+			//check if operation is satisfied
+		}
+		else if (offValue.getClass().getSimpleName().equals("LinkedHashMap")){
+			//check if reqValue is present in off values
+		}
+		else {
+			//TODO:handle exception
+			System.err.println("Unexpected value in properties");
+			return false;
+		}
+		
 		
 		
 		return false;
+	}
+
+	private boolean exactMatch(Object reqValue, Object offValue) {
+		// TODO Auto-generated method stub
+		if (reqValue.equals(offValue)) return true;
+		else return false;
 	}
 
 }
