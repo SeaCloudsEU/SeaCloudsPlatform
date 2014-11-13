@@ -10,6 +10,7 @@
         <module>monitor</module>
         <module>deployer</module>
         <module>rest-api</module>
+        <module>dashboard</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -22,6 +23,7 @@
         <javatuples.version>1.2</javatuples.version>
         <testng.version>6.1.1</testng.version>
         <brooklyn.version>0.7.0-SNAPSHOT</brooklyn.version>
+        <jetty.version>9.2.4.v20141103</jetty.version>
     </properties>
     <repositories>
         <repository>

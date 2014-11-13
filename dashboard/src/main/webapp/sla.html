@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SeaClouds Dashboard - Deploy new Application</title>
+
+    <!-- Core CSS - Include with every page -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
+
+
+    <!-- SB Admin CSS - Include with every page -->
+    <link href="css/sb-admin.css" rel="stylesheet">
+
+    <!-- SeaClouds configuration constants -->
+    <script src="js/config.js"></script>
+
+</head>
+
+<body>
+
+<div id="wrapper">
+
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation"
+         style="margin-bottom: 0">
+        <div class="navbar-header">
+            <a class="navbar-brand extrnLink"
+               href="http://www.seaclouds-project.eu/"> <img
+                    class="img-responsive " src="img/seaclouds-header.png"
+                    style="max-width: 100px; margin-top: -18px;" alt="SeaClouds project main website">
+            </a>
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target=".sidebar-collapse">
+                <span class="sr-only">Toggle navigation</span> <span
+                    class="icon-bar"></span> <span class="icon-bar"></span> <span
+                    class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">SeaClouds Dashboard - Deploy new Application</a>
+        </div>
+        <!-- /.navbar-header -->
+
+        <!-- TODO: Get alert number from Monitoring API -->
+        <ul class="nav navbar-top-links navbar-right">
+
+            <li id ="loading-spinner"></li>
+            <li class="divider"></li>
+            <li class="divider"></li>
+            <li class="divider"></li>
+
+
+            <li class="dropdown"><a class="dropdown-toggle"
+                                    data-toggle="dropdown" href="#"><span class="badge">0</span><i
+                    class="fa fa-bell fa-fw"></i> <i class="fa fa-caret-down"></i> </a>
+                <ul class="dropdown-menu dropdown-alerts">
+                    <li><a href="#">
+                        <div>
+                            <i class="fa fa-exclamation fa-fw"></i>This feature will be
+                            available in prior releases<span
+                                class="pull-right text-muted small">Just now</span>
+                        </div>
+                    </a></li>
+                    <li class="divider"></li>
+
+                    <!-- TODO: Open all alerts page -->
+                    <li class="disabled"><a class="text-center" href="#"> <strong>See
+                        All Alerts</strong> <i class="fa fa-angle-right"></i>
+                    </a></li>
+                </ul>
+            </li>
+                <!-- /.dropdown-alerts -->
+            <!-- /.dropdown -->
+            <li class="dropdown"><a class="dropdown-toggle"
+                                    data-toggle="dropdown" href="#"> <i class="fa fa-user fa-fw"></i>
+                <i class="fa fa-caret-down"></i>
+            </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li class="disabled"><a href="#"><i
+                            class="fa fa-user fa-fw"></i>User Profile</a></li>
+                    <li class="disabled"><a href="#"><i
+                            class="fa fa-gear fa-fw"></i>Settings</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#"><i class="fa fa-exclamation fa-fw"></i>
+                        This feature will be available in prior releases</a></li>
+                </ul>
+                <!-- /.dropdown-user --></li>
+            <!-- /.dropdown -->
+        </ul>
+        <!-- /.navbar-top-links -->
+
+        <div class="navbar-default navbar-static-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav" id="side-menu">
+                    <li><a href="index.html"><i class="fa fa-dashboard fa-home"></i>&nbsp;Home</a></li>
+                    <li><a href="not-available.html" class=""><i class="fa fa-pencil-square-o"></i>&nbsp;Module Profile Designer</a></li>
+                    <li><a href="not-available.html" class=""><i class="fa fa-code-fork"></i>&nbsp;DAM generator</a></li>
+                    <li><a href="deployer.html" class=""><i class="fa fa-download"></i>&nbsp;Deploy new Application</a></li>
+                    <li><a href="monitor.html" class=""><i class="fa fa-dashboard"></i>&nbsp;Monitor applications</a></li>
+                    <li><a href="sla.html" class=""><strong><i class="fa fa-file-text-o"></i>&nbsp;SLA</a></strong></li>
+
+               </ul>
+                <!-- /#side-menu -->
+            </div>
+            <!-- /.sidebar-collapse -->
+        </div>
+        <!-- /.navbar-static-side -->
+    </nav>
+
+    <div id="page-wrapper">
+        <iframe id="iframe" src="http://localhost:8082/slagui/agreements/" frameborder="1" width="800" height="600"></iframe>
+    </div>
+    <!-- /#page-wrapper -->
+
+</div>
+<!-- /#wrapper -->
+
+<!-- Core Scripts - Include with every page -->
+<script src="js/lib/jquery-1.10.2.js"></script>
+<script src="js/lib/jquery.metisMenu.js"></script>
+<script src="js/lib/bootstrap.min.js"></script>
+<script src="js/lib/spin.min.js"></script>
+
+<!-- SB Admin Scripts - Include with every page -->
+<script src="js/sb-admin.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#iframe").attr("src", SLADASHBOARD_ENDPOINT + "/slagui/agreements");
+});
+</script>
+
+</body>
+
+</html>
