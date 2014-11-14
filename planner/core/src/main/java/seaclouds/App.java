@@ -33,8 +33,9 @@ public class App
         	
         }
         
-		userInput = new FileInputStream(new File("/home/michela/Documenti/sampleYaml.yaml"));
-               
+		//userInput = new FileInputStream(new File("/home/michela/Documenti/sampleYaml.yaml"));
+        userInput = new FileInputStream(new File("/home/michela/Documenti/nuroCase.yaml"));
+                
         TOSCAYamlParser userAppModel = new TOSCAYamlParser (userInput);
         
         Map<String, Object> userNodeTemplateList = userAppModel.getNodeTemplates();
@@ -48,7 +49,7 @@ public class App
         
         //retrieve node templates requirements
         for (String key : TnodeTemplatesKeynames){
-        	System.out.println("Processing requirements for node template " + key + ".\n");
+        	System.out.println("\n\nProcessing requirements for node template " + key);
 
         	//extract node templates
         	Map<String, Object> TnodeTemplate = (Map) userNodeTemplateList.get(key);
@@ -58,7 +59,7 @@ public class App
         	else {
         		//retrieve requirements list
         		List TrequirementsList = (List) TnodeTemplate.get("requirements");
-        		
+        		//TODO: look for matching inside the definition file itself
         		//match requirements for a single node template
         		mm.match(TrequirementsList);
         	}

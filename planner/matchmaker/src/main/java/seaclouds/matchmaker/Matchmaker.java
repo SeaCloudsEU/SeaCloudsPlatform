@@ -32,7 +32,7 @@ public class Matchmaker {
 			//TOSCA requirement names: dependency, connection, hosting...
 			String reqName = TreqKeys[0];
 			
-			//extract requirement name
+			//extract requirement value
 			String reqValue = (String) reqDescription.get(reqName);
 			
 			System.out.println("Searching a match for requirement: " + reqName + ": " + reqValue);
@@ -59,7 +59,8 @@ public class Matchmaker {
 	        			
 	        		if(matchProperties(reqDescription, serviceDescription)){
 	        			 
-	        			System.out.println(); 
+	        			System.out.println("Service suitable"); 
+	        			//put serviceDescription somewhere or return its unique identifier
 	        		}
 	        		
 	    	        
@@ -67,60 +68,85 @@ public class Matchmaker {
 	        	}
 	        	else System.out.println("Service not suitable");
 	        }
-	        
-	        
-	        
-	        
-	        
 	       
 			
 		}
+		//TODO: return a map with matching services for each module/requirement
 		
 		System.out.println("-----\nMatchmaking end");
 	}
 
+	
 	private boolean matchProperties(Map<String, Object> reqDescription,
 			Map<String, Object> serviceDescription) {
 		// TODO Auto-generated method stub
    		//2. matchmaking properties (reqDescripion vs serviceDescription) //3. matchmaking values	
 		List reqProperties = (List) reqDescription.get("constraints");
-		Map <String, Object> serviceProperties= (Map) serviceDescription.get("properties");
+		Map serviceProperties= (Map) serviceDescription.get("properties");
 		int suitableProperty = 0;
-		boolean isSuitable = false;
 		
 		for (int i = 0; i < reqProperties.size(); i++){
 			//each property is a map
 			Map<String, Object> property = (Map<String, Object>) reqProperties.get(i);
+			
 			//read property name
 			for (String name : property.keySet()){
 				if (serviceProperties.containsKey(name)){
-					//System.out.println("Property found: " + name);
+					
 					//extract property values
 					Object reqValue = property.get(name);
 					Object offValue = serviceProperties.get(name);
 					String reqClass = reqValue.getClass().getSimpleName();
 					String offClass = offValue.getClass().getSimpleName();	
 					
-					if (reqClass.equals(offClass)){
-						if (reqClass.equals("Integer") || reqClass.equals("String") || reqClass.equals("Boolean") || reqClass.equals("Double")) {
-							//exact matchmaking
-							isSuitable = exactMatch (reqValue, offValue);
+					if (reqClass.equals("LinkedHashMap") || offClass.equals("LinkedHashMap")){
+						if (reqClass.equals(offClass)){
+							//TODO: both properties contain an operator
+							//only permitted operator for off and req properties is "valid_values"
+							Map<String, Object> mapR = (Map<String, Object>) reqValue;	
+							Entry<String, String>[] entryR = (Entry<String, String>[]) mapR.entrySet().toArray(new Map.Entry[mapR.size()]);
+							String operatorR =  entryR[0].getKey();
+							Object valueR = entryR[0].getValue();
+							
+							Map<String, Object> mapO = (Map<String, Object>) offValue;	
+							Entry<String, String>[] entryO = (Entry<String, String>[]) mapO.entrySet().toArray(new Map.Entry[mapO.size()]);
+							String operator =  entryO[0].getKey();
+							Object value = entryO[0].getValue();
+							
+							//at least one of the values in reqValue should be present in offValue
+							
+							System.out.println("Not implemented yet");
 						}
-						else if (reqClass.equals("LinkedHashmap")){
-							isSuitable = operatorMatch (reqValue, offValue);
+						
+						else if (reqClass.equals("LinkedHashMap")){
+							//extract operator
+							Map<String, Object> map = (Map<String, Object>) reqValue;	
+							Entry<String, String>[] entry = (Entry<String, String>[]) map.entrySet().toArray(new Map.Entry[map.size()]);
+							String operator =  entry[0].getKey();
+							Object value = entry[0].getValue();
+							
+							if (operatorMatch(value, offValue, operator)) suitableProperty++;
 						}
-						else {
-							//TODO: handle exception
-							System.err.println("Requested property not recognized");
-							isSuitable = false;
+						
+						else { //offClass contains "valid" operator and reqClass is a string
+							Map<String, Object> map = (Map<String, Object>) offValue;	
+							Entry<String, Object>[] entry = (Entry<String, Object>[]) map.entrySet().toArray(new Map.Entry[map.size()]);
+							String operator =  entry[0].getKey(); //this should be a valid operator
+							List value = (List) entry[0].getValue();
+							
+							Boolean isPresent = false;
+							for (Object element : value){
+								if (reqValue.equals(element)) isPresent = true;
+							}
+							
+							if (isPresent) suitableProperty++;  //not sure if the same function is suitable
 						}
 					}
-					else {
-						//reqClass different form offCLass
-						if (reqClass.equals("LinkedHashMap") || offClass.equals("LinkedHashMap")){
-							if(operatorMatch (reqValue, offValue)) suitableProperty++;
-						}
-						else isSuitable = false;		
+					
+					
+					if (reqClass.equals(offClass)){
+						//exact match
+						if(exactMatch (reqValue, offValue)) suitableProperty++;
 					}
 				}
 			}
@@ -136,167 +162,125 @@ public class Matchmaker {
 		}
 	}
 
-	private boolean operatorMatch(Object reqValue, Object offValue) {
-
+	private boolean operatorMatch(Object value, Object offValue, String operator) {
 		// TODO Auto-generated method stub
-		
-		//the requested property includes an operator
-		if(reqValue.getClass().getSimpleName().equals("LinkedHashMap")){
-			//extract operator
-			Map<String, Object> map = (Map<String, Object>) reqValue;	
-			Entry<String, String>[] entry = (Entry<String, String>[]) map.entrySet().toArray(new Map.Entry[map.size()]);
-			String operator =  entry[0].getKey();
-			Object value = entry[0].getValue();
-			
-			switch (operator) {
-			
-			case "equal":
-				
-				if (offValue.equals(value)) return true;
-				else return false;
-								
-			case "greater_then":
-				if (value.getClass().getSimpleName().equals("Integer")){
-					Integer val = (Integer) value;
-					if ((Integer)offValue > val) return true;
-					else return false;
-			
-				}
-				
-				else if (value.getClass().getSimpleName().equals("Double")){
-					Double val = (Double) value;
-					if ((Double) offValue > val) return true;
-					else return false;
-				}
-				
-				else return false;
-				
-			case "greater_or_equal":
-				//value comparable
-				if (value.getClass().getSimpleName().equals("Integer")){
-					Integer val = (Integer) value;
-					if ((Integer)offValue >= val) return true;
-					else return false;
-			
-				}
-				
-				else if (value.getClass().getSimpleName().equals("Double")){
-					Double val = (Double) value;
-					if ((Double) offValue >= val) return true;
-					else return false;
-				}
-				
-				else return false;
-				
+		switch (operator) {
 
-			case "less_than":
-				if (value.getClass().getSimpleName().equals("Integer")){
-					Integer val = (Integer) value;
-					if ((Integer)offValue < val) return true;
-					else return false;
-			
-				}
-				
-				else if (value.getClass().getSimpleName().equals("Double")){
-					Double val = (Double) value;
-					if ((Double) offValue < val) return true;
-					else return false;
-				}
-				
+		case "equal":
+			if (offValue.equals(value)) return true;
+			else return false;
+
+		case "greater_then":
+			if (value.getClass().getSimpleName().equals("Integer")){
+				Integer val = (Integer) value;
+				if ((Integer)offValue > val) return true;
 				else return false;
-
-			case "less_or_equal":
-				if (value.getClass().getSimpleName().equals("Integer")){
-					Integer val = (Integer) value;
-					if ((Integer)offValue <= val) return true;
-					else return false;
-			
-				}
-				
-				else if (value.getClass().getSimpleName().equals("Double")){
-					Double val = (Double) value;
-					if ((Double) offValue <= val) return true;
-					else return false;
-				}
-				
-				else return false;
-
-			case "in_range":
-				//dual scalar comparable: value is a list with two elements
-				 
-				List<Object> dualScalar = (List<Object>) value;
-				if (dualScalar.get(0).getClass().getSimpleName().equals("Integer")){
-					Integer min = (Integer) dualScalar.get(0);
-					Integer max = (Integer) dualScalar.get(1);
-					if((Integer)offValue >= min && (Integer)offValue <= max){
-						//System.out.println("Valid!");
-						return true;
-					}
-					else return false;
-					
-				}
-				else if (dualScalar.get(0).getClass().getSimpleName().equals("Double")){
-					Double min = (Double) dualScalar.get(0);
-					Double max = (Double) dualScalar.get(1);
-					if((Double)offValue >= min && (Integer)offValue <= max){
-						System.out.println("Valid!");
-						return true;
-					}
-					else return false;
-					
-				}
-				
-				else return false;
-				
-			case "valid_values":
-				//TODO
-				//any
-				//warning: offered can be a single value OR a list '-.-
-				//extract the list of validvlues
-				//extract the list of offValue (can be a single value)
-				Boolean isValid = false;
-				//compare each valid value. ; if validvalue is present in offvalue-> isValid = true;
-				//return isValid;
-				System.out.println("Operator not implemented yet");
-				break;
-
-			case "length":
-				//TODO
-				//string in the specification (?) integer
-				System.out.println("Operator not implemented yet");
-				break;
-
-			case "min_length":
-				//TODO
-				//as above
-				System.out.println("Operator not implemented yet");
-				break;
-
-			case "max_length":
-				//TODO
-				//as above
-				System.out.println("Operator not implemented yet");
-				break;
-			default:
-				//TODO: handle exception
-				System.out.println("Operator not implemented yet");
-				break;
 			}
+			else if (value.getClass().getSimpleName().equals("Double")){
+				Double val = (Double) value;
+				if ((Double) offValue > val) return true;
+				else return false;
+			}
+			else return false;
+
+		case "greater_or_equal":
+			//value comparable
+			if (value.getClass().getSimpleName().equals("Integer")){
+				Integer val = (Integer) value;
+				if ((Integer)offValue >= val) return true;
+				else return false;
+			}
+			else if (value.getClass().getSimpleName().equals("Double")){
+				Double val = (Double) value;
+				if ((Double) offValue >= val) return true;
+				else return false;
+			}
+			else return false;
+
+		case "less_than":
+			if (value.getClass().getSimpleName().equals("Integer")){
+				Integer val = (Integer) value;
+				if ((Integer)offValue < val) return true;
+				else return false;
+			}
+			else if (value.getClass().getSimpleName().equals("Double")){
+				Double val = (Double) value;
+				if ((Double) offValue < val) return true;
+				else return false;
+			}
+			else return false;
+
+		case "less_or_equal":
+			if (value.getClass().getSimpleName().equals("Integer")){
+				Integer val = (Integer) value;
+				if ((Integer)offValue <= val) return true;
+				else return false;
+			}
+			else if (value.getClass().getSimpleName().equals("Double")){
+				Double val = (Double) value;
+				if ((Double) offValue <= val) return true;
+				else return false;
+			}
+			else return false;
+
+		case "in_range":
+			//dual scalar comparable: value is a list with two elements
+			List<Object> dualScalar = (List<Object>) value;
+			if (dualScalar.get(0).getClass().getSimpleName().equals("Integer")){
+				Integer min = (Integer) dualScalar.get(0);
+				Integer max = (Integer) dualScalar.get(1);
+				if((Integer)offValue >= min && (Integer)offValue <= max){
+					//System.out.println("Valid!");
+					return true;
+				}
+				else return false;
+			}
+			else if (dualScalar.get(0).getClass().getSimpleName().equals("Double")){
+				Double min = (Double) dualScalar.get(0);
+				Double max = (Double) dualScalar.get(1);
+				if((Double)offValue >= min && (Integer)offValue <= max){
+					System.out.println("Valid!");
+					return true;
+				}
+				else return false;
+			}
+			else return false;
+
+		case "valid_values":
+			//TODO
+			//any
+			//warning: offered can be a single value OR a list '-.-
+			//extract the list of validvlues
+			//extract the list of offValue (can be a single value)
+			Boolean isValid = false;
+			//compare each valid value. ; if validvalue is present in offvalue-> isValid = true;
+			//return isValid;
+			System.out.println("Operator not implemented yet");
+			break;
+
+		case "length":
+			//TODO
+			//string in the specification (?) integer
+			System.out.println("Operator not implemented yet");
+			break;
+
+		case "min_length":
+			//TODO
+			//as above
+			System.out.println("Operator not implemented yet");
+			break;
+
+		case "max_length":
+			//TODO
+			//as above
+			System.out.println("Operator not implemented yet");
+			break;
+
+		default:
+			//TODO: handle exception
+			System.out.println("Operator not implemented yet");
+			break;
 		}
-		
-		//the requested property is a simple type (CHECK) and offered property include the operator valid_values
-		else if (offValue.getClass().getSimpleName().equals("LinkedHashMap")){
-			//check if reqValue is present in off values
-		}
-		
-		else {
-			//TODO:handle exception
-			System.err.println("Unexpected value in properties");
-			return false;
-		}
-		
-		
-		
 		return false;
 	}
 
