@@ -5,5 +5,5 @@
     be changed.
 */
 
-var BROOKLYN_ENDPOINT = "http://192.168.24.128:8081";
+var BROOKLYN_ENDPOINT = "http://devtest.scenic.uma.es:8081";
 var SLADASHBOARD_ENDPOINT = "http://localhost:8082";
