@@ -135,13 +135,12 @@
 
                                         <%
                                             for (SensorSummary sensorSummary : BROOKLKYN_API.getSensorApi().list(appId, entitySummary.getId())) {
-                                                String inputId = appId + "." + entitySummary.getId() + "." + sensorSummary.getName();
                                         %>
 
                                         <tr>
                                             <td><%=sensorSummary.getName()%></td>
                                             <td><%=sensorSummary.getDescription()%></td>
-                                            <td><input type="checkbox" id="<%=inputId%>" onClick="if (this.checked) {addGraph(<%=inputId%>)} else{removeGraph(<%=inputId%>)} "></td>
+                                            <td><input type="checkbox" onClick="if (this.checked) { addGraph('<%=appId%>','<%=entitySummary.getId()%>','<%=sensorSummary.getName()%>') } else { removeGraph('<%=appId%>','<%=entitySummary.getId()%>','<%=sensorSummary.getName()%>') }"></td>
                                         </tr>
 
                                         <%
@@ -195,7 +194,7 @@
 var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"}).spin(document.getElementById("loading-spinner"));
 var APP_ID = location.search.split('id=')[1];
 var CONTENT_ID = "page-content";
-var VISIBLE_METRICS = [];
+var ACTIVE_API_CALLS = [];
 
 // Configuring API connection and GUI loading
 var API = new SwaggerApi({
@@ -230,14 +229,9 @@ function apiLoaded() {
     if (BACKEND_READY) {
         //FIXME: HACKY WAY TO ACCESS SENSOR API
         API.SensorAPI = API['Entity Sensors'];
-        displayGraphs();
     }
 
     SPINNER.stop();
-}
-
-function displayGraphs(){
-
 }
 
 function apiLoadFailed(err) {
@@ -247,27 +241,40 @@ function apiLoadFailed(err) {
 }
 
 
-function addGraph(item){
+function addGraph(appId, entityId, sensorName){
+    $('#page-graphs').append(generateSensorPanel(appId, entityId, sensorName));
+    setupGraphs("#flot-line-chart-" + appId + "-" + entityId + "-" + sensorName, entityId, sensorName);
+    $('#app-status-collapsable').collapse('hide')
+
 
 }
 
-function removeGraph(item){
+function removeGraph(appId, entityId, sensorName){
+    $(escapeDots("#panel-container-" + appId +'-' + entityId + '-' + sensorName)).remove();
+    $('#app-status-collapsable').collapse('hide')
+
+    for (var i = 0; i < ACTIVE_API_CALLS.length; i++) {
+        if (ACTIVE_API_CALLS[i].functionName == appId +'-' + entityId + '-' + sensorName) {
+            clearInterval(ACTIVE_API_CALLS[i].programedFunction);
+            ACTIVE_API_CALLS.splice(i--, 1);
+        }
+    }
 
 }
 
 
 
-function generateSensorPanel(appID, entity, sensorName){
+function generateSensorPanel(appId, entityId, sensorName){
 
-    var panelHeading = "<div class=\"col-lg-6\"><div class=\"panel panel-default\">";
-    panelHeading +=  "<div class=\"panel-heading\" id=\"entity-heading-" + entity.id + "\"><i class=\"fa fa-bar-chart-o fa-fw\"></i> " + entity.id + ", " + entity.name + "</div>";
-
-
-    var panelBody = "<div class=\"panel-body\" id=\"entity-body-" + entity.id + "\"><h3>"+ sensorName + "</h3></div>";
+    var panelHeading = "<div class=\"col-lg-6\" id=\"panel-container-" + appId + "-" + entityId + "-" + sensorName + "\"" + "><div class=\"panel panel-default\">";
+    panelHeading +=  "<div class=\"panel-heading\"><i class=\"fa fa-bar-chart-o fa-fw\"></i> " + entityId + ", " + sensorName +"</div>";
 
 
-    panelBody +=  "<div class=\"flot-chart\"><div class=\"flot-chart-content\" id=\"flot-line-chart-"+ entity.id +"\"></div></div>";
-    panelBody += "</div></div></div>";
+    var panelBody = "<div class=\"panel-body\">";
+
+
+    panelBody +=  "<div class=\"flot-chart\"><div class=\"flot-chart-content\" id=\"flot-line-chart-"+ appId + "-" + entityId + "-" + sensorName +"\"></div></div>";
+    panelBody += "</div></div>";
 
     return  panelHeading + panelBody;
 
@@ -276,7 +283,7 @@ function generateSensorPanel(appID, entity, sensorName){
 
 function setupGraphs (containerID, entityID, sensorName) {
 
-    var container = $("#"+ containerID);
+    var container = $(escapeDots(containerID));
 
     series = [
         {
@@ -357,12 +364,23 @@ function setupGraphs (containerID, entityID, sensorName) {
 
     }
 
-    setInterval(function(){
+    var programedInterval = setInterval(function(){
         API.SensorAPI.get({application:APP_ID, entity:entityID, sensor:sensorName}, updateFunction)
     }, 40);
 
+    ACTIVE_API_CALLS.push({
+        functionName: APP_ID + "-" + entityID + "-" + sensorName,
+        programedFunction : programedInterval
+    });
 }
 
+
+
+function escapeDots( myid ) {
+
+    return myid.replace( /(:|\.|\[|\])/g, "\\$1" );
+
+}
 
 </script>
 </body>
