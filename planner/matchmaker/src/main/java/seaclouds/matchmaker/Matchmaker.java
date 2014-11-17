@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,62 +20,50 @@ public class Matchmaker {
 	
 
 
-	public void match(List requirementsList) throws FileNotFoundException {
+	public Map<String, Object> match(String reqName, String reqValue, Map reqDescription) throws FileNotFoundException {
 		// TODO Auto-generated method stub
 
         System.out.println("-----\nMatchmaking start");
+			
+		//TODO: ask the discoverer to find services with reqName and reqValue
 		
-		for (int i = 0; i < requirementsList.size(); i++){
-			//extract requirement name
-			Map<String, Object> reqDescription = (Map) requirementsList.get(i);
-			Set<String> reqKeynames = reqDescription.keySet();
-			String[] TreqKeys = reqKeynames.toArray(new String[0]);
-			
-			//TOSCA requirement names: dependency, connection, hosting...
-			String reqName = TreqKeys[0];
-			
-			//extract requirement value
-			String reqValue = (String) reqDescription.get(reqName);
-			
-			System.out.println("Searching a match for requirement: " + reqName + ": " + reqValue);
-			
-			//TODO: ask the discoverer to find services with reqName and reqValue
-			
-			//parse cloud input into a map (like user input)
-			InputStream cloudInput = new FileInputStream(new File("/home/michela/Documenti/outputAWScompute.c1.medium.yaml"));
-	        TOSCAYamlParser cloudModel = new TOSCAYamlParser (cloudInput);
-	        Map<String, Object> cloudOfferedServiceList = cloudModel.getNodeTemplates();
-	        
-	      	       
-	        for (Entry<String, Object> service: cloudOfferedServiceList.entrySet()){
-	        	
-	        	Map<String, Object> serviceDescription = (Map) service.getValue();
-	        	
-	        	//1. check if the service offers a capability equals to reqName and check if the service is of type included in reqValue
+		//parse cloud input into a map (like user input)
+        InputStream cloudInput = new FileInputStream(new File("/home/michela/Documenti/outputAWScompute.c1.medium.yaml"));
+        TOSCAYamlParser cloudModel = new TOSCAYamlParser (cloudInput);
+        Map<String, Object> cloudOfferedServiceList = cloudModel.getNodeTemplates();
+        Map<String, Object> suitableServiceList = new LinkedHashMap<>();
+        System.out.println("\n" + cloudOfferedServiceList.size() + " service(s) available");
 
-	        	//note: a service can offer more than a single capability, thus they are stored into a map
-	        	Map<String, Object> capabilitiesList = (Map) serviceDescription.get("capabilities");
-	        	String offServiceType = (String) serviceDescription.get("type");
+        for (Entry<String, Object> service: cloudOfferedServiceList.entrySet()){
 
-	        	if (capabilitiesList.containsKey(reqName) && offServiceType.equals(reqValue)){
-	        			
-	        		if(matchProperties(reqDescription, serviceDescription)){
-	        			 
-	        			System.out.println("Service suitable"); 
-	        			//put serviceDescription somewhere or return its unique identifier
-	        		}
-	        		
-	    	        
-	        		       			      	        		
-	        	}
-	        	else System.out.println("Service not suitable");
-	        }
+        	String serviceName = (String) service.getKey();
+        	Map<String, Object> serviceDescription = (Map) service.getValue();
+
+        	//1. check if the service offers a capability equals to reqName and check if the service is of type included in reqValue
+        	//note: a service can offer more than a single capability, thus they are stored into a map
+        	Map<String, Object> capabilitiesList = (Map) serviceDescription.get("capabilities");
+        	String offServiceType = (String) serviceDescription.get("type");
+
+        	if (capabilitiesList.containsKey(reqName) && offServiceType.equals(reqValue)){
+
+        		if(matchProperties(reqDescription, serviceDescription)){
+
+        			System.out.println("Service suitable"); 
+        			suitableServiceList.put(serviceName, serviceDescription);
+        			//put serviceDescription somewhere or return its unique identifier
+        		}
+        		
+        		else System.out.println("Service not suitable");
+        	}
+        	else System.out.println("Service not suitable");
+        }
 	       
 			
-		}
+		//}
 		//TODO: return a map with matching services for each module/requirement
 		
 		System.out.println("-----\nMatchmaking end");
+		return suitableServiceList;
 	}
 
 	
@@ -153,11 +143,11 @@ public class Matchmaker {
 		}
 		
 		if (suitableProperty == reqProperties.size()) {
-			System.out.println("Service suitable");
+			//System.out.println("Service suitable");
 			return true;
 		}
 		else {
-			System.out.println("Service not suitable");
+			//System.out.println("Service not suitable");
 			return false;
 		}
 	}

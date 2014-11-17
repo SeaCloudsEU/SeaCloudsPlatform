@@ -2,6 +2,8 @@ package seaclouds.utils;
 
 
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
@@ -21,6 +23,32 @@ public class TOSCAYamlParser {
 		//TODO: check if empty or not valid
 		
 		//TODO: check if it is a valid TOSCA file
+	}
+	/*
+	public void TOSCAYamlEmitter(Object definitions){
+		Yaml definitionsYaml = new Yaml();
+		String output = definitionsYaml.dump(definitions);
+		StringWriter writer = new StringWriter();
+	    definitionsYaml.dump(definitions, writer);
+	    System.out.println(writer.toString());
+	    
+	}*/
+	
+	public void writeYaml(){
+		Yaml definitionsYaml = new Yaml();
+		String output = definitionsYaml.dump(TOSCAdefinitions);
+		StringWriter writer = new StringWriter();
+	    definitionsYaml.dump(TOSCAdefinitions, writer);
+	    System.out.println(writer.toString());
+	    
+	}
+	
+	public Map<String, Object> getTOSCAdefinitions(){
+		return TOSCAdefinitions;
+	}
+	
+	public void setTOSCAdefinitions(Map<String, Object> toscadefinitions) {
+		TOSCAdefinitions = toscadefinitions;
 	}
 	
 	public String getVersion(){
@@ -92,6 +120,35 @@ public class TOSCAYamlParser {
 		else return (Map<String, Object>) TOSCAdefinitions.get(keyname);		
 	}
 	
+	public void setNodeTemplates(Map<String, Object> nodeTemplatesList){
+		TOSCAdefinitions.put("node_templates", nodeTemplatesList);
+	}
+	
+	public Map<String, Object> getNodeTemplate (String name){
+		Map<String, Object> nodeTemplates = getNodeTemplates();
+		if (nodeTemplates.containsKey(name)){
+			Map<String, Object> nodeTemplate = new LinkedHashMap<String, Object>();
+			nodeTemplate.put(name, nodeTemplates.get(name));
+			return nodeTemplate;
+			
+		}
+		else {
+			System.out.println("Node template "+ name + " not found");
+			return null;
+		}
+		
+	}
+	
+	public void setNodeTemplate(String name, Object value){
+		//TODO: check if input is valid
+		//retrieve node templates list
+		Map<String, Object> nodeTemplatesList = this.getNodeTemplates();
+		//update node templates list
+		nodeTemplatesList.put(name, value);
+		//update old node templates list in TOSCAdefinitions
+		TOSCAdefinitions.put("node_templates", nodeTemplatesList);
+	}
+	
 	public Map<String, Object> getNodeTypes(){
 		String keyname = "node_types";
 		if(!TOSCAdefinitions.containsKey(keyname)){
@@ -130,6 +187,8 @@ public class TOSCAYamlParser {
 		System.out.println("Warning: this function has not been defined yet");
 		return null;	
 	}
+	
+	//TODO: functions to modify the status of the definitions file
 
 	
 }

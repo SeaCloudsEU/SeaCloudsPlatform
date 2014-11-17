@@ -3,10 +3,12 @@ package seaclouds;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import seaclouds.matchmaker.Matchmaker;
 import seaclouds.utils.TOSCAYamlParser;
@@ -17,7 +19,7 @@ import seaclouds.utils.TOSCAYamlParser;
  */
 public class App 
 {
-    public static void main( String[] args ) throws FileNotFoundException
+    public static void main( String[] args ) throws IOException
     {
         System.out.println( "Hello Planner!\n-----" );
         InputStream userInput = null;
@@ -39,7 +41,6 @@ public class App
         TOSCAYamlParser userAppModel = new TOSCAYamlParser (userInput);
         
         Map<String, Object> userNodeTemplateList = userAppModel.getNodeTemplates();
-        
         Matchmaker mm = new Matchmaker();
 
         //TODO: wrap NodeTemplate in a class
@@ -59,12 +60,68 @@ public class App
         	else {
         		//retrieve requirements list
         		List TrequirementsList = (List) TnodeTemplate.get("requirements");
-        		//TODO: look for matching inside the definition file itself
-        		//match requirements for a single node template
-        		mm.match(TrequirementsList);
+        		
+        		for (int i = 0; i < TrequirementsList.size(); i++){
+        			//extract requirement name
+        			Map<String, Object> reqDescription = (Map) TrequirementsList.get(i);
+        			Set<String> reqKeynames = reqDescription.keySet();
+        			String[] TreqKeys = reqKeynames.toArray(new String[0]);
+        			
+        			//TOSCA requirement names: dependency, connection, hosting...
+        			String reqName = TreqKeys[0];
+        			
+        			//extract requirement value
+        			String reqValue = (String) reqDescription.get(reqName);
+        			
+        			System.out.println("Searching a match for requirement: " + reqName + ": " + reqValue);
+        			//TODO: look for matching inside the definition file itself
+        			if (userNodeTemplateList.containsKey(reqValue)){
+        				//extract service description
+        				Map<String, Object> serviceDescription = (Map) userNodeTemplateList.get(reqValue);
+
+        				//check if serviceDescription includes reqName in capabilities
+        				Map<String, Object> capabilitiesList = (Map) serviceDescription.get("capabilities");
+        				if (capabilitiesList.containsKey(reqName)){
+        					//TODO: check if capability: offName: offValue match with the name of the node asking for requirement
+        					System.out.println("Requirement already satisfied inside the definitions file\n");
+        				}
+        			}
+        			else {
+                		//match requirements for a single node template and a single requirement (one list of services for each requirement in each node)
+        				Map<String, Object> suitableServiceList = mm.match(reqName, reqValue, reqDescription);
+        				//add the list of suitable services to the requirement section
+        				if (!suitableServiceList.isEmpty()){
+        					//alternatively is possible to include the whole service descriptions
+        					Set<String> suitableServiceNames = (Set<String>) suitableServiceList.keySet();
+        					reqDescription.put("suitableServices", suitableServiceNames);
+        					System.out.println("Found " + suitableServiceList.size() + " service(s) for this requirement");
+        					//update reqDescription
+        					TrequirementsList.set(i, reqDescription);
+        					//update TnodeTemplate
+        					TnodeTemplate.put("requirements", TrequirementsList);
+        					//update TOSCAdefinitions
+        					userAppModel.setNodeTemplate(key, TnodeTemplate);
+        		
+        				}
+        				
+        				else {
+        					System.out.println("Found no service(s) for this requirement");
+        				}
+        				
+        				//System.out.print(true);
+        			}
+        		}
+        	
         	}
         	
         }
+        
+        System.out.println();
+        byte[] text = new byte[20];
+        System.in.read(text);
+        
+        
+        userAppModel.writeYaml();
         
         System.out.println( "-----\nBye bye Planner!" );
 
