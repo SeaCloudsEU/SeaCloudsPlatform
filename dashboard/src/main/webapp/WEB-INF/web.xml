@@ -15,4 +15,32 @@
         <param-name>org.mortbay.jetty.servlet.Default.useFileMappedBuffer</param-name>
         <param-value>false</param-value>
     </context-param>
+
+    <servlet>
+        <servlet-name>SensorServlet</servlet-name>
+        <servlet-class>eu.seaclouds.platform.dashboard.servlets.SensorServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SensorServlet</servlet-name>
+        <url-pattern>/monitor/get/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>MonitorServlet</servlet-name>
+        <servlet-class>eu.seaclouds.platform.dashboard.servlets.MonitorServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MonitorServlet</servlet-name>
+        <url-pattern>/monitor/applications</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DeployerServlet</servlet-name>
+        <servlet-class>eu.seaclouds.platform.dashboard.servlets.DeployerServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeployerServlet</servlet-name>
+        <url-pattern>/deployer</url-pattern>
+    </servlet-mapping>
+
 </web-app>

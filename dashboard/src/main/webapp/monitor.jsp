@@ -1,3 +1,5 @@
+<%@ page import="brooklyn.rest.client.BrooklynApi" %>
+<%@ page import="eu.seaclouds.platform.dashboard.ConfigParameters" %>
 <!DOCTYPE html>
 <html>
 
@@ -6,11 +8,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SeaClouds Dashboard - Deploy new Application</title>
+    <title>SeaClouds Dashboard - Monitor Applications</title>
 
     <!-- Core CSS - Include with every page -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="css/font-awesome.min.css" rel="stylesheet">
 
 
     <!-- SB Admin CSS - Include with every page -->
@@ -19,6 +21,7 @@
     <!-- SeaClouds configuration constants -->
     <script src="js/config.js"></script>
 
+    <%! final BrooklynApi BROOKLKYN_API = new BrooklynApi(ConfigParameters.DEPLOYER_ENDPOINT); %>
 </head>
 
 <body>
@@ -39,7 +42,7 @@
                     class="icon-bar"></span> <span class="icon-bar"></span> <span
                     class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="index.html">SeaClouds Dashboard - Deploy new Application</a>
+            <a class="navbar-brand" href="index.html">SeaClouds Dashboard - Monitor Applications</a>
         </div>
         <!-- /.navbar-header -->
 
@@ -97,8 +100,9 @@
                     <li><a href="index.html"><i class="fa fa-dashboard fa-home"></i>&nbsp;Home</a></li>
                     <li><a href="not-available.html" class=""><i class="fa fa-pencil-square-o"></i>&nbsp;Module Profile Designer</a></li>
                     <li><a href="not-available.html" class=""><i class="fa fa-code-fork"></i>&nbsp;DAM generator</a></li>
-                    <li><a href="deployer.html" class=""><strong><i class="fa fa-download"></i>&nbsp;Deploy new Application</a></strong></li>
-                    <li><a href="monitor.html" class=""><i class="fa fa-dashboard"></i>&nbsp;Monitor applications</a></li>
+                    <li><a href="deployer.jsp" class=""><i class="fa fa-download"></i>&nbsp;Deploy new Application</a></li>
+                    <li><a href="monitor.jsp" class=""><strong><i class="fa fa-dashboard"></i>&nbsp;Monitor applications</strong></a></li>
+                    <li><a href="sla.html" class=""><i class="fa fa-file-text-o"></i>&nbsp;SLA</a></li>
 
 
                </ul>
@@ -113,66 +117,18 @@
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="page-header">
-                    Deployer 
-                    <small>Brooklyn's YAML deploy method</small>
+                    Monitor
+                    <small>Get information from deployed applications</small>
                 </h1>
             </div>
             <!-- /.col-lg-12 -->
         </div>
-        <!-- /.row -->
+                <!-- /.row -->
+
         <div class="row" id="page-content">
-
-            <div class="col-lg-8">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <i class="fa fa-bar-chart-o  fa-fw"></i>Application Specification
-                    </div>
-                    <!-- /.panel-heading -->
-                    <div class="panel-body" id="yaml-input-panel-body">
-                        <form role="form" onreset="resetForm()" onsubmit="submitYaml()">
-
-                            <div class="form-group" id="text-form-group">
-                                <label for="yaml-input-textarea">Paste your YAML here</label>
-                                <textarea id="yaml-input-textarea" class="form-control" rows="3" onchange="switchFormInputTo('yaml-input-textarea')"></textarea>
-                            </div>
-
-
-                            <div class="form-group" id="file-form-group">
-                                <label for="yaml-input-file">Choose a YAML File</label>
-                                <input type="file" id="yaml-input-file" onchange="switchFormInputTo('yaml-input-file')">
-                            </div>
-
-                        <div class="pull-right">
-
-                            <button type="reset" class="btn btn-default">Clear</button>
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </div>
-
-
-                        </form>
-
-
-                    </div>
-                    <!-- /.panel-body -->
-
-                </div>
-                <!-- /.panel -->
-            </div>
-            <!-- /.col-lg-8 -->
-            <div class="col-lg-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <i class="fa fa-gears fa-fw"></i>&nbsp;Deployer Status
-                    </div>
-                    <!-- /.panel-heading -->
-                    <div class="panel-body" id="information-panel-body"></div>
-                    <!-- /.panel-body -->
-                </div>
-                <!-- /.panel -->
-            </div>
-            <!-- /.col-lg-4 -->
         </div>
         <!-- /.row -->
+
 
     </div>
     <!-- /#page-wrapper -->
@@ -188,12 +144,6 @@
 
 <!-- SB Admin Scripts - Include with every page -->
 <script src="js/sb-admin.js"></script>
-
-
-</body>
-
-
-<!-- Swagger JS API -->
 <script src='js/lib/swagger.js' type='text/javascript'></script>
 <script type="text/javascript">
     var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"}).spin(document.getElementById("loading-spinner"));
@@ -216,90 +166,43 @@
         CURRENT_FORM_INPUT = enabledForm;
     }
 
-
-
     var CONTENT_ID = "page-content";
 
-    // Configuring API connection and GUI loading
-    var API = new SwaggerApi({
-        basePath: BROOKLYN_ENDPOINT,
-        discoveryUrl: BROOKLYN_ENDPOINT + "/v1/apidoc",
-        success: apiLoaded,
-        fail: apiLoadFailed
-    });
+    setInterval(function(){
+        SPINNER.spin(document.getElementById("loading-spinner"));
+        displayApplicationOverview();
+    }, 5000);
 
-    var BACKEND_READY = false;
+    function generateAppOverviewBox(application) {
+        // Top of the box
+        var appHTML = "<div class=\"col-lg-4\"><div class=\"panel panel-default\">";
 
+        // Box heading
+        appHTML += "<div class=\"panel-heading clearfix\"><i class=\"fa fa-gears fa-fw\"></i> " + application.spec.name + "<a target=\"_blank\" href=\"app-monitor.jsp?id=" + application.id +"\"><button type=\"button\" class=\"btn btn-info navbar-right\">Info</button></a></div>"
 
+        // Box body
+        appHTML += "<div class=\"panel-body\" id=\"information-panel\"><strong>ID: </strong>" + application.id + "<br>" +
+                "<strong>Type: </strong> " + application.spec.type + "<br><strong>State: </strong>" + application.status;
+        appHTML += "</div></div></div></div>";
 
-
-    function checkBackendStatus(){
-        if(!API.ready){
-            apiLoadFailed();
-        }
-
-        BACKEND_READY = API.ready;
+        return appHTML
     }
 
-    function apiLoaded() {
-        // Check API Connection readiness
-        checkBackendStatus();
-
-        if (BACKEND_READY) {
-            displayDeployerStatus();
-        }
-
-        var refreshInterval = setInterval(function(){
-            SPINNER.spin(document.getElementById("loading-spinner"));
-            if(!BACKEND_READY){
-                // Disable this interval
-                clearInterval(refreshInterval);
-
-                // Try to reload the API
-                API = new SwaggerApi({
-                    basePath: BROOKLYN_ENDPOINT,
-                    discoveryUrl: BROOKLYN_ENDPOINT + "/v1/apidoc",
-                    success: apiLoaded,
-                    fail: apiLoadFailed
-                    });
-            }else{
-                displayDeployerStatus();
-            }
-             SPINNER.stop();
-        }, 5000);
-
-        SPINNER.stop();
-
-    }
-
-    function apiLoadFailed(err) {
-
-        $('#' + CONTENT_ID).html("<h1 class=\"text-center text-danger\">Unable to find any deployer engine</h1>")
-        SPINNER.stop();
-    }
-
-    function displayDeployerStatus(){
-        var boxHTML  = "<h3 class=\"text-center text-success\">Deployer Engine found. <br>" +
-                    "<small>Apache Brooklyn is listening in "+ BROOKLYN_ENDPOINT +" </small></h3> ";
-
-        $('#' + "information-panel-body").html(boxHTML)
-
-    }
-
-
-    function submitYaml(){
-        $.ajax(BROOKLYN_ENDPOINT + "/v1/applications",{
-            'data': $("#yaml-input-textarea").val(),
-            'type': 'POST',
-            'processData': false,
-            'contentType': 'application/x-www-form-urlencoded' //typically 'application/x-www-form-urlencoded', but the service you are calling may expect 'text/json'... check with the service to see what they expect as content-type in the HTTP header.
-        }, function(res){
-            console.log(res);
+    function displayApplicationOverview(){
+        $.get("monitor/applications", function (response) {
+                var boxHTML = "";
+                if (response.length > 0) {
+                    $.each(response, function (idx, app) {
+                        boxHTML += generateAppOverviewBox(app)
+                    })
+                } else {
+                    boxHTML = "<h1 class=\"text-center text-warning\">No applications running.</h1>";
+                }
+                $('#' + CONTENT_ID).html(boxHTML)
+        }).done(function(){
+            SPINNER.stop();
         });
     }
 </script>
-
-
-
-
+</body>
 </html>

@@ -1,10 +1,7 @@
 <%@ page import="eu.seaclouds.platform.dashboard.ConfigParameters" %>
 <%@ page import="brooklyn.rest.client.BrooklynApi" %>
-<%@ page import="brooklyn.rest.domain.ApplicationSummary" %>
 <%@ page import="brooklyn.rest.domain.EntitySummary" %>
-<%@ page import="java.util.List" %>
 <%@ page import="brooklyn.rest.domain.SensorSummary" %>
-
 
 <!DOCTYPE html>
 <html>
@@ -93,6 +90,10 @@
     </nav>
 
     <div id="page-wrapper-no-sidebar">
+        <% if(BROOKLKYN_API.getSensorApi() != null){ %>
+
+
+
         <div class="row">
                 <div class="col-lg-12">
                 <h1 class="page-header">
@@ -164,6 +165,9 @@
         <div class="row" id="page-graphs">
 
         </div>
+        <%} else {%>
+          <h1 class="text-center text-danger">Unable to find any deployer engine</h1>
+        <% } %>
     </div>
     <!-- /#page-wrapper -->
 
@@ -197,49 +201,15 @@ var CONTENT_ID = "page-content";
 var ACTIVE_API_CALLS = [];
 
 // Configuring API connection and GUI loading
-var API = new SwaggerApi({
-    basePath: BROOKLYN_ENDPOINT,
-    discoveryUrl: BROOKLYN_ENDPOINT + "/v1/apidoc",
-    success: apiLoaded,
-    fail: apiLoadFailed
-});
-
 var BACKEND_READY = false;
 
 function checkBackendStatus(){
-    if(!API.ready){
-        $('#' + CONTENT_ID).html("<h1 class=\"text-center text-danger\">Unable to find any deployer engine</h1>")
-    }else if(!APP_ID){
-        $('#' + CONTENT_ID).html("<h1 class=\"text-center text-danger\">Missing Application ID</h1>")
-    }else{
-        API.Applications.get({application:APP_ID}, undefined, function(){
-            $('#' + CONTENT_ID).html("<h1 class=\"text-center text-danger\">Invalid Application ID</h1>");
-            BACKEND_READY = false;
-        });
-    }
+    $.get("status/", function(res){
+        $('#' + CONTENT_ID).html("<h1 class=\"text-center text-danger\">res.message</h1>");
+    });
 
     BACKEND_READY = !API.ready || APP_ID != undefined;
 }
-
-
-function apiLoaded() {
-    // Check API Connection readiness
-    checkBackendStatus();
-
-    if (BACKEND_READY) {
-        //FIXME: HACKY WAY TO ACCESS SENSOR API
-        API.SensorAPI = API['Entity Sensors'];
-    }
-
-    SPINNER.stop();
-}
-
-function apiLoadFailed(err) {
-
-    $('#' + CONTENT_ID).html("<h1 class=\"text-center text-danger\">Unable to find any deployer engine</h1>")
-    SPINNER.stop();
-}
-
 
 function addGraph(appId, entityId, sensorName){
     $('#page-graphs').append(generateSensorPanel(appId, entityId, sensorName));
@@ -259,10 +229,7 @@ function removeGraph(appId, entityId, sensorName){
             ACTIVE_API_CALLS.splice(i--, 1);
         }
     }
-
 }
-
-
 
 function generateSensorPanel(appId, entityId, sensorName){
 
@@ -293,8 +260,6 @@ function setupGraphs (containerID, entityID, sensorName) {
             }
         }
     ];
-
-    //
 
     var plot = $.plot(container, series, {
         grid: {
@@ -335,15 +300,12 @@ function setupGraphs (containerID, entityID, sensorName) {
         }
     });
 
-
     var data = [];
     var MAXIMUM = container.outerWidth() / 2 || 300;
-
 
     // Programming updates
     function updateFunction(apiResponse){
         var value = apiResponse;
-
 
         data.push(value);
 
@@ -360,12 +322,10 @@ function setupGraphs (containerID, entityID, sensorName) {
         plot.setData(series);
         plot.autoScale();
         plot.draw();
-
-
     }
 
     var programedInterval = setInterval(function(){
-        API.SensorAPI.get({application:APP_ID, entity:entityID, sensor:sensorName}, updateFunction)
+        $.get('monitor/get/',{application:APP_ID, entity:entityID, sensor:sensorName}, updateFunction);
     }, 40);
 
     ACTIVE_API_CALLS.push({
@@ -374,12 +334,8 @@ function setupGraphs (containerID, entityID, sensorName) {
     });
 }
 
-
-
 function escapeDots( myid ) {
-
     return myid.replace( /(:|\.|\[|\])/g, "\\$1" );
-
 }
 
 </script>
