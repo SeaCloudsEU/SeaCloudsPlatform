@@ -28,7 +28,9 @@ public class Matchmaker {
 		//TODO: ask the discoverer to find services with reqName and reqValue
 		
 		//parse cloud input into a map (like user input)
-        InputStream cloudInput = new FileInputStream(new File("/home/michela/Documenti/outputAWScompute.c1.medium.yaml"));
+        //InputStream cloudInput = new FileInputStream(new File("/home/michela/Documenti/outputAWScompute.c1.medium.yaml"));
+        InputStream cloudInput = new FileInputStream(new File("/home/michela/Dropbox/SeaCloudsPersonal/documentsProduced/integrationMeeting/outputAWScompute.yaml"));
+        
         TOSCAYamlParser cloudModel = new TOSCAYamlParser (cloudInput);
         Map<String, Object> cloudOfferedServiceList = cloudModel.getNodeTemplates();
         Map<String, Object> suitableServiceList = new LinkedHashMap<>();

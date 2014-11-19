@@ -51,24 +51,30 @@
         <dependency>
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-rest-client</artifactId>
-            <version>${brooklyn.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>org.javatuples</groupId>
             <artifactId>javatuples</artifactId>
-            <version>${javatuples.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>${testng.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>junit</groupId>
+        	<artifactId>junit</artifactId>
+        	<version>3.8.1</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.yaml</groupId>
+        	<artifactId>snakeyaml</artifactId>
+        	<version>1.6</version>
         </dependency>
     </dependencies>
 
@@ -94,4 +100,28 @@
             </plugin>
         </plugins>
     </build>
+    <dependencyManagement>
+    	<dependencies>
+    		<dependency>
+    			<groupId>org.apache.brooklyn</groupId>
+    			<artifactId>brooklyn-rest-client</artifactId>
+    			<version>${brooklyn.version}</version>
+    		</dependency>
+    		<dependency>
+    			<groupId>org.testng</groupId>
+    			<artifactId>testng</artifactId>
+    			<version>${testng.version}</version>
+    		</dependency>
+    		<dependency>
+    			<groupId>com.google.guava</groupId>
+    			<artifactId>guava</artifactId>
+    			<version>${guava.version}</version>
+    		</dependency>
+    		<dependency>
+    			<groupId>org.javatuples</groupId>
+    			<artifactId>javatuples</artifactId>
+    			<version>${javatuples.version}</version>
+    		</dependency>
+    	</dependencies>
+    </dependencyManagement>
 </project>
