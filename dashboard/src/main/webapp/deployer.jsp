@@ -9,7 +9,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SeaClouds Dashboard - Deploy new Application</title>
+    <title>SeaClouds Dashboard - Deployer</title>
 
     <!-- Core CSS - Include with every page -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -101,10 +101,10 @@
                 <ul class="nav" id="side-menu">
                     <li><a href="index.html"><i class="fa fa-dashboard fa-home"></i>&nbsp;Home</a></li>
                     <li><a href="not-available.html" class=""><i class="fa fa-pencil-square-o"></i>&nbsp;Module Profile Designer</a></li>
-                    <li><a href="not-available.html" class=""><i class="fa fa-code-fork"></i>&nbsp;DAM generator</a></li>
-                    <li><a href="deployer.jsp" class=""><strong><i class="fa fa-download"></i>&nbsp;Deploy new Application</strong></a></li>
-                    <li><a href="monitor.jsp" class=""><i class="fa fa-dashboard"></i>&nbsp;Monitor applications</a></li>
-                    <li><a href="sla.html" class=""><i class="fa fa-file-text-o"></i>&nbsp;SLA</a></li>
+                    <li><a href="not-available.html" class=""><i class="fa fa-code-fork"></i>&nbsp;Discoverer & Planner</a></li>
+                    <li><a href="deployer.jsp" class=""><strong><i class="fa fa-download"></i>&nbsp;Deployer</strong></a></li>
+                    <li><a href="monitor.jsp" class=""><i class="fa fa-dashboard"></i>&nbsp;Monitor</a></li>
+                    <li><a href="sla.html" class=""><i class="fa fa-file-text-o"></i>&nbsp;SLA Service</a></li>
 
                </ul>
                 <!-- /#side-menu -->
