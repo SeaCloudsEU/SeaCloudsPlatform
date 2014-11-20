@@ -1,5 +1,3 @@
-<%@ page import="brooklyn.rest.client.BrooklynApi" %>
-<%@ page import="eu.seaclouds.platform.dashboard.ConfigParameters" %>
 <!DOCTYPE html>
 <html>
 
@@ -21,7 +19,6 @@
     <!-- SeaClouds configuration constants -->
     <script src="js/config.js"></script>
 
-    <%! final BrooklynApi BROOKLKYN_API = new BrooklynApi(ConfigParameters.DEPLOYER_ENDPOINT); %>
 </head>
 
 <body>
@@ -147,38 +144,23 @@
 <script src='js/lib/swagger.js' type='text/javascript'></script>
 <script type="text/javascript">
     var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"}).spin(document.getElementById("loading-spinner"));
-    
-    var CURRENT_FORM_INPUT = undefined;
-
-    function resetForm(){
-        $("#yaml-input-file").prop('disabled', false);
-        $("#yaml-input-textarea").prop('disabled', false);
-
-    }
-    function switchFormInputTo(enabledForm){
-        if(enabledForm == "yaml-input-textarea"){
-            //TODO: Enable the form if the textarea is empty
-            $("#yaml-input-file").prop('disabled', true);
-        }else{
-            $("#yaml-input-textarea").prop('disabled', true);
-
-        }
-        CURRENT_FORM_INPUT = enabledForm;
-    }
-
     var CONTENT_ID = "page-content";
 
-    setInterval(function(){
+
+    $(document).ready(function() {
+        updatePage();
+        setInterval(updatePage, 3000);
+    });
+
+    function updatePage(){
         SPINNER.spin(document.getElementById("loading-spinner"));
         displayApplicationOverview();
-    }, 5000);
-
+    }
     function generateAppOverviewBox(application) {
         // Top of the box
         var appHTML = "<div class=\"col-lg-4\"><div class=\"panel panel-default\">";
 
         // Box heading
-        appHTML += "<div class=\"panel-heading clearfix\"><i class=\"fa fa-gears fa-fw\"></i> " + application.spec.name + "<a target=\"_blank\" href=\"app-monitor.jsp?id=" + application.id +"\"><button type=\"button\" class=\"btn btn-info navbar-right\">Info</button></a></div>"
 
         // Box body
         appHTML += "<div class=\"panel-body\" id=\"information-panel\"><strong>ID: </strong>" + application.id + "<br>" +
@@ -189,7 +171,7 @@
     }
 
     function displayApplicationOverview(){
-        $.get("monitor/applications", function (response) {
+        $.get("servlets/listApplications", function (response) {
                 var boxHTML = "";
                 if (response.length > 0) {
                     $.each(response, function (idx, app) {

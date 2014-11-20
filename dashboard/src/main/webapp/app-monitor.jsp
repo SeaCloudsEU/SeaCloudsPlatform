@@ -1,8 +1,3 @@
-<%@ page import="eu.seaclouds.platform.dashboard.ConfigParameters" %>
-<%@ page import="brooklyn.rest.client.BrooklynApi" %>
-<%@ page import="brooklyn.rest.domain.EntitySummary" %>
-<%@ page import="brooklyn.rest.domain.SensorSummary" %>
-
 <!DOCTYPE html>
 <html>
 
@@ -21,7 +16,6 @@
     <!-- SB Admin CSS - Include with every page -->
     <link href="css/sb-admin.css" rel="stylesheet">
 
-    <%! final BrooklynApi BROOKLKYN_API = new BrooklynApi(ConfigParameters.DEPLOYER_ENDPOINT); %>
 </head>
 
 <body>
@@ -89,13 +83,9 @@
         <!-- /.navbar-top-links -->
     </nav>
 
-    <div id="page-wrapper-no-sidebar">
-        <% if(BROOKLKYN_API.getSensorApi() != null){ %>
-
-
-
+    <div id="page-content">
         <div class="row">
-                <div class="col-lg-12">
+            <div class="col-lg-12">
                 <h1 class="page-header">
                     Live Monitor
                     <small> Available application metrics
@@ -104,60 +94,7 @@
             </div>
             <!-- /.col-lg-12 -->
         </div>
-
-        <div class="row" id="page-content">
-            <div class="col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <strong>Live metrics selector</strong>
-                        <a data-toggle="collapse" data-parent="#accordion" data-target ="#app-status-collapsable">
-                            <i class="fa fa-chevron-down"></i>
-                        </a>
-                    </div>
-                    <div class="panel-collapse collapse in" id="app-status-collapsable" >
-                    <div class="panel-body" >
-                        <form>
-
-                            <%
-                                String appId =  request.getParameter("id");
-                                if(appId != null){
-                                   for(EntitySummary entitySummary : BROOKLKYN_API.getEntityApi().list(appId)){
-                            %>
-                                <table class="table">
-                                    <caption><strong><%= entitySummary.getName() %> </strong></caption>
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Description</th>
-                                            <th>Selected</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-
-                                        <%
-                                            for (SensorSummary sensorSummary : BROOKLKYN_API.getSensorApi().list(appId, entitySummary.getId())) {
-                                        %>
-
-                                        <tr>
-                                            <td><%=sensorSummary.getName()%></td>
-                                            <td><%=sensorSummary.getDescription()%></td>
-                                            <td><input type="checkbox" onClick="if (this.checked) { addGraph('<%=appId%>','<%=entitySummary.getId()%>','<%=sensorSummary.getName()%>') } else { removeGraph('<%=appId%>','<%=entitySummary.getId()%>','<%=sensorSummary.getName()%>') }"></td>
-                                        </tr>
-
-                                        <%
-                                            }
-                                        %>
-                                    </tbody>
-                           <%
-                                    }
-                                }
-                           %>
-
-
-                            </table>
-                        </form>
-                    </div>
-                    </div>
+                <div class="panel panel-default" id="metric-chooser-panel">
                 </div>
             </div>
         </div>
@@ -165,9 +102,7 @@
         <div class="row" id="page-graphs">
 
         </div>
-        <%} else {%>
-          <h1 class="text-center text-danger">Unable to find any deployer engine</h1>
-        <% } %>
+
     </div>
     <!-- /#page-wrapper -->
 
@@ -195,148 +130,200 @@
 <!-- Swagger JS API -->
 <script src='js/lib/swagger.js' type='text/javascript'></script>
 <script type="text/javascript">
-var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"}).spin(document.getElementById("loading-spinner"));
-var APP_ID = location.search.split('id=')[1];
-var CONTENT_ID = "page-content";
-var ACTIVE_API_CALLS = [];
+    var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"}).spin(document.getElementById("loading-spinner"));
+    var APP_ID = location.search.split('id=')[1];
+    var CONTENT_ID = "page-content";
+    var ACTIVE_API_CALLS = [];
 
-// Configuring API connection and GUI loading
-var BACKEND_READY = false;
 
-function checkBackendStatus(){
-    $.get("status/", function(res){
-        $('#' + CONTENT_ID).html("<h1 class=\"text-center text-danger\">res.message</h1>");
+
+    $(document).ready(function() {
+        showAvailableMetrics();
     });
 
-    BACKEND_READY = !API.ready || APP_ID != undefined;
-}
-
-function addGraph(appId, entityId, sensorName){
-    $('#page-graphs').append(generateSensorPanel(appId, entityId, sensorName));
-    setupGraphs("#flot-line-chart-" + appId + "-" + entityId + "-" + sensorName, entityId, sensorName);
-    $('#app-status-collapsable').collapse('hide')
 
 
-}
-
-function removeGraph(appId, entityId, sensorName){
-    $(escapeDots("#panel-container-" + appId +'-' + entityId + '-' + sensorName)).remove();
-    $('#app-status-collapsable').collapse('hide')
-
-    for (var i = 0; i < ACTIVE_API_CALLS.length; i++) {
-        if (ACTIVE_API_CALLS[i].functionName == appId +'-' + entityId + '-' + sensorName) {
-            clearInterval(ACTIVE_API_CALLS[i].programedFunction);
-            ACTIVE_API_CALLS.splice(i--, 1);
-        }
+    function showAvailableMetrics() {
+        $.get("servlets/getAvailableMetrics", {application: APP_ID}).done(function (application){
+            $("#metric-chooser-panel").html(generateAvailableMetricsPanel(application));
+        }).fail(function(err){
+            $('#'+CONTENT_ID).html("<h1 class=\"text-center text-warning\">Invalid application.</h1>");
+        })
     }
-}
-
-function generateSensorPanel(appId, entityId, sensorName){
-
-    var panelHeading = "<div class=\"col-lg-6\" id=\"panel-container-" + appId + "-" + entityId + "-" + sensorName + "\"" + "><div class=\"panel panel-default\">";
-    panelHeading +=  "<div class=\"panel-heading\"><i class=\"fa fa-bar-chart-o fa-fw\"></i> " + entityId + ", " + sensorName +"</div>";
 
 
-    var panelBody = "<div class=\"panel-body\">";
+    function addGraph(appId, entityId, sensorName){
+        $('#page-graphs').append(generateSensorPanel(appId, entityId, sensorName));
+        setupGraphs("#flot-line-chart-" + appId + "-" + entityId + "-" + sensorName, entityId, sensorName);
+        $('#app-status-collapsable').collapse('hide')
 
 
-    panelBody +=  "<div class=\"flot-chart\"><div class=\"flot-chart-content\" id=\"flot-line-chart-"+ appId + "-" + entityId + "-" + sensorName +"\"></div></div>";
-    panelBody += "</div></div>";
+    }
 
-    return  panelHeading + panelBody;
+    function removeGraph(appId, entityId, sensorName){
+        $(escapeDots("#panel-container-" + appId +'-' + entityId + '-' + sensorName)).remove();
+        $('#app-status-collapsable').collapse('hide')
 
-}
-
-
-function setupGraphs (containerID, entityID, sensorName) {
-
-    var container = $(escapeDots(containerID));
-
-    series = [
-        {
-
-            lines: {
-                fill: true
+        for (var i = 0; i < ACTIVE_API_CALLS.length; i++) {
+            if (ACTIVE_API_CALLS[i].functionName == appId +'-' + entityId + '-' + sensorName) {
+                clearInterval(ACTIVE_API_CALLS[i].programedFunction);
+                ACTIVE_API_CALLS.splice(i--, 1);
             }
         }
-    ];
+    }
 
-    var plot = $.plot(container, series, {
-        grid: {
-            borderWidth: 1,
-            minBorderMargin: 25,
-            labelMargin: 10,
-            backgroundColor: {
-                colors: ["#fff", "#e4f4f4"]
-            },
+    function generateAvailableMetricsPanel(application) {
+        var panelHeading = "<div class=\"panel-heading\"><strong>Available metrics for the application " + APP_ID + "</strong>" +
+                "<a data-toggle=\"collapse\" data-parent=\"#accordion\" data-target=\"#app-available-metrics-collapsable\">" +
+                "<i class=\"fa fa-chevron-down\"></i></a></div>";
 
-            markings: function (axes) {
-                var markings = [];
-                var xaxis = axes.xaxis;
-                for (var x = Math.floor(xaxis.min); x < xaxis.max; x += xaxis.tickSize * 2) {
-                    markings.push({
-                        xaxis: {
-                            from: x,
-                            to: x + xaxis.tickSize
-                        },
-                        color: "rgba(232, 232, 255, 0.2)"
-                    });
+
+        var panelBody = "<div class=\"panel-collapse collapse in\"  id=\"app-available-metrics-collapsable\" ><div class=\"panel-body\">";
+        panelBody += "<form>";
+
+        application.forEach(function(entity){
+            var table = "<table class=\"table\">";
+            table += "<caption><strong>" + entity.name + "</strong></caption>";
+            table += "<thead><tr><th>Name</th><th>Description</th><th>Selected</th></tr></thead>";
+            table += "<tbody>";
+
+            entity.metrics.forEach(function (metric){
+                table += "<tr>";
+                table += "<td>" + metric.name + "</td>";
+                table += "<td>" + metric.description + "</td>";
+                table += "<td><input type=\"checkbox\" " +
+                        "onClick=\"if (this.checked) {addGraph('"+ APP_ID + "','" + entity.id + "','" + metric.name + "') " +
+                        "} else { removeGraph('"+ APP_ID + "','" + entity.id + "','" + metric.name + "')}\"></td>";
+
+
+                table += "</tr>";
+            })
+
+            table += "</tbody>";
+            table += "</table>";
+
+            panelBody += table;
+
+        })
+
+
+
+        panelBody += "</form>";
+        panelBody += "</div></div>";
+
+
+        return panelHeading + panelBody;
+
+
+    }
+
+
+    function generateSensorPanel(appId, entityId, sensorName){
+
+        var panelHeading = "<div class=\"col-lg-6\" id=\"panel-container-" + appId + "-" + entityId + "-" + sensorName + "\"" + "><div class=\"panel panel-default\">";
+        panelHeading +=  "<div class=\"panel-heading\"><i class=\"fa fa-bar-chart-o fa-fw\"></i> " + entityId + ", " + sensorName +"</div>";
+
+
+        var panelBody = "<div class=\"panel-body\">";
+
+
+        panelBody +=  "<div class=\"flot-chart\"><div class=\"flot-chart-content\" id=\"flot-line-chart-"+ appId + "-" + entityId + "-" + sensorName +"\"></div></div>";
+        panelBody += "</div></div>";
+
+        return  panelHeading + panelBody;
+
+    }
+
+
+    function setupGraphs (containerID, entityID, sensorName) {
+
+        var container = $(escapeDots(containerID));
+
+        series = [
+            {
+
+                lines: {
+                    fill: true
                 }
-                return markings;
             }
-        },
-        xaxis: {
-            tickFormatter: function () {
-                return "";
+        ];
+
+        var plot = $.plot(container, series, {
+            grid: {
+                borderWidth: 1,
+                minBorderMargin: 25,
+                labelMargin: 10,
+                backgroundColor: {
+                    colors: ["#fff", "#e4f4f4"]
+                },
+
+                markings: function (axes) {
+                    var markings = [];
+                    var xaxis = axes.xaxis;
+                    for (var x = Math.floor(xaxis.min); x < xaxis.max; x += xaxis.tickSize * 2) {
+                        markings.push({
+                            xaxis: {
+                                from: x,
+                                to: x + xaxis.tickSize
+                            },
+                            color: "rgba(232, 232, 255, 0.2)"
+                        });
+                    }
+                    return markings;
+                }
+            },
+            xaxis: {
+                tickFormatter: function () {
+                    return "";
+                }
+            },
+            yaxis: {
+                min :0,
+                ticks:10,
+                alignTicksWithAxis: 1
+            },
+            legend: {
+                show: true
             }
-        },
-        yaxis: {
-            min :0,
-            ticks:10,
-            alignTicksWithAxis: 1
-        },
-        legend: {
-            show: true
-        }
-    });
+        });
 
-    var data = [];
-    var MAXIMUM = container.outerWidth() / 2 || 300;
+        var data = [];
+        var MAXIMUM = container.outerWidth() / 2 || 300;
 
-    // Programming updates
-    function updateFunction(apiResponse){
-        var value = apiResponse;
+        // Programming updates
+        function updateFunction(apiResponse){
+            var value = apiResponse;
 
-        data.push(value);
+            data.push(value);
 
-        if (data.length >= MAXIMUM){
-            data.shift();
-        }
+            if (data.length >= MAXIMUM){
+                data.shift();
+            }
 
-        var graphPoints = [];
-        for (var i = 0; i < data.length; ++i) {
-            graphPoints.push([i, data[i]])
+            var graphPoints = [];
+            for (var i = 0; i < data.length; ++i) {
+                graphPoints.push([i, data[i]])
+            }
+
+            series[0].data = graphPoints;
+            plot.setData(series);
+            plot.autoScale();
+            plot.draw();
         }
 
-        series[0].data = graphPoints;
-        plot.setData(series);
-        plot.autoScale();
-        plot.draw();
+        var programedInterval = setInterval(function(){
+            $.get('servlets/getMetricValueServlet',{application:APP_ID, entity:entityID, sensor:sensorName}, updateFunction);
+        }, 40);
+
+        ACTIVE_API_CALLS.push({
+            functionName: APP_ID + "-" + entityID + "-" + sensorName,
+            programedFunction : programedInterval
+        });
     }
 
-    var programedInterval = setInterval(function(){
-        $.get('monitor/get/',{application:APP_ID, entity:entityID, sensor:sensorName}, updateFunction);
-    }, 40);
-
-    ACTIVE_API_CALLS.push({
-        functionName: APP_ID + "-" + entityID + "-" + sensorName,
-        programedFunction : programedInterval
-    });
-}
-
-function escapeDots( myid ) {
-    return myid.replace( /(:|\.|\[|\])/g, "\\$1" );
-}
+    function escapeDots( myid ) {
+        return myid.replace( /(:|\.|\[|\])/g, "\\$1" );
+    }
 
 </script>
 </body>
