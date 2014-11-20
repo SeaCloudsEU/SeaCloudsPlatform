@@ -40,7 +40,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>DeployerServlet</servlet-name>
-        <url-pattern>/deployer</url-pattern>
+        <url-pattern>/deployer/*</url-pattern>
     </servlet-mapping>
 
 </web-app>
