@@ -148,7 +148,6 @@
                             </div>
 
                         <div class="pull-right">
-
                             <button type="reset" class="btn btn-default">Clear</button>
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
@@ -177,7 +176,7 @@
                         <%} else{ %>
                         <h3 class="text-center text-success">Deployer Engine found. <br>
                         <small>Apache Brooklyn is listening in <%=ConfigParameters.DEPLOYER_ENDPOINT %> </small></h3>
-                        <% } %>
+                        <%} %>
                     </div>
                     <!-- /.panel-body -->
                 </div>
@@ -233,9 +232,23 @@
     var BACKEND_READY = false;
 
     function submitYaml(){
-        $.get("/deployer", {yaml: $("#yaml-input-textarea").val()}, function(res){
-            console.log(res);
-        });
+        if(CURRENT_FORM_INPUT == "yaml-input-textarea") {
+            $.get("deployer/", {yaml: $("#yaml-input-textarea").val()}, function (res) {
+                console.log(res);
+            });
+        } else {
+            var unparsedFile = $("#yaml-input-file").prop('files')[0];
+            var reader = new FileReader();
+
+            reader.onload = function(theFile) {
+                $.get("deployer/", {yaml: theFile.target.result}, function (res) {
+                    console.log(res);
+                });
+            }
+
+            reader.readAsText(unparsedFile);
+        }
+
     }
 </script>
 

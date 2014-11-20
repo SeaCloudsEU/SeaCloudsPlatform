@@ -171,7 +171,7 @@
     setInterval(function(){
         SPINNER.spin(document.getElementById("loading-spinner"));
         displayApplicationOverview();
-    }, 5000);
+    }, 3000);
 
     function generateAppOverviewBox(application) {
         // Top of the box
