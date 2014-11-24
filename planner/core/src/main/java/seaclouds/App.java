@@ -36,7 +36,7 @@ public class App
         }
         
 		//userInput = new FileInputStream(new File("/home/michela/Documenti/sampleYaml.yaml"));
-        userInput = new FileInputStream(new File("/home/michela/Dropbox/SeaCloudsPersonal/documentsProduced/integrationMeeting/nuroCase.yaml"));
+        userInput = new FileInputStream(new File("src/main/resources/nuroCase.yaml"));
                 
         TOSCAYamlParser userAppModel = new TOSCAYamlParser (userInput);
         

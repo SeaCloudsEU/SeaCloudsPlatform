@@ -29,7 +29,7 @@ public class Matchmaker {
 		
 		//parse cloud input into a map (like user input)
         //InputStream cloudInput = new FileInputStream(new File("/home/michela/Documenti/outputAWScompute.c1.medium.yaml"));
-        InputStream cloudInput = new FileInputStream(new File("/home/michela/Dropbox/SeaCloudsPersonal/documentsProduced/integrationMeeting/outputAWScompute.yaml"));
+        InputStream cloudInput = new FileInputStream(new File("src/main/resources/computeServices.yaml"));
         
         TOSCAYamlParser cloudModel = new TOSCAYamlParser (cloudInput);
         Map<String, Object> cloudOfferedServiceList = cloudModel.getNodeTemplates();
