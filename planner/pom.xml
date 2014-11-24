@@ -12,7 +12,7 @@
   <modules>
     <module>core</module>
     <module>matchmaker</module>
-    <module>planner-utils</module>
+    
     <module>utils</module>
   </modules>
 </project>
