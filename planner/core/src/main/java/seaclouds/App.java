@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,6 +48,7 @@ public class App
 
         //retrieve node templates names
         Set<String> TnodeTemplatesKeynames = userNodeTemplateList.keySet(); 
+        Map<String, Object> chosenServices = new LinkedHashMap<String, Object>();
         
         //retrieve node templates requirements
         for (String key : TnodeTemplatesKeynames){
@@ -93,6 +95,10 @@ public class App
         				if (!suitableServiceList.isEmpty()){
         					//alternatively is possible to include the whole service descriptions
         					Set<String> suitableServiceNames = (Set<String>) suitableServiceList.keySet();
+        					
+        					
+        					/* adding ALL the suitable services in a list IN the yaml 
+        					 * replaced by automagic selection of a suitable service
         					reqDescription.put("suitableServices", suitableServiceNames);
         					System.out.println("Found " + suitableServiceList.size() + " service(s) for this requirement");
         					//update reqDescription
@@ -101,7 +107,47 @@ public class App
         					TnodeTemplate.put("requirements", TrequirementsList);
         					//update TOSCAdefinitions
         					userAppModel.setNodeTemplate(key, TnodeTemplate);
-        		
+        					*/
+        					
+
+        			        //automagic selection of services for each requirement in each module
+        					//TODO: to be replaced by the OPTIMAL selection of services by the optimizer
+        					
+        					//remove constraints
+        					reqDescription.remove("constraints");
+        					
+        					if (key.equals("nuroDatabase")){
+        						//System.out.println("this requires Hp");
+        						for (String name: suitableServiceNames){
+        							if (name.contains("HP")){
+        								reqDescription.put("host", name);
+                						chosenServices.put(name, suitableServiceList.get(name));
+                						break;
+        							}
+        						}
+        						
+        						
+        						
+        					}
+        					
+        					//select the first AWS service available 
+        					else if (key.equals("webServer")){
+        						//System.out.println("this requires AWS");
+        						for (String name: suitableServiceNames){
+        							if (name.contains("AWS")){
+        								reqDescription.put("host", name);
+                						chosenServices.put(name, suitableServiceList.get(name));
+                						break;
+        							}
+        												
+        						}
+        						       						
+        					}
+        					
+        					else {
+        						System.err.println("This warning should never appear for the nuroCaseStudy");
+        					}
+        					
         				}
         				
         				else {
@@ -116,10 +162,22 @@ public class App
         	
         }
         
+        
         System.out.println();
         byte[] text = new byte[20];
         System.in.read(text);
         
+        //add chosen services to the yaml. TB replaced by the optimizer decision
+        for (String key : chosenServices.keySet())
+        {  	//TODO: replace with userAppModel.addNodeTemplate();
+        	userNodeTemplateList.put(key, chosenServices.get(key));
+        }
+		
+        
+        //TODO: OPTIMIZER
+        //optimizer select the best orchestration of services for application modules
+        
+   
         
         userAppModel.writeYaml();
         
