@@ -161,6 +161,11 @@
         var appHTML = "<div class=\"col-lg-4\"><div class=\"panel panel-default\">";
 
         // Box heading
+        // Header
+        appHTML += "<div class=\"panel-heading clearfix\">";
+        appHTML += "<i class=\"fa fa-gears fa-fw\"><\/i>" + application.spec.name +
+                "<button type=\"button\" class=\"btn btn-info navbar-right\" onClick=showPopUp('" + application.id  + "')>Live monitor</button>";
+        appHTML += "</div>";
 
         // Box body
         appHTML += "<div class=\"panel-body\" id=\"information-panel\"><strong>ID: </strong>" + application.id + "<br>" +
@@ -171,8 +176,9 @@
     }
 
     function displayApplicationOverview(){
+        var boxHTML = "";
+
         $.get("servlets/listApplications", function (response) {
-                var boxHTML = "";
                 if (response.length > 0) {
                     $.each(response, function (idx, app) {
                         boxHTML += generateAppOverviewBox(app)
@@ -180,10 +186,25 @@
                 } else {
                     boxHTML = "<h1 class=\"text-center text-warning\">No applications running.</h1>";
                 }
-                $('#' + CONTENT_ID).html(boxHTML)
         }).done(function(){
+            $('#' + CONTENT_ID).html(boxHTML)
+            SPINNER.stop();
+        }).fail(function(){
+            boxHTML = "<h1 class=\"text-center text-danger\">Monitor module is not available in this moment.</h1>";
+            $('#' + CONTENT_ID).html(boxHTML)
             SPINNER.stop();
         });
+    }
+
+
+    function  showPopUp(id){
+        var width = window.screen.availWidth * 0.9;
+        var height = window.screen.availHeight * 0.95;
+        var left = (window.screen.width/2)-(width/2);
+        var top = (window.screen.height/2)-(height/2);
+        return window.open("app-monitor.jsp?id="+id, "SeaClouds Live Monitor (" + id + ")", 'toolbar=no, location=no,' +
+                ' directories=no, status=no, menubar=no, scrollbars=no, resizable=no,' +
+                ' copyhistory=no, width='+width+', height='+height+', top='+top+', left='+left);
     }
 </script>
 </body>

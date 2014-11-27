@@ -152,8 +152,8 @@
     }
 
 
-    function addGraph(appId, entityId, sensorName){
-        $('#page-graphs').append(generateSensorPanel(appId, entityId, sensorName));
+    function addGraph(appId, entityId, entityName, sensorName){
+        $('#page-graphs').append(generateSensorPanel(appId, entityId, entityName, sensorName));
         setupGraphs("#flot-line-chart-" + appId + "-" + entityId + "-" + sensorName, entityId, sensorName);
         $('#app-status-collapsable').collapse('hide')
 
@@ -173,8 +173,8 @@
     }
 
     function generateAvailableMetricsPanel(application) {
-        var panelHeading = "<div class=\"panel-heading\"><strong>Available metrics for the application " + APP_ID + "</strong>" +
-                "<a data-toggle=\"collapse\" data-parent=\"#accordion\" data-target=\"#app-available-metrics-collapsable\">" +
+        var panelHeading = "<div class=\"panel-heading\"><strong>Available metrics </strong> for the application with the ID <strong>" + APP_ID + "</strong>" +
+                " <a data-toggle=\"collapse\" data-parent=\"#accordion\" data-target=\"#app-available-metrics-collapsable\">" +
                 "<i class=\"fa fa-chevron-down\"></i></a></div>";
 
 
@@ -192,7 +192,7 @@
                 table += "<td>" + metric.name + "</td>";
                 table += "<td>" + metric.description + "</td>";
                 table += "<td><input type=\"checkbox\" " +
-                        "onClick=\"if (this.checked) {addGraph('"+ APP_ID + "','" + entity.id + "','" + metric.name + "') " +
+                        "onClick=\"if (this.checked) {addGraph('"+ APP_ID + "','" + entity.id + "','" + entity.name + "','" + metric.name + "') " +
                         "} else { removeGraph('"+ APP_ID + "','" + entity.id + "','" + metric.name + "')}\"></td>";
 
 
@@ -218,10 +218,11 @@
     }
 
 
-    function generateSensorPanel(appId, entityId, sensorName){
+    function generateSensorPanel(appId, entityId, entityName, sensorName){
 
         var panelHeading = "<div class=\"col-lg-6\" id=\"panel-container-" + appId + "-" + entityId + "-" + sensorName + "\"" + "><div class=\"panel panel-default\">";
-        panelHeading +=  "<div class=\"panel-heading\"><i class=\"fa fa-bar-chart-o fa-fw\"></i> " + entityId + ", " + sensorName +"</div>";
+        panelHeading +=  "<div class=\"panel-heading\"><i class=\"fa fa-bar-chart-o fa-fw\"></i><strong> " + entityName +
+                ", " + sensorName + "</strong> (" + entityId + ")</div>";
 
 
         var panelBody = "<div class=\"panel-body\">";

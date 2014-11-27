@@ -121,7 +121,7 @@
             <!-- /.col-lg-12 -->
         </div>
         <!-- /.row -->
-        <div class="row">
+        <div class="row" id="page-content">
 
             <div class="col-lg-12">
                 <div class="panel panel-default">
@@ -156,7 +156,7 @@
 
                 </div>
             </div>
-            <div class="col-lg-12" id="page-content">
+            <div class="col-lg-12" id="deployed-applications">
             </div>
         </div>
     </div>
@@ -178,7 +178,7 @@
 <script src='js/lib/swagger.js' type='text/javascript'></script>
 <script type="text/javascript">
     var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"}).spin(document.getElementById("loading-spinner"));
-    var CONTENT_ID = "page-content";
+    var CONTENT_ID = "deployed-applications";
 
     $(document).ready(function() {
         updatePage();
@@ -197,7 +197,6 @@
         $.get("servlets/listApplications", function getApplications(response) {
             if (response.length > 0) {
                 $.each(response, function (appIdx, app) {
-                    // FIXME: Synchronize properly by using async or promises
                     // FIXME: The servlet provides all the location stuff
                     boxHTML += generateAppOverviewBox(app);
                     })
@@ -207,7 +206,11 @@
         }).done(function(){
             $('#' + CONTENT_ID).html(boxHTML);
             SPINNER.stop();
-        });
+        }).fail(function(){
+            boxHTML = "<h1 class=\"text-center text-danger\">Deployer module is not available in this moment.</h1>";
+            $('#page-content').html(boxHTML)
+            SPINNER.stop();
+        });;
     }
 
     function generateAppOverviewBox(application) {
