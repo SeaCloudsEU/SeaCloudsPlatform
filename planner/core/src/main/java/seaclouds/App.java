@@ -33,12 +33,13 @@ public class App
 				System.err.println("Yaml file expected for user input. Using default file");
 				
 			}
-        	
         }
         
 		//userInput = new FileInputStream(new File("/home/michela/Documenti/sampleYaml.yaml"));
-        userInput = new FileInputStream(new File("src/main/resources/nuroCase.yaml"));
-                
+        //userInput = new FileInputStream(new File("src/main/resources/nuroCase.yaml"));
+        userInput = new FileInputStream(new File("/Users/Jose/dev/SeaCloudsPlatform/planner/core/src/main/resources/nuroCase.yaml"));
+
+
         TOSCAYamlParser userAppModel = new TOSCAYamlParser (userInput);
         
         Map<String, Object> userNodeTemplateList = userAppModel.getNodeTemplates();
