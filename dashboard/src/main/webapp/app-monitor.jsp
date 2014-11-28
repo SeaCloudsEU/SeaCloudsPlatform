@@ -1,24 +1,3 @@
-<%@ page import="eu.seaclouds.platform.dashboard.ConfigParameters" %>
-<%@ page import="brooklyn.rest.client.BrooklynApi" %>
-<%@ page import="brooklyn.rest.domain.EntitySummary" %>
-<%@ page import="brooklyn.rest.domain.SensorSummary" %>
-<%@ page import="java.util.Comparator" %>
-<%@ page import="java.util.Collections" %>
-<%@ page import="java.util.List" %>
-
-<%!
-    private boolean isNumberType(String type){
-        return type.equals("java.lang.Integer")
-                || type.equals("java.lang.Double")
-                || type.equals("java.lang.Float")
-                || type.equals("java.lang.Long")
-                || type.equals("java.lang.Short")
-                || type.equals("java.lang.BigDecimal")
-                || type.equals("java.lang.BigInteger")
-                || type.equals("java.lang.Byte");
-    }
-%>
-
 <!DOCTYPE html>
 <html>
 
@@ -37,7 +16,6 @@
     <!-- SB Admin CSS - Include with every page -->
     <link href="css/sb-admin.css" rel="stylesheet">
 
-    <%! final BrooklynApi BROOKLKYN_API = new BrooklynApi(ConfigParameters.DEPLOYER_ENDPOINT); %>
 </head>
 
 <body>
@@ -105,9 +83,7 @@
         <!-- /.navbar-top-links -->
     </nav>
 
-    <div id="page-wrapper-no-sidebar">
-        <% if(BROOKLKYN_API.getSensorApi() != null){ %>
-
+    <div id="page-content">
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="page-header">
@@ -118,70 +94,7 @@
             </div>
             <!-- /.col-lg-12 -->
         </div>
-
-        <div class="row" id="page-content">
-            <div class="col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <strong>Live metrics selector</strong>
-                        <a data-toggle="collapse" data-parent="#accordion" data-target ="#app-status-collapsable">
-                            <i class="fa fa-chevron-down"></i>
-                        </a>
-                    </div>
-                    <div class="panel-collapse collapse in" id="app-status-collapsable" >
-                        <div class="panel-body" >
-                            <form>
-
-                                <%
-                                    String appId =  request.getParameter("id");
-                                    if(appId != null){
-                                        for(EntitySummary entitySummary : BROOKLKYN_API.getEntityApi().list(appId)){
-                                %>
-                                <table class="table">
-                                    <caption><strong><%= entitySummary.getName() %> </strong></caption>
-                                    <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Description</th>
-                                        <th>Selected</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-
-                                    <%
-                                        List<SensorSummary> sensorSummaryList = BROOKLKYN_API.getSensorApi().list(appId, entitySummary.getId());
-                                        Collections.sort(sensorSummaryList, new Comparator<SensorSummary>() {
-                                            @Override
-                                            public int compare(SensorSummary s1, SensorSummary s2) {
-                                                return s1.getName().compareTo(s2.getName());
-                                            }
-                                        });
-
-                                        for (SensorSummary sensorSummary : sensorSummaryList) {
-                                            if (isNumberType(sensorSummary.getType())) {
-                                    %>
-
-                                    <tr>
-                                        <td><%=sensorSummary.getName()%></td>
-                                        <td><%=sensorSummary.getDescription()%></td>
-                                        <td><input type="checkbox" onClick="if (this.checked) { addGraph('<%=appId%>','<%=entitySummary.getId()%>','<%=sensorSummary.getName()%>') } else { removeGraph('<%=appId%>','<%=entitySummary.getId()%>','<%=sensorSummary.getName()%>') }"></td>
-                                    </tr>
-
-                                    <%
-                                            }
-                                        }
-                                    %>
-                                    </tbody>
-                                    <%
-                                            }
-                                        }
-                                    %>
-
-
-                                </table>
-                            </form>
-                        </div>
-                    </div>
+                <div class="panel panel-default" id="metric-chooser-panel">
                 </div>
             </div>
         </div>
@@ -189,9 +102,7 @@
         <div class="row" id="page-graphs">
 
         </div>
-        <%} else {%>
-        <h1 class="text-center text-danger">Unable to find any deployer engine</h1>
-        <% } %>
+
     </div>
     <!-- /#page-wrapper -->
 
@@ -224,19 +135,25 @@
     var CONTENT_ID = "page-content";
     var ACTIVE_API_CALLS = [];
 
-    // Configuring API connection and GUI loading
-    var BACKEND_READY = false;
 
-    function checkBackendStatus(){
-        $.get("status/", function(res){
-            $('#' + CONTENT_ID).html("<h1 class=\"text-center text-danger\">res.message</h1>");
-        });
 
-        BACKEND_READY = !API.ready || APP_ID != undefined;
+    $(document).ready(function() {
+        showAvailableMetrics();
+    });
+
+
+
+    function showAvailableMetrics() {
+        $.get("servlets/getAvailableMetrics", {application: APP_ID}).done(function (application){
+            $("#metric-chooser-panel").html(generateAvailableMetricsPanel(application));
+        }).fail(function(err){
+            $('#'+CONTENT_ID).html("<h1 class=\"text-center text-warning\">Invalid application.</h1>");
+        })
     }
 
-    function addGraph(appId, entityId, sensorName){
-        $('#page-graphs').append(generateSensorPanel(appId, entityId, sensorName));
+
+    function addGraph(appId, entityId, entityName, sensorName){
+        $('#page-graphs').append(generateSensorPanel(appId, entityId, entityName, sensorName));
         setupGraphs("#flot-line-chart-" + appId + "-" + entityId + "-" + sensorName, entityId, sensorName);
         $('#app-status-collapsable').collapse('hide')
 
@@ -255,10 +172,57 @@
         }
     }
 
-    function generateSensorPanel(appId, entityId, sensorName){
+    function generateAvailableMetricsPanel(application) {
+        var panelHeading = "<div class=\"panel-heading\"><strong>Available metrics </strong> for the application with the ID <strong>" + APP_ID + "</strong>" +
+                " <a data-toggle=\"collapse\" data-parent=\"#accordion\" data-target=\"#app-available-metrics-collapsable\">" +
+                "<i class=\"fa fa-chevron-down\"></i></a></div>";
+
+
+        var panelBody = "<div class=\"panel-collapse collapse in\"  id=\"app-available-metrics-collapsable\" ><div class=\"panel-body\">";
+        panelBody += "<form>";
+
+        application.forEach(function(entity){
+            var table = "<table class=\"table\">";
+            table += "<caption><strong>" + entity.name + "</strong></caption>";
+            table += "<thead><tr><th>Name</th><th>Description</th><th>Selected</th></tr></thead>";
+            table += "<tbody>";
+
+            entity.metrics.forEach(function (metric){
+                table += "<tr>";
+                table += "<td>" + metric.name + "</td>";
+                table += "<td>" + metric.description + "</td>";
+                table += "<td><input type=\"checkbox\" " +
+                        "onClick=\"if (this.checked) {addGraph('"+ APP_ID + "','" + entity.id + "','" + entity.name + "','" + metric.name + "') " +
+                        "} else { removeGraph('"+ APP_ID + "','" + entity.id + "','" + metric.name + "')}\"></td>";
+
+
+                table += "</tr>";
+            })
+
+            table += "</tbody>";
+            table += "</table>";
+
+            panelBody += table;
+
+        })
+
+
+
+        panelBody += "</form>";
+        panelBody += "</div></div>";
+
+
+        return panelHeading + panelBody;
+
+
+    }
+
+
+    function generateSensorPanel(appId, entityId, entityName, sensorName){
 
         var panelHeading = "<div class=\"col-lg-6\" id=\"panel-container-" + appId + "-" + entityId + "-" + sensorName + "\"" + "><div class=\"panel panel-default\">";
-        panelHeading +=  "<div class=\"panel-heading\"><i class=\"fa fa-bar-chart-o fa-fw\"></i> " + entityId + ", " + sensorName +"</div>";
+        panelHeading +=  "<div class=\"panel-heading\"><i class=\"fa fa-bar-chart-o fa-fw\"></i><strong> " + entityName +
+                ", " + sensorName + "</strong> (" + entityId + ")</div>";
 
 
         var panelBody = "<div class=\"panel-body\">";
@@ -349,7 +313,7 @@
         }
 
         var programedInterval = setInterval(function(){
-            $.get('monitor/get/',{application:APP_ID, entity:entityID, sensor:sensorName}, updateFunction);
+            $.get('servlets/getMetricValueServlet',{application:APP_ID, entity:entityID, sensor:sensorName}, updateFunction);
         }, 40);
 
         ACTIVE_API_CALLS.push({

@@ -1,5 +1,3 @@
-<%@ page import="brooklyn.rest.client.BrooklynApi" %>
-<%@ page import="eu.seaclouds.platform.dashboard.ConfigParameters" %>
 <!DOCTYPE html>
 <html>
 
@@ -21,7 +19,6 @@
     <!-- SeaClouds configuration constants -->
     <script src="js/config.js"></script>
 
-    <%! final BrooklynApi BROOKLKYN_API = new BrooklynApi(ConfigParameters.DEPLOYER_ENDPOINT); %>
 </head>
 
 <body>
@@ -147,38 +144,28 @@
 <script src='js/lib/swagger.js' type='text/javascript'></script>
 <script type="text/javascript">
     var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"}).spin(document.getElementById("loading-spinner"));
-    
-    var CURRENT_FORM_INPUT = undefined;
-
-    function resetForm(){
-        $("#yaml-input-file").prop('disabled', false);
-        $("#yaml-input-textarea").prop('disabled', false);
-
-    }
-    function switchFormInputTo(enabledForm){
-        if(enabledForm == "yaml-input-textarea"){
-            //TODO: Enable the form if the textarea is empty
-            $("#yaml-input-file").prop('disabled', true);
-        }else{
-            $("#yaml-input-textarea").prop('disabled', true);
-
-        }
-        CURRENT_FORM_INPUT = enabledForm;
-    }
-
     var CONTENT_ID = "page-content";
 
-    setInterval(function(){
+
+    $(document).ready(function() {
+        updatePage();
+        setInterval(updatePage, 3000);
+    });
+
+    function updatePage(){
         SPINNER.spin(document.getElementById("loading-spinner"));
         displayApplicationOverview();
-    }, 3000);
-
+    }
     function generateAppOverviewBox(application) {
         // Top of the box
         var appHTML = "<div class=\"col-lg-4\"><div class=\"panel panel-default\">";
 
         // Box heading
-        appHTML += "<div class=\"panel-heading clearfix\"><i class=\"fa fa-gears fa-fw\"></i> " + application.spec.name + "<a target=\"_blank\" href=\"app-monitor.jsp?id=" + application.id +"\"><button type=\"button\" class=\"btn btn-info navbar-right\">Info</button></a></div>"
+        // Header
+        appHTML += "<div class=\"panel-heading clearfix\">";
+        appHTML += "<i class=\"fa fa-gears fa-fw\"><\/i>" + application.spec.name +
+                "<button type=\"button\" class=\"btn btn-info navbar-right\" onClick=showPopUp('" + application.id  + "')>Live monitor</button>";
+        appHTML += "</div>";
 
         // Box body
         appHTML += "<div class=\"panel-body\" id=\"information-panel\"><strong>ID: </strong>" + application.id + "<br>" +
@@ -189,8 +176,9 @@
     }
 
     function displayApplicationOverview(){
-        $.get("monitor/applications", function (response) {
-                var boxHTML = "";
+        var boxHTML = "";
+
+        $.get("servlets/listApplications", function (response) {
                 if (response.length > 0) {
                     $.each(response, function (idx, app) {
                         boxHTML += generateAppOverviewBox(app)
@@ -198,10 +186,25 @@
                 } else {
                     boxHTML = "<h1 class=\"text-center text-warning\">No applications running.</h1>";
                 }
-                $('#' + CONTENT_ID).html(boxHTML)
         }).done(function(){
+            $('#' + CONTENT_ID).html(boxHTML)
+            SPINNER.stop();
+        }).fail(function(){
+            boxHTML = "<h1 class=\"text-center text-danger\">Monitor module is not available in this moment.</h1>";
+            $('#' + CONTENT_ID).html(boxHTML)
             SPINNER.stop();
         });
+    }
+
+
+    function  showPopUp(id){
+        var width = window.screen.availWidth * 0.9;
+        var height = window.screen.availHeight * 0.95;
+        var left = (window.screen.width/2)-(width/2);
+        var top = (window.screen.height/2)-(height/2);
+        return window.open("app-monitor.jsp?id="+id, "SeaClouds Live Monitor (" + id + ")", 'toolbar=no, location=no,' +
+                ' directories=no, status=no, menubar=no, scrollbars=no, resizable=no,' +
+                ' copyhistory=no, width='+width+', height='+height+', top='+top+', left='+left);
     }
 </script>
 </body>

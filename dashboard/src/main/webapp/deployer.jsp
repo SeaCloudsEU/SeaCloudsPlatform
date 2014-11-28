@@ -1,6 +1,3 @@
-<%@ page import="eu.seaclouds.platform.dashboard.ConfigParameters" %>
-<%@ page import="brooklyn.rest.client.BrooklynApi" %>
-
 <!DOCTYPE html>
 <html>
 
@@ -22,7 +19,6 @@
     <!-- SeaClouds configuration constants -->
     <script src="js/config.js"></script>
 
-    <%! final BrooklynApi BROOKLKYN_API = new BrooklynApi(ConfigParameters.DEPLOYER_ENDPOINT); %>
 
 </head>
 
@@ -76,7 +72,7 @@
                     </a></li>
                 </ul>
             </li>
-                <!-- /.dropdown-alerts -->
+            <!-- /.dropdown-alerts -->
             <!-- /.dropdown -->
             <li class="dropdown"><a class="dropdown-toggle"
                                     data-toggle="dropdown" href="#"> <i class="fa fa-user fa-fw"></i>
@@ -106,7 +102,7 @@
                     <li><a href="monitor.jsp" class=""><i class="fa fa-dashboard"></i>&nbsp;Monitor</a></li>
                     <li><a href="sla.html" class=""><i class="fa fa-file-text-o"></i>&nbsp;SLA Service</a></li>
 
-               </ul>
+                </ul>
                 <!-- /#side-menu -->
             </div>
             <!-- /.sidebar-collapse -->
@@ -118,8 +114,8 @@
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="page-header">
-                    Deployer 
-                    <small>Brooklyn's YAML deploy method</small>
+                    Deployer
+                    <small>Manage applications</small>
                 </h1>
             </div>
             <!-- /.col-lg-12 -->
@@ -127,70 +123,45 @@
         <!-- /.row -->
         <div class="row" id="page-content">
 
-            <div class="col-lg-8">
+            <div class="col-lg-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <i class="fa fa-bar-chart-o  fa-fw"></i>Application Specification
+                        <i class="fa fa-cloud-download"></i> Deploy new application defined in YAML format.
+                        <a aria-expanded="false" data-toggle="collapse" data-parent="#accordion" data-target ="#app-status-collapsable"><i class="fa fa-chevron-down"></i></a>
                     </div>
                     <!-- /.panel-heading -->
-                    <div class="panel-body" id="yaml-input-panel-body">
-                        <form role="form" onreset="resetForm()" onsubmit="submitYaml()">
+                    <div class="panel-collapse collapse  " id="app-status-collapsable" >
+                        <div class="panel-body" id="yaml-input-panel-body">
+                            <form role="form" onreset="resetForm()" onsubmit="submitYaml()">
 
-                            <div class="form-group" id="text-form-group">
-                                <label for="yaml-input-textarea">Paste your YAML here</label>
-                                <textarea id="yaml-input-textarea" class="form-control" rows="3" onchange="switchFormInputTo('yaml-input-textarea')"></textarea>
-                            </div>
+                                <div class="form-group" id="text-form-group">
+                                    <label for="yaml-input-textarea">Paste your YAML here</label>
+                                    <textarea id="yaml-input-textarea" class="form-control" rows="3" onchange="switchFormInputTo('yaml-input-textarea')"></textarea>
+                                </div>
 
 
-                            <div class="form-group" id="file-form-group">
-                                <label for="yaml-input-file">Choose a YAML File</label>
-                                <input type="file" id="yaml-input-file" onchange="switchFormInputTo('yaml-input-file')">
-                            </div>
+                                <div class="form-group" id="file-form-group">
+                                    <label for="yaml-input-file">Choose a YAML File</label>
+                                    <input type="file" id="yaml-input-file" onchange="switchFormInputTo('yaml-input-file')">
+                                </div>
 
-                        <div class="pull-right">
-                            <button type="reset" class="btn btn-default">Clear</button>
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                                <div class="pull-right">
+                                    <button type="reset" class="btn btn-default">Clear</button>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+
+                            </form>
                         </div>
-
-
-                        </form>
-
-
                     </div>
-                    <!-- /.panel-body -->
 
                 </div>
-                <!-- /.panel -->
             </div>
-            <!-- /.col-lg-8 -->
-            <div class="col-lg-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <i class="fa fa-gears fa-fw"></i>&nbsp;Deployer Status
-                    </div>
-                    <!-- /.panel-heading -->
-                    <div class="panel-body" id="information-panel-body">
-                        <% if(BROOKLKYN_API.getApplicationApi() != null){ %>
-                        <h3 class="text-center text-success">Deployer Engine found. <br>
-                        <small>Apache Brooklyn is listening in <%=ConfigParameters.DEPLOYER_ENDPOINT %> </small></h3>
-                        <%} else{ %>
-                        <h3 class="text-center text-success">Deployer Engine found. <br>
-                        <small>Apache Brooklyn is listening in <%=ConfigParameters.DEPLOYER_ENDPOINT %> </small></h3>
-                        <%} %>
-                    </div>
-                    <!-- /.panel-body -->
-                </div>
-                <!-- /.panel -->
+            <div class="col-lg-12" id="deployed-applications">
             </div>
-            <!-- /.col-lg-4 -->
         </div>
-        <!-- /.row -->
-
     </div>
-    <!-- /#page-wrapper -->
 
 </div>
-<!-- /#wrapper -->
 
 <!-- Core Scripts - Include with every page -->
 <script src="js/lib/jquery-1.10.2.js"></script>
@@ -207,9 +178,89 @@
 <script src='js/lib/swagger.js' type='text/javascript'></script>
 <script type="text/javascript">
     var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"}).spin(document.getElementById("loading-spinner"));
-    
-    var CURRENT_FORM_INPUT = undefined;
+    var CONTENT_ID = "deployed-applications";
 
+    $(document).ready(function() {
+        updatePage();
+        setInterval(updatePage, 3000);
+    });
+
+    function updatePage(){
+        SPINNER.spin(document.getElementById("loading-spinner"));
+        displayApplicationOverview();
+    }
+
+    // Deployed applications
+
+    function displayApplicationOverview(){
+        var boxHTML = "";
+        $.get("servlets/listApplications", function getApplications(response) {
+            if (response.length > 0) {
+                $.each(response, function (appIdx, app) {
+                    // FIXME: The servlet provides all the location stuff
+                    boxHTML += generateAppOverviewBox(app);
+                    })
+            } else {
+                boxHTML = "<h1 class=\"text-center text-warning\">No applications running.</h1>";
+            }
+        }).done(function(){
+            $('#' + CONTENT_ID).html(boxHTML);
+            SPINNER.stop();
+        }).fail(function(){
+            boxHTML = "<h1 class=\"text-center text-danger\">Deployer module is not available in this moment.</h1>";
+            $('#page-content').html(boxHTML)
+            SPINNER.stop();
+        });;
+    }
+
+    function generateAppOverviewBox(application) {
+        // External container
+        var appHTML = "<div class=\"col-lg-6\"><div class=\"panel panel-default\">";
+
+        // Header
+        appHTML += "<div class=\"panel-heading clearfix\">";
+        appHTML += "<i class=\"fa fa-gears fa-fw\"><\/i>" + application.id +
+                "<button type=\"button\" class=\"btn btn-danger navbar-right\" onClick=deleteApp('"+ application.id  + "')>Remove</button>";
+        appHTML += "</div>";
+
+        // Body
+        appHTML += "<div class=\"panel-body\" id=\"information-panel\">";
+        appHTML += "<strong>Type: </strong> " +  application.spec.type  + "<br>";
+        appHTML += "<strong>Name: </strong> " +  application.spec.name + "<br>";
+        appHTML += "<strong>Status: </strong> " +  application.status + "<br>";
+        appHTML += "<strong>Locations: </strong> ";
+        $.each( application.spec.locations, function(idx, location){
+            appHTML += location.name + " ";
+        })
+        appHTML +="<br>";
+        appHTML += "</div>";
+
+        // External container
+        appHTML += "</div>";
+        appHTML += "</div>";
+
+        return appHTML
+    }
+
+
+    function deleteApp(applicationId){
+        // http://stackoverflow.com/a/15089299
+
+        $.ajax({
+            url: "servlets/removeApplication" + "?" + $.param({application : applicationId}),
+            type: 'DELETE',
+            success: function(result) {
+                console.log(res);
+                updatePage();
+            }
+        });
+
+    }
+
+
+    // Deployer new app form
+
+    var CURRENT_FORM_INPUT = undefined;
     function resetForm(){
         $("#yaml-input-file").prop('disabled', false);
         $("#yaml-input-textarea").prop('disabled', false);
@@ -217,39 +268,31 @@
     }
 
     function switchFormInputTo(enabledForm){
-        if(enabledForm == "yaml-input-textarea"){
-            //TODO: Enable the form if the textarea is empty
-            $("#yaml-input-file").prop('disabled', true);
-        }else{
-            $("#yaml-input-textarea").prop('disabled', true);
-
-        }
         CURRENT_FORM_INPUT = enabledForm;
     }
 
-    var CONTENT_ID = "page-content";
-
-    var BACKEND_READY = false;
-
     function submitYaml(){
         if(CURRENT_FORM_INPUT == "yaml-input-textarea") {
-            $.get("deployer/", {yaml: $("#yaml-input-textarea").val()}, function (res) {
+            $.post("servlets/addAplication", {yaml: $("#yaml-input-textarea").val()}).done(function(res) {
                 console.log(res);
             });
+
         } else {
             var unparsedFile = $("#yaml-input-file").prop('files')[0];
             var reader = new FileReader();
 
             reader.onload = function(theFile) {
-                $.get("deployer/", {yaml: theFile.target.result}, function (res) {
+                $.post("servlets/addAplication", {yaml: theFile.target.result}).done(function(res) {
                     console.log(res);
                 });
+
             }
 
             reader.readAsText(unparsedFile);
         }
-
     }
+
+
 </script>
 
 

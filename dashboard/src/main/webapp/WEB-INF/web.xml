@@ -16,31 +16,53 @@
         <param-value>false</param-value>
     </context-param>
 
+
     <servlet>
-        <servlet-name>SensorServlet</servlet-name>
-        <servlet-class>eu.seaclouds.platform.dashboard.servlets.SensorServlet</servlet-class>
+        <servlet-name>GetMetricValueServlet</servlet-name>
+        <servlet-class>eu.seaclouds.platform.dashboard.servlets.GetMetricValueServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>SensorServlet</servlet-name>
-        <url-pattern>/monitor/get/*</url-pattern>
+        <servlet-name>GetMetricValueServlet</servlet-name>
+        <url-pattern>/servlets/getMetricValueServlet</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>GetAvailableMetricsServlet</servlet-name>
+        <servlet-class>eu.seaclouds.platform.dashboard.servlets.GetAvailableMetricsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetAvailableMetricsServlet</servlet-name>
+        <url-pattern>/servlets/getAvailableMetrics</url-pattern>
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>MonitorServlet</servlet-name>
-        <servlet-class>eu.seaclouds.platform.dashboard.servlets.MonitorServlet</servlet-class>
+        <servlet-name>ListApplicationsServlet</servlet-name>
+        <servlet-class>eu.seaclouds.platform.dashboard.servlets.ListApplicationsServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>MonitorServlet</servlet-name>
-        <url-pattern>/monitor/applications</url-pattern>
+        <servlet-name>ListApplicationsServlet</servlet-name>
+        <url-pattern>/servlets/listApplications</url-pattern>
     </servlet-mapping>
 
+
     <servlet>
-        <servlet-name>DeployerServlet</servlet-name>
-        <servlet-class>eu.seaclouds.platform.dashboard.servlets.DeployerServlet</servlet-class>
+        <servlet-name>AddApplicationsServlet</servlet-name>
+        <servlet-class>eu.seaclouds.platform.dashboard.servlets.AddApplicationsServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>DeployerServlet</servlet-name>
-        <url-pattern>/deployer/*</url-pattern>
+        <servlet-name>AddApplicationsServlet</servlet-name>
+        <url-pattern>/servlets/addAplication</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>RemoveApplicationsServlet</servlet-name>
+        <servlet-class>eu.seaclouds.platform.dashboard.servlets.RemoveApplicationsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RemoveApplicationsServlet</servlet-name>
+        <url-pattern>/servlets/removeApplication</url-pattern>
     </servlet-mapping>
 
 </web-app>
