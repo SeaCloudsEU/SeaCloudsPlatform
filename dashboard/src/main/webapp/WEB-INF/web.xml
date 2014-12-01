@@ -65,4 +65,24 @@
         <url-pattern>/servlets/removeApplication</url-pattern>
     </servlet-mapping>
 
+    <!-- Planner Servlets -->
+    <servlet>
+        <servlet-name>GetInitialToscaPlan</servlet-name>
+        <servlet-class>eu.seaclouds.platform.dashboard.servlets.GetInitialToscaPlanServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetInitialToscaPlan</servlet-name>
+        <url-pattern>/servlets/getInitialToscaPlan</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GetMatchmaking</servlet-name>
+        <servlet-class>eu.seaclouds.platform.dashboard.servlets.GetMatchmakingServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetMatchmaking</servlet-name>
+        <url-pattern>/servlets/getMatchmaking</url-pattern>
+    </servlet-mapping>
+
+
 </web-app>
