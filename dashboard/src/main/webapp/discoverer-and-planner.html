@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SeaClouds Dashboard - Not available</title>
+    <title>SeaClouds Dashboard - Discoverer % Planner</title>
 
     <!-- Core CSS - Include with every page -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -16,6 +16,8 @@
     <!-- SB Admin CSS - Include with every page -->
     <link href="css/sb-admin.css" rel="stylesheet">
 
+    <!-- Code Mirror CSS -->
+    <link rel="stylesheet" href="css/codemirror.css">
 
 </head>
 
@@ -37,7 +39,7 @@
                     class="icon-bar"></span> <span class="icon-bar"></span> <span
                     class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="index.html">SeaClouds Dashboard - Not available</a>
+            <a class="navbar-brand" href="index.html">SeaClouds Dashboard - Deploy new Application</a>
         </div>
         <!-- /.navbar-header -->
 
@@ -69,7 +71,7 @@
                     </a></li>
                 </ul>
             </li>
-                <!-- /.dropdown-alerts -->
+            <!-- /.dropdown-alerts -->
             <!-- /.dropdown -->
             <li class="dropdown"><a class="dropdown-toggle"
                                     data-toggle="dropdown" href="#"> <i class="fa fa-user fa-fw"></i>
@@ -92,15 +94,14 @@
         <div class="navbar-default navbar-static-side" role="navigation">
             <div class="sidebar-collapse">
                 <ul class="nav" id="side-menu">
-                    <li><a href="index.html"><strong><i class="fa fa-dashboard fa-home"></i>&nbsp;Home</strong></a></li>
+                    <li><a href="index.html"><i class="fa fa-dashboard fa-home"></i>&nbsp;Home</a></li>
                     <li><a href="not-available.html" class=""><i class="fa fa-pencil-square-o"></i>&nbsp;Module Profile Designer</a></li>
-                    <li><a href="discoverer-and-planner.html" class=""><i class="fa fa-code-fork"></i>&nbsp;Discoverer & Planner</a></li>
+                    <li><a href="discoverer-and-planner.html" class=""><strong><i class="fa fa-code-fork"></i>&nbsp;Discoverer & Planner</strong></a></li>
                     <li><a href="deployer.jsp" class=""><i class="fa fa-download"></i>&nbsp;Deployer</a></li>
                     <li><a href="monitor.jsp" class=""><i class="fa fa-dashboard"></i>&nbsp;Monitor</a></li>
                     <li><a href="sla.html" class=""><i class="fa fa-file-text-o"></i>&nbsp;SLA Service</a></li>
 
-
-               </ul>
+                </ul>
                 <!-- /#side-menu -->
             </div>
             <!-- /.sidebar-collapse -->
@@ -112,27 +113,61 @@
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="page-header">
-                    Sorry
-                    <small>we are working hard to fix it</small>
+                    Discoverer & Planner
+                    <small>Find best provider for your application</small>
                 </h1>
             </div>
             <!-- /.col-lg-12 -->
         </div>
         <!-- /.row -->
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="text-center text-danger"> This functionality is not available yet. </h1>
+        <div class="row" id="page-content">
 
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-file"></i> Application topology in YAML format.
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <form id="form-app-topology" class="form-horizontal" role="form">
+                            <div class="form-group">
+                                <div class="col-lg-12">
+                                    <textarea id="app-topology" class="form-control" rows="22" style="resize: none"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-12">
+                                    <button type="button" class="btn btn-primary" onclick="processAppTopology()">Process Application Topology</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <!-- /.col-lg-12 -->
-        </div>
-        <!-- /.row -->
 
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-terminal"></i> Planner & Matchmaking result.
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <form id="form-planner-output" class="form-horizontal" role="form">
+                            <div class="form-group">
+                                <div class="col-lg-12">
+                                    <textarea id="planner-output" class="form-control" rows="25" style="resize: none"></textarea>
+                                </div>
+                            </div>
+                         </form>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
     </div>
-    <!-- /#page-wrapper -->
 
 </div>
-<!-- /#wrapper -->
 
 <!-- Core Scripts - Include with every page -->
 <script src="js/lib/jquery-1.10.2.js"></script>
@@ -143,7 +178,44 @@
 <!-- SB Admin Scripts - Include with every page -->
 <script src="js/sb-admin.js"></script>
 
+<!-- Code Mirror Scripts -->
+<script src="js/lib/codemirror.js"></script>
+<script src="js/lib/codemirror-yaml.js"></script>
+
 
 </body>
+
+<!-- Swagger JS API -->
+<script type="text/javascript">
+    var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"});
+    var APP_TOPOLOGY_TEXTAREA;
+    var PLANNER_OUTPUT_TEXTAREA;
+
+
+    $(document).ready(function() {
+        SPINNER.spin(document.getElementById("loading-spinner"));
+        loadCodeMirror();
+        SPINNER.stop();
+    });
+
+    function loadCodeMirror(){
+        var appTopology = document.getElementById("app-topology");
+        var plannerOutput = document.getElementById("planner-output");
+
+        APP_TOPOLOGY_TEXTAREA = CodeMirror.fromTextArea(appTopology);
+        PLANNER_OUTPUT_TEXTAREA = CodeMirror.fromTextArea(plannerOutput, {readOnly : true});
+    }
+
+    function processAppTopology(){
+        SPINNER.spin(document.getElementById("loading-spinner"));
+        PLANNER_OUTPUT_TEXTAREA.setValue(APP_TOPOLOGY_TEXTAREA.getValue());
+        SPINNER.stop();
+
+    }
+
+</script>
+
+
+
 
 </html>

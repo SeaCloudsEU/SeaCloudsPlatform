@@ -16,9 +16,6 @@
     <!-- SB Admin CSS - Include with every page -->
     <link href="css/sb-admin.css" rel="stylesheet">
 
-    <!-- SeaClouds configuration constants -->
-    <script src="js/config.js"></script>
-
 </head>
 
 <body>
@@ -96,7 +93,7 @@
                 <ul class="nav" id="side-menu">
                     <li><a href="index.html"><i class="fa fa-dashboard fa-home"></i>&nbsp;Home</a></li>
                     <li><a href="not-available.html" class=""><i class="fa fa-pencil-square-o"></i>&nbsp;Module Profile Designer</a></li>
-                    <li><a href="not-available.html" class=""><i class="fa fa-code-fork"></i>&nbsp;Discoverer & Planner</a></li>
+                    <li><a href="discoverer-and-planner.html" class=""><i class="fa fa-code-fork"></i>&nbsp;Discoverer & Planner</a></li>
                     <li><a href="deployer.jsp" class=""><i class="fa fa-download"></i>&nbsp;Deployer</a></li>
                     <li><a href="monitor.jsp" class=""><strong><i class="fa fa-dashboard"></i>&nbsp;Monitor</strong></a></li>
                     <li><a href="sla.html" class=""><i class="fa fa-file-text-o"></i>&nbsp;SLA Service</a></li>
