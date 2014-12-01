@@ -8,9 +8,9 @@
     <version>0.1.0-SNAPSHOT</version>
   </parent>
   <groupId>eu.seaclouds</groupId>
-  <artifactId>core</artifactId>
+  <artifactId>planner-core</artifactId>
   <version>0.1.0-SNAPSHOT</version>
-  <name>core</name>
+  <name>planner-core</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,7 +24,7 @@
     </dependency>
     <dependency>
     	<groupId>eu.seaclouds</groupId>
-    	<artifactId>utils</artifactId>
+    	<artifactId>planner-utils</artifactId>
     	<version>0.1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
