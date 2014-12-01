@@ -16,9 +16,6 @@
     <!-- SB Admin CSS - Include with every page -->
     <link href="css/sb-admin.css" rel="stylesheet">
 
-    <!-- SeaClouds configuration constants -->
-    <script src="js/config.js"></script>
-
 </head>
 
 <body>

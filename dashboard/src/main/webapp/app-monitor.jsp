@@ -118,9 +118,6 @@
 <!-- SB Admin Scripts - Include with every page -->
 <script src="js/sb-admin.js"></script>
 
-<!-- SeaClouds configuration constants -->
-<script src="js/config.js"></script>
-
 
 <!-- Page-Level Plugin Scripts - Flot -->
 <script src="js/lib/jquery.flot.js"></script>
