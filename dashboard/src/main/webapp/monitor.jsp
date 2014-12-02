@@ -138,7 +138,6 @@
 
 <!-- SB Admin Scripts - Include with every page -->
 <script src="js/sb-admin.js"></script>
-<script src='js/lib/swagger.js' type='text/javascript'></script>
 <script type="text/javascript">
     var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"}).spin(document.getElementById("loading-spinner"));
     var CONTENT_ID = "page-content";

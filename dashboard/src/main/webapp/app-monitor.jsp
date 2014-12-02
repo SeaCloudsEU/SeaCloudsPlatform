@@ -123,9 +123,6 @@
 <script src="js/lib/jquery.flot.js"></script>
 <script src="js/lib/jquery.flot.autoscale.js"></script>
 
-
-<!-- Swagger JS API -->
-<script src='js/lib/swagger.js' type='text/javascript'></script>
 <script type="text/javascript">
     var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"}).spin(document.getElementById("loading-spinner"));
     var APP_ID = location.search.split('id=')[1];
