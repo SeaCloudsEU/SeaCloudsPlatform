@@ -196,7 +196,7 @@
                 $.each(response, function (appIdx, app) {
                     // FIXME: The servlet provides all the location stuff
                     boxHTML += generateAppOverviewBox(app);
-                    })
+                })
             } else {
                 boxHTML = "<h1 class=\"text-center text-warning\">No applications running.</h1>";
             }
@@ -291,8 +291,7 @@
 
 
 </script>
-
-
+</body>
 
 
 </html>

@@ -18,6 +18,8 @@
 
     <!-- Code Mirror CSS -->
     <link rel="stylesheet" href="css/codemirror.css">
+    <link rel="stylesheet" href="css/codemirror-simplescrollbars.css">
+
 
 </head>
 
@@ -181,6 +183,8 @@
 <!-- Code Mirror Scripts -->
 <script src="js/lib/codemirror.js"></script>
 <script src="js/lib/codemirror-yaml.js"></script>
+<script src="js/lib/codemirror-simplescrollbars.js"></script>
+
 
 
 </body>
@@ -201,8 +205,8 @@
         var appTopology = document.getElementById("app-topology");
         var plannerOutput = document.getElementById("planner-output");
 
-        APP_TOPOLOGY_TEXTAREA = CodeMirror.fromTextArea(appTopology);
-        PLANNER_OUTPUT_TEXTAREA = CodeMirror.fromTextArea(plannerOutput, {readOnly : true});
+        APP_TOPOLOGY_TEXTAREA = CodeMirror.fromTextArea(appTopology, {scrollbarStyle : "simple"});
+        PLANNER_OUTPUT_TEXTAREA = CodeMirror.fromTextArea(plannerOutput, {readOnly : true, scrollbarStyle : "simple"});
 
         $.get("servlets/getInitialToscaPlan", function getInitialToscaPlan(response){
             APP_TOPOLOGY_TEXTAREA.setValue(response);
