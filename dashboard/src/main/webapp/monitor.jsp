@@ -161,7 +161,7 @@
         // Header
         appHTML += "<div class=\"panel-heading clearfix\">";
         appHTML += "<i class=\"fa fa-gears fa-fw\"><\/i>" + application.spec.name +
-                "<button type=\"button\" class=\"btn btn-info navbar-right\" onClick=showPopUp('" + application.id  + "')>Live monitor</button>";
+                "<a href=\"app-monitor.jsp?id="+ application.id + "\"<button type=\"button\" class=\"btn btn-info navbar-right\">Live monitor</button></a>";
         appHTML += "</div>";
 
         // Box body
@@ -194,15 +194,6 @@
     }
 
 
-    function  showPopUp(id){
-        var width = window.screen.availWidth * 0.9;
-        var height = window.screen.availHeight * 0.95;
-        var left = (window.screen.width/2)-(width/2);
-        var top = (window.screen.height/2)-(height/2);
-        return window.open("app-monitor.jsp?id="+id, "SeaClouds Live Monitor (" + id + ")", 'toolbar=no, location=no,' +
-                ' directories=no, status=no, menubar=no, scrollbars=no, resizable=no,' +
-                ' copyhistory=no, width='+width+', height='+height+', top='+top+', left='+left);
-    }
 </script>
 </body>
 </html>
