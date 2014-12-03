@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SeaClouds Dashboard - SLA</title>
+    <title>SeaClouds Dashboard - Module Profile Designer</title>
 
     <!-- Core CSS - Include with every page -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -98,7 +98,6 @@
                     <li><a href="deployer.html" class=""><i class="fa fa-download"></i>&nbsp;Deployer</a></li>
                     <li><a href="monitor.html" class=""><i class="fa fa-dashboard"></i>&nbsp;Monitor</a></li>
                     <li><a href="sla.html" class=""><strong><i class="fa fa-file-text-o"></i>&nbsp;SLA Service</strong></a></li>
-
                 </ul>
                 <!-- /#side-menu -->
             </div>
@@ -111,8 +110,8 @@
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="page-header">
-                    SLA
-                    <small>Manage Service Level Agreements</small>
+                    Module Profile Designer
+                    <small>Design the topology of your Cloud Application</small>
                 </h1>
             </div>
         </div>
@@ -123,47 +122,17 @@
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <i class="fa fa-terminal"></i> Create SLA Agreement
+                        <i class="fa fa-magic"></i> Define your application topology
+                        <div class="text-danger pull-right"> PROOF OF CONCEPT - Work in progress</div>
                     </div>
                     <!-- /.panel-heading -->
-                    <div class="panel-body">
-                        <form class="form-inline" role="form" onsubmit="addSlaAgreement()">
-                            <div class="form-group">
-                                <label for="appIdInput">Application ID</label>
-                                <input type="text" class="form-control" id="appIdInput" placeholder="Application ID">
-                            </div>
-                            <div class="form-group">
-                                <label for="moduleIdInput">Module ID</label>
-                                <input type="text" class="form-control" id="moduleIdInput" placeholder="Module ID">
-                            </div>
-
-                            <button type="submit" class="btn btn-default">Add Agreement</button>
-                        </form>
+                    <div class="panel-body" style="display:table-cell; vertical-align:middle; text-align:center">
+                        <img  style="width:80%;"  src="img/module-profile-concept.png" alt="Module profile concept">
                     </div>
 
                 </div>
             </div>
         </div>
-
-
-        <div class="row">
-
-
-            <div class="col-lg-12">
-
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <i class="fa fa-bullseye"></i> View SLA Agreements
-                    </div>
-                    <!-- /.panel-heading -->
-                    <div class="panel-body">
-                        <iframe id="iframe" width="100%" height="100%"  frameBorder="0" src="#"></iframe>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
 
     </div>
     <!-- /#page-wrapper -->
@@ -185,32 +154,8 @@
 
     $(document).ready(function() {
         SPINNER.spin(document.getElementById("loading-spinner"));
-        $('#iframe').load(function(){
-            SPINNER.stop();
-        });
-        $("#iframe").attr("src", "slagui/agreements");
+        SPINNER.stop();
     });
-
-    function addSlaAgreement(){
-        var appIdInput = $("#appIdInput").val();
-        var moduleIdInput = $("#moduleIdInput").val();
-
-        $.post("slagui/rest/agreements", {"templateid" : "nuro-template", "consumerid":"random-client","appid": appIdInput, "moduleid": moduleIdInput})
-                .done(function (response){
-                    $.ajax({
-                        url: '/slagui/rest/enforcements/' + appIdInput,
-                        type: 'PUT',
-                        success: function(result) {
-                            $("#iframe").attr("src", "slagui/agreements");
-                        }
-                    });
-
-
-                }).fail(function (err){
-                   console.log(err);
-                })
-
-    }
 
 </script>
 
