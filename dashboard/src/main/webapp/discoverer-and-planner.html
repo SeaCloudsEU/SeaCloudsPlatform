@@ -204,8 +204,11 @@
         var appTopology = document.getElementById("app-topology");
         var plannerOutput = document.getElementById("planner-output");
 
-        APP_TOPOLOGY_TEXTAREA = CodeMirror.fromTextArea(appTopology, {scrollbarStyle : "simple", tabSize : 2}).setSize("100%", 450);
-        PLANNER_OUTPUT_TEXTAREA = CodeMirror.fromTextArea(plannerOutput, {readOnly : true, scrollbarStyle : "simple", tabSize :2}).setSize("100%", 500);
+        APP_TOPOLOGY_TEXTAREA = CodeMirror.fromTextArea(appTopology, {scrollbarStyle : "simple", tabSize : 2})
+        APP_TOPOLOGY_TEXTAREA.setSize("100%", 450);
+        PLANNER_OUTPUT_TEXTAREA = CodeMirror.fromTextArea(plannerOutput, {readOnly : true, scrollbarStyle : "simple", tabSize :2})
+        PLANNER_OUTPUT_TEXTAREA.setSize("100%", 500);
+
         SPINNER.stop();
 
     }
