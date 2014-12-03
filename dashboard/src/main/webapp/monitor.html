@@ -36,7 +36,7 @@
                     class="icon-bar"></span> <span class="icon-bar"></span> <span
                     class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="index.html">SeaClouds Dashboard - Monitor Applications</a>
+            <a class="navbar-brand" href="index.html">SeaClouds Dashboard</a>
         </div>
         <!-- /.navbar-header -->
 
@@ -94,8 +94,8 @@
                     <li><a href="index.html"><i class="fa fa-dashboard fa-home"></i>&nbsp;Home</a></li>
                     <li><a href="not-available.html" class=""><i class="fa fa-pencil-square-o"></i>&nbsp;Module Profile Designer</a></li>
                     <li><a href="discoverer-and-planner.html" class=""><i class="fa fa-code-fork"></i>&nbsp;Discoverer & Planner</a></li>
-                    <li><a href="deployer.jsp" class=""><i class="fa fa-download"></i>&nbsp;Deployer</a></li>
-                    <li><a href="monitor.jsp" class=""><strong><i class="fa fa-dashboard"></i>&nbsp;Monitor</strong></a></li>
+                    <li><a href="deployer.html" class=""><i class="fa fa-download"></i>&nbsp;Deployer</a></li>
+                    <li><a href="monitor.html" class=""><strong><i class="fa fa-dashboard"></i>&nbsp;Monitor</strong></a></li>
                     <li><a href="sla.html" class=""><i class="fa fa-file-text-o"></i>&nbsp;SLA Service</a></li>
 
 
@@ -161,7 +161,7 @@
         // Header
         appHTML += "<div class=\"panel-heading clearfix\">";
         appHTML += "<i class=\"fa fa-gears fa-fw\"><\/i>" + application.spec.name +
-                "<button type=\"button\" class=\"btn btn-info navbar-right\" onClick=showPopUp('" + application.id  + "')>Live monitor</button>";
+                "<a href=\"app-monitor.html?id="+ application.id + "\"<button type=\"button\" class=\"btn btn-info navbar-right\">Live monitor</button></a>";
         appHTML += "</div>";
 
         // Box body
@@ -194,15 +194,6 @@
     }
 
 
-    function  showPopUp(id){
-        var width = window.screen.availWidth * 0.9;
-        var height = window.screen.availHeight * 0.95;
-        var left = (window.screen.width/2)-(width/2);
-        var top = (window.screen.height/2)-(height/2);
-        return window.open("app-monitor.jsp?id="+id, "SeaClouds Live Monitor (" + id + ")", 'toolbar=no, location=no,' +
-                ' directories=no, status=no, menubar=no, scrollbars=no, resizable=no,' +
-                ' copyhistory=no, width='+width+', height='+height+', top='+top+', left='+left);
-    }
 </script>
 </body>
 </html>

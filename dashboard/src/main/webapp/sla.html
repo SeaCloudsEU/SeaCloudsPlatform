@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SeaClouds Dashboard - Deploy new Application</title>
+    <title>SeaClouds Dashboard - SLA</title>
 
     <!-- Core CSS - Include with every page -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -37,7 +37,7 @@
                     class="icon-bar"></span> <span class="icon-bar"></span> <span
                     class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="index.html">SeaClouds Dashboard - Deploy new Application</a>
+            <a class="navbar-brand" href="index.html">SeaClouds Dashboard</a>
         </div>
         <!-- /.navbar-header -->
 
@@ -95,8 +95,8 @@
                     <li><a href="index.html"><i class="fa fa-dashboard fa-home"></i>&nbsp;Home</a></li>
                     <li><a href="not-available.html" class=""><i class="fa fa-pencil-square-o"></i>&nbsp;Module Profile Designer</a></li>
                     <li><a href="discoverer-and-planner.html" class=""><i class="fa fa-code-fork"></i>&nbsp;Discoverer & Planner</a></li>
-                    <li><a href="deployer.jsp" class=""><i class="fa fa-download"></i>&nbsp;Deployer</a></li>
-                    <li><a href="monitor.jsp" class=""><i class="fa fa-dashboard"></i>&nbsp;Monitor</a></li>
+                    <li><a href="deployer.html" class=""><i class="fa fa-download"></i>&nbsp;Deployer</a></li>
+                    <li><a href="monitor.html" class=""><i class="fa fa-dashboard"></i>&nbsp;Monitor</a></li>
                     <li><a href="sla.html" class=""><strong><i class="fa fa-file-text-o"></i>&nbsp;SLA Service</strong></a></li>
 
                 </ul>
@@ -181,7 +181,13 @@
 <script src="js/sb-admin.js"></script>
 
 <script type="text/javascript">
+    var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"});
+
     $(document).ready(function() {
+        SPINNER.spin(document.getElementById("loading-spinner"));
+        $('#iframe').load(function(){
+            SPINNER.stop();
+        });
         $("#iframe").attr("src", "slagui/agreements");
     });
 
