@@ -69,9 +69,9 @@ public class Planner {
         List TrequirementsList = applicationModel.getNodeTemplateRequirements(key);
         //TODO michela added here a message: error if not requirements
 
-        for (int i = 0; i < TrequirementsList.size(); i++) {
+        for (Object aTrequirementsList : TrequirementsList) {
 
-            Map<String, Object> reqDescription = (Map) TrequirementsList.get(i);
+            Map<String, Object> reqDescription = (Map) aTrequirementsList;
             Set<String> reqKeynames = reqDescription.keySet();
             String[] TreqKeys = reqKeynames.toArray(new String[0]);
 
@@ -79,10 +79,9 @@ public class Planner {
             String reqName = TreqKeys[0];
             //extract requirement value
             String reqValue = (String) reqDescription.get(reqName);
-            System.out.println("Searching a match for requirement: " + reqName + ": " + reqValue);
+            log.info("Searching a match for requirement: " + reqName + ": " + reqValue);
 
-            if (requireAnOtherNodeTempalte(reqValue)) {
-
+            if (requireAnOtherNodeTemplate(reqValue)) {
                 log.warn("Requirement already satisfied inside the definitions file " + reqValue);
             } else {
                 selectADeploymentService(key, reqDescription);
@@ -144,7 +143,7 @@ public class Planner {
     }
 
 
-    private boolean requireAnOtherNodeTempalte(String requirementValue) {
+    private boolean requireAnOtherNodeTemplate(String requirementValue) {
         return applicationModel.getNodeTemplate(requirementValue) != null;
     }
 
