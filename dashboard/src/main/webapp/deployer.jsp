@@ -126,7 +126,7 @@
             <div class="col-lg-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <i class="fa fa-cloud-download"></i> Deploy new application defined in YAML format.
+                        <i class="fa fa-cloud-download"></i> Deploy new application defined in YAML format
                         <a aria-expanded="false" data-toggle="collapse" data-parent="#accordion" data-target ="#app-status-collapsable"><i class="fa fa-chevron-down"></i></a>
                     </div>
                     <!-- /.panel-heading -->

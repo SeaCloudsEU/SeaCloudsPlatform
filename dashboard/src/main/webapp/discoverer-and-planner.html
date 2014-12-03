@@ -116,7 +116,7 @@
             <div class="col-lg-12">
                 <h1 class="page-header">
                     Discoverer & Planner
-                    <small>Find best provider for your application</small>
+                    <small>Find best providers for your application</small>
                 </h1>
             </div>
             <!-- /.col-lg-12 -->
@@ -127,14 +127,14 @@
             <div class="col-lg-6">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <i class="fa fa-file"></i> Application topology in YAML format.
+                        <i class="fa fa-file"></i> TOSCA YAML application topology
                     </div>
                     <!-- /.panel-heading -->
                     <div class="panel-body">
                         <form id="form-app-topology" class="form-horizontal" role="form">
                             <div class="form-group">
                                 <div class="col-lg-12">
-                                    <textarea id="app-topology" class="form-control" rows="22" style="resize: none"></textarea>
+                                    <textarea id="app-topology" class="form-control" style="resize: none"></textarea>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -150,14 +150,14 @@
             <div class="col-lg-6">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <i class="fa fa-terminal"></i> Planner & Matchmaking result.
+                        <i class="fa fa-terminal"></i> Matchmaking result
                     </div>
                     <!-- /.panel-heading -->
                     <div class="panel-body">
                         <form id="form-planner-output" class="form-horizontal" role="form">
                             <div class="form-group">
                                 <div class="col-lg-12">
-                                    <textarea id="planner-output" class="form-control" rows="25" style="resize: none"></textarea>
+                                    <textarea id="planner-output" class="form-control"   style="resize: none"></textarea>
                                 </div>
                             </div>
                          </form>
@@ -204,8 +204,8 @@
         var appTopology = document.getElementById("app-topology");
         var plannerOutput = document.getElementById("planner-output");
 
-        APP_TOPOLOGY_TEXTAREA = CodeMirror.fromTextArea(appTopology, {scrollbarStyle : "simple"});
-        PLANNER_OUTPUT_TEXTAREA = CodeMirror.fromTextArea(plannerOutput, {readOnly : true, scrollbarStyle : "simple"});
+        APP_TOPOLOGY_TEXTAREA = CodeMirror.fromTextArea(appTopology, {scrollbarStyle : "simple", tabSize : 2}).setSize("100%", 450);
+        PLANNER_OUTPUT_TEXTAREA = CodeMirror.fromTextArea(plannerOutput, {readOnly : true, scrollbarStyle : "simple", tabSize :2}).setSize("100%", 500);
         SPINNER.stop();
 
     }
