@@ -21,7 +21,7 @@ import java.util.List;
  * @author Adrian Nieto
  */
 public class GetAvailableMetricsServlet extends HttpServlet {
-    final static BrooklynApi BROOKLKYN_API = new BrooklynApi(ConfigParameters.DEPLOYER_ENDPOINT);
+    final static BrooklynApi BROOKLKYN_API = new BrooklynApi(ConfigParameters.MONITOR_ENDPOINT);
 
 
     private boolean isNumberType(SensorSummary sensor){

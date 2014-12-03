@@ -172,18 +172,18 @@
 </div>
 
 <!-- Core Scripts - Include with every page -->
-<script src="js/lib/jquery-1.10.2.js"></script>
-<script src="js/lib/jquery.metisMenu.js"></script>
-<script src="js/lib/bootstrap.min.js"></script>
-<script src="js/lib/spin.min.js"></script>
+<script src="js/jquery-1.10.2.js"></script>
+<script src="js/jquery.metisMenu.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/spin.min.js"></script>
 
 <!-- SB Admin Scripts - Include with every page -->
 <script src="js/sb-admin.js"></script>
 
 <!-- Code Mirror Scripts -->
-<script src="js/lib/codemirror.js"></script>
-<script src="js/lib/codemirror-yaml.js"></script>
-<script src="js/lib/codemirror-simplescrollbars.js"></script>
+<script src="js/codemirror.js"></script>
+<script src="js/codemirror-yaml.js"></script>
+<script src="js/codemirror-simplescrollbars.js"></script>
 
 
 
@@ -204,8 +204,11 @@
         var appTopology = document.getElementById("app-topology");
         var plannerOutput = document.getElementById("planner-output");
 
-        APP_TOPOLOGY_TEXTAREA = CodeMirror.fromTextArea(appTopology, {scrollbarStyle : "simple", tabSize : 2}).setSize("100%", 450);
-        PLANNER_OUTPUT_TEXTAREA = CodeMirror.fromTextArea(plannerOutput, {readOnly : true, scrollbarStyle : "simple", tabSize :2}).setSize("100%", 500);
+        APP_TOPOLOGY_TEXTAREA = CodeMirror.fromTextArea(appTopology, {scrollbarStyle : "simple", tabSize : 2})
+        APP_TOPOLOGY_TEXTAREA.setSize("100%", 450);
+        PLANNER_OUTPUT_TEXTAREA = CodeMirror.fromTextArea(plannerOutput, {readOnly : true, scrollbarStyle : "simple", tabSize :2})
+        PLANNER_OUTPUT_TEXTAREA.setSize("100%", 500);
+
         SPINNER.stop();
 
     }
