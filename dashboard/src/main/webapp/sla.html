@@ -123,11 +123,17 @@
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <i class="fa fa-terminal"></i> Create SLA Agreement
+                        <i class="fa fa-tasks"></i> Create SLA Agreement
+                        <a aria-expanded="false" data-toggle="collapse" data-parent="#accordion" data-target="#sla-form-collapsable"><i class="fa fa-chevron-down"></i></a>
                     </div>
+
                     <!-- /.panel-heading -->
-                    <div class="panel-body">
-                        <form class="form-inline" role="form" onsubmit="addSlaAgreement()">
+                    <div id="sla-form-collapsable" class="panel-body collapse">
+                        <form class="form" role="form" onsubmit="addSlaAgreement()">
+                            <div class="form-group">
+                                <label for="templateNameInput">Template name</label>
+                                <input type="text" class="form-control" id="templateNameInput" placeholder="Template name">
+                            </div>
                             <div class="form-group">
                                 <label for="appIdInput">Application ID</label>
                                 <input type="text" class="form-control" id="appIdInput" placeholder="Application ID">
@@ -138,7 +144,9 @@
                             </div>
 
                             <button type="submit" class="btn btn-default">Add Agreement</button>
+
                         </form>
+
                     </div>
 
                 </div>
@@ -157,7 +165,7 @@
                     </div>
                     <!-- /.panel-heading -->
                     <div class="panel-body">
-                        <iframe id="iframe" width="100%" height="600px"  frameBorder="0" src="#"></iframe>
+                        <iframe id="iframe" width="100%" height="450px"  frameBorder="0" src="#"></iframe>
                     </div>
 
                 </div>
@@ -172,10 +180,10 @@
 <!-- /#wrapper -->
 
 <!-- Core Scripts - Include with every page -->
-<script src="js/jquery-1.10.2.js"></script>
-<script src="js/jquery.metisMenu.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/spin.min.js"></script>
+<script src="js/lib/jquery-1.10.2.js"></script>
+<script src="js/lib/jquery.metisMenu.js"></script>
+<script src="js/lib/bootstrap.min.js"></script>
+<script src="js/lib/spin.min.js"></script>
 
 <!-- SB Admin Scripts - Include with every page -->
 <script src="js/sb-admin.js"></script>
@@ -193,14 +201,15 @@
     });
 
     function addSlaAgreement(){
+        var templateNameInput = $("#templateNameInput").val();
         var appIdInput = $("#appIdInput").val();
         var moduleIdInput = $("#moduleIdInput").val();
 
         $.post("/projects/seaclouds/slagui/rest/agreements", 
-		{"templateid" : "nuro-template", "consumerid":"random-client","appid": appIdInput, "moduleid": moduleIdInput})
+		{"templateid" : templateNameInput, "consumerid":"random-client","appid": appIdInput, "moduleid": moduleIdInput})
                 .done(function (response){
                     $.ajax({
-                        url: '/projects/seaclouds/slagui/rest/enforcements/' + appIdInput,
+                        url: '/projects/seaclouds/slagui/rest/enforcements/' + response.id,
                         type: 'PUT',
                         success: function(result) {
                             $("#iframe").attr("src", "/projects/seaclouds/slagui/agreements/");
