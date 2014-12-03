@@ -3,6 +3,8 @@ package seaclouds.matchmaker;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import seaclouds.utils.TOSCAYamlParser;
 
 import java.io.FileNotFoundException;
@@ -16,8 +18,10 @@ import java.util.Map.Entry;
 
 public class Matchmaker {
 
+    static Logger log = LoggerFactory.getLogger(Matchmaker.class);
 
-	public Map<String, Object> match(String reqName, String reqValue, Map reqDescription) throws FileNotFoundException {
+
+    public Map<String, Object> match(String reqName, String reqValue, Map reqDescription) throws FileNotFoundException {
 		// TODO Auto-generated method stub
 
         System.out.println("-----\nMatchmaking start");
@@ -38,7 +42,7 @@ public class Matchmaker {
 
         Map<String, Object> cloudOfferedServiceList = cloudModel.getNodeTemplates();
         Map<String, Object> suitableServiceList = new LinkedHashMap<>();
-        System.out.println("\n" + cloudOfferedServiceList.size() + " service(s) available");
+        log.info("\n" + cloudOfferedServiceList.size() + " service(s) available");
 
         for (Entry<String, Object> service: cloudOfferedServiceList.entrySet()){
 
@@ -51,24 +55,21 @@ public class Matchmaker {
         	String offServiceType = (String) serviceDescription.get("type");
 
         	if (capabilitiesList.containsKey(reqName) && offServiceType.equals(reqValue)){
-
         		if(matchProperties(reqDescription, serviceDescription)){
-
-        			System.out.println("Service suitable");
+        			log.info("Service suitable");
         			suitableServiceList.put(serviceName, serviceDescription);
         			//put serviceDescription somewhere or return its unique identifier
-        		}
-
-        		else System.out.println("Service not suitable");
-        	}
-        	else System.out.println("Service not suitable");
+        		} else {
+                    log.info("Service not suitable");
+                }
+        	} else {
+                log.info("Service not suitable");
+            }
         }
 
-
-		//}
 		//TODO: return a map with matching services for each module/requirement
 
-		System.out.println("-----\nMatchmaking end");
+		log.info("-----\nMatchmaking end");
 		return suitableServiceList;
 	}
 
@@ -111,7 +112,7 @@ public class Matchmaker {
 
 							//at least one of the values in reqValue should be present in offValue
 
-							System.out.println("Not implemented yet");
+							log.info("Not implemented yet");
 						}
 
 						else if (reqClass.equals("LinkedHashMap")){
@@ -149,11 +150,8 @@ public class Matchmaker {
 		}
 
 		if (suitableProperty == reqProperties.size()) {
-			//System.out.println("Service suitable");
 			return true;
-		}
-		else {
-			//System.out.println("Service not suitable");
+		} else {
 			return false;
 		}
 	}
@@ -163,61 +161,50 @@ public class Matchmaker {
 		switch (operator) {
 
 		case "equal":
-			if (offValue.equals(value)) return true;
-			else return false;
+			return offValue.equals(value) ;
 
 		case "greater_then":
 			if (value.getClass().getSimpleName().equals("Integer")){
 				Integer val = (Integer) value;
-				if ((Integer)offValue > val) return true;
-				else return false;
-			}
-			else if (value.getClass().getSimpleName().equals("Double")){
+				return ((Integer) offValue > val);
+			} else if (value.getClass().getSimpleName().equals("Double")){
 				Double val = (Double) value;
-				if ((Double) offValue > val) return true;
-				else return false;
-			}
-			else return false;
+				return ((Double) offValue > val);
+			} else {
+                return false;
+            }
 
 		case "greater_or_equal":
 			//value comparable
 			if (value.getClass().getSimpleName().equals("Integer")){
 				Integer val = (Integer) value;
-				if ((Integer)offValue >= val) return true;
-				else return false;
-			}
-			else if (value.getClass().getSimpleName().equals("Double")){
+				return ((Integer)offValue >= val);
+			} else if (value.getClass().getSimpleName().equals("Double")){
 				Double val = (Double) value;
-				if ((Double) offValue >= val) return true;
-				else return false;
-			}
-			else return false;
+				return ((Double) offValue >= val);
+			} else {
+                return false;
+            }
 
 		case "less_than":
 			if (value.getClass().getSimpleName().equals("Integer")){
 				Integer val = (Integer) value;
-				if ((Integer)offValue < val) return true;
-				else return false;
-			}
-			else if (value.getClass().getSimpleName().equals("Double")){
+                return (Integer) offValue < val;
+			} else if (value.getClass().getSimpleName().equals("Double")){
 				Double val = (Double) value;
-				if ((Double) offValue < val) return true;
-				else return false;
-			}
-			else return false;
+                return (Double) offValue < val;
+			} else {
+                return false;
+            }
 
 		case "less_or_equal":
 			if (value.getClass().getSimpleName().equals("Integer")){
 				Integer val = (Integer) value;
-				if ((Integer)offValue <= val) return true;
-				else return false;
-			}
-			else if (value.getClass().getSimpleName().equals("Double")){
+                return (Integer) offValue <= val;
+			} else if (value.getClass().getSimpleName().equals("Double")){
 				Double val = (Double) value;
-				if ((Double) offValue <= val) return true;
-				else return false;
-			}
-			else return false;
+                return (Double) offValue <= val;
+			} else return false;
 
 		case "in_range":
 			//dual scalar comparable: value is a list with two elements
@@ -225,22 +212,20 @@ public class Matchmaker {
 			if (dualScalar.get(0).getClass().getSimpleName().equals("Integer")){
 				Integer min = (Integer) dualScalar.get(0);
 				Integer max = (Integer) dualScalar.get(1);
-				if((Integer)offValue >= min && (Integer)offValue <= max){
-					//System.out.println("Valid!");
-					return true;
-				}
-				else return false;
+                return (Integer) offValue >= min && (Integer) offValue <= max;
 			}
 			else if (dualScalar.get(0).getClass().getSimpleName().equals("Double")){
 				Double min = (Double) dualScalar.get(0);
 				Double max = (Double) dualScalar.get(1);
 				if((Double)offValue >= min && (Integer)offValue <= max){
-					System.out.println("Valid!");
+					log.info("Valid!");
 					return true;
-				}
-				else return false;
-			}
-			else return false;
+				} else {
+                    return false;
+                }
+			} else {
+                return false;
+            }
 
 		case "valid_values":
 			//TODO
@@ -251,30 +236,30 @@ public class Matchmaker {
 			Boolean isValid = false;
 			//compare each valid value. ; if validvalue is present in offvalue-> isValid = true;
 			//return isValid;
-			System.out.println("Operator not implemented yet");
+			log.info("Operator not implemented yet");
 			break;
 
 		case "length":
 			//TODO
 			//string in the specification (?) integer
-			System.out.println("Operator not implemented yet");
+			log.info("Operator not implemented yet");
 			break;
 
 		case "min_length":
 			//TODO
 			//as above
-			System.out.println("Operator not implemented yet");
+			log.info("Operator not implemented yet");
 			break;
 
 		case "max_length":
 			//TODO
 			//as above
-			System.out.println("Operator not implemented yet");
+			log.info("Operator not implemented yet");
 			break;
 
 		default:
 			//TODO: handle exception
-			System.out.println("Operator not implemented yet");
+			log.info("Operator not implemented yet");
 			break;
 		}
 		return false;

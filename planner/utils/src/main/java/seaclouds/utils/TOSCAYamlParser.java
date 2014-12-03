@@ -1,6 +1,8 @@
 package seaclouds.utils;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileNotFoundException;
@@ -13,6 +15,7 @@ import java.util.Set;
 
 public class TOSCAYamlParser {
 
+    static Logger log = LoggerFactory.getLogger(TOSCAYamlParser.class);
 
     Map<String, Object> TOSCAdefinitions;
 
@@ -38,7 +41,7 @@ public class TOSCAYamlParser {
         String output = definitionsYaml.dump(TOSCAdefinitions);
         StringWriter writer = new StringWriter();
         definitionsYaml.dump(TOSCAdefinitions, writer);
-        //System.out.println(writer.toString());
+        //log.info(writer.toString());
     }
 
     public String getYaml() {
@@ -62,60 +65,63 @@ public class TOSCAYamlParser {
 
     public String getNamespace() {
         //TODO:
-        // System.out.println("Warning: this function has not been defined yet");
         return null;
     }
 
     public String getTemplateName() {
         String keyname = "template_name";
         if (!TOSCAdefinitions.containsKey(keyname)) {
-            // System.out.println("This keyname has not been defined.");
             return null;
-        } else return (String) TOSCAdefinitions.get(keyname);
+        } else {
+            return (String) TOSCAdefinitions.get(keyname);
+        }
     }
 
     public String getTemplateAuthor() {
         String keyname = "template_author";
         if (!TOSCAdefinitions.containsKey(keyname)) {
-            // System.out.println("This keyname has not been defined.");
             return null;
-        } else return (String) TOSCAdefinitions.get(keyname);
+        } else {
+            return (String) TOSCAdefinitions.get(keyname);
+        }
     }
 
     public String getTemplateVersion() {
         String keyname = "template_version";
         if (!TOSCAdefinitions.containsKey(keyname)) {
-            // System.out.println("This keyname has not been defined.");
             return null;
-        } else return (String) TOSCAdefinitions.get(keyname);
+        } else {
+            return (String) TOSCAdefinitions.get(keyname);
+        }
     }
 
     public String getDescription() {
         String keyname = "description";
         if (!TOSCAdefinitions.containsKey(keyname)) {
-            // System.out.println("This keyname has not been defined.");
             return null;
-        } else return (String) TOSCAdefinitions.get(keyname);
+        } else {
+            return (String) TOSCAdefinitions.get(keyname);
+        }
     }
 
     public String getImports() {
         //TODO:
-        // System.out.println("Warning: this function has not been defined yet");
         return null;
     }
 
     public String getInputs() {
         //TODO:
-        // System.out.println("Warning: this function has not been defined yet");
         return null;
     }
 
     public Map<String, Object> getNodeTemplates() {
         String keyname = "node_templates";
         if (!TOSCAdefinitions.containsKey(keyname)) {
-            // System.out.println("This keyname has not been defined.");
+            // log.info("This keyname has not been defined.");
             return null;
-        } else return (Map<String, Object>) TOSCAdefinitions.get(keyname);
+        } else {
+            return (Map<String, Object>) TOSCAdefinitions.get(keyname);
+        }
     }
 
     public void setNodeTemplates(Map<String, Object> nodeTemplatesList) {
@@ -130,7 +136,6 @@ public class TOSCAYamlParser {
             return nodeTemplate;
 
         } else {
-            // System.out.println("Node template " + name + " not found");
             return null;
         }
 
@@ -149,38 +154,40 @@ public class TOSCAYamlParser {
     public Map<String, Object> getNodeTypes() {
         String keyname = "node_types";
         if (!TOSCAdefinitions.containsKey(keyname)) {
-            System.out.println("This keyname has not been defined.");
+            log.info("This keyname has not been defined.");
             return null;
-        } else return (Map<String, Object>) TOSCAdefinitions.get(keyname);
+        } else {
+            return (Map<String, Object>) TOSCAdefinitions.get(keyname);
+        }
     }
 
     public String getRelationshipTypes() {
         //TODO:
-        System.out.println("Warning: this function has not been defined yet");
+        log.info("Warning: this function has not been defined yet");
         return null;
     }
 
     public String getCapabilityTypes() {
         //TODO:
-        System.out.println("Warning: this function has not been defined yet");
+        log.info("Warning: this function has not been defined yet");
         return null;
     }
 
     public String getArtifactTypes() {
         //TODO:
-        System.out.println("Warning: this function has not been defined yet");
+        log.info("Warning: this function has not been defined yet");
         return null;
     }
 
     public String getOutputs() {
         //TODO:
-        System.out.println("Warning: this function has not been defined yet");
+        log.info("Warning: this function has not been defined yet");
         return null;
     }
 
     public String getGroups() {
         //TODO:
-        System.out.println("Warning: this function has not been defined yet");
+        log.info("Warning: this function has not been defined yet");
         return null;
     }
 
@@ -197,9 +204,9 @@ public class TOSCAYamlParser {
     }
 
     public List getNodeTemplateRequirements(String key){
-        List result=null;
+        List result = null;
         Map<String, Object> TnodeTemplate = getNodeTemplate(key);
-        if(TnodeTemplate!=null){
+        if (TnodeTemplate!=null) {
             result = (List) ((Map)TnodeTemplate.get(key)).get("requirements");
         }
         return result;

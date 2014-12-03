@@ -24,12 +24,8 @@ public class SimplePlannerTest {
     }
 
     public void setUp() throws FileNotFoundException {
-        //topologyFile="/Users/Jose/dev/SeaCloudsPlatform/planner/core/src/main/resources/nuroCase.yaml";
-        //topologyFile="/Users/Jose/dev/SeaCloudsPlatform/planner/core/src/main/resources/nuroCase.yaml";
         topologyFile =getClass().getClassLoader().getResource("nuroCase.yaml").getFile();
-                //new FileInputStream(new File(topologyFile));
         planner = new Planner(topologyFile);
-
     }
 
     @Test
