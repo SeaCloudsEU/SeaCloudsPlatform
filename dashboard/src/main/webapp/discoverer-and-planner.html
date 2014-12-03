@@ -196,33 +196,25 @@
 
 
     $(document).ready(function() {
-        SPINNER.spin(document.getElementById("loading-spinner"));
         loadCodeMirror();
-        SPINNER.stop();
     });
 
     function loadCodeMirror(){
+        SPINNER.spin(document.getElementById("loading-spinner"));
         var appTopology = document.getElementById("app-topology");
         var plannerOutput = document.getElementById("planner-output");
 
         APP_TOPOLOGY_TEXTAREA = CodeMirror.fromTextArea(appTopology, {scrollbarStyle : "simple"});
         PLANNER_OUTPUT_TEXTAREA = CodeMirror.fromTextArea(plannerOutput, {readOnly : true, scrollbarStyle : "simple"});
+        SPINNER.stop();
 
-        $.get("servlets/getInitialToscaPlan", function getInitialToscaPlan(response){
-            APP_TOPOLOGY_TEXTAREA.setValue(response);
-        }).fail(function(){
-            boxHTML = "<h1 class=\"text-center text-danger\">Planner module is not available in this moment.</h1>";
-            $('#page-content').html(boxHTML)
-            SPINNER.stop();
-        });
     }
 
     function processAppTopology(){
         SPINNER.spin(document.getElementById("loading-spinner"));
-        //PLANNER_OUTPUT_TEXTAREA.setValue(APP_TOPOLOGY_TEXTAREA.getValue());
-        SPINNER.stop();
-        $.get("servlets/getMatchmaking", function getMatchmaking(response) {
+        $.get("servlets/getMatchmaking", {yaml : APP_TOPOLOGY_TEXTAREA.getValue()}, function getMatchmaking(response) {
             PLANNER_OUTPUT_TEXTAREA.setValue(response);
+            SPINNER.stop();
         }).fail(function(){
             boxHTML = "<h1 class=\"text-center text-danger\">Planner module is not available in this moment.</h1>";
             $('#page-content').html(boxHTML)
