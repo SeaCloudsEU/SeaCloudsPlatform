@@ -122,7 +122,7 @@
 
             <div class="col-lg-12">
                 <div class="panel panel-default">
-                    <div class="panel-heading">
+                    <div id="app-status-heading" class="panel-heading">
                         <i class="fa fa-cloud-download"></i> Deploy new application defined in YAML format
                         <a aria-expanded="false" data-toggle="collapse" data-parent="#accordion" data-target ="#app-status-collapsable"><i class="fa fa-chevron-down"></i></a>
                     </div>
@@ -153,16 +153,15 @@
 
                 </div>
             </div>
+
             <div class="col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <i class="fa fa-laptop"></i> Running applications
-                    </div>
+
+                    <h4><i class="fa fa-laptop"></i> Running applications</h4>
                     <!-- /.panel-heading -->
 
-                    <div class="panel-body" style="display:none" id="deployed-applications">
+                    <div style="display:none" id="deployed-applications">
                     </div>
-                </div>
+
             </div>
 
         </div>
@@ -187,6 +186,10 @@
     $(document).ready(function() {
         updatePage();
         setInterval(updatePage, 3000);
+    });
+
+    $("#app-status-heading").on("click", function(){
+        $("#app-status-collapsable").collapse("toggle");
     });
 
     function updatePage(){
