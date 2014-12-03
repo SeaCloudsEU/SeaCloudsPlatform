@@ -181,7 +181,13 @@
 <script src="js/sb-admin.js"></script>
 
 <script type="text/javascript">
+    var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"});
+
     $(document).ready(function() {
+        SPINNER.spin(document.getElementById("loading-spinner"));
+        $('#iframe').load(function(){
+            SPINNER.stop();
+        });
         $("#iframe").attr("src", "slagui/agreements");
     });
 
