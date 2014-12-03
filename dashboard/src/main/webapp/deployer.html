@@ -153,8 +153,18 @@
 
                 </div>
             </div>
-            <div class="col-lg-12" id="deployed-applications">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-laptop"></i> Running applications
+                    </div>
+                    <!-- /.panel-heading -->
+
+                    <div class="panel-body" style="display:none" id="deployed-applications">
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
 
@@ -199,12 +209,13 @@
             }
         }).done(function(){
             $('#' + CONTENT_ID).html(boxHTML);
-            SPINNER.stop();
         }).fail(function(){
             boxHTML = "<h1 class=\"text-center text-danger\">Deployer module is not available in this moment.</h1>";
             $('#page-content').html(boxHTML)
+        }).always(function(){
+            $('#' + CONTENT_ID).show();
             SPINNER.stop();
-        });;
+        });
     }
 
     function generateAppOverviewBox(application) {
@@ -213,7 +224,7 @@
 
         // Header
         appHTML += "<div class=\"panel-heading clearfix\">";
-        appHTML += "<i class=\"fa fa-gears fa-fw\"><\/i>" + application.id +
+        appHTML += "<i class=\"fa fa-gears fa-fw\"><\/i> " + application.spec.name +
                 "<button type=\"button\" class=\"btn btn-danger navbar-right\" onClick=deleteApp('"+ application.id  + "')>Remove</button>";
         appHTML += "</div>";
 
@@ -285,7 +296,6 @@
             reader.readAsText(unparsedFile);
         }
     }
-
 
 </script>
 </body>
