@@ -16,6 +16,10 @@
     <!-- SB Admin CSS - Include with every page -->
     <link href="css/sb-admin.css" rel="stylesheet">
 
+    <!-- Code Mirror CSS -->
+    <link rel="stylesheet" href="css/codemirror.css">
+    <link rel="stylesheet" href="css/codemirror-simplescrollbars.css">
+
 
 </head>
 
@@ -133,7 +137,7 @@
 
                                 <div class="form-group" id="text-form-group">
                                     <label for="yaml-input-textarea">Paste your YAML here</label>
-                                    <textarea id="yaml-input-textarea" class="form-control" rows="3" onchange="switchFormInputTo('yaml-input-textarea')"></textarea>
+                                    <textarea id="yaml-input-textarea" class="form-control" rows="3"></textarea>
                                 </div>
 
 
@@ -169,15 +173,32 @@
 <!-- SB Admin Scripts - Include with every page -->
 <script src="js/sb-admin.js"></script>
 
+<!-- Code Mirror Scripts -->
+<script src="js/codemirror.js"></script>
+<script src="js/codemirror-yaml.js"></script>
+<script src="js/codemirror-simplescrollbars.js"></script>
+
 
 <script type="text/javascript">
     var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"}).spin(document.getElementById("loading-spinner"));
     var CONTENT_ID = "deployed-applications";
+    var APP_DEPLOYER_TEXTAREA;
 
     $(document).ready(function() {
+        setupTextArea();
         updatePage();
         setInterval(updatePage, 3000);
     });
+
+    function setupTextArea(){
+        var appDeployer = document.getElementById("yaml-input-textarea");
+        APP_DEPLOYER_TEXTAREA = CodeMirror.fromTextArea(appDeployer, {scrollbarStyle : "simple", tabSize : 2})
+        APP_DEPLOYER_TEXTAREA.setSize("100%", 300);
+        APP_DEPLOYER_TEXTAREA.on("changes", function(cm, changes){
+            switchFormInputTo('yaml-input-textarea');
+        } )
+
+    }
 
     function updatePage(){
         SPINNER.spin(document.getElementById("loading-spinner"));
@@ -191,7 +212,6 @@
         $.get("servlets/listApplications", function getApplications(response) {
             if (response.length > 0) {
                 $.each(response, function (appIdx, app) {
-                    // FIXME: The servlet provides all the location stuff
                     boxHTML += generateAppOverviewBox(app);
                 })
             } else {
@@ -251,15 +271,7 @@
 
     }
 
-
-    // Deployer new app form
-
     var CURRENT_FORM_INPUT = undefined;
-    function resetForm(){
-        $("#yaml-input-file").prop('disabled', false);
-        $("#yaml-input-textarea").prop('disabled', false);
-
-    }
 
     function switchFormInputTo(enabledForm){
         CURRENT_FORM_INPUT = enabledForm;
@@ -267,11 +279,11 @@
 
     function submitYaml(){
         if(CURRENT_FORM_INPUT == "yaml-input-textarea") {
-            $.post("servlets/addAplication", {yaml: $("#yaml-input-textarea").val()}).done(function(res) {
+            $.post("servlets/addAplication", {yaml: APP_DEPLOYER_TEXTAREA.getValue()}).done(function(res) {
                 console.log(res);
             });
 
-        } else {
+        } else if (CURRENT_FORM_INPUT == "yaml-input-file"){
             var unparsedFile = $("#yaml-input-file").prop('files')[0];
             var reader = new FileReader();
 
@@ -283,6 +295,9 @@
             }
 
             reader.readAsText(unparsedFile);
+        }else{
+            // TODO: Show an error toast
+            console.log(error);
         }
     }
 
