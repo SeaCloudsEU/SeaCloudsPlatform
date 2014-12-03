@@ -188,20 +188,22 @@
         $('#iframe').load(function(){
             SPINNER.stop();
         });
-        $("#iframe").attr("src", "slagui/agreements");
+
+        $("#iframe").attr("src", "/projects/seaclouds/slagui/agreements/");
     });
 
     function addSlaAgreement(){
         var appIdInput = $("#appIdInput").val();
         var moduleIdInput = $("#moduleIdInput").val();
 
-        $.post("slagui/rest/agreements", {"templateid" : "nuro-template", "consumerid":"random-client","appid": appIdInput, "moduleid": moduleIdInput})
+        $.post("/projects/seaclouds/slagui/rest/agreements", 
+		{"templateid" : "nuro-template", "consumerid":"random-client","appid": appIdInput, "moduleid": moduleIdInput})
                 .done(function (response){
                     $.ajax({
-                        url: '/slagui/rest/enforcements/' + appIdInput,
+                        url: '/projects/seaclouds/slagui/rest/enforcements/' + appIdInput,
                         type: 'PUT',
                         success: function(result) {
-                            $("#iframe").attr("src", "slagui/agreements");
+                            $("#iframe").attr("src", "/projects/seaclouds/slagui/agreements/");
                         }
                     });
 
