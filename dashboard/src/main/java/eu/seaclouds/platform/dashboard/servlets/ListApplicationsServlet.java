@@ -82,18 +82,17 @@ public class ListApplicationsServlet extends HttpServlet {
                         if(locations != null){
 
                             for (LocationSummary locationSummary : locations) {
-                                for (String location : application.getSpec().getLocations()) {
-                                    LocationSummary locationSumary = BROOKLKYN_API.getLocationApi().get(location, null);
+                                    LocationSummary locationDetails = BROOKLKYN_API.getLocationApi().get(locationSummary.getId(), null);
 
-                                    if(locationSumary != null){
+                                    if(locationDetails != null){
                                         JsonObject jsonLocation = new JsonObject();
                                         jsonArrayLocations.add(jsonLocation);
-                                        jsonLocation.addProperty("id", locationSumary.getId());
-                                        jsonLocation.addProperty("name", locationSumary.getName());
-                                        jsonLocation.addProperty("type", locationSumary.getType());
-                                        jsonLocation.addProperty("spec", locationSumary.getSpec());
+                                        jsonLocation.addProperty("id", locationDetails.getId());
+                                        jsonLocation.addProperty("name", locationDetails.getName());
+                                        jsonLocation.addProperty("type", locationDetails.getType());
+                                        jsonLocation.addProperty("spec", locationDetails.getSpec());
                                     }
-                                }
+
                             }
 
 
