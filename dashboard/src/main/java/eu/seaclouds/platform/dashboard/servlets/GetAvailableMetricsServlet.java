@@ -20,11 +20,6 @@ import java.util.*;
  */
 public class GetAvailableMetricsServlet extends HttpServlet {
     final static BrooklynApi BROOKLKYN_API = new BrooklynApi(ConfigParameters.MONITOR_ENDPOINT);
-    final static List<String> PHP_WEBAPP_SENSORS_NOT_SUPPORTED = Arrays.asList(
-            "webapp.reqs.bytes.received",
-            "webapp.reqs.bytes.sent",
-            "webapp.reqs.processingTime.max",
-            "webapp.reqs.processingTime.max");
 
 
     private boolean isNumberType(SensorSummary sensor) {
@@ -36,16 +31,6 @@ public class GetAvailableMetricsServlet extends HttpServlet {
                 || sensor.getType().equals("java.lang.BigDecimal")
                 || sensor.getType().equals("java.lang.BigInteger")
                 || sensor.getType().equals("java.lang.Byte");
-    }
-
-    private List<SensorSummary> filterPhpNotSupportedSensors(List<SensorSummary> sensors) {
-        List<SensorSummary> result = new LinkedList<SensorSummary>();
-        for (SensorSummary sensor : sensors) {
-            if (!PHP_WEBAPP_SENSORS_NOT_SUPPORTED.contains(sensor.getName())) {
-                result.add(sensor);
-            }
-        }
-        return result;
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -63,9 +48,9 @@ public class GetAvailableMetricsServlet extends HttpServlet {
                 JsonArray entityMetricsJsonArray = new JsonArray();
                 entitySumaryJson.add("metrics", entityMetricsJsonArray);
 
-                List<SensorSummary> sensorSummaryList = filterPhpNotSupportedSensors(BROOKLKYN_API
+                List<SensorSummary> sensorSummaryList = BROOKLKYN_API
                         .getSensorApi()
-                        .list(application, entitySummary.getId()));
+                        .list(application, entitySummary.getId());
 
                 Collections.sort(sensorSummaryList, new Comparator<SensorSummary>() {
                     @Override
