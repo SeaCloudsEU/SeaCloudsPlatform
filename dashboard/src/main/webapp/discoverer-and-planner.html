@@ -230,8 +230,13 @@
         APP_TOPOLOGY_TEXTAREA = CodeMirror.fromTextArea(appTopology, {scrollbarStyle: "simple", tabSize: 2})
         APP_TOPOLOGY_TEXTAREA.setSize("100%", 400);
 
+        APP_TOPOLOGY_TEXTAREA.setValue("Write your YAML here...");
+        APP_TOPOLOGY_TEXTAREA.focus();
+
         PLANNER_OUTPUT_TEXTAREA = CodeMirror.fromTextArea(plannerOutput, {readOnly: true, scrollbarStyle: "simple", tabSize: 2})
         PLANNER_OUTPUT_TEXTAREA.setSize("100%", 400);
+
+        PLANNER_OUTPUT_TEXTAREA.setValue("");
 
         SPINNER.stop();
 

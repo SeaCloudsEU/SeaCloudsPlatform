@@ -16,7 +16,6 @@
     <link href="css/sb-admin.css" rel="stylesheet">
 
     <!-- Data Tables CSS -->
-    <link href="css/jquery.dataTables.css" rel="stylesheet">
     <link href="css/dataTables.bootstrap.css" rel="stylesheet">
     <link href="css/dataTables.responsive.css" rel="stylesheet">
 
@@ -229,16 +228,20 @@
         DATATABLE.clear();
 
         applicationList.forEach(function(application){
-
             var button;
+            var status;
             if(application.status == "RUNNING"){
                 button = "<a href=\"app-monitor.html?id="+ application.id + "\">" +
                         "<button type=\"button\" class=\"btn btn-info\">Live monitor</button></a>";
-            }else{
+                status = "<span class=\"text-success\"><strong>" +  application.status + "</strong></span>";
+            } else if(application.status == "STARTING"){
+                button = "<button type=\"button\" class=\"btn btn-info\" disabled>Live monitor</button>";
+                status = "<span class=\"text-muted\"><strong>" +  application.status + "</strong></span><br>";
+            } else{
                 button = "<button type=\"button\" class=\"btn btn-info\" disabled>Live monitor</button>";
             }
 
-            DATATABLE.row.add([application.id, application.spec.name, application.spec.type, application.status, button]);
+            DATATABLE.row.add([application.id, application.spec.name, application.spec.type, status, button]);
 
         })
         DATATABLE.draw();
