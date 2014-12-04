@@ -253,13 +253,54 @@
 
         // Body
         appHTML += "<div class=\"panel-body\" id=\"information-panel\">";
-        appHTML += "<strong>Type: </strong> " +  application.spec.type  + "<br>";
+        appHTML += "<strong>ID: </strong> " +  application.id + "<br>";
         appHTML += "<strong>Name: </strong> " +  application.spec.name + "<br>";
-        appHTML += "<strong>Status: </strong> " +  application.status + "<br>";
-        appHTML += "<strong>Locations: </strong> ";
-        $.each( application.spec.locations, function(idx, location){
-            appHTML += location.name + " ";
+        appHTML += "<strong>Type: </strong> " +  application.spec.type  + "<br>";
+
+        if(application.status == "RUNNING"){
+            appHTML += "<strong>Status: </strong> <span class=\"text-success\">" +  application.status + "</span><br>";
+        } else if(application.status == "STARTING"){
+            appHTML += "<strong>Status: </strong> <span class=\"text-muted\">" +  application.status + "</span><br>";
+        }else{
+            appHTML += "<strong>Status: </strong> <span class=\"text-danger\">" +  application.status + "</span><br>";
+        }
+
+
+
+
+
+        appHTML += "<ul class=\"list-unstyled\"><li><strong>Application Components</strong></li>";
+        application.descendants.forEach(function(descendant){
+               appHTML += "<li role=\"presentation\" class=\"dropdown-header\">" +
+                       "<a href=\"#\" data-toggle=\"collapse\" class=\"active\" data-target=\"#" + descendant.id + "-collapse\">" +
+                       "<i class=\"fa fa-search\"></i> " + descendant.name + " Summary  <i class=\"fa fa-angle-down\"></i></a></li>";
+               appHTML += "<li id=\"" + descendant.id + "-collapse\" class=\"collapse in\">";
+               appHTML += "<ul  class=\"list-unstyled\" style=\"padding-left : 5%\">";
+               appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>ID: </strong>" + descendant.id + "</li>";
+               appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>Name: </strong>" + descendant.name + "</li>";
+               appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>Type: </strong>" + descendant.type + "</li>";
+               appHTML += "<li role=\"presentation\" class=\"dropdown-header\">" +
+                       "<a href=\"#\" data-toggle=\"collapse\" class=\"active\" data-target=\"#" + descendant.id + "-locations-collapse\">" +
+                       "<i class=\"fa fa-map-marker\"></i> Locations <i class=\"fa fa-angle-down\"></i></a>" ;
+               appHTML += "<li id=\"" + descendant.id + "-locations-collapse\" class=\"collapse\">";
+               appHTML += "<ul  class=\"list-unstyled\" style=\"padding-left : 5%\">";
+
+               descendant.locations.forEach(function(location){
+                   appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>ID: </strong>" + location.id + "</li>";
+                   appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>Name: </strong>" + location.name + "</li>";
+               })
+
+            appHTML += "</ul>";
+            appHTML += "</li>";
+            appHTML += "</ul>";
+
+
+
+
+
+
         })
+        appHTML += "</ul>"
         appHTML +="<br>";
         appHTML += "</div>";
 
