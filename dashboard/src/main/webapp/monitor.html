@@ -12,9 +12,15 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/font-awesome.min.css" rel="stylesheet">
 
-
     <!-- SB Admin CSS - Include with every page -->
     <link href="css/sb-admin.css" rel="stylesheet">
+
+    <!-- Data Tables CSS -->
+    <link href="css/jquery.dataTables.css" rel="stylesheet">
+    <link href="css/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="css/dataTables.responsive.css" rel="stylesheet">
+
+
 
 </head>
 
@@ -68,7 +74,7 @@
                     </a></li>
                 </ul>
             </li>
-                <!-- /.dropdown-alerts -->
+            <!-- /.dropdown-alerts -->
             <!-- /.dropdown -->
             <li class="dropdown"><a class="dropdown-toggle"
                                     data-toggle="dropdown" href="#"> <i class="fa fa-user fa-fw"></i>
@@ -99,7 +105,7 @@
                     <li><a href="sla.html" class=""><i class="fa fa-file-text-o"></i>&nbsp;SLA Service</a></li>
 
 
-               </ul>
+                </ul>
                 <!-- /#side-menu -->
             </div>
             <!-- /.sidebar-collapse -->
@@ -117,15 +123,33 @@
             </div>
             <!-- /.col-lg-12 -->
         </div>
-                <!-- /.row -->
 
-        <div class="row" id="page-content">
+        <div class="row">
+            <div class="col-lg-12">
+                <h4><i class="fa fa-laptop"></i> Running applications</h4>
+                <div id="page-content">
+                    <table id="application-table" class="table table-striped">
+                        <thead >
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Live Monitor</th>
+                        </tr>
+                        </thead>
+                        <tbody id="application-table-body">
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
         </div>
         <!-- /.row -->
 
 
     </div>
-    <!-- /#page-wrapper -->
 
 </div>
 <!-- /#wrapper -->
@@ -139,60 +163,87 @@
 <!-- SB Admin Scripts - Include with every page -->
 <script src="js/sb-admin.js"></script>
 
+<!-- Data Tables Scripts -->
+<script src="js/jquery.dataTables.js"></script>
+<script src="js/dataTables.bootstrap.js"></script>
+<script src="js/dataTables.responsive.js"></script>
+
+
+
 <script type="text/javascript">
     var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"}).spin(document.getElementById("loading-spinner"));
+    var DATATABLE;
     var CONTENT_ID = "page-content";
 
 
     $(document).ready(function() {
+        setupDataTable();
         updatePage();
         setInterval(updatePage, 3000);
     });
 
-    function updatePage(){
-        SPINNER.spin(document.getElementById("loading-spinner"));
-        displayApplicationOverview();
-    }
-    function generateAppOverviewBox(application) {
-        // Top of the box
-        var appHTML = "<div class=\"col-lg-4\"><div class=\"panel panel-default\">";
-
-        // Box heading
-        // Header
-        appHTML += "<div class=\"panel-heading clearfix\">";
-        appHTML += "<i class=\"fa fa-gears fa-fw\"><\/i>" + application.spec.name +
-                "<a href=\"app-monitor.html?id="+ application.id + "\"<button type=\"button\" class=\"btn btn-info navbar-right\">Live monitor</button></a>";
-        appHTML += "</div>";
-
-        // Box body
-        appHTML += "<div class=\"panel-body\" id=\"information-panel\"><strong>ID: </strong>" + application.id + "<br>" +
-                "<strong>Type: </strong> " + application.spec.type + "<br><strong>State: </strong>" + application.status;
-        appHTML += "</div></div></div></div>";
-
-        return appHTML
-    }
-
-    function displayApplicationOverview(){
-        var boxHTML = "";
-
-        $.get("servlets/listApplications", function (response) {
-                if (response.length > 0) {
-                    $.each(response, function (idx, app) {
-                        boxHTML += generateAppOverviewBox(app)
-                    })
-                } else {
-                    boxHTML = "<h1 class=\"text-center text-warning\">No applications running.</h1>";
-                }
-        }).done(function(){
-            $('#' + CONTENT_ID).html(boxHTML)
-            SPINNER.stop();
-        }).fail(function(){
-            boxHTML = "<h1 class=\"text-center text-danger\">Monitor module is not available in this moment.</h1>";
-            $('#' + CONTENT_ID).html(boxHTML)
-            SPINNER.stop();
+    function setupDataTable(){
+        DATATABLE = $('#application-table').DataTable({
+            responsive: true,
+            "columns": [
+                null,
+                null,
+                null,
+                null,
+                { "type": "html" }
+            ],
+            "aoColumns": [
+                null,
+                null,
+                null,
+                null,
+                { "orderable": false }
+            ],
+            "columns": [
+                null,
+                null,
+                null,
+                null,
+                { "searchable": false }
+            ]
         });
     }
 
+    function updatePage(){
+        SPINNER.spin(document.getElementById("loading-spinner"));
+
+        $.get("servlets/listApplications", function (applicationList) {
+            if (applicationList.length > 0) {
+                fillTableData(applicationList);
+            }
+        }).fail(function(){
+            boxHTML = "<h1 class=\"text-center text-danger\">Monitor module is not available in this moment.</h1>";
+            $('#' + CONTENT_ID).html(boxHTML)
+        }).always(function(){
+            SPINNER.stop();
+        });
+
+    }
+
+    function fillTableData(applicationList){
+        DATATABLE.clear();
+
+        applicationList.forEach(function(application){
+
+            var button;
+            if(application.status == "RUNNING"){
+                button = "<a href=\"app-monitor.html?id="+ application.id + "\">" +
+                        "<button type=\"button\" class=\"btn btn-info\">Live monitor</button></a>";
+            }else{
+                button = "<button type=\"button\" class=\"btn btn-info\" disabled>Live monitor</button>";
+            }
+
+            DATATABLE.row.add([application.id, application.spec.name, application.spec.type, application.status, button]);
+
+        })
+        DATATABLE.draw();
+
+    }
 
 </script>
 </body>
