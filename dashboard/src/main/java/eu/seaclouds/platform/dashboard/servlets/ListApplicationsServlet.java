@@ -2,6 +2,7 @@ package eu.seaclouds.platform.dashboard.servlets;
 
 import brooklyn.rest.client.BrooklynApi;
 import brooklyn.rest.domain.ApplicationSummary;
+import brooklyn.rest.domain.EntitySummary;
 import brooklyn.rest.domain.LocationSummary;
 import brooklyn.rest.domain.SensorSummary;
 import com.google.gson.Gson;
@@ -59,22 +60,52 @@ public class ListApplicationsServlet extends HttpServlet {
                 jsonSpec.addProperty("name", application.getSpec().getName());
                 jsonSpec.addProperty("type", application.getSpec().getName());
 
-                JsonArray jsonArrayLocations = new JsonArray();
-                jsonSpec.add("locations", jsonArrayLocations);
+                JsonArray jsonDescendantsEntities = new JsonArray();
+                jsonApplication.add("descendants", jsonDescendantsEntities);
 
-                for (String location : application.getSpec().getLocations()) {
-                    LocationSummary locationSumary = BROOKLKYN_API.getLocationApi().get(location, null);
+                List<EntitySummary> descendants = BROOKLKYN_API.getEntityApi().list(application.getId());
 
-                    if(locationSumary != null){
-                        JsonObject jsonLocation = new JsonObject();
-                        jsonArrayLocations.add(jsonLocation);
-                        jsonLocation.addProperty("id", locationSumary.getId());
-                        jsonLocation.addProperty("name", locationSumary.getName());
-                        jsonLocation.addProperty("type", locationSumary.getType());
-                        jsonLocation.addProperty("spec", locationSumary.getSpec());
+                if(descendants != null){
+                    for (EntitySummary childEntity : descendants) {
+                        JsonObject jsonDescendantEntity = new JsonObject();
+                        jsonDescendantsEntities.add(jsonDescendantEntity);
+
+
+                        jsonDescendantEntity.addProperty("id",childEntity.getId());
+                        jsonDescendantEntity.addProperty("name",childEntity.getName());
+                        jsonDescendantEntity.addProperty("type",childEntity.getType());
+
+                        JsonArray jsonArrayLocations = new JsonArray();
+                        jsonDescendantEntity.add("locations", jsonArrayLocations);
+
+                        List<LocationSummary> locations = BROOKLKYN_API.getEntityApi().getLocations(application.getId(), childEntity.getId());
+                        if(locations != null){
+
+                            for (LocationSummary locationSummary : locations) {
+                                    LocationSummary locationDetails = BROOKLKYN_API.getLocationApi().get(locationSummary.getId(), null);
+
+                                    if(locationDetails != null){
+                                        JsonObject jsonLocation = new JsonObject();
+                                        jsonArrayLocations.add(jsonLocation);
+                                        jsonLocation.addProperty("id", locationDetails.getId());
+                                        jsonLocation.addProperty("name", locationDetails.getName());
+                                        jsonLocation.addProperty("type", locationDetails.getType());
+                                        jsonLocation.addProperty("spec", locationDetails.getSpec());
+                                    }
+
+                            }
+
+
+                        }else{
+                                response.sendError(500, "Connection error: couldn't reach SeaClouds endpoint");
+
+                        }
+
                     }
-                }
 
+                }else{
+                    response.sendError(500, "Connection error: couldn't reach SeaClouds endpoint");
+                }
             }
 
             response.setContentType("application/json");

@@ -48,7 +48,7 @@
         <!-- TODO: Get alert number from Monitoring API -->
         <ul class="nav navbar-top-links navbar-right">
 
-            <li id ="loading-spinner"></li>
+            <li id="loading-spinner"></li>
             <li class="divider"></li>
             <li class="divider"></li>
             <li class="divider"></li>
@@ -97,9 +97,12 @@
             <div class="sidebar-collapse">
                 <ul class="nav" id="side-menu">
                     <li><a href="index.html"><i class="fa fa-dashboard fa-home"></i>&nbsp;Home</a></li>
-                    <li><a href="module-profile-designer.html" class=""><i class="fa fa-pencil-square-o"></i>&nbsp;Module Profile Designer</a></li>
-                    <li><a href="discoverer-and-planner.html" class=""><i class="fa fa-code-fork"></i>&nbsp;Discoverer & Planner</a></li>
-                    <li><a href="deployer.html" class=""><strong><i class="fa fa-download"></i>&nbsp;Deployer</strong></a></li>
+                    <li><a href="module-profile-designer.html" class=""><i class="fa fa-pencil-square-o"></i>&nbsp;Module
+                        Profile Designer</a></li>
+                    <li><a href="discoverer-and-planner.html" class=""><i class="fa fa-code-fork"></i>&nbsp;Discoverer &
+                        Planner</a></li>
+                    <li><a href="deployer.html" class=""><strong><i
+                            class="fa fa-download"></i>&nbsp;Deployer</strong></a></li>
                     <li><a href="monitor.html" class=""><i class="fa fa-dashboard"></i>&nbsp;Monitor</a></li>
                     <li><a href="sla.html" class=""><i class="fa fa-file-text-o"></i>&nbsp;SLA Service</a></li>
 
@@ -128,29 +131,36 @@
                 <div class="panel panel-default">
                     <div id="app-status-heading" class="panel-heading">
                         <i class="fa fa-cloud-download"></i> Deploy new application defined in YAML format
-                        <a aria-expanded="false" data-toggle="collapse" data-parent="#accordion" data-target ="#app-status-collapsable"><i class="fa fa-chevron-down"></i></a>
+                        <a aria-expanded="false" data-toggle="collapse" data-parent="#accordion"
+                           data-target="#app-status-collapsable"><i class="fa fa-chevron-down"></i></a>
                     </div>
                     <!-- /.panel-heading -->
-                    <div class="panel-collapse collapse  " id="app-status-collapsable" >
+                    <div class="panel-collapse collapse  " id="app-status-collapsable">
                         <div class="panel-body" id="yaml-input-panel-body">
                             <form role="form" onreset="resetForm()" onsubmit="submitYaml()">
-
-                                <div class="form-group" id="text-form-group">
-                                    <label for="yaml-input-textarea">Paste your YAML here</label>
-                                    <textarea id="yaml-input-textarea" class="form-control" rows="3"></textarea>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="form-group" id="text-form-group">
+                                            <label for="yaml-input-textarea">Paste your YAML here</label>
+                                            <textarea id="yaml-input-textarea" class="form-control" rows="3"></textarea>
+                                        </div>
+                                    </div>
                                 </div>
-
-
-                                <div class="form-group" id="file-form-group">
-                                    <label for="yaml-input-file">Choose a YAML File</label>
-                                    <input type="file" id="yaml-input-file" onchange="switchFormInputTo('yaml-input-file')">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group" id="file-form-group">
+                                            <label for="yaml-input-file">Choose a YAML File</label>
+                                            <input type="file" id="yaml-input-file"
+                                                   onchange="switchFormInputTo('yaml-input-file')">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="pull-right">
+                                            <button type="reset" class="btn btn-default">Clear</button>
+                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                        </div>
+                                    </div>
                                 </div>
-
-                                <div class="pull-right">
-                                    <button type="reset" class="btn btn-default">Clear</button>
-                                    <button type="submit" class="btn btn-primary">Submit</button>
-                                </div>
-
                             </form>
                         </div>
                     </div>
@@ -160,11 +170,11 @@
 
             <div class="col-lg-12">
 
-                    <h4><i class="fa fa-laptop"></i> Running applications</h4>
-                    <!-- /.panel-heading -->
+                <h4><i class="fa fa-laptop"></i> Running applications</h4>
+                <!-- /.panel-heading -->
 
-                    <div style="display:none" id="deployed-applications">
-                    </div>
+                <div style="display:none" id="deployed-applications">
+                </div>
 
             </div>
 
@@ -193,34 +203,48 @@
     var CONTENT_ID = "deployed-applications";
     var APP_DEPLOYER_TEXTAREA;
 
-    $(document).ready(function() {
-        $("#app-status-heading").on("click", function(){
-        	$("#app-status-collapsable").collapse("toggle");
-    	});
+    $(document).ready(function () {
+        $("#app-status-heading").on("click", function () {
+            $("#app-status-collapsable").collapse("toggle");
+        });
+
 
         setupTextArea();
         updatePage();
         setInterval(updatePage, 3000);
+
+        $("#yaml-input-file").on("change", function(){
+            var unparsedFile = $("#yaml-input-file").prop('files')[0];
+            var reader = new FileReader();
+
+            reader.onload = function (theFile) {
+                APP_DEPLOYER_TEXTAREA.setValue(theFile.target.result);
+            }
+            reader.readAsText(unparsedFile);
+        })
+
+
     });
 
-    function setupTextArea(){
+    function setupTextArea() {
         var appDeployer = document.getElementById("yaml-input-textarea");
-        APP_DEPLOYER_TEXTAREA = CodeMirror.fromTextArea(appDeployer, {scrollbarStyle : "simple", tabSize : 2})
+        APP_DEPLOYER_TEXTAREA = CodeMirror.fromTextArea(appDeployer, {scrollbarStyle: "simple", tabSize: 2});
         APP_DEPLOYER_TEXTAREA.setSize("100%", 300);
-        APP_DEPLOYER_TEXTAREA.on("changes", function(cm, changes){
-            switchFormInputTo('yaml-input-textarea');
-        } )
 
+        $("#app-status-collapsable").on('shown.bs.collapse', function() {
+            APP_DEPLOYER_TEXTAREA.setValue(" ");
+            APP_DEPLOYER_TEXTAREA.focus();
+        })
     }
 
-    function updatePage(){
+    function updatePage() {
         SPINNER.spin(document.getElementById("loading-spinner"));
         displayApplicationOverview();
     }
 
     // Deployed applications
 
-    function displayApplicationOverview(){
+    function displayApplicationOverview() {
         var boxHTML = "";
         $.get("servlets/listApplications", function getApplications(response) {
             if (response.length > 0) {
@@ -230,12 +254,12 @@
             } else {
                 boxHTML = "<h1 class=\"text-center text-warning\">No applications running.</h1>";
             }
-        }).done(function(){
+        }).done(function () {
             $('#' + CONTENT_ID).html(boxHTML);
-        }).fail(function(){
+        }).fail(function () {
             boxHTML = "<h1 class=\"text-center text-danger\">Deployer module is not available in this moment.</h1>";
             $('#page-content').html(boxHTML)
-        }).always(function(){
+        }).always(function () {
             $('#' + CONTENT_ID).show();
             SPINNER.stop();
         });
@@ -248,18 +272,59 @@
         // Header
         appHTML += "<div class=\"panel-heading clearfix\">";
         appHTML += "<i class=\"fa fa-gears fa-fw\"><\/i> " + application.spec.name +
-                "<button type=\"button\" class=\"btn btn-danger navbar-right\" onClick=deleteApp('"+ application.id  + "')>Remove</button>";
+                "<button type=\"button\" class=\"btn btn-danger navbar-right\" onClick=deleteApp('" + application.id + "')>Remove</button>";
         appHTML += "</div>";
 
         // Body
         appHTML += "<div class=\"panel-body\" id=\"information-panel\">";
-        appHTML += "<strong>Type: </strong> " +  application.spec.type  + "<br>";
+        appHTML += "<strong>ID: </strong> " +  application.id + "<br>";
         appHTML += "<strong>Name: </strong> " +  application.spec.name + "<br>";
-        appHTML += "<strong>Status: </strong> " +  application.status + "<br>";
-        appHTML += "<strong>Locations: </strong> ";
-        $.each( application.spec.locations, function(idx, location){
-            appHTML += location.name + " ";
+        appHTML += "<strong>Type: </strong> " +  application.spec.type  + "<br>";
+
+        if(application.status == "RUNNING"){
+            appHTML += "<strong>Status: </strong> <span class=\"text-success\">" +  application.status + "</span><br>";
+        } else if(application.status == "STARTING"){
+            appHTML += "<strong>Status: </strong> <span class=\"text-muted\">" +  application.status + "</span><br>";
+        }else{
+            appHTML += "<strong>Status: </strong> <span class=\"text-danger\">" +  application.status + "</span><br>";
+        }
+
+
+
+
+
+        appHTML += "<ul class=\"list-unstyled\"><li><strong>Application Components</strong></li>";
+        application.descendants.forEach(function(descendant){
+               appHTML += "<li role=\"presentation\" class=\"dropdown-header\">" +
+                       "<a href=\"#\" data-toggle=\"collapse\" class=\"active\" data-target=\"#" + descendant.id + "-collapse\">" +
+                       "<i class=\"fa fa-search\"></i> " + descendant.name + " Summary  <i class=\"fa fa-angle-down\"></i></a></li>";
+               appHTML += "<li id=\"" + descendant.id + "-collapse\" class=\"collapse in\">";
+               appHTML += "<ul  class=\"list-unstyled\" style=\"padding-left : 5%\">";
+               appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>ID: </strong>" + descendant.id + "</li>";
+               appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>Name: </strong>" + descendant.name + "</li>";
+               appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>Type: </strong>" + descendant.type + "</li>";
+               appHTML += "<li role=\"presentation\" class=\"dropdown-header\">" +
+                       "<a href=\"#\" data-toggle=\"collapse\" class=\"active\" data-target=\"#" + descendant.id + "-locations-collapse\">" +
+                       "<i class=\"fa fa-map-marker\"></i> Locations <i class=\"fa fa-angle-down\"></i></a>" ;
+               appHTML += "<li id=\"" + descendant.id + "-locations-collapse\" class=\"collapse\">";
+               appHTML += "<ul  class=\"list-unstyled\" style=\"padding-left : 5%\">";
+
+               descendant.locations.forEach(function(location){
+                   appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>ID: </strong>" + location.id + "</li>";
+                   appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>Name: </strong>" + location.name + "</li><br/>";
+               })
+
+            appHTML += "</ul>";
+            appHTML += "</li>";
+            appHTML += "</ul>";
+
+
+
+
+
+
         })
+        appHTML += "</ul>"
         appHTML +="<br>";
         appHTML += "</div>";
 
@@ -271,13 +336,13 @@
     }
 
 
-    function deleteApp(applicationId){
+    function deleteApp(applicationId) {
         // http://stackoverflow.com/a/15089299
 
         $.ajax({
-            url: "servlets/removeApplication" + "?" + $.param({application : applicationId}),
+            url: "servlets/removeApplication" + "?" + $.param({application: applicationId}),
             type: 'DELETE',
-            success: function(result) {
+            success: function (result) {
                 console.log(res);
                 updatePage();
             }
@@ -285,35 +350,16 @@
 
     }
 
-    var CURRENT_FORM_INPUT = undefined;
+    function submitYaml() {
 
-    function switchFormInputTo(enabledForm){
-        CURRENT_FORM_INPUT = enabledForm;
-    }
-
-    function submitYaml(){
-        if(CURRENT_FORM_INPUT == "yaml-input-textarea") {
-            $.post("servlets/addAplication", {yaml: APP_DEPLOYER_TEXTAREA.getValue()}).done(function(res) {
+            $.post("servlets/addAplication", {yaml: APP_DEPLOYER_TEXTAREA.getValue()}).done(function (res) {
                 console.log(res);
             });
 
-        } else if (CURRENT_FORM_INPUT == "yaml-input-file"){
-            var unparsedFile = $("#yaml-input-file").prop('files')[0];
-            var reader = new FileReader();
 
-            reader.onload = function(theFile) {
-                $.post("servlets/addAplication", {yaml: theFile.target.result}).done(function(res) {
-                    console.log(res);
-                });
-
-            }
-
-            reader.readAsText(unparsedFile);
-        }else{
-            // TODO: Show an error toast
-            console.log(error);
-        }
     }
+
+
 
 </script>
 </body>

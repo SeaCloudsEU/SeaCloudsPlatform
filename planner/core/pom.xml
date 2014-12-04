@@ -7,7 +7,6 @@
     <artifactId>planner</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
-  <groupId>eu.seaclouds</groupId>
   <artifactId>planner-core</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <name>planner-core</name>
