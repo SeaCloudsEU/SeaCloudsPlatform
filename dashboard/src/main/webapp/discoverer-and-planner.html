@@ -48,7 +48,7 @@
         <!-- TODO: Get alert number from Monitoring API -->
         <ul class="nav navbar-top-links navbar-right">
 
-            <li id ="loading-spinner"></li>
+            <li id="loading-spinner"></li>
             <li class="divider"></li>
             <li class="divider"></li>
             <li class="divider"></li>
@@ -97,8 +97,10 @@
             <div class="sidebar-collapse">
                 <ul class="nav" id="side-menu">
                     <li><a href="index.html"><i class="fa fa-dashboard fa-home"></i>&nbsp;Home</a></li>
-                    <li><a href="module-profile-designer.html" class=""><i class="fa fa-pencil-square-o"></i>&nbsp;Module Profile Designer</a></li>
-                    <li><a href="discoverer-and-planner.html" class=""><strong><i class="fa fa-code-fork"></i>&nbsp;Discoverer & Planner</strong></a></li>
+                    <li><a href="module-profile-designer.html" class=""><i class="fa fa-pencil-square-o"></i>&nbsp;Module
+                        Profile Designer</a></li>
+                    <li><a href="discoverer-and-planner.html" class=""><strong><i class="fa fa-code-fork"></i>&nbsp;Discoverer
+                        & Planner</strong></a></li>
                     <li><a href="deployer.html" class=""><i class="fa fa-download"></i>&nbsp;Deployer</a></li>
                     <li><a href="monitor.html" class=""><i class="fa fa-dashboard"></i>&nbsp;Monitor</a></li>
                     <li><a href="sla.html" class=""><i class="fa fa-file-text-o"></i>&nbsp;SLA Service</a></li>
@@ -134,12 +136,15 @@
                         <form id="form-app-topology" class="form-horizontal" role="form">
                             <div class="form-group">
                                 <div class="col-lg-12">
-                                    <textarea id="app-topology" class="form-control" style="resize: none"></textarea>
+                                    <textarea id="app-topology-textarea" class="form-control"
+                                              style="resize: none"></textarea>
                                 </div>
                             </div>
-                            <div class="form-group">
+
+                            <div class="form-group" id="file-form-group">
                                 <div class="col-lg-12">
-                                    <button type="button" class="btn btn-primary" onclick="processAppTopology()">Process Application Topology</button>
+                                    <label for="yaml-input-file">Choose a YAML File</label>
+                                    <input type="file" id="yaml-input-file">
                                 </div>
                             </div>
                         </form>
@@ -157,10 +162,19 @@
                         <form id="form-planner-output" class="form-horizontal" role="form">
                             <div class="form-group">
                                 <div class="col-lg-12">
-                                    <textarea id="planner-output" class="form-control"   style="resize: none"></textarea>
+                                    <textarea id="planner-output" class="form-control" style="resize: none"></textarea>
                                 </div>
                             </div>
-                         </form>
+                            <div class="form-group">
+                                <div class="col-lg-12">
+                                    <div class="button-wrapper" style="padding: 7px">
+                                        <button type="button" class="btn btn-primary" onclick="processAppTopology()">Process
+                                            Application Topology
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
 
 
@@ -186,7 +200,6 @@
 <script src="js/codemirror-simplescrollbars.js"></script>
 
 
-
 </body>
 
 <script type="text/javascript">
@@ -195,30 +208,42 @@
     var PLANNER_OUTPUT_TEXTAREA;
 
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         loadCodeMirror();
+
+        $("#yaml-input-file").on("change", function () {
+            var unparsedFile = $("#yaml-input-file").prop('files')[0];
+            var reader = new FileReader();
+
+            reader.onload = function (theFile) {
+                APP_TOPOLOGY_TEXTAREA.setValue(theFile.target.result);
+            };
+            reader.readAsText(unparsedFile);
+        });
     });
 
-    function loadCodeMirror(){
+    function loadCodeMirror() {
         SPINNER.spin(document.getElementById("loading-spinner"));
-        var appTopology = document.getElementById("app-topology");
+        var appTopology = document.getElementById("app-topology-textarea");
         var plannerOutput = document.getElementById("planner-output");
 
-        APP_TOPOLOGY_TEXTAREA = CodeMirror.fromTextArea(appTopology, {scrollbarStyle : "simple", tabSize : 2})
+        APP_TOPOLOGY_TEXTAREA = CodeMirror.fromTextArea(appTopology, {scrollbarStyle: "simple", tabSize: 2})
         APP_TOPOLOGY_TEXTAREA.setSize("100%", 400);
-        PLANNER_OUTPUT_TEXTAREA = CodeMirror.fromTextArea(plannerOutput, {readOnly : true, scrollbarStyle : "simple", tabSize :2})
-        PLANNER_OUTPUT_TEXTAREA.setSize("100%", 450);
+
+        PLANNER_OUTPUT_TEXTAREA = CodeMirror.fromTextArea(plannerOutput, {readOnly: true, scrollbarStyle: "simple", tabSize: 2})
+        PLANNER_OUTPUT_TEXTAREA.setSize("100%", 400);
 
         SPINNER.stop();
 
     }
 
-    function processAppTopology(){
+    function processAppTopology() {
         SPINNER.spin(document.getElementById("loading-spinner"));
-        $.get("servlets/getMatchmaking", {yaml : APP_TOPOLOGY_TEXTAREA.getValue()}, function getMatchmaking(response) {
+
+        $.get("servlets/getMatchmaking", {yaml: APP_TOPOLOGY_TEXTAREA.getValue()}, function getMatchmaking(response) {
             PLANNER_OUTPUT_TEXTAREA.setValue(response);
             SPINNER.stop();
-        }).fail(function(){
+        }).fail(function () {
             boxHTML = "<h1 class=\"text-center text-danger\">Planner module is not available in this moment.</h1>";
             $('#page-content').html(boxHTML)
             SPINNER.stop();
@@ -226,8 +251,6 @@
     }
 
 </script>
-
-
 
 
 </html>
