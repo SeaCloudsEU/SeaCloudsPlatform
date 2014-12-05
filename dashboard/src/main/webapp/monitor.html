@@ -128,7 +128,7 @@
                 <h4><i class="fa fa-laptop"></i> Running applications</h4>
                 <div id="page-content">
                     <table id="application-table" class="table table-striped">
-                        <thead >
+                        <thead>
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
@@ -184,13 +184,7 @@
     function setupDataTable(){
         DATATABLE = $('#application-table').DataTable({
             responsive: true,
-            "columns": [
-                null,
-                null,
-                null,
-                null,
-                { "type": "html" }
-            ],
+            "lengthMenu": [[20, 50, -1], [20, 50, "All"]],
             "aoColumns": [
                 null,
                 null,
@@ -213,7 +207,7 @@
 
         $.get("servlets/listApplications", function (applicationList) {
             if (applicationList.length > 0) {
-                fillTableData(applicationList);
+                fillAvailableApplicationsTable(applicationList);
             }
         }).fail(function(){
             boxHTML = "<h1 class=\"text-center text-danger\">Monitor module is not available in this moment.</h1>";
@@ -224,7 +218,7 @@
 
     }
 
-    function fillTableData(applicationList){
+    function fillAvailableApplicationsTable(applicationList){
         DATATABLE.clear();
 
         applicationList.forEach(function(application){

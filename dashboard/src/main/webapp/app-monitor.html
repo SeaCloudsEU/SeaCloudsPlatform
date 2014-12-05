@@ -11,10 +11,14 @@
     <!-- Core CSS - Include with every page -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/font-awesome.min.css" rel="stylesheet">
-
+    <link href="css/custom.css" rel="stylesheet">
 
     <!-- SB Admin CSS - Include with every page -->
     <link href="css/sb-admin.css" rel="stylesheet">
+
+    <!-- Data Tables CSS -->
+    <link href="css/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="css/dataTables.responsive.css" rel="stylesheet">
 
 </head>
 
@@ -127,6 +131,25 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="panel panel-default" id="metric-chooser-panel">
+                        <div id="metrics-panel" class="panel-heading"><strong>Metric chooser </strong> <a data-toggle="collapse" data-parent="#accordion" data-target="#app-available-metrics-collapsable"><i class="fa fa-chevron-down"></i></a></div>
+                        <div class="panel-collapse collapse in" id="app-available-metrics-collapsable">
+                            <div class="panel-body">
+                                <table id="metrics-table" class="table table-stripped">
+                                    <caption id="metric-table-caption"></caption>
+                                    <thead>
+                                    <tr>
+                                        <th>Entity</th>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Selected</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="metrics-table-body">
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -150,7 +173,12 @@
 <script src="js/sb-admin.js"></script>
 
 
-<!-- Page-Level Plugin Scripts - Flot -->
+<!-- Data Tables Scripts -->
+<script src="js/jquery.dataTables.js"></script>
+<script src="js/dataTables.bootstrap.js"></script>
+<script src="js/dataTables.responsive.js"></script>
+
+<!-- Flot Scripts -  -->
 <script src="js/jquery.flot.js"></script>
 <script src="js/jquery.flot.autoscale.js"></script>
 
@@ -159,29 +187,69 @@
     var APP_ID = location.search.split('id=')[1];
     var CONTENT_ID = "page-content";
     var ACTIVE_API_CALLS = [];
+    var DATATABLE;
 
 
 
     $(document).ready(function() {
+        setupDataTable();
         showAvailableMetrics();
     });
 
 
+    function setupDataTable(){
+        $("#" + "metric-table-caption").html("<strong>Available metrics for the application (" + APP_ID + ")</strong>");
+        DATATABLE = $('#metrics-table').DataTable({
+            responsive: true,
+            "lengthMenu": [[20, 50, -1], [20, 50, "All"]],
+            "aoColumns": [
+                { "width": "25%" },
+                { "width": "40%" },
+                { "width": "30%" },
+                { "width": "5%", "orderable": false ,  "sClass": "text-center"}
+            ],
+            "columns": [
+                null,
+                null,
+                null,
+                { "searchable": false }
+            ]
+        });
+    }
+
 
     function showAvailableMetrics() {
-        $.get("servlets/getAvailableMetrics", {application: APP_ID}).done(function (application){
-            $("#metric-chooser-panel").html(generateAvailableMetricsPanel(application));
+        $.get("servlets/getAvailableMetrics", {application: APP_ID}).done(function (entityList){
+
+            fillAvailableMetricsTable(entityList);
+
             $("#metrics-panel").on("click", function(){
                 $("#app-available-metrics-collapsable").collapse("toggle");
             });
         }).fail(function(err){
             $('#'+CONTENT_ID).html("<h1 class=\"text-center text-warning\">Invalid application.</h1>");
+        }).always(function(){
+            SPINNER.stop();
         })
 
     }
 
+    function fillAvailableMetricsTable(entityList){
+        entityList.forEach(function(entity){
+            entity.metrics.forEach(function (metric){
+                var checkBox = "<input type=\"checkbox\" onClick=\"if (this.checked) " +
+                        "{addGraph('"+ APP_ID + "','" + entity.id + "','" + entity.name + "','" + metric.name + "') " +
+                        "} else { removeGraph('"+ APP_ID + "','" + entity.id + "','" + metric.name + "')}\">";
+
+                DATATABLE.row.add([entity.name, metric.name, metric.description, checkBox]);
+            })
+        })
+        DATATABLE.draw();
+
+    }
 
     function addGraph(appId, entityId, entityName, sensorName){
+        SPINNER.spin(document.getElementById("loading-spinner"));
         $('#page-graphs').append(generateSensorPanel(appId, entityId, entityName, sensorName));
         setupGraphs("#flot-line-chart-" + appId + "-" + entityId + "-" + sensorName, entityId, sensorName);
         $('#app-status-collapsable').collapse('hide')
@@ -199,52 +267,11 @@
                 ACTIVE_API_CALLS.splice(i--, 1);
             }
         }
+        if(ACTIVE_API_CALLS.length == 0){
+            SPINNER.stop();
+        }
     }
 
-    function generateAvailableMetricsPanel(application) {
-        var panelHeading = "<div id=\"metrics-panel\" class=\"panel-heading\"><strong>Available metrics </strong> for the application with the ID <strong>" + APP_ID + "</strong>" +
-                " <a data-toggle=\"collapse\" data-parent=\"#accordion\" data-target=\"#app-available-metrics-collapsable\">" +
-                "<i class=\"fa fa-chevron-down\"></i></a></div>";
-
-
-        var panelBody = "<div class=\"panel-collapse collapse in\"  id=\"app-available-metrics-collapsable\" ><div class=\"panel-body\">";
-        panelBody += "<form>";
-
-        application.forEach(function(entity){
-            var table = "<table class=\"table\">";
-            table += "<caption><strong>" + entity.name + "</strong></caption>";
-            table += "<thead><tr><th>Name</th><th>Description</th><th>Selected</th></tr></thead>";
-            table += "<tbody>";
-
-            entity.metrics.forEach(function (metric){
-                table += "<tr>";
-                table += "<td>" + metric.name + "</td>";
-                table += "<td>" + metric.description + "</td>";
-                table += "<td><input type=\"checkbox\" " +
-                        "onClick=\"if (this.checked) {addGraph('"+ APP_ID + "','" + entity.id + "','" + entity.name + "','" + metric.name + "') " +
-                        "} else { removeGraph('"+ APP_ID + "','" + entity.id + "','" + metric.name + "')}\"></td>";
-
-
-                table += "</tr>";
-            })
-
-            table += "</tbody>";
-            table += "</table>";
-
-            panelBody += table;
-
-        })
-
-
-
-        panelBody += "</form>";
-        panelBody += "</div></div>";
-
-
-        return panelHeading + panelBody;
-
-
-    }
 
 
     function generateSensorPanel(appId, entityId, entityName, sensorName){
@@ -342,8 +369,12 @@
         }
 
         var programedInterval = setInterval(function(){
-            $.get('servlets/getMetricValueServlet',{application:APP_ID, entity:entityID, sensor:sensorName}, updateFunction);
-        }, 40);
+            var query = $.get('servlets/getMetricValueServlet',{application:APP_ID, entity:entityID, sensor:sensorName}, updateFunction);
+            query.done(function(res){
+            }).fail(function(){
+                //TODO Add toast
+            });
+        }, 500);
 
         ACTIVE_API_CALLS.push({
             functionName: APP_ID + "-" + entityID + "-" + sensorName,
