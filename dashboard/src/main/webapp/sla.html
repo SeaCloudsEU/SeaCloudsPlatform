@@ -207,9 +207,10 @@
         var templateNameInput = $("#templateNameInput").val();
         var appIdInput = $("#appIdInput").val();
         var moduleIdInput = $("#moduleIdInput").val();
+        var consumerId = (templateNameInput == "nuro-cloud-template")? "nuro" : "any-client";
 
         $.post("/projects/seaclouds/slagui/rest/agreements", 
-		{"templateid" : templateNameInput, "consumerid":"random-client","appid": appIdInput, "moduleid": moduleIdInput})
+		{"templateid" : templateNameInput, "consumerid": consumerId, "appid": appIdInput, "moduleid": moduleIdInput})
                 .done(function (response){
                     $.ajax({
                         url: '/projects/seaclouds/slagui/rest/enforcements/' + response.id,
