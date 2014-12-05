@@ -211,19 +211,7 @@
 
         setupTextArea();
         updatePage();
-        setInterval(updatePage, 3000);
-
-        $("#yaml-input-file").on("change", function(){
-            var unparsedFile = $("#yaml-input-file").prop('files')[0];
-            var reader = new FileReader();
-
-            reader.onload = function (theFile) {
-                APP_DEPLOYER_TEXTAREA.setValue(theFile.target.result);
-            }
-            reader.readAsText(unparsedFile);
-        })
-
-
+        setInterval(updatePage, 10000);
     });
 
     function setupTextArea() {
@@ -236,6 +224,16 @@
                 APP_DEPLOYER_TEXTAREA.setValue(" ");
             }
             APP_DEPLOYER_TEXTAREA.focus();
+        })
+
+        $("#yaml-input-file").on("change", function(){
+            var unparsedFile = $("#yaml-input-file").prop('files')[0];
+            var reader = new FileReader();
+
+            reader.onload = function (theFile) {
+                APP_DEPLOYER_TEXTAREA.setValue(theFile.target.result);
+            }
+            reader.readAsText(unparsedFile);
         })
     }
 
@@ -291,39 +289,44 @@
             appHTML += "<strong>Status: </strong> <span class=\"text-danger\">" +  application.status + "</span><br>";
         }
 
-
-
-
-
         appHTML += "<ul class=\"list-unstyled\"><li><strong>Application Components</strong></li>";
         application.descendants.forEach(function(descendant){
-               appHTML += "<li role=\"presentation\" class=\"dropdown-header\">" +
-                       "<a href=\"#\" data-toggle=\"collapse\" class=\"active\" data-target=\"#" + descendant.id + "-collapse\">" +
-                       "<i class=\"fa fa-search\"></i> " + descendant.name + " Summary  <i class=\"fa fa-angle-down\"></i></a></li>";
-               appHTML += "<li id=\"" + descendant.id + "-collapse\" class=\"collapse in\">";
-               appHTML += "<ul  class=\"list-unstyled\" style=\"padding-left : 5%\">";
-               appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>ID: </strong>" + descendant.id + "</li>";
-               appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>Name: </strong>" + descendant.name + "</li>";
-               appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>Type: </strong>" + descendant.type + "</li>";
-               appHTML += "<li role=\"presentation\" class=\"dropdown-header\">" +
-                       "<a href=\"#\" data-toggle=\"collapse\" class=\"active\" data-target=\"#" + descendant.id + "-locations-collapse\">" +
-                       "<i class=\"fa fa-map-marker\"></i> Locations <i class=\"fa fa-angle-down\"></i></a>" ;
-               appHTML += "<li id=\"" + descendant.id + "-locations-collapse\" class=\"collapse\">";
-               appHTML += "<ul  class=\"list-unstyled\" style=\"padding-left : 5%\">";
+            appHTML += "<li role=\"presentation\" class=\"dropdown-header\">" +
+                    "<a href=\"#\" data-toggle=\"collapse\" class=\"active\" data-target=\"#" + descendant.id + "-collapse\">" +
+                    "<i class=\"fa fa-search\"></i> " + descendant.name + " Summary  <i class=\"fa fa-angle-down\"></i></a></li>";
 
-               descendant.locations.forEach(function(location){
-                   appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>ID: </strong>" + location.id + "</li>";
-                   appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>Name: </strong>" + location.name + "</li><br/>";
-               })
+            var collapseStatus = $("#" +descendant.id + "-collapse");
+            if(collapseStatus && collapseStatus.hasClass("in")){
+                appHTML += "<li id=\"" + descendant.id + "-collapse\" class=\"collapse in\">";
+            }else{
+                appHTML += "<li id=\"" + descendant.id + "-collapse\" class=\"collapse\">";
+            }
+
+            appHTML += "<ul  class=\"list-unstyled\" style=\"padding-left : 5%\">";
+            appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>ID: </strong>" + descendant.id + "</li>";
+            appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>Name: </strong>" + descendant.name + "</li>";
+            appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>Type: </strong>" + descendant.type + "</li>";
+            appHTML += "<li role=\"presentation\" class=\"dropdown-header\">" +
+                    "<a href=\"#\" data-toggle=\"collapse\" class=\"active\" data-target=\"#" + descendant.id + "-locations-collapse\">" +
+                    "<i class=\"fa fa-map-marker\"></i> Locations <i class=\"fa fa-angle-down\"></i></a>" ;
+
+            collapseStatus = $("#" +descendant.id + "-locations-collapse");
+            if(collapseStatus && collapseStatus.hasClass("in")){
+                appHTML += "<li id=\"" + descendant.id + "-locations-collapse\" class=\"collapse in\">";
+            }else{
+                appHTML += "<li id=\"" + descendant.id + "-locations-collapse\" class=\"collapse\">";
+            }
+
+            appHTML += "<ul  class=\"list-unstyled\" style=\"padding-left : 5%\">";
+
+            descendant.locations.forEach(function(location){
+                appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>ID: </strong>" + location.id + "</li>";
+                appHTML += "<li><i class=\"fa fa-chevron-right\"></i> <strong>Name: </strong>" + location.name + "</li><br/>";
+            })
 
             appHTML += "</ul>";
             appHTML += "</li>";
             appHTML += "</ul>";
-
-
-
-
-
 
         })
         appHTML += "</ul>"
@@ -341,27 +344,27 @@
     function deleteApp(applicationId) {
         // http://stackoverflow.com/a/15089299
 
-        $.ajax({
+        var query = $.ajax({
             url: "servlets/removeApplication" + "?" + $.param({application: applicationId}),
-            type: 'DELETE',
-            success: function (result) {
-                console.log(res);
-                updatePage();
-            }
+            type: 'DELETE'
         });
+        query.done(updatePage());
+        query.fail(function (){
+            //TODO: Add toast error
+        })
 
     }
 
     function submitYaml() {
+        var query= $.post("servlets/addApplication", {yaml: APP_DEPLOYER_TEXTAREA.getValue()});
 
-            $.post("servlets/addAplication", {yaml: APP_DEPLOYER_TEXTAREA.getValue()}).done(function (res) {
-                console.log(res);
-            });
-
-
+        query.done(function () {
+            APP_DEPLOYER_TEXTAREA.setValue("");
+            updatePage();
+        }).fail(function () {
+            //TODO: Add toast error
+        })
     }
-
-
 
 </script>
 </body>
