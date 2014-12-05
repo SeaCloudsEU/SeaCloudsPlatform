@@ -232,9 +232,15 @@
         APP_DEPLOYER_TEXTAREA.setSize("100%", 300);
 
         $("#app-status-collapsable").on('shown.bs.collapse', function() {
-            APP_DEPLOYER_TEXTAREA.setValue(" ");
+            if(isEmpty(APP_DEPLOYER_TEXTAREA)){
+                APP_DEPLOYER_TEXTAREA.setValue(" ");
+            }
             APP_DEPLOYER_TEXTAREA.focus();
         })
+    }
+
+    function isEmpty(textArea){
+        return textArea.getValue()=="";
     }
 
     function updatePage() {
