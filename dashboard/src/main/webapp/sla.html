@@ -208,22 +208,32 @@
         var appIdInput = $("#appIdInput").val();
         var moduleIdInput = $("#moduleIdInput").val();
         var consumerId = (templateNameInput == "nuro-cloud-template")? "nuro" : "any-client";
+        var data = {
+            templateid : templateNameInput,
+            consumerid: consumerId,
+            appid: appIdInput,
+            moduleid: moduleIdInput
+        };
 
-        $.post("/projects/seaclouds/slagui/rest/agreements", 
-		{"templateid" : templateNameInput, "consumerid": consumerId, "appid": appIdInput, "moduleid": moduleIdInput})
-                .done(function (response){
-                    $.ajax({
-                        url: '/projects/seaclouds/slagui/rest/enforcements/' + response.id,
-                        type: 'PUT',
-                        success: function(result) {
-                            $("#iframe").attr("src", "/projects/seaclouds/slagui/agreements/");
-                        }
-                    });
-
-
-                }).fail(function (err){
-                   console.log(err);
-                })
+        $.ajax({
+            url: "/projects/seaclouds/slagui/rest/agreements",
+            type: "POST",
+            data: JSON.stringify(data),     /* this should not be needed */
+            contentType: "application/json",
+            dataType: "json"
+        }).done(function (response){
+            $.ajax({
+                url: '/projects/seaclouds/slagui/rest/enforcements/' + response.id,
+                type: 'PUT',
+                success: function(result) {
+                    $("#iframe").attr("src", "/projects/seaclouds/slagui/agreements/");
+                }
+            }).fail(function(err) {
+                    console.log(err);
+            });
+        }).fail(function (err){
+           console.log(err);
+        })
 
     }
 
