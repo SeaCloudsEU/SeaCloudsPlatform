@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="css/codemirror.css">
     <link rel="stylesheet" href="css/codemirror-simplescrollbars.css">
 
+    <!-- PNotify CSS -->
+    <link href="css/pnotify.custom.min.css" rel="stylesheet">
 
 </head>
 
@@ -197,6 +199,8 @@
 <script src="js/codemirror-yaml.js"></script>
 <script src="js/codemirror-simplescrollbars.js"></script>
 
+<!-- PNotify Scripts -  -->
+<script src="js/pnotify.custom.min.js"></script>
 
 <script type="text/javascript">
     var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"}).spin(document.getElementById("loading-spinner"));
@@ -208,6 +212,7 @@
             $("#app-status-collapsable").collapse("toggle");
         });
 
+        PNotify.prototype.options.styling = "fontawesome";
 
         setupTextArea();
         updatePage();
@@ -350,7 +355,11 @@
         });
         query.done(updatePage());
         query.fail(function (){
-            //TODO: Add toast error
+            new PNotify({
+                title: 'Error',
+                text: 'Something happened while removing the application',
+                type: 'error'
+            });
         })
 
     }
@@ -362,7 +371,11 @@
             APP_DEPLOYER_TEXTAREA.setValue("");
             updatePage();
         }).fail(function () {
-            //TODO: Add toast error
+            new PNotify({
+                title: 'Error',
+                text: 'Something happened while deploying the application',
+                type: 'error'
+            });
         })
     }
 

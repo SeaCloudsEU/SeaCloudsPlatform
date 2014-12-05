@@ -26,10 +26,14 @@ public class GetMatchmakingServlet extends HttpServlet {
         if (yaml == null) {
             response.sendError(500, "YAML File not found");
         } else {
-            Planner planner = new Planner(yaml);
+            try {
+                Planner planner = new Planner(yaml);
 
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(planner.plan());
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(planner.plan());
+            } catch (Exception e){
+                response.sendError(500, "Error processing Application Model");
+            }
         }
     }
 }

@@ -12,10 +12,11 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/font-awesome.min.css" rel="stylesheet">
 
-
     <!-- SB Admin CSS - Include with every page -->
     <link href="css/sb-admin.css" rel="stylesheet">
 
+    <!-- PNotify CSS -->
+    <link href="css/pnotify.custom.min.css" rel="stylesheet">
 
 </head>
 
@@ -116,7 +117,7 @@
                 </h1>
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="page-content">
 
 
             <div class="col-lg-12">
@@ -151,7 +152,6 @@
 
                 </div>
             </div>
-        </div>
 
 
         <div class="row">
@@ -169,6 +169,7 @@
             </div>
         </div>
 
+    </div>
 
     </div>
     <!-- /#page-wrapper -->
@@ -185,12 +186,24 @@
 <!-- SB Admin Scripts - Include with every page -->
 <script src="js/sb-admin.js"></script>
 
+<!-- PNotify Scripts -  -->
+<script src="js/pnotify.custom.min.js"></script>
+
 <script type="text/javascript">
     var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"});
+    var CONTENT_ID = "page-content";
 
     $(document).ready(function() {
+        PNotify.prototype.options.styling = "fontawesome";
+
+
         SPINNER.spin(document.getElementById("loading-spinner"));
         $('#iframe').load(function(){
+            // Workaround to detect if the IFrame failed
+            var iframe = $("#iframe");
+            if (iframe.contents().text().search("404") != -1) {
+                $('#'+CONTENT_ID).html("<h1 class=\"text-center text-danger\">SLA module is not available in this moment.</h1>");
+            }
             SPINNER.stop();
         });
 
@@ -229,10 +242,18 @@
                     $("#iframe").attr("src", "/projects/seaclouds/slagui/agreements/");
                 }
             }).fail(function(err) {
-                    console.log(err);
+                new PNotify({
+                    title: 'Error',
+                    text: 'The SLA Module failed while adding a new enforcement',
+                    type: 'error'
+                });
             });
         }).fail(function (err){
-           console.log(err);
+            new PNotify({
+                title: 'Error',
+                text: 'The SLA Module failed while adding a new greement',
+                type: 'error'
+            });
         })
 
     }

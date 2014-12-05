@@ -20,6 +20,9 @@
     <link href="css/dataTables.bootstrap.css" rel="stylesheet">
     <link href="css/dataTables.responsive.css" rel="stylesheet">
 
+    <!-- PNotify CSS -->
+    <link href="css/pnotify.custom.min.css" rel="stylesheet">
+
 </head>
 
 <body>
@@ -182,6 +185,10 @@
 <script src="js/jquery.flot.js"></script>
 <script src="js/jquery.flot.autoscale.js"></script>
 
+<!-- PNotify Scripts -  -->
+<script type="text/javascript" src="js/pnotify.custom.min.js" ></script>
+
+
 <script type="text/javascript">
     var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"}).spin(document.getElementById("loading-spinner"));
     var APP_ID = location.search.split('id=')[1];
@@ -192,6 +199,9 @@
 
 
     $(document).ready(function() {
+
+        PNotify.prototype.options.styling = "fontawesome";
+
         setupDataTable();
         showAvailableMetrics();
     });
@@ -372,7 +382,11 @@
             var query = $.get('servlets/getMetricValueServlet',{application:APP_ID, entity:entityID, sensor:sensorName}, updateFunction);
             query.done(function(res){
             }).fail(function(){
-                //TODO Add toast
+                new PNotify({
+                    title: 'Error',
+                    text: 'Something happened while generating the graphs',
+                    type: 'error'
+                });
             });
         }, 500);
 

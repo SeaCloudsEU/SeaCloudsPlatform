@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="css/codemirror.css">
     <link rel="stylesheet" href="css/codemirror-simplescrollbars.css">
 
+    <!-- PNotify CSS -->
+    <link href="css/pnotify.custom.min.css" rel="stylesheet">
 
 </head>
 
@@ -199,6 +201,8 @@
 <script src="js/codemirror-yaml.js"></script>
 <script src="js/codemirror-simplescrollbars.js"></script>
 
+<!-- PNotify Scripts -  -->
+<script type="text/javascript" src="js/pnotify.custom.min.js"></script>
 
 </body>
 
@@ -210,6 +214,8 @@
 
     $(document).ready(function () {
         loadCodeMirror();
+
+        PNotify.prototype.options.styling = "fontawesome";
 
         $("#yaml-input-file").on("change", function () {
             var unparsedFile = $("#yaml-input-file").prop('files')[0];
@@ -249,8 +255,11 @@
             PLANNER_OUTPUT_TEXTAREA.setValue(response);
             SPINNER.stop();
         }).fail(function () {
-            boxHTML = "<h1 class=\"text-center text-danger\">Planner module is not available in this moment.</h1>";
-            $('#page-content').html(boxHTML)
+            new PNotify({
+                title: 'Error',
+                text: 'Error processing the application model',
+                type: 'error'
+            });
             SPINNER.stop();
         });
     }
