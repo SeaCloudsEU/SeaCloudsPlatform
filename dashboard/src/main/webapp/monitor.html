@@ -237,8 +237,9 @@
             } else if(application.status == "STARTING"){
                 button = "<button type=\"button\" class=\"btn btn-info\" disabled>Live monitor</button>";
                 status = "<span class=\"text-muted\"><strong>" +  application.status + "</strong></span><br>";
-            } else{
+            } else {
                 button = "<button type=\"button\" class=\"btn btn-info\" disabled>Live monitor</button>";
+                status = "<span class=\"text-danger\"><strong>" +  application.status + "</strong></span><br>";
             }
 
             DATATABLE.row.add([application.id, application.spec.name, application.spec.type, status, button]);
