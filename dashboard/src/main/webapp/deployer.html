@@ -139,7 +139,6 @@
                     <!-- /.panel-heading -->
                     <div class="panel-collapse collapse  " id="app-status-collapsable">
                         <div class="panel-body" id="yaml-input-panel-body">
-                            <form role="form" onreset="resetForm()" onsubmit="submitYaml()">
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="form-group" id="text-form-group">
@@ -152,18 +151,15 @@
                                     <div class="col-lg-6">
                                         <div class="form-group" id="file-form-group">
                                             <label for="yaml-input-file">Choose a YAML File</label>
-                                            <input type="file" id="yaml-input-file"
-                                                   onchange="switchFormInputTo('yaml-input-file')">
+                                            <input type="file" id="yaml-input-file">
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="pull-right">
-                                            <button type="reset" class="btn btn-default">Clear</button>
-                                            <button type="submit" class="btn btn-primary">Deploy</button>
+                                            <button  class="btn btn-primary" onClick="submitYaml()">Deploy</button>
                                         </div>
                                     </div>
                                 </div>
-                            </form>
                         </div>
                     </div>
 
@@ -348,35 +344,57 @@
 
     function deleteApp(applicationId) {
         // http://stackoverflow.com/a/15089299
-
-        var query = $.ajax({
+        SPINNER.spin(document.getElementById("loading-spinner"));
+        $.ajax({
             url: "servlets/removeApplication" + "?" + $.param({application: applicationId}),
             type: 'DELETE'
-        });
-        query.done(updatePage());
-        query.fail(function (){
+        }).done(function(){
+            new PNotify({
+                title: 'App removed successfully',
+                text: 'Please wait until the application list refreshes',
+                type: 'success'
+            });
+            setTimeout(function(){
+                updatePage();
+            }, 1000);
+        }).fail(function (){
             new PNotify({
                 title: 'Error',
                 text: 'Something happened while removing the application',
                 type: 'error'
             });
+        }).always(function(){
+            SPINNER.stop();
         })
 
+        return false;
     }
 
     function submitYaml() {
-        var query= $.post("servlets/addApplication", {yaml: APP_DEPLOYER_TEXTAREA.getValue()});
+        SPINNER.spin(document.getElementById("loading-spinner"));
+        $("#app-status-collapsable").collapse("toggle");
 
+        var query= $.post("servlets/addApplication", {yaml: APP_DEPLOYER_TEXTAREA.getValue()});
         query.done(function () {
-            APP_DEPLOYER_TEXTAREA.setValue("");
-            updatePage();
+            APP_DEPLOYER_TEXTAREA.setValue(" ");
+            new PNotify({
+                title: 'App deployed successfully',
+                text: 'It will appear soon on the application list',
+                type: 'success'
+            });
+            setTimeout(function(){
+                updatePage();
+            }, 1000);
         }).fail(function () {
             new PNotify({
                 title: 'Error',
                 text: 'Something happened while deploying the application',
                 type: 'error'
             });
+        }).always(function(){
+            SPINNER.stop();
         })
+        return false;
     }
 
 </script>
