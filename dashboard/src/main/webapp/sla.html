@@ -205,15 +205,16 @@
         $("#sla-agreement-heading").on("click", function(){
             $("#sla-form-collapsable").collapse("toggle");
         });
-        updatePage();
-        setInterval(updatePage, 5000);
+
+        $("#iframe").attr("src", "/projects/seaclouds/slagui/agreements/");
+        setInterval(updatePage, 3000);
 
 
     });
 
     function updatePage(){
         SPINNER.spin(document.getElementById("loading-spinner"));
-        $("#iframe").attr("src", "/projects/seaclouds/slagui/agreements/");
+        document.getElementById('iframe').contentWindow.location.reload(true);
     }
 
 
@@ -246,8 +247,7 @@
                     text: 'Please wait until it appear on the list',
                     type: 'success'
                 });
-                $("#iframe").attr("src", "/projects/seaclouds/slagui/agreements/");
-
+                updatePage();
             }).fail(function(err) {
                 new PNotify({
                     title: 'Error',
