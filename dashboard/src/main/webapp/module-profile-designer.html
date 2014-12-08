@@ -10,8 +10,11 @@
 
     <!-- Core CSS - Include with every page -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/font-awesome.min.css" rel="stylesheet">
 
+    <link rel="stylesheet" href="css/canvas.css"/>
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/editor.css"/>
 
     <!-- SB Admin CSS - Include with every page -->
     <link href="css/sb-admin.css" rel="stylesheet">
@@ -126,8 +129,98 @@
                         <div class="text-danger pull-right"> PROOF OF CONCEPT - Work in progress</div>
                     </div>
                     <!-- /.panel-heading -->
-                    <div class="panel-body" style="display:table-cell; vertical-align:middle; text-align:center">
-                        <img  style="width:80%;"  src="img/module-profile-concept.png" alt="Module profile concept">
+                    <div class="panel-body" style="vertical-align:middle">
+                        <ul>
+                            <li>Click Add... button to add nodes</li>
+                            <li>SHIFT+Click on a node to connect nodes</li>
+                        </ul>
+                        <div class="btn-group">
+                        
+                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            Add... <span class="caret"> </span>
+                          </button>
+                        
+                          <ul id="add-buttons" class="dropdown-menu" role="menu">
+                            <li><a id="add-database" href="#">Database</a>
+                            <li><a id="add-restservice" href="#">Rest Service</a>
+                            <li><a id="add-webapplication" href="#">Web application</a>
+                          </ul>
+                        </div>
+                        
+                        <div class="modal fade" id="add-form">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                    <span class="sr-only">Close</span>
+                                </button>
+                                <h4 class="modal-title">Add new...</h4>
+                              </div>
+                              <div class="modal-body">
+                                <form role="form">
+                                  <fieldset id="set-common">
+                                      <legend>Description <a href="#"><i class="fa fa-chevron-down"></i></a></legend>
+                                      <div class="form-group">
+                                        <label for="name">Name</label>
+                                        <input type="text" class="form-control" id="name" placeholder="Module name">
+                                      </div>
+                                      <div class="form-group">
+                                        <label for="label">Label on screen</label>
+                                        <input type="text" class="form-control" id="label" placeholder="Module label">
+                                      </div>
+                                  </fieldset>
+                                  <fieldset id="set-code-tech">
+                                      <legend>Technological Requirements <a href="#"><i class="fa fa-chevron-down"></i></a></legend>
+                                      <div class="form-group">
+                                        <label for="code-language">Language</label>
+                                        <select class="form-control" id="code-language">
+                                        </select>
+                                      </div>
+                                  </fieldset>
+                                  <fieldset id="set-database-tech">
+                                      <legend>Technological Requirements <a href="#"><i class="fa fa-chevron-down"></i></a></legend>
+                                      <div class="form-group">
+                                        <label for="database-category">Category</label>
+                                        <select class="form-control" id="database-category">
+                                            <option>MySql</option>
+                                            <option>Oracle</option>
+                                            <option>PostgreSQL</option>
+                                            <option>MongoDB</option>
+                                            <option>Redis</option>
+                                        </select>
+                                      </div>
+                                  </fieldset>
+                                  <!--
+                                  <fieldset id="set-nonfunctional">
+                                      <legend>Non-functional Requirements <a href="#"><i class="fa fa-chevron-down"></i></a></legend>
+                                  </fieldset>
+                                  -->
+                                  <fieldset id="set-infrastructure">
+                                      <legend>Provider Infrastructure <a href="#"><i class="fa fa-chevron-down"></i></a></legend>
+                                      <div class="form-group">
+                                        <label for="infrastructure">Provider is</label>
+                                        <label class="radio-inline">
+                                          <input type="radio" id="infrastructure-iaas" name="infrastructure" value="iaas"> IaaS
+                                        </label>
+                                        <label class="radio-inline">
+                                          <input type="radio" id="infrastructure-paas" name="infrastructure" value="paas"> PaaS
+                                        </label>
+                                      </div>
+                                  </fieldset>
+                                </form>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Add!</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                            
+                        
+                        <div id="canvas">
+                        </div>
                     </div>
 
                 </div>
@@ -149,6 +242,11 @@
 <!-- SB Admin Scripts - Include with every page -->
 <script src="js/sb-admin.js"></script>
 
+<script src="js/d3.min.js"></script>
+<script src="js/editor/log.js"></script>
+<script src="js/editor/graph.js"></script>
+<script src="js/editor/canvas.js"></script>
+<script src="js/editor/editor.js"></script>
 <script type="text/javascript">
     var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"});
 
