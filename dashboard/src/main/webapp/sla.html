@@ -130,46 +130,42 @@
 
                     <!-- /.panel-heading -->
                     <div id="sla-form-collapsable" class="panel-body collapse">
-                        <form class="form" role="form" onsubmit="addSlaAgreement()">
-                            <div class="form-group">
-                                <label for="templateNameInput">Template name</label>
-                                <input type="text" class="form-control" id="templateNameInput" placeholder="Template name">
-                            </div>
-                            <div class="form-group">
-                                <label for="appIdInput">Application ID</label>
-                                <input type="text" class="form-control" id="appIdInput" placeholder="Application ID">
-                            </div>
-                            <div class="form-group">
-                                <label for="moduleIdInput">Module ID</label>
-                                <input type="text" class="form-control" id="moduleIdInput" placeholder="Module ID">
-                            </div>
+                        <div class="form-group">
+                            <label for="templateNameInput">Template name</label>
+                            <input type="text" class="form-control" id="templateNameInput" placeholder="Template name">
+                        </div>
+                        <div class="form-group">
+                            <label for="appIdInput">Application ID</label>
+                            <input type="text" class="form-control" id="appIdInput" placeholder="Application ID">
+                        </div>
+                        <div class="form-group">
+                            <label for="moduleIdInput">Module ID</label>
+                            <input type="text" class="form-control" id="moduleIdInput" placeholder="Module ID">
+                        </div>
 
-                            <button type="submit" class="btn btn-default">Add Agreement</button>
-
-                        </form>
-
+                        <button onClick="addSlaAgreement()" class="btn btn-default">Add Agreement</button>
                     </div>
 
                 </div>
             </div>
 
 
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <i class="fa fa-bullseye"></i> View SLA Agreements
-                    </div>
-                    <!-- /.panel-heading -->
-                    <div class="panel-body">
-                        <iframe id="iframe" width="100%" height="450px"  frameBorder="0" src="#"></iframe>
-                    </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bullseye"></i> View SLA Agreements
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <iframe id="iframe" width="100%" height="450px"  frameBorder="0" src="#"></iframe>
+                        </div>
 
+                    </div>
                 </div>
             </div>
+
         </div>
-
-    </div>
 
     </div>
     <!-- /#page-wrapper -->
@@ -196,8 +192,6 @@
     $(document).ready(function() {
         PNotify.prototype.options.styling = "fontawesome";
 
-
-        SPINNER.spin(document.getElementById("loading-spinner"));
         $('#iframe').load(function(){
             // Workaround to detect if the IFrame failed
             var iframe = $("#iframe");
@@ -207,14 +201,21 @@
             SPINNER.stop();
         });
 
+
+        $("#sla-agreement-heading").on("click", function(){
+            $("#sla-form-collapsable").collapse("toggle");
+        });
+        updatePage();
+        setInterval(updatePage, 5000);
+
+
+    });
+
+    function updatePage(){
+        SPINNER.spin(document.getElementById("loading-spinner"));
         $("#iframe").attr("src", "/projects/seaclouds/slagui/agreements/");
+    }
 
-
-    });
-
-    $("#sla-agreement-heading").on("click", function(){
-        $("#sla-form-collapsable").collapse("toggle");
-    });
 
     function addSlaAgreement(){
         var templateNameInput = $("#templateNameInput").val();
@@ -238,9 +239,15 @@
             $.ajax({
                 url: '/projects/seaclouds/slagui/rest/enforcements/' + response.id,
                 type: 'PUT',
-                success: function(result) {
-                    $("#iframe").attr("src", "/projects/seaclouds/slagui/agreements/");
-                }
+                dataType: 'text'
+            }).done(function(res){
+                new PNotify({
+                    title: 'New agreement created',
+                    text: 'Please wait until it appear on the list',
+                    type: 'success'
+                });
+                $("#iframe").attr("src", "/projects/seaclouds/slagui/agreements/");
+
             }).fail(function(err) {
                 new PNotify({
                     title: 'Error',
