@@ -22,29 +22,46 @@ var Canvas = (function() {
     var Database = Object.create(Graph.Database); 
     var RestService = Object.create(Graph.RestService); 
     
-    /*
-     * http://stackoverflow.com/questions/18416749/adding-fontawesome-icons-to-a-d3-graph
-     */
+    Graph.Node.popovertitle = function() {
+        return this.name;
+    };
     
     Graph.Node.popovercontent = function() {
         function item(key, value) {
-            return "<dt>" + key + "</dt><dd>" + value + "</dd>";
+            var result = "";
+            if (value !== undefined && value !== "") {
+                result = "<dt>" + key + "</dt><dd>" + value + "</dd>";
+            }
+            return result;
         };
-        return "<dt>" + item("Name", this.name) + item("Type", this.type) + "</dt>";
+
+        var location = this.location;
+        if (location !== undefined && location !== "") {
+            location = location + " - " + this.location_option;
+        }
+        
+        var terms = [
+            [ "Type", this.type],
+            [ "Name", this.name],
+            [ "Category", this.category],
+            [ "Language", this.language],
+            [ "Cost", this.cost],
+            [ "Location", location],
+            [ "QoS", this.qos],
+            [ "Infrastructure", this.infrastructure]
+        ];
+        
+        var content = "";
+        for (i in terms) {
+            term = terms[i];
+            content += item(term[0], term[1]);
+        }
+        return "<dl>" + content + "</dl>";
     };
-    // Graph.Node.decorate = function(dom_element) {
-        // d3_element = d3.select(dom_element);
-        // d3_element.append("svg:text")
-            // .attr("x", 0)
-            // .attr("y", 9)
-            // .attr("class", "type-icon")
-            // .text(function(d) { return d.kindlabel(); });
-        // d3_element.append("svg:text")
-            // .attr("x", 0)
-            // .attr("y", 15)
-            // .attr("class", "type")
-            // .text("HTTP");
-    // };
+
+    /*
+     * http://stackoverflow.com/questions/18416749/adding-fontawesome-icons-to-a-d3-graph
+     */
 
     WebApplication.decorate = function(dom_element) {
         d3_element = d3.select(dom_element);
@@ -73,7 +90,7 @@ var Canvas = (function() {
             .text("\uf013");
         d3_element.append("svg:text")
             .attr("x", 0)
-            .attr("y", 15)
+            .attr("y", 4)
             .attr("class", "type")
             .text("REST");
     };
@@ -183,7 +200,6 @@ var Canvas = (function() {
         );
     
         restart();
-    
     }
     
     
@@ -349,6 +365,8 @@ var Canvas = (function() {
     
         /*
          * handle nodes
+         * 
+         * TODO: Evaluate use second arg = function(d) { return d.name; }
          */
         node = node.data(g_nodes);
     
@@ -372,22 +390,22 @@ var Canvas = (function() {
             .attr("y", 30)
             .text(function(d) { return d.label; });
     
-        newnodes.each(function(d) {
-            log.debug("popover node " + d.toString());
-            var str = d.toString();
+        newnodes.each(function(d, i) {
             $(this).popover(
                 {
                     'container' : 'body',
                     'placement' : 'auto right',
-                    'title'     : d.name,
-                    'content'   : d.popovercontent(),
+                    'title'     : function() { return d.popovertitle(i); },
+                    'content'   : function() { return d.popovercontent(); },
+                    // 'title'     : d.popovertitle(i),
+                    // 'content'   : d.popovercontent(),
                     'html'      : true,
                     'trigger'   : 'manual'
                 }
             );
         });
         
-        newnodes.on("click", function(d) {
+        newnodes.on("click", function(d, i) {
             var e = d3.event;
     
             if (e.defaultPrevented) {
@@ -398,6 +416,7 @@ var Canvas = (function() {
             log.debug("node.click");
             if(e.shiftKey || e.ctrlKey){
             }else{
+                log.debug("Popover " + d.toString());
                 $(this).popover("toggle");
             }
             e.stopPropagation();
