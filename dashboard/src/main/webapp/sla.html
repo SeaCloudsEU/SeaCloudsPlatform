@@ -94,11 +94,11 @@
             <div class="sidebar-collapse">
                 <ul class="nav" id="side-menu">
                     <li><a href="index.html"><i class="fa fa-dashboard fa-home"></i>&nbsp;Home</a></li>
-                    <li><a href="module-profile-designer.html" class=""><i class="fa fa-pencil-square-o"></i>&nbsp;Module Profile Designer</a></li>
+                    <li><a href="module-profile-designer.html" class=""><strong><i class="fa fa-pencil-square-o"></i>&nbsp;Module Profile Designer</strong></a></li>
                     <li><a href="discoverer-and-planner.html" class=""><i class="fa fa-code-fork"></i>&nbsp;Discoverer & Planner</a></li>
                     <li><a href="deployer.html" class=""><i class="fa fa-download"></i>&nbsp;Deployer</a></li>
                     <li><a href="monitor.html" class=""><i class="fa fa-dashboard"></i>&nbsp;Monitor</a></li>
-                    <li><a href="sla.html" class=""><strong><i class="fa fa-file-text-o"></i>&nbsp;SLA Service</strong></a></li>
+                    <li><a href="sla.html" class=""><i class="fa fa-file-text-o"></i>&nbsp;SLA Service</strong></a></li>
 
                 </ul>
                 <!-- /#side-menu -->
@@ -207,7 +207,7 @@
         });
 
         $("#iframe").attr("src", "/projects/seaclouds/slagui/agreements/");
-        setInterval(updatePage, 3000);
+        setInterval(updatePage, 10000);
 
 
     });
@@ -258,7 +258,7 @@
         }).fail(function (err){
             new PNotify({
                 title: 'Error',
-                text: 'The SLA Module failed while adding a new greement',
+                text: 'The SLA Module failed while adding a new agreement',
                 type: 'error'
             });
         })
