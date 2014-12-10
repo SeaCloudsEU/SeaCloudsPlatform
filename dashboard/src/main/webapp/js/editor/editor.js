@@ -58,9 +58,7 @@ function populate_select($select, options) {
 Graph.Node.popovertitle = function(i) {
     return this.name + "&nbsp;&nbsp;&nbsp;" +
         '<button type="button" class="popover-edit" data-action="edit" data-nodeindex="' + i + '">' + 
-        '<span aria-hidden="true" class="fa fa-edit"></span></button>' +
-        '<button type="button" class="popover-edit" data-action="delete" data-nodeindex="' + i + '">' + 
-        '<span aria-hidden="true" class="fa fa-remove"></span></button>';
+        '<span aria-hidden="true" class="fa fa-edit"></span></button>';
 };
 
 
