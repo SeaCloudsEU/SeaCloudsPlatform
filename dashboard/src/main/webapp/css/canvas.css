@@ -36,7 +36,7 @@ path.link.hidden {
 }
 
 .type-icon {
-    fill: #333333;
+    fill: #777777;
     font-family: FontAwesome;
     font-size: 2em;
 }
@@ -44,4 +44,8 @@ path.link.hidden {
 .type {
     text-shadow: 0px 0px 1px white;
     font-weight: bold;
+}
+
+.popover-edit {
+    float: right;
 }
