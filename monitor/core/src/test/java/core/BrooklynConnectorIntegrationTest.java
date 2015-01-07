@@ -18,8 +18,8 @@ import javax.ws.rs.core.Response;
 /**
  * Created by Adrian on 22/10/2014.
  */
-@Test(groups = { "brooklyn" })
-public class BrooklynConnectorTest {
+@Test(groups = { "Integration" })
+public class BrooklynConnectorIntegrationTest {
 
     BrooklynApi api;
     String appId;

@@ -26,8 +26,8 @@ import java.util.List;
 /**
  * @author MBarrientos
  */
-@Test(groups = { "brooklyn" })
-public class BrooklynApiTest {
+@Test(groups = { "Integration" })
+public class BrooklynApiIntegrationTest {
 
     public static final String BROOKLYN_ENDPOINT = "http://devtest.scenic.uma.es:8081";
 
