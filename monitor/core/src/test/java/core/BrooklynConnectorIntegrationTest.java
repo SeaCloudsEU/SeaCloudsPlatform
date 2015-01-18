@@ -27,9 +27,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-/**
- * Created by Adrian on 22/10/2014.
- */
 @Test(groups = { "Integration" })
 public class BrooklynConnectorIntegrationTest {
 

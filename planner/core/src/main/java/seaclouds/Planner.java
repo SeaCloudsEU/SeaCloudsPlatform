@@ -12,9 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by Jose on 27/11/14.
- */
 public class Planner {
 
     static Logger log = LoggerFactory.getLogger(Planner.class);

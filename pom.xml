@@ -29,7 +29,7 @@
         <module>dashboard</module>
     </modules>
     <packaging>pom</packaging>
-    <name>platform</name>
+    <name>SeaClouds Platform</name>
     <url>http://www.seaclouds-project.eu</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -113,6 +113,48 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <version>0.11</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <excludes combine.children="append">
+                        <exclude>**/.git/**</exclude>
+                        <exclude>**/.gitignore</exclude>
+                        <exclude>**/.repository/**</exclude>
+                        <exclude>**/.idea/**</exclude>
+                        <exclude>**/*.iml</exclude>
+                        <exclude>**/.classpath/**</exclude>
+                        <exclude>**/.project</exclude>
+                        <exclude>**/.settings/**</exclude>
+                        <exclude>**/*.log</exclude>
+                        <exclude>**/target/**</exclude>
+
+                        <!-- files not requiring licence -->
+                        <exclude>ignored/**</exclude>
+                        <exclude>**/*.md</exclude>
+                        <exclude>**/*.svg</exclude>
+                        <exclude>**/MANIFEST.MF</exclude>
+                        <exclude>**/test-output/**</exclude>
+                        <exclude>**/*.pem.pub</exclude>
+                        <exclude>**/*.svg</exclude>
+                        <exclude>**/*.crt</exclude>
+                        <exclude>**/*.csr</exclude>
+                        <exclude>**/*.key</exclude>
+                        <exclude>**/*.key.org</exclude>
+                        <exclude>**/*.psd</exclude>
+                        <exclude>**/*.json</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>

@@ -17,9 +17,7 @@
 package core;
 
 import brooklyn.rest.client.BrooklynApi;
-import brooklyn.rest.domain.ApplicationSummary;
 import brooklyn.rest.domain.SensorSummary;
-import brooklyn.rest.domain.Status;
 import com.google.common.collect.Lists;
 import metrics.BrooklynMetricLanguage;
 import metrics.Metric;
@@ -27,12 +25,8 @@ import metrics.MetricCatalog;
 import model.Module;
 import model.exceptions.MonitorConnectorException;
 
-
 import java.util.List;
 
-/**
- * @author MBarrientos
- */
 public class BrooklynConnector implements Connector {
     private final static BrooklynMetricLanguage METRIC_TRANSLATOR = BrooklynMetricLanguage.getInstance();
     private final static MetricCatalog METRIC_CATALOG = MetricCatalog.getInstance();

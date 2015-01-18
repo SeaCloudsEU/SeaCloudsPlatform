@@ -27,9 +27,6 @@ import org.testng.annotations.BeforeSuite;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-/**
- * @author MBarrientos
- */
 public class BrooklynTestUtils {
 
     public static final String BROOKLYN_ENDPOINT = "http://devtest.scenic.uma.es:8081";

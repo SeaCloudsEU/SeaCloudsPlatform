@@ -18,9 +18,6 @@ package model;
 
 import java.util.Collection;
 
-/**
- * @author MBarrientos
- */
 public interface Module {
 
     public String getId();

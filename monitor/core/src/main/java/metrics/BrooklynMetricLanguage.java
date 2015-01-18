@@ -18,9 +18,7 @@ package metrics;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-/**
- * Created by Adrian on 17/10/2014.
- */
+
 public class BrooklynMetricLanguage  extends MetricLanguage{
     private static BrooklynMetricLanguage instance;
     private  BiMap<String, String> runtimeTranslations;
