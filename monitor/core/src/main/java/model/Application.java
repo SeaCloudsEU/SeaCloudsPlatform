@@ -19,11 +19,7 @@ package model;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
-/**
- * Created by Adrian on 15/10/2014.
- */
 public class Application implements Module {
 
     // TODO: Search application/module by ID

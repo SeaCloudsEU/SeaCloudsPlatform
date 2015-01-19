@@ -17,10 +17,6 @@
 package metrics;
 
 /**
- * Created by Adrian on 15/10/2014.
- */
-
-/**
  * This class represents a metric given its id, description and type {@link T}
  * @param <T> Type of the metric value.
  */

@@ -17,6 +17,7 @@
 package eu.seaclouds.platform.dashboard.servlets;
 
 import brooklyn.rest.client.BrooklynApi;
+import com.google.gson.Gson;
 import eu.seaclouds.platform.dashboard.ConfigParameters;
 
 import javax.servlet.ServletException;
@@ -46,7 +47,7 @@ public class RemoveApplicationsServlet extends HttpServlet {
             } else {
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(res.toString());
+                response.getWriter().write(new Gson().toJson(res.getStatus()));
             }
 
         } else {

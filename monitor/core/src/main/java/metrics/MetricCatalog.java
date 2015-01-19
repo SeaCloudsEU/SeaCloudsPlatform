@@ -21,9 +21,6 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 
 
-/**
- * Created by Adrian on 15/10/2014.
- */
 public class MetricCatalog {
 
 

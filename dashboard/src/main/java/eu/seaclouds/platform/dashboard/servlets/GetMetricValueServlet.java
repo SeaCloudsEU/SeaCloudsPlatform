@@ -34,7 +34,7 @@ import java.io.IOException;
  * @author Adrian Nieto
  */
 public class GetMetricValueServlet extends HttpServlet {
-    final static BrooklynApi BROOKLKYN_API = new BrooklynApi(ConfigParameters.DEPLOYER_ENDPOINT);
+    final static BrooklynApi BROOKLKYN_API = new BrooklynApi(ConfigParameters.MONITOR_ENDPOINT);
 
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

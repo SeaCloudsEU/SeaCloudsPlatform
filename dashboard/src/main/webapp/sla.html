@@ -24,18 +24,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SeaClouds Dashboard - Deploy new Application</title>
+    <title>SeaClouds Dashboard - SLA</title>
 
     <!-- Core CSS - Include with every page -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/font-awesome.min.css" rel="stylesheet">
-
+    <link href="css/lib/bootstrap.min.css" rel="stylesheet">
+    <link href="css/lib/font-awesome.min.css" rel="stylesheet">
 
     <!-- SB Admin CSS - Include with every page -->
     <link href="css/sb-admin.css" rel="stylesheet">
 
-    <!-- SeaClouds configuration constants -->
-    <script src="js/config.js"></script>
+    <!-- PNotify CSS -->
+    <link href="css/lib/pnotify.custom.min.css" rel="stylesheet">
 
 </head>
 
@@ -57,7 +56,7 @@
                     class="icon-bar"></span> <span class="icon-bar"></span> <span
                     class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="index.html">SeaClouds Dashboard - Deploy new Application</a>
+            <a class="navbar-brand" href="index.html">SeaClouds Dashboard</a>
         </div>
         <!-- /.navbar-header -->
 
@@ -89,7 +88,7 @@
                     </a></li>
                 </ul>
             </li>
-                <!-- /.dropdown-alerts -->
+            <!-- /.dropdown-alerts -->
             <!-- /.dropdown -->
             <li class="dropdown"><a class="dropdown-toggle"
                                     data-toggle="dropdown" href="#"> <i class="fa fa-user fa-fw"></i>
@@ -113,13 +112,13 @@
             <div class="sidebar-collapse">
                 <ul class="nav" id="side-menu">
                     <li><a href="index.html"><i class="fa fa-dashboard fa-home"></i>&nbsp;Home</a></li>
-                    <li><a href="not-available.html" class=""><i class="fa fa-pencil-square-o"></i>&nbsp;Module Profile Designer</a></li>
-                    <li><a href="not-available.html" class=""><i class="fa fa-code-fork"></i>&nbsp;Discoverer & Planner</a></li>
-                    <li><a href="deployer.jsp" class=""><i class="fa fa-download"></i>&nbsp;Deployer</a></li>
-                    <li><a href="monitor.jsp" class=""><i class="fa fa-dashboard"></i>&nbsp;Monitor</a></li>
-                    <li><a href="sla.html" class=""><strong><i class="fa fa-file-text-o"></i>&nbsp;SLA Service</strong></a></li>
+                    <li><a href="module-profile-designer.html" class=""><strong><i class="fa fa-pencil-square-o"></i>&nbsp;Module Profile Designer</strong></a></li>
+                    <li><a href="discoverer-and-planner.html" class=""><i class="fa fa-code-fork"></i>&nbsp;Discoverer & Planner</a></li>
+                    <li><a href="deployer.html" class=""><i class="fa fa-download"></i>&nbsp;Deployer</a></li>
+                    <li><a href="monitor.html" class=""><i class="fa fa-dashboard"></i>&nbsp;Monitor</a></li>
+                    <li><a href="sla.html" class=""><i class="fa fa-file-text-o"></i>&nbsp;SLA Service</strong></a></li>
 
-               </ul>
+                </ul>
                 <!-- /#side-menu -->
             </div>
             <!-- /.sidebar-collapse -->
@@ -128,7 +127,64 @@
     </nav>
 
     <div id="page-wrapper">
-        <iframe id="iframe" src="#" frameborder="1" width="800" height="600"></iframe>
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">
+                    SLA Service
+                    <small>Manage the Service Level Agreements</small>
+                </h1>
+            </div>
+        </div>
+        <div class="row" id="page-content">
+
+
+            <div class="col-lg-12">
+
+                <div class="panel panel-default">
+                    <div id="sla-agreement-heading" class="panel-heading">
+                        <i class="fa fa-tasks"></i> Create SLA Agreement
+                        <a aria-expanded="false" data-toggle="collapse" data-parent="#accordion" data-target="#sla-form-collapsable"><i class="fa fa-chevron-down"></i></a>
+                    </div>
+
+                    <!-- /.panel-heading -->
+                    <div id="sla-form-collapsable" class="panel-body collapse">
+                        <div class="form-group">
+                            <label for="templateNameInput">Template name</label>
+                            <input type="text" class="form-control" id="templateNameInput" placeholder="Template name">
+                        </div>
+                        <div class="form-group">
+                            <label for="appIdInput">Application ID</label>
+                            <input type="text" class="form-control" id="appIdInput" placeholder="Application ID">
+                        </div>
+                        <div class="form-group">
+                            <label for="moduleIdInput">Module ID</label>
+                            <input type="text" class="form-control" id="moduleIdInput" placeholder="Module ID">
+                        </div>
+
+                        <button onClick="addSlaAgreement()" class="btn btn-default">Add Agreement</button>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bullseye"></i> View SLA Agreements
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <iframe id="iframe" width="100%" height="450px"  frameBorder="0" src="#"></iframe>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
     </div>
     <!-- /#page-wrapper -->
 
@@ -144,10 +200,90 @@
 <!-- SB Admin Scripts - Include with every page -->
 <script src="js/sb-admin.js"></script>
 
+<!-- PNotify Scripts -  -->
+<script src="js/lib/pnotify.custom.min.js"></script>
+
 <script type="text/javascript">
-$(document).ready(function() {
-    $("#iframe").attr("src", "slagui/agreements/");
-});
+    var SPINNER = new Spinner({lines: 13, length: 6, width: 2, radius: 5, top: "-5px"});
+    var CONTENT_ID = "page-content";
+
+    $(document).ready(function() {
+        PNotify.prototype.options.styling = "fontawesome";
+
+        $("#iframe").attr("src", "slagui/agreements/");
+        $('#iframe').load(function(){
+            // Workaround to detect if the IFrame failed
+            var iframe = $("#iframe");
+            if (iframe.contents().text().search("404") != -1) {
+                $('#'+CONTENT_ID).html("<h1 class=\"text-center text-danger\">SLA module is not available in this moment.</h1>");
+            }
+            SPINNER.stop();
+        });
+
+
+        $("#sla-agreement-heading").on("click", function(){
+            $("#sla-form-collapsable").collapse("toggle");
+        });
+
+        $("#iframe").attr("src", "/projects/seaclouds/slagui/agreements/");
+        setInterval(updatePage, 10000);
+
+
+    });
+
+    function updatePage(){
+        SPINNER.spin(document.getElementById("loading-spinner"));
+        document.getElementById('iframe').contentWindow.location.reload(true);
+    }
+
+
+    function addSlaAgreement(){
+        var templateNameInput = $("#templateNameInput").val();
+        var appIdInput = $("#appIdInput").val();
+        var moduleIdInput = $("#moduleIdInput").val();
+        var consumerId = (templateNameInput == "nuro-cloud-template")? "nuro" : "any-client";
+        var data = {
+            templateid : templateNameInput,
+            consumerid: consumerId,
+            appid: appIdInput,
+            moduleid: moduleIdInput
+        };
+
+        $.ajax({
+            url: "/projects/seaclouds/slagui/rest/agreements",
+            type: "POST",
+            data: JSON.stringify(data),     /* this should not be needed */
+            contentType: "application/json",
+            dataType: "json"
+        }).done(function (response){
+            $.ajax({
+                url: '/projects/seaclouds/slagui/rest/enforcements/' + response.id,
+                type: 'PUT',
+                dataType: 'text'
+            }).done(function(res){
+                new PNotify({
+                    title: 'New agreement created',
+                    text: 'Please wait until it appear on the list',
+                    type: 'success'
+                });
+                updatePage();
+            }).fail(function(err) {
+                new PNotify({
+                    title: 'Error',
+                    text: 'The SLA Module failed while adding a new enforcement',
+                    type: 'error'
+                });
+            });
+        }).fail(function (err){
+            new PNotify({
+                title: 'Error',
+                text: 'The SLA Module failed while adding a new agreement',
+                type: 'error'
+            });
+        })
+
+    }
+
 </script>
 
 </body>
