@@ -24,7 +24,6 @@
     <modules>
         <module>monitor</module>
         <module>deployer</module>
-        <module>rest-api</module>
         <module>planner</module>
         <module>dashboard</module>
     </modules>
@@ -154,6 +153,9 @@
                         <exclude>**/*.key.org</exclude>
                         <exclude>**/*.psd</exclude>
                         <exclude>**/*.json</exclude>
+                        <exclude>**/*.yml</exclude>
+                        <exclude>**/*.yaml</exclude>
+
                     </excludes>
                 </configuration>
             </plugin>

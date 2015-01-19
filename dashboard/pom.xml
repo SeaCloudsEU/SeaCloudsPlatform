@@ -78,6 +78,27 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty.version}</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <version>0.11</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <excludes combine.children="append">
+                        <exclude>**/css/lib/*</exclude>
+                        <exclude>**/css/fonts/*</exclude>
+                        <exclude>**/js/lib/*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
         </plugins>
         <finalName>dashboard</finalName>
     </build>
