@@ -16,9 +16,20 @@
  */
 
 
+package eu.seaclouds.platform.planner.optimizer.heuristics;
 
+import java.util.Map;
 
+import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 
-public class InputOpt  {
-    
+public interface Heuristic {
+
+	
+	/**
+	 * @param cloudOffers
+	 * @param applicationMap
+	 * It changes the elements in CloudOffers, which reference the map in applicationMap
+	 */
+	public void computeOptimalSolution(SuitableOptions cloudOffers, Map<String, Object>applicationMap);
+	
 }
