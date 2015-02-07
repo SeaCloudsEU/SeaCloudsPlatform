@@ -20,7 +20,10 @@ package eu.seaclouds.platform.planner.optimizer.heuristics;
 import java.util.List;
 import java.util.Map;
 
-public class RandomSearch extends AbstractHeuristic implements Heuristic {
+import eu.seaclouds.platform.planner.optimizer.Solution;
+import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
+
+public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 
 	
 	
@@ -35,12 +38,12 @@ public class RandomSearch extends AbstractHeuristic implements Heuristic {
 
 	/*
 	 * (non-Javadoc)
-	 * @see test.restws.Heuristic#computeOptimalSolution(test.restws.SuitableOptions, java.util.Map)
+	 * @see eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethod#computeOptimalSolution(eu.seaclouds.platform.planner.optimizer.SuitableOptions, java.util.Map)
 	 */
 	@Override
 	public void computeOptimalSolution(SuitableOptions cloudOffers,	Map<String, Object> applicationMap) {
 		
-		//We pass an Empty solution instead of a null value or create a new method that does not consider the current one. 
+		//To findSolution method, we pass an Empty solution instead of a null value to or create a new method that does not consider the current one. 
 		//This way may help for replanning, when even the first attempt for solution will be based on the current deployment
 		 Solution bestSol = findSolution(new Solution(), cloudOffers, applicationMap);
 		 
@@ -69,9 +72,11 @@ public class RandomSearch extends AbstractHeuristic implements Heuristic {
 		
 		Solution newSolution = new Solution();
 		
+		//TODO: Complete the loop 
 		for(List<String> l : cloudOffers.getListIterator()){
 			
-			double itemToUse = Math.floor(Math.random()*l.size());
+			
+			//double itemToUse = Math.floor(Math.random()*l.size());
 			//newSolution.addItem(name, cloudOption);
 		}
 		

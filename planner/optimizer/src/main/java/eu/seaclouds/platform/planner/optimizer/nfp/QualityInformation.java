@@ -15,21 +15,39 @@
  *    limitations under the License.
  */
 
-
-package eu.seaclouds.platform.planner.optimizer.heuristics;
+package eu.seaclouds.platform.planner.optimizer.nfp;
 
 import java.util.Map;
 
-import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
+public class QualityInformation {
 
-public interface Heuristic {
+	public int getPerfRequirement(Map<String, Object> applicationMap) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-	
-	/**
-	 * @param cloudOffers
-	 * @param applicationMap
-	 * It changes the elements in CloudOffers, which reference the map in applicationMap
+	/*
+	 *TODO:  Make a clear distinction between performance and Response Time
 	 */
-	public void computeOptimalSolution(SuitableOptions cloudOffers, Map<String, Object>applicationMap);
+	public int getResponseTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
+
+
+
+	
+	public double getAvailability(Map<String, Object> applicationMap) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int getCost(Map<String, Object> applicationMap) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+
 }

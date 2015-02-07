@@ -24,9 +24,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.seaclouds.platform.planner.optimizer.heuristics.Heuristic;
+import eu.seaclouds.platform.planner.optimizer.heuristics.RandomSearch;
+import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethod;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
-import test.restws.RandomSearch;
+
 
 
 public class OptimizerInitialDeployment {
@@ -44,7 +45,7 @@ public class OptimizerInitialDeployment {
 		
 		//Compute solution
 		//TODO Change the type of heuristic for another with better performance/output
-		Heuristic engine = new RandomSearch();
+		SearchMethod engine = new RandomSearch();
 		engine.computeOptimalSolution(appInfoSuitableOptions.clone(), appMap);
 		YAMLoptimizerParser.ReplaceSuitableServiceByHost(appMap);
 		 return YAMLoptimizerParser.FromMAPtoYAMLstring(appMap);

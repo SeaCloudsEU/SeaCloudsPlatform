@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
+import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 
 
 public class YAMLoptimizerParser {
@@ -220,6 +221,13 @@ private static boolean containsSingleSuitableService(Entry<String, Object> modul
 	}
 	return false;
 	
+}
+
+
+public static QualityInformation getQualityRequirements(
+		Map<String, Object> applicationMap) {
+	// TODO Auto-generated method stub
+	return null;
 }
 	
 
