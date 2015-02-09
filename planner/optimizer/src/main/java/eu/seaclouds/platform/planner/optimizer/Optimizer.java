@@ -1,5 +1,3 @@
-
-
 /**
  * Copyright 2014 SeaClouds
  * Contact: SeaClouds
