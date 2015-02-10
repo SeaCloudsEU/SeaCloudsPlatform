@@ -24,5 +24,11 @@ public class TOSCAkeywords {
 	public static final Object MODULE_REQUIREMENTS = "requirements";
 	public static final Object MODULE_REQUIREMENTS_CONSTRAINTS = "constraints";
 	public static final String MODULE_REQUIREMENTS_HOST = "host";
+	public static final String CLOUD_OFFER_PROPERTIES_TAG = "properties";
+	
+	//These ones have not been defined yet. I invent them
+	public static final String CLOUD_OFFER_PROPERTY_AVAILABILITY = "availability";
+	public static final String CLOUD_OFFER_PROPERTY_PERFORMANCE = "performance";
+	public static final String CLOUD_OFFER_PROPERTY_COST = "cost";
 	
 }

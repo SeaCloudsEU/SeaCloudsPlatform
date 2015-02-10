@@ -17,6 +17,7 @@
 
 package eu.seaclouds.platform.planner.optimizer.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
+import eu.seaclouds.platform.planner.optimizer.CloudOffer;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 
@@ -138,7 +140,7 @@ public class YAMLoptimizerParser {
 
 
 @SuppressWarnings("unchecked")
-public static SuitableOptions GetSuitableCloudOptionsForModules(String appModel) {
+public static SuitableOptions GetSuitableCloudOptionsAndCharacteristicsForModules(String appModel, String suitableCloudOffers) {
 	
 	Map<String, Object> appMap = GetMAPofAPP(appModel);
 	 
@@ -150,12 +152,13 @@ public static SuitableOptions GetSuitableCloudOptionsForModules(String appModel)
 	 for (Map.Entry<String, Object> entry : appMap.entrySet())
 	 {
 	   String potentialModuleName =   entry.getKey();
-	   List<String> potentialListOfOffers =GetListOfSuitableOptionsForAlreadyFoundModule(entry.getValue()); 
+	   List<String> potentialListOfOffersNames =GetListOfSuitableOptionsForAlreadyFoundModule(entry.getValue()); 
 			  // lookForSuitableOffersOfPotentialModuleName(entry.getValue(),1);
 	   
-	   if(potentialListOfOffers!=null){
-		   log.debug("Found suitable options, saving their reference. Module name= " + potentialModuleName + " cloud offers=" + potentialListOfOffers.toString());
-		   options.addSuitableOptions(potentialModuleName, potentialListOfOffers);
+	   if(potentialListOfOffersNames!=null){
+		   log.debug("Found suitable options, saving their reference. Module name= " + potentialModuleName + " cloud offers=" + potentialListOfOffersNames.toString());
+		   List<CloudOffer> potentialListOfOfferCharacteristics = getCloudOfferCharacteristcisByName(potentialListOfOffersNames,suitableCloudOffers);
+		   options.addSuitableOptions(potentialModuleName, potentialListOfOffersNames, potentialListOfOfferCharacteristics);
 	   }
 		   
 	  }
@@ -167,6 +170,69 @@ public static SuitableOptions GetSuitableCloudOptionsForModules(String appModel)
 
 
 
+
+
+private static List<CloudOffer> getCloudOfferCharacteristcisByName(List<String> potentialListOfOffers, String suitableCloudOffers) {
+	
+	Map<String, Object> cloudOffersMap = GetMAPofAPP(suitableCloudOffers);
+	
+	List<CloudOffer> potentiaListOfCloudOffersWithCharacteristics = new ArrayList<CloudOffer>();
+	
+	//for each offer, look for its characteristics
+	for(String potentialOffer: potentialListOfOffers){
+		CloudOffer cloudOfferCharacteristics=getAllCharacteristicsOfCloudOffer(potentialOffer,cloudOffersMap);
+	
+		//Iff the offer was found, add its characteristics to the list
+		if(cloudOfferCharacteristics!=null){
+			potentiaListOfCloudOffersWithCharacteristics.add(cloudOfferCharacteristics);
+		}
+		else{ //If it was not found, add an identificative Element 
+			potentiaListOfCloudOffersWithCharacteristics.add(new CloudOffer(potentialOffer + " (CLOUD OFFER NOT EXISTENT IN FILE WITH CLOUD OFFERS)"));
+			log.warn("Cloud offer " + potentialOffer + " was not found among cloud offer options. Potential subsequent error");
+		}
+	}
+	
+	return potentiaListOfCloudOffersWithCharacteristics;
+	
+	
+}
+
+
+@SuppressWarnings("unchecked")
+private static CloudOffer getAllCharacteristicsOfCloudOffer(String potentialOffer,	Map<String, Object> cloudOffersMap) {
+
+	
+	 
+	Map<String, Object> cloudMap=(Map<String, Object>) cloudOffersMap.get(TOSCAkeywords.NODE_TEMPLATE);
+	 
+	CloudOffer offer= new CloudOffer(potentialOffer);
+	offer.setAvailability(getPropertyOfCloudOffer(TOSCAkeywords.CLOUD_OFFER_PROPERTY_AVAILABILITY,(Map<String, Object>)cloudMap.get(potentialOffer)));
+	offer.setPerformance(getPropertyOfCloudOffer(TOSCAkeywords.CLOUD_OFFER_PROPERTY_PERFORMANCE,(Map<String, Object>)cloudMap.get(potentialOffer)));
+	offer.setCost(getPropertyOfCloudOffer(TOSCAkeywords.CLOUD_OFFER_PROPERTY_COST,(Map<String, Object>)cloudMap.get(potentialOffer)));
+	 
+	return offer;
+}
+
+
+private static double getPropertyOfCloudOffer(String cloudOfferProperty, Map<String, Object> singleOfferMap) {
+	
+	Map<String, Object> propertiesOfOffer = (Map<String, Object>)singleOfferMap.get(TOSCAkeywords.CLOUD_OFFER_PROPERTIES_TAG);
+	
+	double valueOfProperty=0.0;
+	
+	
+	if(propertiesOfOffer.containsKey(cloudOfferProperty)){
+		//If there is an error here, treat the value returned in the Map as List<String> instead of as String; i.e., add a .get(0)
+		valueOfProperty = Double.valueOf(((String) propertiesOfOffer.get(cloudOfferProperty))).doubleValue();
+	}
+	else{
+		//Many times it will not exist the value and it will return 0
+		log.debug("Property " + cloudOfferProperty + " not found. Need to populate better the YAML file with suitable cloud offers");
+	}
+	
+	return valueOfProperty;
+	
+}
 
 
 public static void AddSuitableOfferForModule(String moduleName, String solutionName ,Map<String, Object> applicationMap) {

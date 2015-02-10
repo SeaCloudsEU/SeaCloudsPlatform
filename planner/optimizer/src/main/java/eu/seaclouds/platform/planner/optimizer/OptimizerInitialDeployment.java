@@ -41,7 +41,7 @@ public class OptimizerInitialDeployment {
 		Map<String, Object> appMap = YAMLoptimizerParser.GetMAPofAPP(appModel);		 
 		
 		//Get cloud offers
-		SuitableOptions appInfoSuitableOptions = YAMLoptimizerParser.GetSuitableCloudOptionsForModules(appModel);
+		SuitableOptions appInfoSuitableOptions = YAMLoptimizerParser.GetSuitableCloudOptionsAndCharacteristicsForModules(appModel,suitableCloudOffer);
 		
 		//Compute solution
 		//TODO Change the type of heuristic for another with better performance/output

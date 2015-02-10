@@ -28,26 +28,31 @@ public class SuitableOptions { //implements Iterable<List<String>
 	
 	static Logger log = LoggerFactory.getLogger(SuitableOptions.class);
 	
-	ArrayList<List<String>> suitableOptions;
-	ArrayList<String> moduleNames;
+	private ArrayList<String> moduleNames;
+	private ArrayList<List<String>> suitableOptionsNames;
+	private ArrayList<List<CloudOffer>> suitableOptionsCharacteristics;
+	
 	
 	public SuitableOptions(){
-		suitableOptions = new ArrayList<List<String>>();
+		
 		moduleNames = new ArrayList<String>();
+		suitableOptionsNames = new ArrayList<List<String>>();
+		suitableOptionsCharacteristics = new ArrayList<List<CloudOffer>>();
+		
 	}
 	
-	public void addSuitableOptions(String moduleName, List<String> options){
+	public void addSuitableOptions(String moduleName, List<String> optionsNames, List<CloudOffer> OptionsCharacteristics){
 		
-		log.debug("Adding the options of module " + moduleName + " which consists of " + options.size() + " elements");
+		log.debug("Adding the options of module " + moduleName + " which consists of " + optionsNames.size() + " elements");
 		
 		
 		moduleNames.add(moduleName);
-		suitableOptions.add(options);
-
+		suitableOptionsNames.add(optionsNames);
+		suitableOptionsCharacteristics.add(OptionsCharacteristics);
 	}
 	
 
-/* Better not expose the getter because it's referencing the input yaml, not copying it
+/* Better not exposing the getter method because it's referencing the input yaml, not copying it
  * 
  *
 	public List<String> getSuitableOptions(String moduleName){
@@ -87,7 +92,7 @@ public class SuitableOptions { //implements Iterable<List<String>
 		}
 		
 		if(found){
-			return suitableOptions.get(i).size(); 
+			return suitableOptionsNames.get(i).size(); 
 		}
 		else{System.out.println("getSuitableOptions@SuitableOptions: Error, name of module not found: Return -1");}
 		
@@ -104,16 +109,27 @@ public class SuitableOptions { //implements Iterable<List<String>
 		}
 		
 		
-		//Clone suitableOptions
-		for(List<String> l : suitableOptions){
+		//Clone suitableOptionsNames
+		for(List<String> l : suitableOptionsNames){
 			
 			List<String> clonedList = (List<String>)  new ArrayList<String>();
 			
 			for(String option : l){
 				clonedList.add(option);
 			}
-			cloned.suitableOptions.add(clonedList);
+			cloned.suitableOptionsNames.add(clonedList);
 		}
+		
+		//Clone suitableOptionsCharacteristics
+		for(List<CloudOffer> l : suitableOptionsCharacteristics){
+				
+					List<CloudOffer> clonedList2 = (List<CloudOffer>)  new ArrayList<CloudOffer>();
+					
+					for(CloudOffer option : l){
+						clonedList2.add(option.clone());
+					}
+					cloned.suitableOptionsCharacteristics.add(clonedList2);
+				}
 		
 		
 		return cloned;
@@ -136,8 +152,8 @@ public class SuitableOptions { //implements Iterable<List<String>
 		if(found){
 			
 			//if module found and there exist suitable options for it (i.e., suitableOptions.get(i).size()>0). 
-			if(suitableOptions.get(i).size()>0){
-				return suitableOptions.get(i).get(optionPosition); 
+			if(suitableOptionsNames.get(i).size()>0){
+				return suitableOptionsNames.get(i).get(optionPosition); 
 			}
 			else{
 				return null;
@@ -185,7 +201,7 @@ public class SuitableOptions { //implements Iterable<List<String>
     	
     	@Override
          public List<String> next() {
-         	List<String> currentList=suitableOptions.get(currentIndex);
+         	List<String> currentList=suitableOptionsNames.get(currentIndex);
          	currentIndex++;
              return currentList;
              		

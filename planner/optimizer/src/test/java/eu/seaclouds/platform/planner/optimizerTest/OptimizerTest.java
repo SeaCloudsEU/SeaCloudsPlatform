@@ -44,6 +44,7 @@ public class OptimizerTest {
 	private static final String CLOUD_OFFER_FILENAME="./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/cloudOffer.yaml";
 	private static final String OPEN_SQUARE_BRACKET="[";
 	private static final String CLOSE_SQUARE_BRACKET="]";
+	private static final double MAX_MILLIS_EXECUTING = 20000;
 	
 	static Logger log = LoggerFactory.getLogger(OptimizerTest.class);
 	
@@ -113,6 +114,19 @@ public void testPresenceSolution(){
 	Assert.assertEquals("Optimizer did not find any of the services",numServices,numSuitableServicesFound);
 	
 }
+
+@Test
+public void testPerformanceComplete(){
+	
+	long startTime= System.currentTimeMillis();
+	optimizer.optimize(appModel, suitableCloudOffer);
+	long finishTime= System.currentTimeMillis();
+	
+	log.debug("Optimizer execution time= " + (((double) (finishTime-startTime))/1000.0) + " seconds");
+	Assert.assertTrue("Otimizer does not have good Performance. More than " + ((double) MAX_MILLIS_EXECUTING)/1000.1 + " seconds", (finishTime-startTime)>MAX_MILLIS_EXECUTING);
+	
+}
+
 
 @AfterClass
 public void testFinishced(){
