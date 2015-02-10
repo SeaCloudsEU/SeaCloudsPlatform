@@ -55,6 +55,7 @@ public abstract class AbstractHeuristic implements SearchMethod {
 	public double fitness(Solution bestSol,Map<String, Object> applicationMap) {
 		
 		
+		
 		QualityInformation requirements = YAMLoptimizerParser.getQualityRequirements(applicationMap);
 		QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
 		
@@ -72,6 +73,7 @@ public abstract class AbstractHeuristic implements SearchMethod {
 			//some requirement was not satisfied, so the solution cannot be considered
 			return Double.NEGATIVE_INFINITY;
 		}
+		
 	}
 
 	
