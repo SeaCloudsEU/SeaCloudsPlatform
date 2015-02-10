@@ -31,17 +31,28 @@ public class Solution implements Iterable<String>{
 	
 	
 	private Map<String, String> modName_ModOption; 
+	private Map<String, Integer> modName_NumInstances; 
 	
 	public Solution(){
 		modName_ModOption = new HashMap<String, String>();
+		modName_NumInstances = new HashMap<String, Integer>();
 	}
 	
 	public void addItem(String name, String cloudOption){
-		modName_ModOption.put(name, cloudOption);
+		addItem(name, cloudOption,1);
 	}
 	
-	public String getItem(String key){
+	public void addItem(String name, String cloudOption, int numInstances){
+		modName_ModOption.put(name, cloudOption);
+		modName_NumInstances.put(name, numInstances);
+	}
+	
+	public String getCloudOfferNameForModule(String key){
 		return modName_ModOption.get(key);
+	}
+	
+	public int getCloudInstancesForModule(String key){
+		return modName_NumInstances.get(key);
 	}
 	
 	

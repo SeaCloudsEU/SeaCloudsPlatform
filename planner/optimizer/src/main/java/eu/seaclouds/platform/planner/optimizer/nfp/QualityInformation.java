@@ -21,32 +21,55 @@ import java.util.Map;
 
 public class QualityInformation {
 
-	public int getPerfRequirement(Map<String, Object> applicationMap) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	/*
-	 *TODO:  Make a clear distinction between performance and Response Time
-	 */
-	public int getResponseTime() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	
+	private double respTime;
+	private double availability;
+	private double cost;
+	private double workload;
+	
 	
 
-
+	public double getResponseTime() {
+		return respTime;
+	}
+	
+	public void setResponseTime(double respTime) {
+		this.respTime = respTime;
+	}
 
 	
-	public double getAvailability(Map<String, Object> applicationMap) {
-		// TODO Auto-generated method stub
-		return 0;
+	public double getAvailability() {	
+		return availability;
+	}
+	
+	
+	
+	public void setAvailability(double availability) {
+		this.availability = availability;
 	}
 
-	public int getCost(Map<String, Object> applicationMap) {
-		// TODO Auto-generated method stub
-		return 0;
+
+	public void setCost(double cost) {
+		this.cost = cost;
 	}
+
+
+	public double getCost() {
+		
+		return cost;
+	}
+
+	public void setWorkload(double applicationWorkload) {
+		workload=applicationWorkload;
+		
+	}
+
+
+	public double getWorkload() {
+		return workload;
+	}
+
+
 
 
 

@@ -11,4 +11,33 @@ public class TopologyElementCalled {
 		element=e;
 	}
 	
+	public TopologyElementCalled(TopologyElement e, double proCall, double ncall){
+		element=e;
+		probCall=proCall;
+		meanNumberCalls=ncall;
+	}
+
+	public double getProbCall() {
+		return probCall;
+	}
+
+	public void setProbCall(double probCall) {
+		this.probCall = probCall;
+	}
+
+	public double getMeanNumberCalls() {
+		return meanNumberCalls;
+	}
+
+	public void setMeanNumberCalls(double meanNumberCalls) {
+		this.meanNumberCalls = meanNumberCalls;
+	}
+
+	public TopologyElement getElement() {
+		return element;
+	}
+
+	public void setElement(TopologyElement element) {
+		this.element = element;
+	}
 }

@@ -15,8 +15,16 @@ public class TopologyElement {
 	}
 	
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return name;
+	}
+	
+	public void addElementCalled(TopologyElementCalled e){
+		dependences.add(e);
+	}
+	
+	public void addElementCalled(TopologyElement e){
+		TopologyElementCalled elementCalled = new TopologyElementCalled(e);
+		dependences.add(elementCalled);
 	}
 
 }

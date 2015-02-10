@@ -21,6 +21,7 @@ package eu.seaclouds.platform.planner.optimizer.heuristics;
 import java.util.Map;
 
 import eu.seaclouds.platform.planner.optimizer.Solution;
+import eu.seaclouds.platform.planner.optimizer.Topology;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
@@ -52,19 +53,20 @@ public abstract class AbstractHeuristic implements SearchMethod {
 		return MAX_ITER_NO_IMPROVE;
 	}
 
-	public double fitness(Solution bestSol,Map<String, Object> applicationMap) {
+	public double fitness(Solution bestSol,Map<String, Object> applicationMap, Topology topology) {
 		
 		
 		
 		QualityInformation requirements = YAMLoptimizerParser.getQualityRequirements(applicationMap);
+		requirements.setWorkload(YAMLoptimizerParser.getApplicationWorkload(applicationMap));
 		QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
 		
 		//calculates how well it satisfies performance reuquirement
-		double perfGoodness= requirements.getResponseTime() / qualityAnalyzer.computePerformance(bestSol).getResponseTime() ;
+		double perfGoodness= requirements.getResponseTime() / qualityAnalyzer.computePerformance(bestSol,topology).getResponseTime() ;
 		//calculates how well it satisfies performance reuquirement
-		double availGoodness= (1.0 - requirements.getAvailability(applicationMap)) / (1.0 - qualityAnalyzer.computeAvailability(bestSol));
+		double availGoodness= (1.0 - requirements.getAvailability()) / (1.0 - qualityAnalyzer.computeAvailability(bestSol));
 		//calculates how well it satisfies performance reuquirement
-		double costGoodness= requirements.getCost(applicationMap) / qualityAnalyzer.computeCost(bestSol);
+		double costGoodness= requirements.getCost() / qualityAnalyzer.computeCost(bestSol);
 		
 		if((perfGoodness>=0)&&(availGoodness>=0)&&(costGoodness>=0)){
 			return perfGoodness + availGoodness + costGoodness;
@@ -82,7 +84,7 @@ public abstract class AbstractHeuristic implements SearchMethod {
 		for(String solkey :  currentSol){
 			
 			YAMLoptimizerParser.CleanSuitableOfferForModule(solkey, applicationMap);
-			YAMLoptimizerParser.AddSuitableOfferForModule(solkey, currentSol.getItem(solkey),applicationMap);
+			YAMLoptimizerParser.AddSuitableOfferForModule(solkey, currentSol.getCloudOfferNameForModule(solkey),applicationMap);
 		}
 		
 	}

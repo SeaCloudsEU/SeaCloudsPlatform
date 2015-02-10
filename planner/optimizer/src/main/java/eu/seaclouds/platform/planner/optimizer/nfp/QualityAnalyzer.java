@@ -18,10 +18,11 @@
 package eu.seaclouds.platform.planner.optimizer.nfp;
 
 import eu.seaclouds.platform.planner.optimizer.Solution;
+import eu.seaclouds.platform.planner.optimizer.Topology;
 
 public class QualityAnalyzer {
 
-	QualityInformation properties=null;
+	private QualityInformation properties=null;
 	
 	public QualityAnalyzer() {
 		
@@ -32,7 +33,7 @@ public class QualityAnalyzer {
 
 	
 	
-	public QualityInformation computePerformance(Solution bestSol) {
+	public QualityInformation computePerformance(Solution bestSol, Topology topology) {
 		// TODO Auto-generated method stub
 		//after computing, save the performance infor in properties.performance
 		return null;

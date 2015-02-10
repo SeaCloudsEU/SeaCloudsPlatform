@@ -40,13 +40,17 @@ public class OptimizerInitialDeployment {
 		//Get app characteristics
 		Map<String, Object> appMap = YAMLoptimizerParser.GetMAPofAPP(appModel);		 
 		
+		Topology topology=null;
+		//TODO: Obtain Application topology. At 10/02/2015 this information is not included in the YAML. It's not possible to retrieve it
+		//Topology topology = getApplicationTopology(appMap);
+		
 		//Get cloud offers
 		SuitableOptions appInfoSuitableOptions = YAMLoptimizerParser.GetSuitableCloudOptionsAndCharacteristicsForModules(appModel,suitableCloudOffer);
 		
 		//Compute solution
 		//TODO Change the type of heuristic for another with better performance/output
 		SearchMethod engine = new RandomSearch();
-		engine.computeOptimalSolution(appInfoSuitableOptions.clone(), appMap);
+		engine.computeOptimalSolution(appInfoSuitableOptions.clone(), appMap, topology);
 		YAMLoptimizerParser.ReplaceSuitableServiceByHost(appMap);
 		 return YAMLoptimizerParser.FromMAPtoYAMLstring(appMap);
 	}

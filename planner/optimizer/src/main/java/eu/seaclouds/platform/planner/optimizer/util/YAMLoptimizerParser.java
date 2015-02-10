@@ -293,7 +293,15 @@ private static boolean containsSingleSuitableService(Entry<String, Object> modul
 public static QualityInformation getQualityRequirements(
 		Map<String, Object> applicationMap) {
 	// TODO Auto-generated method stub
+	// TODO Waiting for the decision on how these requirements are stored in the YAML
 	return null;
+}
+
+
+public static double getApplicationWorkload(Map<String, Object> applicationMap) {
+	// TODO Auto-generated method stub
+	// TODO Waiting for the decision on how workload is stored in the YAML
+	return 0;
 }
 	
 

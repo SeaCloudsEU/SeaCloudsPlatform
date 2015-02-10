@@ -17,11 +17,11 @@
 
 package eu.seaclouds.platform.planner.optimizer.heuristics;
 
-import java.util.List;
 import java.util.Map;
 
 import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
+import eu.seaclouds.platform.planner.optimizer.Topology;
 
 public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 
@@ -41,7 +41,7 @@ public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 	 * @see eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethod#computeOptimalSolution(eu.seaclouds.platform.planner.optimizer.SuitableOptions, java.util.Map)
 	 */
 	@Override
-	public void computeOptimalSolution(SuitableOptions cloudOffers,	Map<String, Object> applicationMap) {
+	public void computeOptimalSolution(SuitableOptions cloudOffers,	Map<String, Object> applicationMap, Topology topology) {
 		
 		//To findSolution method, we pass an Empty solution instead of a null value to or create a new method that does not consider the current one. 
 		//This way may help for replanning, when even the first attempt for solution will be based on the current deployment
@@ -49,13 +49,16 @@ public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 		 
 		 Solution currentSol=bestSol;
 		 
+		 double bestSolFitness = super.fitness(bestSol, applicationMap,topology);
+		 
 		 int i=0;
 		 while(i<getMaxIterNoImprove()){
 		 
 			currentSol = findSolution(currentSol, cloudOffers, applicationMap);
-			 
-			 if(super.fitness(currentSol, applicationMap)>super.fitness(bestSol, applicationMap)){			 
+			 double currentSolFitness= super.fitness(currentSol, applicationMap, topology);
+			 if(currentSolFitness>bestSolFitness){			 
 				 bestSol= currentSol;
+				 bestSolFitness= currentSolFitness;
 				 i=0;
 			 }
 			 
@@ -72,15 +75,9 @@ public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 		
 		Solution newSolution = new Solution();
 		
-		//TODO: Complete the loop 
-		for(List<String> l : cloudOffers.getListIterator()){
-			
-			
-			//double itemToUse = Math.floor(Math.random()*l.size());
-			//newSolution.addItem(name, cloudOption);
-		}
-		
 		for(String modName : cloudOffers.getStringIterator()){
+			
+			//TODO Consider also playing with the amount of instances used of a suitable option. 
 			int itemToUse = (int) Math.floor(Math.random()*cloudOffers.getSizeOfSuitableOptions(modName));
 			
 			newSolution.addItem(modName, cloudOffers.getIthSuitableOptionForModuleName(modName,itemToUse));
