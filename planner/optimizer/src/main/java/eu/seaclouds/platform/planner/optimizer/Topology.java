@@ -1,25 +1,121 @@
+/**
+ * Copyright 2014 SeaClouds
+ * Contact: SeaClouds
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package eu.seaclouds.platform.planner.optimizer;
 
-import java.util.HashMap;
-import java.util.Map;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 
 
 public class Topology {
 
+	static Logger log = LoggerFactory.getLogger(Topology.class);
+	
 	//A hashMap indexed by the module name, which is in turn duplicated because it is contained insiede TopologyElement
-	private Map<String,TopologyElement> modules;
+	private List<TopologyElement> modules;
 	
 	public Topology(){
-		modules = new HashMap<String,TopologyElement>();
+		modules = new ArrayList<TopologyElement>();
 	}
 	
 	public void addModule(TopologyElement e){
 
-		modules.put(e.getName(), e);
+		//Potential error if it is included an element already contained
+		modules.add(e);
+		
+		if(modules.contains(e)){
+			log.warn("Adding more than one time the same element to the topology");
+		}
+		
 	}
 	
 	public TopologyElement getModule(String name){
-		return modules.get(name);
+		
+		for(TopologyElement e : modules){
+			if(e.getName().equals(name)){
+				return e;
+			}
+		}
+		return null;
+	
+	}
+
+	public int size() {
+		return modules.size();
+	}
+
+	public TopologyElement getInitialElement() {
+		//We assume that The initial element is such one that is not called by anyone.
+		
+		
+		for(TopologyElement pointed: modules){
+			boolean isInitial=true;
+			
+			//Check if any of the elements in the topology depends on (calls) it
+			for(TopologyElement pointer: modules){
+				if(pointer.dependsOn(pointed.getName())){
+					isInitial=false;
+				}
+				
+			}
+			
+			if(isInitial){
+				return pointed;
+			}
+			
+		}
+		
+		log.warn("Initial element not found. Possible circular dependences in the design. Please, state clearly which is the initial element");
+		return null;
+	}
+
+	public int indexOf(TopologyElement initialElement) {
+		return modules.indexOf(initialElement);
+	}
+
+	
+	
+	/**
+	 * @param element
+	 * @param toIndex
+	 * Swaps the elements indexes. "Element" gets "toIndex" index and the previous element with index "toIndex" gets the previous index of "element"
+	 * 
+	 */
+	public void replaceElementsIndexes(TopologyElement element, int toIndex) {
+		int targetIndex = modules.indexOf(element);
+		TopologyElement replaced = modules.set(toIndex, element);
+		modules.set(targetIndex, replaced);
+	}
+
+	//TODO: This operation can break encapsulation. Since it is only used to iterate over the elements in the list
+	// implement an iterator in this class over the modules list
+	public List<TopologyElement> getModules() {
+		return modules;
+	}
+
+	public TopologyElement getElementIndex(int index) {
+		return modules.get(index);
 	}
 	
 }

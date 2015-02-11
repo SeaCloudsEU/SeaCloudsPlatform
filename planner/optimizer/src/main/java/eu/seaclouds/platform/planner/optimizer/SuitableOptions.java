@@ -20,8 +20,10 @@ package eu.seaclouds.platform.planner.optimizer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public class SuitableOptions { //implements Iterable<List<String>
 
@@ -226,6 +228,50 @@ public class SuitableOptions { //implements Iterable<List<String>
 	
 	public Iterable<String> getStringIterator(){
 		return new StringIterator();
+	}
+
+	
+	/**
+	 * @param moduleName
+	 * @param cloudChosenForModule
+	 * @return The characteristics of cloudOptionNameForModule cloud for module with name moduleName
+	 */
+	public CloudOffer getCloudCharacteristics(String moduleName,String cloudOptionNameForModule) {
+		
+		//Find index of moduleName
+		boolean found=false;
+		int indexModule=0;
+		while((indexModule<moduleNames.size())&&(!found)){
+			if(moduleNames.get(indexModule).equals(moduleName)){
+				found=true;
+			}
+			else{indexModule++;}
+			
+		}
+		
+		//if it is not found, there will probably be an error later. Now advise. We cannot repair the situation here, just be aware. 
+		if(!found){
+			log.warn("Module in topology has not been found as module with some suitable optoins. ERROR ahead!");
+		}
+		
+		found=false;
+		int indexCloudOffer=0;
+		while((indexCloudOffer<suitableOptionsCharacteristics.get(indexModule).size())&&(!found)){
+			if(suitableOptionsCharacteristics.get(indexModule).get(indexCloudOffer).getName().equals(cloudOptionNameForModule)){
+				found=true;
+			}
+			else{
+				indexCloudOffer++;
+			}
+		}
+		
+		if(!found){
+			log.warn("Chosen cloud option in solution has not been found as possibility for the suitable options for the module. ERROR ahead!");
+		}
+		
+		return suitableOptionsCharacteristics.get(indexModule).get(indexCloudOffer);
+		
+		
 	}
 
 

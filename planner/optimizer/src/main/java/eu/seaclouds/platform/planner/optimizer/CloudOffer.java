@@ -6,14 +6,26 @@ public class CloudOffer {
 	private double performance;
 	private double availability;
 	private double cost;
+	private double numCores;
 	
 	
-	public CloudOffer(String name, double performance, double availability,	double cost) {
+public CloudOffer(String name, double performance, double availability,	double cost, double numCores) {
 		
 		this.name = name;
+		
+		//We expect to save here the value MU (service rate) of the cloud offer (it works because, although it is not very modular to store 
+		//info here, CloudOffers are members of a list of SuitableSolutions for module). 
 		this.performance = performance;
 		this.availability=availability;
 		this.cost = cost;
+		this.numCores=numCores;
+	}
+	
+	//NumCores not specified, assuming 1
+	public CloudOffer(String name, double performance, double availability,	double cost) {
+		
+		this(name,performance,availability,cost,1.0);
+		
 	}
 
 	public CloudOffer(String name) {
@@ -64,6 +76,14 @@ public class CloudOffer {
 
 	public CloudOffer clone(){
 		return new CloudOffer(name,performance,availability,	cost);
+	}
+
+	public double getNumCores() {
+		return numCores;
+	}
+
+	public void setNumCores(double numCores) {
+		this.numCores = numCores;
 	}
 
 

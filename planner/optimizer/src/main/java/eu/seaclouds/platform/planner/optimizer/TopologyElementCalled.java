@@ -3,7 +3,9 @@ package eu.seaclouds.platform.planner.optimizer;
 public class TopologyElementCalled {
 
 	private double probCall=1.0;
-	private double meanNumberCalls=1.0;
+	
+	//NOT used in this version. The number of calls is fixed to 1. 
+	//private double meanNumberCalls=1.0;
 	
 	private TopologyElement element;
 	
@@ -11,10 +13,9 @@ public class TopologyElementCalled {
 		element=e;
 	}
 	
-	public TopologyElementCalled(TopologyElement e, double proCall, double ncall){
+	public TopologyElementCalled(TopologyElement e, double proCall){
 		element=e;
 		probCall=proCall;
-		meanNumberCalls=ncall;
 	}
 
 	public double getProbCall() {
@@ -25,13 +26,6 @@ public class TopologyElementCalled {
 		this.probCall = probCall;
 	}
 
-	public double getMeanNumberCalls() {
-		return meanNumberCalls;
-	}
-
-	public void setMeanNumberCalls(double meanNumberCalls) {
-		this.meanNumberCalls = meanNumberCalls;
-	}
 
 	public TopologyElement getElement() {
 		return element;

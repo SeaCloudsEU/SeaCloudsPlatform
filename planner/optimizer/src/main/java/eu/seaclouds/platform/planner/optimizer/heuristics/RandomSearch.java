@@ -49,13 +49,13 @@ public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 		 
 		 Solution currentSol=bestSol;
 		 
-		 double bestSolFitness = super.fitness(bestSol, applicationMap,topology);
+		 double bestSolFitness = super.fitness(bestSol, applicationMap,topology,cloudOffers);
 		 
 		 int i=0;
 		 while(i<getMaxIterNoImprove()){
 		 
 			currentSol = findSolution(currentSol, cloudOffers, applicationMap);
-			 double currentSolFitness= super.fitness(currentSol, applicationMap, topology);
+			 double currentSolFitness= super.fitness(currentSol, applicationMap, topology, cloudOffers);
 			 if(currentSolFitness>bestSolFitness){			 
 				 bestSol= currentSol;
 				 bestSolFitness= currentSolFitness;

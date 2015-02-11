@@ -21,6 +21,7 @@ package eu.seaclouds.platform.planner.optimizer.heuristics;
 import java.util.Map;
 
 import eu.seaclouds.platform.planner.optimizer.Solution;
+import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.Topology;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
@@ -53,7 +54,7 @@ public abstract class AbstractHeuristic implements SearchMethod {
 		return MAX_ITER_NO_IMPROVE;
 	}
 
-	public double fitness(Solution bestSol,Map<String, Object> applicationMap, Topology topology) {
+	public double fitness(Solution bestSol,Map<String, Object> applicationMap, Topology topology, SuitableOptions cloudCharacteristics) {
 		
 		
 		
@@ -62,7 +63,7 @@ public abstract class AbstractHeuristic implements SearchMethod {
 		QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
 		
 		//calculates how well it satisfies performance reuquirement
-		double perfGoodness= requirements.getResponseTime() / qualityAnalyzer.computePerformance(bestSol,topology).getResponseTime() ;
+		double perfGoodness= requirements.getResponseTime() / qualityAnalyzer.computePerformance(bestSol,topology, requirements.getWorkload(),cloudCharacteristics).getResponseTime() ;
 		//calculates how well it satisfies performance reuquirement
 		double availGoodness= (1.0 - requirements.getAvailability()) / (1.0 - qualityAnalyzer.computeAvailability(bestSol));
 		//calculates how well it satisfies performance reuquirement
