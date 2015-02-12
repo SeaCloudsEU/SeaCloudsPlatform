@@ -15,8 +15,12 @@
  *    limitations under the License.
  */
 
+
+
 package eu.seaclouds.platform.planner.optimizer.nfp;
 
+
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,6 +106,8 @@ public class QualityAnalyzer {
 		
 		double[] workloadsReceived = new double[routing.length];
 		
+		boolean initialWorkloadIsSet=false;
+		
 		while(!completedWorkloadsCalculation(workloadsReceived)){
 			
 			//See which workloads can be calculated with the current information
@@ -109,6 +115,13 @@ public class QualityAnalyzer {
 				
 				//If module i can be calculated (and was not calculate previously)
 				if((workloadsReceived[i]==0.0) && (workloadCanBeCalculated(routing,workloadsReceived,i))){
+					
+					log.debug("Calculating the received workload of Module: " + i);
+					//The first case; i.e,. the one that receive requests directly, "workload" has to be added to the array
+					if(!initialWorkloadIsSet){
+						initialWorkloadIsSet=true;
+						workloadsReceived[i]=workload;
+					}
 					
 					for(int callingIndex=0; callingIndex<routing.length; callingIndex++){
 						workloadsReceived[i]+= routing[callingIndex][i]*workloadsReceived[callingIndex];
@@ -131,12 +144,21 @@ public class QualityAnalyzer {
 
 	private boolean workloadCanBeCalculated(double[][] routing,	double[] workloads, int indexCol) {
 		
+		log.debug("Checking if it can be calculeted workload of module: " + indexCol);
+		
 		for(int row=0; row<routing.length; row++){
 			if((routing[row][indexCol]!=0)&&(workloads[row]==0.0)){
 				//There is some calling module whose workload has not been calculated yet.
+				log.debug("Worload calculation checked: it couldn't. Failed in row " + row +" indexCol " + indexCol + " value of routing in this positon is: " + routing[row][indexCol]);
+				try {
+				    TimeUnit.MILLISECONDS.sleep(500);               
+				} catch(InterruptedException ex) {
+				    Thread.currentThread().interrupt();
+				}
 				return false;
 			}
 		}
+		log.debug("Worload calculation checked: it could");
 		return true;
 	}
 
@@ -179,7 +201,7 @@ public class QualityAnalyzer {
 			
 			//TODO: improve this solution implementing an iterator over the modules of the topology: now  
 			// allowed operation initialElement.getDependences() breaks the encapsulation of data by TopologyElement class
-			for(TopologyElementCalled c: initialElement.getDependences()){
+			for(TopologyElementCalled c: e.getDependences()){
 				routing[topology.indexOf(e)][topology.indexOf(c.getElement())]=c.getProbCall();
 			}
 		}

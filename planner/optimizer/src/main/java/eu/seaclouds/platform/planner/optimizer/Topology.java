@@ -41,12 +41,13 @@ public class Topology {
 	
 	public void addModule(TopologyElement e){
 
-		//Potential error if it is included an element already contained
-		modules.add(e);
-		
+				
 		if(modules.contains(e)){
 			log.warn("Adding more than one time the same element to the topology");
 		}
+		
+		//Potential error if it is included an element already contained
+		modules.add(e);
 		
 	}
 	
