@@ -68,6 +68,10 @@ public class QualityInformation {
 		return workload;
 	}
 
+	public boolean hasValidWorkload() {
+		return workload>0;
+	}
+
 
 
 

@@ -61,6 +61,7 @@ public abstract class AbstractHeuristic implements SearchMethod {
 
 	private QualityInformation requirements=null ;
 	
+	
 	public double fitness(Solution bestSol,Map<String, Object> applicationMap, Topology topology, SuitableOptions cloudCharacteristics) {
 		
 		
@@ -75,16 +76,16 @@ public abstract class AbstractHeuristic implements SearchMethod {
 			requirements.setResponseTime(1.0);
 			requirements.setAvailability(0.9);
 			requirements.setCost(10.0);
+			requirements.setWorkload(-1.0);
 			
 		}
 		
-		double workload =YAMLoptimizerParser.getApplicationWorkload(applicationMap);
-		
-		if(workload>0.0){
-			requirements.setWorkload(workload);
+		if(requirements.getWorkload()<0.0){
+			requirements.setWorkload(YAMLoptimizerParser.getApplicationWorkload(applicationMap));
 		}
-		else{
-			log.error("Workload information not found in the input document. REAL SOLUTION CANNOT BE COMPUTED. "
+		//Maybe the previous operation did not work correctly because the workload could not be found in the YAML. Follow an ad-hoc solution to get some requirements
+		if(!requirements.hasValidWorkload()){
+			log.error("Valid workload information not found in the input document. REAL SOLUTION CANNOT BE COMPUTED. "
 					+ "Just to keep working, workload is assumed to be 10 requests per second");
 			requirements.setWorkload(10.0);
 		}
