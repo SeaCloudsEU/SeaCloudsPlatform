@@ -45,7 +45,7 @@ public class SuitableOptions { //implements Iterable<List<String>
 	
 	public void addSuitableOptions(String moduleName, List<String> optionsNames, List<CloudOffer> OptionsCharacteristics){
 		
-		log.debug("Adding the options of module " + moduleName + " which consists of " + optionsNames.size() + " elements");
+		log.debug("Adding the cloud options of module " + moduleName + " which consists of " + optionsNames.size() + " elements");
 		
 		
 		moduleNames.add(moduleName);
@@ -233,7 +233,7 @@ public class SuitableOptions { //implements Iterable<List<String>
 	
 	/**
 	 * @param moduleName
-	 * @param cloudChosenForModule
+	 * @param cloudOptionNameForModule
 	 * @return The characteristics of cloudOptionNameForModule cloud for module with name moduleName
 	 */
 	public CloudOffer getCloudCharacteristics(String moduleName,String cloudOptionNameForModule) {

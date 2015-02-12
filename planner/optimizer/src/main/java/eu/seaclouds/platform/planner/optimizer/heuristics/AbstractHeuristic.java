@@ -62,12 +62,13 @@ public abstract class AbstractHeuristic implements SearchMethod {
 		requirements.setWorkload(YAMLoptimizerParser.getApplicationWorkload(applicationMap));
 		QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
 		
-		//calculates how well it satisfies performance reuquirement
+		//calculates how well it satisfies performance reuquirement. Method computePerformance returns a structure because, beyond response time 
+		//information, other performance-related information can be useful for guiding the search method towards better solutions
 		double perfGoodness= requirements.getResponseTime() / qualityAnalyzer.computePerformance(bestSol,topology, requirements.getWorkload(),cloudCharacteristics).getResponseTime() ;
 		//calculates how well it satisfies performance reuquirement
-		double availGoodness= (1.0 - requirements.getAvailability()) / (1.0 - qualityAnalyzer.computeAvailability(bestSol));
+		double availGoodness= (1.0 - requirements.getAvailability()) / (1.0 - qualityAnalyzer.computeAvailability(bestSol, topology, cloudCharacteristics));
 		//calculates how well it satisfies performance reuquirement
-		double costGoodness= requirements.getCost() / qualityAnalyzer.computeCost(bestSol);
+		double costGoodness= requirements.getCost() / qualityAnalyzer.computeCost(bestSol, cloudCharacteristics);
 		
 		if((perfGoodness>=0)&&(availGoodness>=0)&&(costGoodness>=0)){
 			return perfGoodness + availGoodness + costGoodness;

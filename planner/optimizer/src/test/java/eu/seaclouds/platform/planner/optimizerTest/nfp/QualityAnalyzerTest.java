@@ -65,6 +65,8 @@ public void createObjects() {
 @Test
 public void testPerformanceEvaluation(){
 	
+	log.info("==== TEST for PERFORMANCE EVALUATION starts ====");
+	
 	Solution bestSol=createSolution();
 	Topology topology = createTopology();
 	
@@ -80,11 +82,57 @@ public void testPerformanceEvaluation(){
 		log.info("Testing performance. Returned application response time is " +  qInfo.getResponseTime());
 	}
 	
-	
+	log.info("==== TEST for PERFORMANCE EVALUATION finishes ====");
 
 }
 
+@Test
+public void testAvailabilityEvaluation(){
+	
+	log.info("==== TEST for AVAILABILITY EVALUATION starts ====");
+	
+	Solution bestSol=createSolution();
+	Topology topology = createTopology();
+	
+	
+	SuitableOptions cloudCharacteristics=createSuitableOptions();
+	
+	double availability = analyzer.computeAvailability(bestSol, topology, cloudCharacteristics);
+	
+	Assert.assertTrue("Compute availability returned an impossible value", availability>=0.0);
+	Assert.assertTrue("Compute availability returned an impossible value", availability<=1.0);
+	
+	
+		log.info("Testing availability. Returned application availability is " + availability);
+	
+	
+	log.info("==== TEST for AVAILABILITY EVALUATION finishes ====");
 
+}
+
+@Test
+public void testCostEvaluation(){
+	
+	log.info("==== TEST for COST EVALUATION starts ====");
+	
+	Solution bestSol=createSolution();
+	Topology topology = createTopology();
+	
+	
+	SuitableOptions cloudCharacteristics=createSuitableOptions();
+	
+	double cost = analyzer.computeCost(bestSol, cloudCharacteristics);
+	
+	Assert.assertTrue("Compute cost returned an impossible value", cost>=0.0);
+	
+	
+	
+		log.info("Testing cost. Returned application cost is " + cost);
+	
+	
+	log.info("==== TEST for COST EVALUATION finishes ====");
+
+}
 
 
 
@@ -122,7 +170,7 @@ private Topology createTopology() {
 private SuitableOptions createSuitableOptions() {
 
 	CloudOffer offer1= new CloudOffer("CloudOffer1", 20, 0.99, 2);
-	CloudOffer offer2= new CloudOffer("CloudOffer2", 30, 0.95, 2);
+	CloudOffer offer2= new CloudOffer("CloudOffer2", 30, 0.95, 3);
 	
 	SuitableOptions solutions = new SuitableOptions();
 	

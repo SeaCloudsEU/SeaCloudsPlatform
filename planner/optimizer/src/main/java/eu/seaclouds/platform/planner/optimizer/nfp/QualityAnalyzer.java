@@ -20,7 +20,8 @@
 package eu.seaclouds.platform.planner.optimizer.nfp;
 
 
-import java.util.concurrent.TimeUnit;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +86,9 @@ public class QualityAnalyzer {
 
 
 
+	/*
+	 * Here they are used the Queueing Network theory basics.
+	 */
 	private double calculateRespTimeModule(double visits, double lambda, double mu) {
 		
 		double utilization = lambda/mu;
@@ -193,21 +197,15 @@ public class QualityAnalyzer {
 
 	private boolean workloadCanBeCalculated(double[][] routing,	double[] workloads, int indexCol) {
 		
-		log.debug("Checking if it can be calculeted workload of module: " + indexCol);
+		
 		
 		for(int row=0; row<routing.length; row++){
 			if((routing[row][indexCol]!=0)&&(workloads[row]==0.0)){
 				//There is some calling module whose workload has not been calculated yet.
-				log.debug("Worload calculation checked: it couldn't. Failed in row " + row +" indexCol " + indexCol + " value of routing in this positon is: " + routing[row][indexCol]);
-				try {
-				    TimeUnit.MILLISECONDS.sleep(500);               
-				} catch(InterruptedException ex) {
-				    Thread.currentThread().interrupt();
-				}
 				return false;
 			}
 		}
-		log.debug("Worload calculation checked: it could");
+		
 		return true;
 	}
 
@@ -263,20 +261,97 @@ public class QualityAnalyzer {
 		
 
 
+	//HashSet to check if an element has been visited. It is used for checking for loops in the topology.  
+
+	private Set<String> visited;
+	
 
 
-
-
-	public double computeAvailability(Solution bestSol) {
-		// TODO Auto-generated method stub
+	/**
+	 * @param bestSol
+	 * @param topology
+	 * @param cloudCharacteristics
+	 * @return The calculated availability of the system. 
+	 * 
+	 * This method will be recursive. The availablity of the system will be the product of the availability of its first module and the modules it requests.
+	 * It will not work if there are cycles in the topology
+	 */
+	public double computeAvailability(Solution bestSol, Topology topology, SuitableOptions cloudCharacteristics) {
+		
+			
+		visited = new HashSet<String>();
+		
+		TopologyElement initialElement = topology.getInitialElement();
+		
+		visited.add(initialElement.getName());
+		
+		String cloudUsedInitialElement = bestSol.getCloudOfferNameForModule(initialElement.getName());
+		double instancesUsedInitialElement = bestSol.getCloudInstancesForModule(initialElement.getName());
+		double availabilityInitialElementInstance = cloudCharacteristics.getCloudCharacteristics(initialElement.getName(), cloudUsedInitialElement).getAvailability();
+		
+		double unavailabilityInitialElement = Math.pow((1.0-availabilityInitialElementInstance), instancesUsedInitialElement);
+		double availabilityInitialElement = 1.0 - unavailabilityInitialElement;
+		
+		double systemAvailability = availabilityInitialElement;
+		
+		for(TopologyElementCalled c : topology.getInitialElement().getDependences()){
+			systemAvailability= systemAvailability * calculateAvailabilityRecursive(c,bestSol,topology,cloudCharacteristics);
+		}
+		
 		//after computing, save the availability info in properties.availability
-		return 0;
+		properties.setAvailability(systemAvailability);
+		
+		
+		return systemAvailability;
 	}
 
-	public int computeCost(Solution bestSol) {
-		//after computing, save the availability info in properties.availability
-		// TODO Auto-generated method stub
-		return 0;
+	private double calculateAvailabilityRecursive(TopologyElementCalled c, Solution bestSol, Topology topology,	SuitableOptions cloudCharacteristics) {
+		
+		if(visited.contains(c.getElement().getName())){
+			log.warn("Availability evaluation: Revisting the availability of a module which was already visited. Expect weird behaviors or infinite loops");
+			return 1;
+		}
+		
+		visited.add(c.getElement().getName());
+		
+		String cloudUsedForElement = bestSol.getCloudOfferNameForModule(c.getElement().getName());
+		double instancesUsedForElement = bestSol.getCloudInstancesForModule(c.getElement().getName());
+		double availabilityElementInstance = cloudCharacteristics.getCloudCharacteristics(c.getElement().getName(), cloudUsedForElement).getAvailability();
+		double unavailabilityElement = Math.pow((1.0-availabilityElementInstance), instancesUsedForElement);
+		
+		double availabilityElement= 1.0 - unavailabilityElement;
+		
+		for(TopologyElementCalled cc : c.getElement().getDependences()){
+			availabilityElement = availabilityElement * calculateAvailabilityRecursive(cc, bestSol,topology,cloudCharacteristics);
+		}
+		
+		double callAvailability = c.getProbCall()*availabilityElement + (1.0 - c.getProbCall());
+		
+		return callAvailability;
+	}
+
+
+
+
+
+	public double computeCost(Solution bestSol, SuitableOptions cloudCharacteristics) {
+		
+		double cost=0.0;
+		
+		for(String moduleName : bestSol){
+			
+			String cloudUsedForElement = bestSol.getCloudOfferNameForModule(moduleName);
+			double instancesUsedForElement = bestSol.getCloudInstancesForModule(moduleName);
+			double costElementInstance = cloudCharacteristics.getCloudCharacteristics(moduleName, cloudUsedForElement).getCost();
+			
+			cost += (instancesUsedForElement*costElementInstance);
+			
+		}
+
+		//after computing, save the cost info in properties.availability
+		properties.setCost(cost);
+		return cost;
+		
 	}
 
 }
