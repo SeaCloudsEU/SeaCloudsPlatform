@@ -47,23 +47,72 @@ public class QualityAnalyzer {
 	
 	
 	public QualityInformation computePerformance(Solution bestSol, Topology topology, double workload, SuitableOptions cloudCharacteristics) {
-		// TODO Auto-generated method stub
+		
 		double [][] routes = getRoutingMatrix(topology);
 		double [] workloadsModules = getWorkloadsArray(routes, workload);
+		double [] numVisitsModule = getNumVisitsArray(workloadsModules,workload);
 		
 		//calculate the workload received by each core of a module: consider both number of cores 
 		//of a cloud offer and number of instances for such module
 		double [] workloadsModulesByCoresAndNumInstances = weighModuleWorkloadByCoresAndNumInstances(workloadsModules,topology,bestSol,cloudCharacteristics);
 		
 		double[] mus = getMusOfSelectedCloudOffers(bestSol,topology,cloudCharacteristics);
-				
+		
+		double respTime = getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances,mus);
 		
 		//after computing, save the performance info in properties.performance
-		return null;
+		properties.setResponseTime(respTime);
+		
+		return properties;
 	}
 
 	
 	
+	private double getSystemRespTime(double[] numVisitsModule,double[] workloadsModulesByCoresAndNumInstances, double[] mus) {
+		
+		double respTime =0;
+		
+		for(int i=0; i<numVisitsModule.length; i++){
+			
+			respTime+= calculateRespTimeModule(numVisitsModule[i],workloadsModulesByCoresAndNumInstances[i], mus[i]);
+			
+		}
+		
+		return respTime;
+	}
+
+
+
+
+
+	private double calculateRespTimeModule(double visits, double lambda, double mu) {
+		
+		double utilization = lambda/mu;
+		double respTimeVisit = (1.0/mu)/(1.0-utilization);
+		
+		return visits * respTimeVisit;
+		
+	}
+
+
+
+
+
+	private double[] getNumVisitsArray(double[] workloadsModules,double workload) {
+		
+		double[] numVisits = new double[workloadsModules.length];
+		
+		for(int i=0; i<numVisits.length; i++){
+			numVisits[i]=workloadsModules[i]/workload;
+		}
+		
+		return numVisits;
+	}
+
+
+
+
+
 	private double[] getMusOfSelectedCloudOffers(Solution bestSol,Topology topology, SuitableOptions cloudCharacteristics) {
 		
 		double[] mus = new double[topology.size()];

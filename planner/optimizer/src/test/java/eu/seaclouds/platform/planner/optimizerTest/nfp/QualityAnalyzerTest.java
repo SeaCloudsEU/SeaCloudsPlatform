@@ -76,6 +76,10 @@ public void testPerformanceEvaluation(){
 	
 	Assert.assertTrue("Compute performance returned null", qInfo!=null);
 	
+	if(qInfo!=null){
+		log.info("Testing performance. Returned application response time is " +  qInfo.getResponseTime());
+	}
+	
 	
 
 }
