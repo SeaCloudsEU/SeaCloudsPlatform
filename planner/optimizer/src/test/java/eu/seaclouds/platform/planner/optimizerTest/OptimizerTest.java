@@ -53,7 +53,7 @@ public class OptimizerTest {
 public void createObjects() {
 	
 	log.info("Starting TEST optimizer");
-	optimizer= new Optimizer();
+	
 	
 	final String dir = System.getProperty("user.dir");
 	log.debug("Trying to open files: current executino dir = " + dir);
@@ -85,7 +85,12 @@ private static String filenameToString(String path)  throws IOException {
 @Test
 public void testPresenceSolution(){
 	
+	log.info("=== TEST for SOLUTION GENERATION of optimizer STARTED ===");
+	
+	optimizer= new Optimizer();
+	
 	String dam = optimizer.optimize(appModel, suitableCloudOffer);
+	Assert.assertFalse("Dam was not created, optimize method returns null", dam==null);
 	String damLines[] = dam.split(System.getProperty("line.separator"));
 	
 	Assert.assertTrue("Dam was not created", damLines.length>1);
@@ -113,24 +118,30 @@ public void testPresenceSolution(){
 	}
 	Assert.assertEquals("Optimizer did not find any of the services",numServices,numSuitableServicesFound);
 	
+	log.info("=== TEST for SOLUTION GENERATION of optimizer FINISEHD ===");
+	
 }
 
 @Test
 public void testPerformanceComplete(){
 	
+	optimizer= new Optimizer();
+	
+	log.info("=== TEST for PERFORMANCE of optimizer STARTED ===");
 	long startTime= System.currentTimeMillis();
 	optimizer.optimize(appModel, suitableCloudOffer);
 	long finishTime= System.currentTimeMillis();
 	
 	log.debug("Optimizer execution time= " + (((double) (finishTime-startTime))/1000.0) + " seconds");
-	Assert.assertTrue("Otimizer does not have good Performance. More than " + ((double) MAX_MILLIS_EXECUTING)/1000.1 + " seconds", (finishTime-startTime)>MAX_MILLIS_EXECUTING);
+	Assert.assertTrue("Otimizer does not have good Performance. More than " + ((double) MAX_MILLIS_EXECUTING)/1000.1 + " seconds", (finishTime-startTime)<MAX_MILLIS_EXECUTING);
+	log.info("=== TEST for PERFORMANCE of optimizer FINISHED===");
 	
 }
 
 
 @AfterClass
 public void testFinishced(){
-	log.info("Test finished");
+	log.info("===== ALL TESTS FOR OPTIMIZER FINISHED ===");
 }
 	
 }

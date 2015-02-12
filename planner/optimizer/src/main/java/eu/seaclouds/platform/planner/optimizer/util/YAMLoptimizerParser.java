@@ -28,6 +28,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import eu.seaclouds.platform.planner.optimizer.CloudOffer;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
+import eu.seaclouds.platform.planner.optimizer.Topology;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 
 
@@ -227,7 +228,8 @@ private static double getPropertyOfCloudOffer(String cloudOfferProperty, Map<Str
 	}
 	else{
 		//Many times it will not exist the value and it will return 0
-		log.debug("Property " + cloudOfferProperty + " not found. Need to populate better the YAML file with suitable cloud offers");
+		log.error("Property " + cloudOfferProperty + " not found. Need to populate better the YAML file with suitable cloud offers."
+				+ "REAL SOLUTION CANNOT BE COMPUTED. Just to keep working we assume a value 0.99 for whatever porperty in {performance, availability, cost}");
 	}
 	
 	return valueOfProperty;
@@ -301,7 +303,14 @@ public static QualityInformation getQualityRequirements(
 public static double getApplicationWorkload(Map<String, Object> applicationMap) {
 	// TODO Auto-generated method stub
 	// TODO Waiting for the decision on how workload is stored in the YAML
-	return 0;
+	return -1;
+}
+
+
+public static Topology getApplicationTopology(Map<String, Object> appMap) {
+	// TODO Auto-generated method stub
+	// TODO Waiting for the decision on how workload is stored in the YAML
+	return null;
 }
 	
 

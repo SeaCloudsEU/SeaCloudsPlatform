@@ -169,7 +169,7 @@ public class QualityAnalyzer {
 				//If module i can be calculated (and was not calculate previously)
 				if((workloadsReceived[i]==0.0) && (workloadCanBeCalculated(routing,workloadsReceived,i))){
 					
-					log.debug("Calculating the received workload of Module: " + i);
+					//Calculating the received workload of Module i
 					//The first case; i.e,. the one that receive requests directly, "workload" has to be added to the array
 					if(!initialWorkloadIsSet){
 						initialWorkloadIsSet=true;

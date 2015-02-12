@@ -59,6 +59,7 @@ public String optimize(	 String appModel, String suitableCloudOffer){
 		Reoptimizer optimizerReplanning = new Reoptimizer();
 		
 		try{
+		log.error("Calling a Replanning. The previously generated Plan will be used as a base");
 		outputPlan=optimizerReplanning.optimize(appModel,suitableCloudOffer);
 		previousPlan=outputPlan;
 		}

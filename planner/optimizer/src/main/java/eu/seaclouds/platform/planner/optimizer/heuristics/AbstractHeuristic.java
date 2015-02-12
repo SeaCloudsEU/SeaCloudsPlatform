@@ -20,6 +20,9 @@ package eu.seaclouds.platform.planner.optimizer.heuristics;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.Topology;
@@ -31,6 +34,8 @@ import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
 public abstract class AbstractHeuristic implements SearchMethod {
 
+	static Logger log = LoggerFactory.getLogger(AbstractHeuristic.class);
+	
 	private int MAX_ITER_NO_IMPROVE = 200;
 	
 	
@@ -54,12 +59,36 @@ public abstract class AbstractHeuristic implements SearchMethod {
 		return MAX_ITER_NO_IMPROVE;
 	}
 
+	private QualityInformation requirements=null ;
+	
 	public double fitness(Solution bestSol,Map<String, Object> applicationMap, Topology topology, SuitableOptions cloudCharacteristics) {
 		
 		
+		if(requirements==null){
+			requirements= YAMLoptimizerParser.getQualityRequirements(applicationMap);
+		}
+		//Maybe the previous operation did not work because Requirements could not be found in the YAML. Follow an ad-hoc solution to get some requirements
+		if(requirements==null){
+			log.error("Quality requirements not found in the input document. REAL SOLUTION CANNOT BE COMPUTED. "
+					+ "Just to keep working, requirements are assumed to be: responseTime=1second , availability=0.9, cost=10");
+			requirements= new QualityInformation();
+			requirements.setResponseTime(1.0);
+			requirements.setAvailability(0.9);
+			requirements.setCost(10.0);
+			
+		}
 		
-		QualityInformation requirements = YAMLoptimizerParser.getQualityRequirements(applicationMap);
-		requirements.setWorkload(YAMLoptimizerParser.getApplicationWorkload(applicationMap));
+		double workload =YAMLoptimizerParser.getApplicationWorkload(applicationMap);
+		
+		if(workload>0.0){
+			requirements.setWorkload(workload);
+		}
+		else{
+			log.error("Workload information not found in the input document. REAL SOLUTION CANNOT BE COMPUTED. "
+					+ "Just to keep working, workload is assumed to be 10 requests per second");
+			requirements.setWorkload(10.0);
+		}
+		
 		QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
 		
 		//calculates how well it satisfies performance reuquirement. Method computePerformance returns a structure because, beyond response time 

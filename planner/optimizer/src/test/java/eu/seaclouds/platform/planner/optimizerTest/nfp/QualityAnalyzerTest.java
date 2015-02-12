@@ -116,7 +116,6 @@ public void testCostEvaluation(){
 	log.info("==== TEST for COST EVALUATION starts ====");
 	
 	Solution bestSol=createSolution();
-	Topology topology = createTopology();
 	
 	
 	SuitableOptions cloudCharacteristics=createSuitableOptions();

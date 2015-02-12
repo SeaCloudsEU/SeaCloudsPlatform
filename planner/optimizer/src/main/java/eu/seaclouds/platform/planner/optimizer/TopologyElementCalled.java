@@ -10,7 +10,9 @@ public class TopologyElementCalled {
 	private TopologyElement element;
 	
 	public TopologyElementCalled(TopologyElement e){
+		//probability will keep its default value = 1.0
 		element=e;
+		
 	}
 	
 	public TopologyElementCalled(TopologyElement e, double proCall){

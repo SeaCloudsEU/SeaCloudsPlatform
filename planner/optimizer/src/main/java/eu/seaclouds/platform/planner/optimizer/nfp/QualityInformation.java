@@ -17,7 +17,6 @@
 
 package eu.seaclouds.platform.planner.optimizer.nfp;
 
-import java.util.Map;
 
 public class QualityInformation {
 

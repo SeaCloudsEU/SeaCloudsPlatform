@@ -40,19 +40,63 @@ public class OptimizerInitialDeployment {
 		//Get app characteristics
 		Map<String, Object> appMap = YAMLoptimizerParser.GetMAPofAPP(appModel);		 
 		
-		Topology topology=null;
-		//TODO: Obtain Application topology. At 10/02/2015 this information is not included in the YAML. It's not possible to retrieve it
-		//Topology topology = getApplicationTopology(appMap);
-		
 		//Get cloud offers
 		SuitableOptions appInfoSuitableOptions = YAMLoptimizerParser.GetSuitableCloudOptionsAndCharacteristicsForModules(appModel,suitableCloudOffer);
+		
+		//TODO: Obtain Application topology. At 10/02/2015 this information is not included in the YAML. It's not possible to retrieve it
+		Topology topology = YAMLoptimizerParser.getApplicationTopology(appMap);
+		
+		//TODO: Remove the following temporal management of the lack of topology. Create an incorrect and ad-hoc one to keep the system working		
+		if(topology==null){
+			log.error("Topology could not be found. Need to populate better the YAML file of the applicatoin description."
+					+ "REAL SOLUTION CANNOT BE COMPUTED. Just to keep working we assume that all modules are called in sequence. The order of calls is random}");
+			topology = createAdHocTopologyFromSuitableOptions(appInfoSuitableOptions);
+		}
+		
 		
 		//Compute solution
 		//TODO Change the type of heuristic for another with better performance/output
 		SearchMethod engine = new RandomSearch();
 		engine.computeOptimalSolution(appInfoSuitableOptions.clone(), appMap, topology);
+		
+		if(appMap==null){
+			log.error("Map returned by Search engine is null");
+		}
+		
 		YAMLoptimizerParser.ReplaceSuitableServiceByHost(appMap);
+		
 		 return YAMLoptimizerParser.FromMAPtoYAMLstring(appMap);
+	}
+
+	
+	//TODO: Remove this method to avoid finishing weird executions when the YAML does not contain all the information. 
+	// Later it will be better an exception than a weird result. 
+	private Topology createAdHocTopologyFromSuitableOptions(SuitableOptions appInfoSuitableOptions) {
+		
+		Topology topology = new Topology();
+		
+		TopologyElement current=null;
+		TopologyElement previous=null;
+		
+		for(String moduleName : appInfoSuitableOptions.getStringIterator()){
+			
+			if(current==null){
+				//first element treated. None of them needs to point at it
+				current= new TopologyElement(moduleName);
+				topology.addModule(current);
+				
+			}
+			else{//There were explored already other modules
+				previous=current;
+				current = new TopologyElement(moduleName);
+				previous.addElementCalled(current);
+				topology.addModule(current);
+			}		
+			
+		}
+		
+		return topology;
+		
 	}
 
 
