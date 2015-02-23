@@ -18,7 +18,9 @@
 
 package eu.seaclouds.platform.planner.optimizerTest;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -42,6 +44,7 @@ public class OptimizerTest {
 	private static String suitableCloudOffer;
 	private static final String APP_MODEL_FILENAME="./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/Matchmakeroutput.yaml";
 	private static final String CLOUD_OFFER_FILENAME="./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/cloudOffer.yaml";
+	private static final String OUTPUT_FILENAME="./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/output.yaml";
 	private static final String OPEN_SQUARE_BRACKET="[";
 	private static final String CLOSE_SQUARE_BRACKET="]";
 	private static final double MAX_MILLIS_EXECUTING = 20000;
@@ -118,9 +121,30 @@ public void testPresenceSolution(){
 	}
 	Assert.assertEquals("Optimizer did not find any of the services",numServices,numSuitableServicesFound);
 	
+	saveFile(OUTPUT_FILENAME,dam);
+	
+	
 	log.info("=== TEST for SOLUTION GENERATION of optimizer FINISEHD ===");
 	
 }
+
+private void saveFile(String outputFilename, String dam) {
+	PrintWriter out =null;
+	try {
+		out = new PrintWriter(OUTPUT_FILENAME);
+		out.println(dam);
+	} catch (FileNotFoundException e) {
+		e.printStackTrace();
+	}
+	finally
+	{
+	    if ( out != null){
+			out.close( );
+		}
+	}
+	
+}
+
 
 @Test
 public void testPerformanceComplete(){

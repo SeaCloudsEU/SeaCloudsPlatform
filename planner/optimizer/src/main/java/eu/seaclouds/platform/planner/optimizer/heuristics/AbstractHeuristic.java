@@ -37,6 +37,7 @@ public abstract class AbstractHeuristic implements SearchMethod {
 	static Logger log = LoggerFactory.getLogger(AbstractHeuristic.class);
 	
 	private int MAX_ITER_NO_IMPROVE = 200;
+	private double MAX_TIMES_IMPROVE_REQUIREMENT=20;
 	
 	
 	public AbstractHeuristic(int maxIter){
@@ -101,7 +102,9 @@ public abstract class AbstractHeuristic implements SearchMethod {
 		double costGoodness= requirements.getCost() / qualityAnalyzer.computeCost(bestSol, cloudCharacteristics);
 		
 		if((perfGoodness>=0)&&(availGoodness>=0)&&(costGoodness>=0)){
-			return perfGoodness + availGoodness + costGoodness;
+			return Math.max(MAX_TIMES_IMPROVE_REQUIREMENT,perfGoodness) + 
+					Math.max(MAX_TIMES_IMPROVE_REQUIREMENT, availGoodness) + 
+					Math.max(MAX_TIMES_IMPROVE_REQUIREMENT,costGoodness);
 		}
 		else{
 			//some requirement was not satisfied, so the solution cannot be considered
