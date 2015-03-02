@@ -26,6 +26,7 @@
         <module>deployer</module>
         <module>planner</module>
         <module>dashboard</module>
+        <module>sla</module>
     </modules>
     <packaging>pom</packaging>
     <name>SeaClouds Platform</name>
@@ -155,6 +156,7 @@
                         <exclude>**/*.json</exclude>
                         <exclude>**/*.yml</exclude>
                         <exclude>**/*.yaml</exclude>
+                        <exclude>**/*.sample</exclude>
 
                     </excludes>
                 </configuration>

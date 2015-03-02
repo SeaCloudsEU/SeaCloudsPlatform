@@ -1,0 +1,41 @@
+name: NuroSensor v1.1
+services:
+- serviceType: brooklyn.entity.webapp.apache.ApacheServer
+  name: Apache Server
+  id: apache
+  location: localhost
+  brooklyn.config:
+    http_port: 80
+    app_tarball_url: nurogames-seaclouds-casestudy-php.tgz # CHANGE URL
+    db_connection_file_config: config/config.php
+    db_connection_config_params:
+      g_DatabaseHost: $brooklyn:formatString("%s", component("db").attributeWhenReady("host.address"))
+      g_DatabasePort: $brooklyn:component("db").attributeWhenReady("mysql.port")
+      g_DatabasePassword: $brooklyn:component("db").attributeWhenReady("mysql.password")
+      g_DatabaseUser: root
+  brooklyn.initializers:
+  - type: brooklyn.entity.software.http.HttpRequestSensor
+    brooklyn.config:
+      name: nuro.analytics_time
+      uri: http://192.168.56.101/nurocasestudyphp5-5/sensor.php # CHANGE URL
+      jsonPath: $.database1.analytics_time
+      targetType: double
+  - type: brooklyn.entity.software.http.HttpRequestSensor
+    brooklyn.config:
+      name: nuro.hour.avg_run_time
+      uri: http://192.168.56.101/nurocasestudyphp5-5/sensor.php # CHANGE URL
+      jsonPath: $.request_analytics.hour.avg_run_time
+      targetType: double
+  - type: brooklyn.entity.software.http.HttpRequestSensor
+    brooklyn.config:
+      name: nuro.minute.avg_run_time
+      uri: http://192.168.56.101/nurocasestudyphp5-5/sensor.php # CHANGE URL
+      jsonPath: $.request_analytics.minute.avg_run_time
+      targetType: double
+
+- serviceType: brooklyn.entity.database.mysql.MySqlNode
+  id: db
+  name: MySQL Node
+  location: localhost
+  brooklyn.config:
+    datastore.creation.script.url: create_v1.1.sql # CHANGE PATH
