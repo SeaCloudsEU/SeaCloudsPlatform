@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2015 SeaClouds
+    Contact: SeaClouds
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+           http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+<wsag:Agreement xmlns:wsag="http://www.ggf.org/namespaces/ws-agreement" xmlns:sla="http://sla.atos.eu">
+	<wsag:Name>ExampleAgreement</wsag:Name>
+	<wsag:Context>
+		<wsag:ExpirationTime>2014-03-07T12:00:00+0100</wsag:ExpirationTime>
+		<wsag:AgreementInitiator>RandomClient</wsag:AgreementInitiator>
+		<wsag:AgreementResponder>provider03</wsag:AgreementResponder>
+		<wsag:ServiceProvider>AgreementResponder</wsag:ServiceProvider>
+		<wsag:TemplateId>template01</wsag:TemplateId>
+		<sla:Service>service01</sla:Service>		
+	</wsag:Context>
+	<wsag:Terms>
+		<wsag:All>
+			<!-- FUNCTIONAL DESCRIPTION -->
+			<!-- <wsag:ServiceDescriptionTerm wsag:Name="SDTName" wsag:ServiceName="ServiceName"> 
+				DSL expression </wsag:ServiceDescriptionTerm> -->
+
+			<!-- OPTIONAL SERVICE REFERENCE -->
+
+			<!-- OPTIONAL SERVICE PROPERTIES : non funcional properties -->
+			<wsag:ServiceProperties wsag:Name="NonFunctional" wsag:ServiceName="ServiceName">
+				<wsag:Variables>
+					<wsag:Variable wsag:Name="ResponseTime" wsag:Metric="xs:double">
+						<wsag:Location>qos:ResponseTime</wsag:Location>
+					</wsag:Variable>
+				</wsag:Variables>
+			</wsag:ServiceProperties>
+			<wsag:GuaranteeTerm wsag:Name="GT_ResponseTime">
+				<wsag:ServiceScope wsag:ServiceName="ServiceName">ScopeNameContent</wsag:ServiceScope>
+				<!-- The qualifying conditions that must be met before the guarantee 
+					is evaluated -->
+				<!--wsag:QualifyingCondition>{"samplingperiodfactor":"SCHEDULEx3"}</wsag:QualifyingCondition-->
+				<wsag:QualifyingCondition>{"samplingperiodfactor":"AT_END"}</wsag:QualifyingCondition>
+				<wsag:ServiceLevelObjective>
+					<wsag:KPITarget>
+						<wsag:KPIName>ResponseTime</wsag:KPIName> <!-- same name as property for the moment -->
+						<wsag:CustomServiceLevel>{"constraint" : "ResponseTime LT 100"}</wsag:CustomServiceLevel> <!-- the ServiceProperty is referenced here -->
+					</wsag:KPITarget>
+				</wsag:ServiceLevelObjective>
+				<wsag:BusinessValueList>
+					<wsag:CustomBusinessValue>
+						<sla:Penalty sla:type="discount" sla:expression="35" sla:unit="%" sla:validity="P1D"/>
+					</wsag:CustomBusinessValue>
+					<wsag:CustomBusinessValue count="5" duration="P1D">
+						<sla:Penalty sla:type="service" sla:expression="sms" sla:validity="P1M"/>
+					</wsag:CustomBusinessValue>
+				</wsag:BusinessValueList>
+			</wsag:GuaranteeTerm>
+		</wsag:All>
+	</wsag:Terms>
+</wsag:Agreement>
