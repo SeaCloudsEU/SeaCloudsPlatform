@@ -21,10 +21,10 @@ package eu.seaclouds.platform.planner.optimizer.nfp;
 public class QualityInformation {
 
 	
-	private double respTime;
-	private double availability;
-	private double cost;
-	private double workload;
+	private double respTime=0;
+	private double availability=0;
+	private double cost=0;
+	private double workload=0;
 	
 	
 
@@ -36,6 +36,9 @@ public class QualityInformation {
 		this.respTime = respTime;
 	}
 
+	public boolean existResponseTimeRequirement(){
+		return respTime!=0.0;
+	}
 	
 	public double getAvailability() {	
 		return availability;
@@ -46,6 +49,11 @@ public class QualityInformation {
 	public void setAvailability(double availability) {
 		this.availability = availability;
 	}
+	
+	public boolean existAvailabilityRequirement(){
+		return availability!=0.0;
+	}
+	
 
 
 	public void setCost(double cost) {
@@ -58,6 +66,11 @@ public class QualityInformation {
 		return cost;
 	}
 
+	public boolean existCostRequirement(){
+		return cost!=0.0;
+	}
+	
+	
 	public void setWorkload(double applicationWorkload) {
 		workload=applicationWorkload;
 		

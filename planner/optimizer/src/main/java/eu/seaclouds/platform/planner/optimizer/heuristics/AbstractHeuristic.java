@@ -63,33 +63,12 @@ public abstract class AbstractHeuristic implements SearchMethod {
 	private QualityInformation requirements=null ;
 	
 	
+	
+	
 	public double fitness(Solution bestSol,Map<String, Object> applicationMap, Topology topology, SuitableOptions cloudCharacteristics) {
 		
-		
-		if(requirements==null){
-			requirements= YAMLoptimizerParser.getQualityRequirements(applicationMap);
-		}
-		//Maybe the previous operation did not work because Requirements could not be found in the YAML. Follow an ad-hoc solution to get some requirements
-		if(requirements==null){
-			log.error("Quality requirements not found in the input document. REAL SOLUTION CANNOT BE COMPUTED. "
-					+ "Just to keep working, requirements are assumed to be: responseTime=1second , availability=0.9, cost=10");
-			requirements= new QualityInformation();
-			requirements.setResponseTime(1.0);
-			requirements.setAvailability(0.9);
-			requirements.setCost(10.0);
-			requirements.setWorkload(-1.0);
-			
-		}
-		
-		if(requirements.getWorkload()<0.0){
-			requirements.setWorkload(YAMLoptimizerParser.getApplicationWorkload(applicationMap));
-		}
-		//Maybe the previous operation did not work correctly because the workload could not be found in the YAML. Follow an ad-hoc solution to get some requirements
-		if(!requirements.hasValidWorkload()){
-			log.error("Valid workload information not found in the input document. REAL SOLUTION CANNOT BE COMPUTED. "
-					+ "Just to keep working, workload is assumed to be 10 requests per second");
-			requirements.setWorkload(10.0);
-		}
+		loadQualityRequirements(applicationMap);
+
 		
 		QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
 		
@@ -114,6 +93,36 @@ public abstract class AbstractHeuristic implements SearchMethod {
 	}
 
 	
+	private void loadQualityRequirements(Map<String, Object> applicationMap) {
+		if(requirements==null){
+			requirements= YAMLoptimizerParser.getQualityRequirements(applicationMap);
+		}
+		//Maybe the previous operation did not work because Requirements could not be found in the YAML. Follow an ad-hoc solution to get some requirements
+		if(requirements==null){
+			log.error("Quality requirements not found in the input document. Loading dummy quality requirements for testing purposes");
+			requirements=YAMLoptimizerParser.getQualityRequirementsForTesting();
+			
+		}
+		
+		if(requirements.existResponseTimeRequirement()){
+			loadWorkload(applicationMap);
+		}
+		
+		
+	}
+
+	private void loadWorkload(Map<String, Object> applicationMap) {
+		if(requirements.getWorkload()<0.0){
+			requirements.setWorkload(YAMLoptimizerParser.getApplicationWorkload(applicationMap));
+		}
+		//Maybe the previous operation did not work correctly because the workload could not be found in the YAML. Follow an ad-hoc solution to get some requirements
+		if(!requirements.hasValidWorkload()){
+			log.error("Valid workload information not found in the input document. Loading dummy quality requirements for testing purposes");
+			requirements.setWorkload(YAMLoptimizerParser.getApplicationWorkloadTest());
+		}
+		
+	}
+
 	public void addSolutionToAppMap(Solution currentSol,Map<String, Object> applicationMap) {
 		
 		for(String solkey :  currentSol){

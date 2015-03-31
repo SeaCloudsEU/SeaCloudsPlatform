@@ -131,7 +131,7 @@ public void testPresenceSolution(){
 private void saveFile(String outputFilename, String dam) {
 	PrintWriter out =null;
 	try {
-		out = new PrintWriter(OUTPUT_FILENAME);
+		out = new PrintWriter(outputFilename);
 		out.println(dam);
 	} catch (FileNotFoundException e) {
 		e.printStackTrace();

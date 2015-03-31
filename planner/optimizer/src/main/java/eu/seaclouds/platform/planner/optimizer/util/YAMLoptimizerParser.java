@@ -35,7 +35,7 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 public class YAMLoptimizerParser {
 
 	static Logger log = LoggerFactory.getLogger(YAMLoptimizerParser.class);
-	
+
 	
 	
 	public static void CleanSuitableOfferForModule(String modulename, Map<String, Object> appMap) {
@@ -312,6 +312,33 @@ public static Topology getApplicationTopology(Map<String, Object> appMap) {
 	// TODO Waiting for the decision on how workload is stored in the YAML
 	return null;
 }
+
+
+public static QualityInformation getQualityRequirementsForTesting() {
+	
+	// TODO This method should not exist in the future, when quality requirements exist as input
+	log.error("Dummy requirements are: responseTime=1second , availability=0.9, cost=10");
+	
+	QualityInformation requirements= new QualityInformation();
+	
+	requirements= new QualityInformation();
+	requirements.setResponseTime(1.0);
+	requirements.setAvailability(0.9);
+	requirements.setCost(10.0);
+	requirements.setWorkload(-1.0);
+	
+	return requirements;
+}
+
+
+public static double getApplicationWorkloadTest() {
+	log.error("Dummy workload is assumed to be 10 requests per second");
+		return 10.0;
+}
+
+
+
+
 	
 
 	

@@ -48,8 +48,8 @@ public class OptimizerInitialDeployment {
 		
 		//TODO: Remove the following temporal management of the lack of topology. Create an incorrect and ad-hoc one to keep the system working		
 		if(topology==null){
-			log.error("Topology could not be found. Need to populate better the YAML file of the applicatoin description."
-					+ "REAL SOLUTION CANNOT BE COMPUTED. Just to keep working we assume that all modules are called in sequence. The order of calls is random}");
+			log.error("Topology could not be parsed. Not known quantity of calls between modules. Assuming the dummy case where"
+					+ "all modules are called in sequence. The order of calls is random}");
 			topology = createAdHocTopologyFromSuitableOptions(appInfoSuitableOptions);
 		}
 		
@@ -57,7 +57,7 @@ public class OptimizerInitialDeployment {
 		//Compute solution
 		//TODO Change the type of heuristic for another with better performance/output
 		SearchMethod engine = new RandomSearch();
-		engine.computeOptimalSolution(appInfoSuitableOptions.clone(), appMap, topology);
+		engine.computeOptimizationProblem(appInfoSuitableOptions.clone(), appMap, topology);
 		
 		if(appMap==null){
 			log.error("Map returned by Search engine is null");

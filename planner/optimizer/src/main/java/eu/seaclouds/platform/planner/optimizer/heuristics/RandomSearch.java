@@ -41,7 +41,7 @@ public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 	 * @see eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethod#computeOptimalSolution(eu.seaclouds.platform.planner.optimizer.SuitableOptions, java.util.Map)
 	 */
 	@Override
-	public void computeOptimalSolution(SuitableOptions cloudOffers,	Map<String, Object> applicationMap, Topology topology) {
+	public void computeOptimizationProblem(SuitableOptions cloudOffers,	Map<String, Object> applicationMap, Topology topology) {
 		
 		//To findSolution method, we pass an Empty solution instead of a null value to or create a new method that does not consider the current one. 
 		//This way may help for replanning, when even the first attempt for solution will be based on the current deployment
