@@ -18,6 +18,8 @@
 package eu.seaclouds.platform.planner.optimizer.heuristics;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -65,6 +67,13 @@ public abstract class AbstractHeuristic implements SearchMethod {
 	
 	
 	
+	/**
+	 * @param bestSol
+	 * @param applicationMap
+	 * @param topology
+	 * @param cloudCharacteristics
+	 * @return the fitness value of the solution. If the solution does not satisfy the requirements, it returns -infty
+	 */
 	public double fitness(Solution bestSol,Map<String, Object> applicationMap, Topology topology, SuitableOptions cloudCharacteristics) {
 		
 		loadQualityRequirements(applicationMap);
@@ -103,6 +112,25 @@ public abstract class AbstractHeuristic implements SearchMethod {
 			return Double.NEGATIVE_INFINITY;
 		}
 		
+	}
+	
+	/**
+	 * @param sol
+	 * @param applicationMap
+	 * @param topology
+	 * @param cloudCharacteristics
+	 * This method uses performance evaluation techniques to propose the thresholds to reconfigure modules of the system until expiring the cost
+	 */
+	public void createReconfigurationThresholds(Solution sol,Map<String, Object> applicationMap, Topology topology, SuitableOptions cloudCharacteristics){
+		
+		loadQualityRequirements(applicationMap);
+
+		QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
+		
+		//A HashMap with all the keys of module names, and associated an arraylist with the thresholds for reconfigurations. 
+		HashMap<String,ArrayList<Double>> thresholds = new HashMap<String,ArrayList<Double>>();
+		//TODO: 
+			//thresholds=qualityAnalyzer.computeThresholds(sol,topology, requirements.getWorkload(),cloudCharacteristics);
 	}
 
 	
