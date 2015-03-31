@@ -74,19 +74,32 @@ public abstract class AbstractHeuristic implements SearchMethod {
 		
 		//calculates how well it satisfies performance reuquirement. Method computePerformance returns a structure because, beyond response time 
 		//information, other performance-related information can be useful for guiding the search method towards better solutions
-		double perfGoodness= requirements.getResponseTime() / qualityAnalyzer.computePerformance(bestSol,topology, requirements.getWorkload(),cloudCharacteristics).getResponseTime() ;
-		//calculates how well it satisfies performance reuquirement
-		double availGoodness= (1.0 - requirements.getAvailability()) / (1.0 - qualityAnalyzer.computeAvailability(bestSol, topology, cloudCharacteristics));
-		//calculates how well it satisfies performance reuquirement
-		double costGoodness= requirements.getCost() / qualityAnalyzer.computeCost(bestSol, cloudCharacteristics);
+		double perfGoodness=1;
+		if(requirements.existResponseTimeRequirement()){
+			perfGoodness=requirements.getResponseTime() / qualityAnalyzer.computePerformance(bestSol,topology, requirements.getWorkload(),cloudCharacteristics).getResponseTime();
+		}
 		
-		if((perfGoodness>=0)&&(availGoodness>=0)&&(costGoodness>=0)){
-			return Math.max(MAX_TIMES_IMPROVE_REQUIREMENT,perfGoodness) + 
-					Math.max(MAX_TIMES_IMPROVE_REQUIREMENT, availGoodness) + 
-					Math.max(MAX_TIMES_IMPROVE_REQUIREMENT,costGoodness);
+		
+		//calculates how well it satisfies availability reuquirement, if it exists
+		double availGoodness=1;	
+		if(requirements.existAvailabilityRequirement()){
+		availGoodness= (1.0 - requirements.getAvailability()) / (1.0 - qualityAnalyzer.computeAvailability(bestSol, topology, cloudCharacteristics));
+		}
+		
+		//calculates how well it satisfies cost reuquirement, if it exists
+		double costGoodness=1;
+		if(requirements.existCostRequirement()){
+			costGoodness= requirements.getCost() / qualityAnalyzer.computeCost(bestSol, cloudCharacteristics);
+		}
+		
+		if((perfGoodness>=1)&&(availGoodness>=1)&&(costGoodness>=1)){
+			return Math.min(MAX_TIMES_IMPROVE_REQUIREMENT,perfGoodness) + 
+					Math.min(MAX_TIMES_IMPROVE_REQUIREMENT, availGoodness) + 
+					Math.min(MAX_TIMES_IMPROVE_REQUIREMENT,costGoodness);
 		}
 		else{
-			//some requirement was not satisfied, so the solution cannot be considered
+			//some requirement was not satisfied, so the solution cannot be considered. 
+			//If a value of goodness is less than one it meant that the requirement was specified but not satisfied;
 			return Double.NEGATIVE_INFINITY;
 		}
 		
