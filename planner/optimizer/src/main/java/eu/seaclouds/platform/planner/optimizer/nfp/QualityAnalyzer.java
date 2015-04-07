@@ -20,6 +20,8 @@
 package eu.seaclouds.platform.planner.optimizer.nfp;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,12 +40,29 @@ public class QualityAnalyzer {
 	
 	private QualityInformation properties=null;
 	
+	private final double MAX_TIMES_WORKLOAD_FOR_THRESHOLDS;
+	private final double WORKLOAD_INCREMENT_FOR_SEARCH;
+	
 	public QualityAnalyzer() {
 		
 		properties = new QualityInformation();
+		MAX_TIMES_WORKLOAD_FOR_THRESHOLDS=10.0;
+		WORKLOAD_INCREMENT_FOR_SEARCH=1.0;
 	}
 
+	public QualityAnalyzer(double maxWorkload) {
+		
+		properties = new QualityInformation();
+		MAX_TIMES_WORKLOAD_FOR_THRESHOLDS=maxWorkload;
+		WORKLOAD_INCREMENT_FOR_SEARCH=1.0;
+	}
 	
+	public QualityAnalyzer(double maxWorkload, double workloadIncrement) {
+		
+		properties = new QualityInformation();
+		MAX_TIMES_WORKLOAD_FOR_THRESHOLDS=maxWorkload;
+		WORKLOAD_INCREMENT_FOR_SEARCH=workloadIncrement;
+	}
 
 	
 	
@@ -352,6 +371,222 @@ public class QualityAnalyzer {
 		properties.setCost(cost);
 		return cost;
 		
+	}
+
+
+
+
+
+	public HashMap<String, ArrayList<Double>> computeThresholds(Solution solInput, Topology topology, QualityInformation requirements,
+			SuitableOptions cloudCharacteristics) {
+		
+		// TODO Auto-generated method stub
+		
+		// TODO It will be necessary to initiate the arrayList the first time that a threshold for a module is found 
+		HashMap<String, ArrayList<Double>> thresholds = new HashMap<String,ArrayList<Double>>();
+		
+		Solution modifSol = solInput.clone();
+		double workload=0;
+		if((requirements.hasValidWorkload())&&(requirements.existResponseTimeRequirement())){
+
+			workload = requirements.getWorkload();
+		}
+		else{//If no valid workload is specified, there cannot be created the thresholds
+			log.debug("Reconfiguration Thresholds not created because Response Time requirement or expected workload was not found.");
+			return null;
+			}
+		double [][] routes = getRoutingMatrix(topology);
+		
+		double[] mus = getMusOfSelectedCloudOffers(modifSol,topology,cloudCharacteristics);
+		
+	
+		double limitWorkload = workload;
+		boolean existModulesToScaleOut=true;
+		while(continueGeneratingThresholds(limitWorkload, workload, modifSol, requirements,cloudCharacteristics,existModulesToScaleOut) ){
+			//Stop condition is the highest allowed cost or, if cost is not specified, ten times the expected worklaod
+		
+			limitWorkload = findWorkloadForWhichRespTimeIsExceeded(requirements.getResponseTime(), limitWorkload,routes,mus,modifSol,topology, cloudCharacteristics);
+			//get highest utilization
+			String moduleWithHighestUtilization = findHighestUtilizationModuleThatCanScale(limitWorkload,routes,mus,modifSol,topology, cloudCharacteristics);
+			
+			//put the value in the hashMap. "moduleWithHighestUtilization" may be null
+			addThresholdToThresholds(thresholds,limitWorkload,moduleWithHighestUtilization);
+			
+			//modify the solution to use a resource more of the currently specified. "moduleWithHighestUtilization" may be null
+			addResourceToSolution(modifSol, moduleWithHighestUtilization);
+			
+			if(moduleWithHighestUtilization==null){
+				existModulesToScaleOut=false;
+			}
+		
+		}
+		return thresholds;
+	}
+
+
+
+
+
+	private void addResourceToSolution(Solution sol,String moduleWithHighestUtilization) {
+		sol.modifyNumInstancesOfModule(moduleWithHighestUtilization, sol.getCloudInstancesForModule(moduleWithHighestUtilization)+1);
+		
+	}
+
+	private void addThresholdToThresholds(HashMap<String, ArrayList<Double>> thresholds, double limitWorkload, String moduleName) {
+		
+		if(moduleName==null){return;}
+		if(thresholds.containsKey(moduleName)){
+			thresholds.get(moduleName).add(limitWorkload);
+		}
+		else{//First time that this module is scaled out
+			ArrayList<Double> list = new ArrayList<Double>();
+			list.add(limitWorkload);
+			thresholds.put(moduleName, list);
+		}
+		
+		
+	}
+
+	/**
+	 * @param limitWorkload
+	 * @param routes
+	 * @param mus
+	 * @param cloudCharacteristics 
+	 * @param topology 
+	 * @param modifSol
+	 * @return The name of the module with highest utilization. This method makes a strong assumption that rows 
+	 * in routes matrix and elements in topology are in the same order (which should happen if no bugs were included programming)
+	 */
+	private String findHighestUtilizationModuleThatCanScale(double limitWorkload, double[][] routes, double[] mus,Solution sol, Topology topology, SuitableOptions cloudCharacteristics) {
+	
+		double [] workloadsModules = getWorkloadsArray(routes, limitWorkload);
+		
+		//calculate the workload received by each core of a module: consider both number of cores 
+		//of a cloud offer and number of instances for such module
+		double [] workloadsModulesByCoresAndNumInstances = weighModuleWorkloadByCoresAndNumInstances(workloadsModules,topology,sol,cloudCharacteristics);
+		
+		//find upper value
+		double[] utilizations = utilizationOfEachModule(workloadsModulesByCoresAndNumInstances,mus);
+		
+		int maxUtilizationIndex=-1;
+		for(int i=0; i<utilizations.length; i++){
+			if(topology.getElementIndex(i).canScale()){//It is a candidate
+				if(maxUtilizationIndex==-1){//choose it directly because it's the first one that can scale
+					maxUtilizationIndex=i;
+				}
+				else{
+					if(utilizations[i]>utilizations[maxUtilizationIndex]){ //It could be done as an OR in the previous condition, but this is a safe 
+																			//manner as the order in which Java evaluates disyuntive conditions  
+						maxUtilizationIndex=i;
+					}
+				}
+			}
+		}
+		
+		if(maxUtilizationIndex > -1){
+			return topology.getElementIndex(maxUtilizationIndex).getName();
+		}
+		else{
+			log.debug("None of the modules can scale. Thresholds cannot be calculated");
+			return null;
+		}
+	}
+
+	
+	
+	private double[] utilizationOfEachModule(double[] workloadsModulesByCoresAndNumInstances, double[] mus) {
+		
+		double[] utilizations = new double[mus.length];
+		for(int i=0; i<utilizations.length; i++){
+			utilizations[i]=workloadsModulesByCoresAndNumInstances[i]/mus[i];	
+		}
+		
+		return utilizations;
+	}
+
+	/*
+	 * Condition to stop generating thresholds
+	 */
+	private boolean continueGeneratingThresholds(double limitWorkload,double workload, Solution sol, 
+												QualityInformation requirements, SuitableOptions cloudCharacteristics, boolean existModulesToScaleOut) {
+		//Stop if the maximum number of scalings for every module has been reached. 
+		//Stop also if the highest allowed cost or, if cost is not specified, ten times the expected workload
+		
+		
+		if(!existModulesToScaleOut){
+			return false;
+		}
+		if(requirements.existCostRequirement()){
+			return computeCost(sol,cloudCharacteristics)<=requirements.getCost();
+		}
+		return limitWorkload<=(MAX_TIMES_WORKLOAD_FOR_THRESHOLDS*workload);
+		
+	}
+
+
+
+
+
+	/**
+	 * @param workload
+	 * @param routes
+	 * @param mus
+	 * @param cloudCharacteristics 
+	 * @param topology 
+	 * @param modifSol 
+	 * @return the first workload value for which the requirement of response time is not satisfied
+	 */
+	private double findWorkloadForWhichRespTimeIsExceeded(double respTimeRequirement, double workload, double[][] routes, double[] mus, 
+														Solution sol, Topology topology, SuitableOptions cloudCharacteristics) {
+		
+		double incWorkload=WORKLOAD_INCREMENT_FOR_SEARCH;
+		
+		double [] workloadsModules = getWorkloadsArray(routes, workload+incWorkload);
+		double [] numVisitsModule = getNumVisitsArray(workloadsModules,workload+incWorkload);
+		
+		//calculate the workload received by each core of a module: consider both number of cores 
+		//of a cloud offer and number of instances for such module
+		double [] workloadsModulesByCoresAndNumInstances = weighModuleWorkloadByCoresAndNumInstances(workloadsModules,topology,sol,cloudCharacteristics);
+		
+		//find upper value. TODO: It may not stop if there are only delay centers (not considered yet in the requirements). 
+		while(getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances,mus)<=respTimeRequirement){
+			incWorkload=incWorkload*2.0;
+			
+			workloadsModules = getWorkloadsArray(routes, workload+incWorkload);
+			numVisitsModule = getNumVisitsArray(workloadsModules,workload+incWorkload);
+			
+			//calculate the workload received by each core of a module: consider both number of cores 
+			//of a cloud offer and number of instances for such module
+			workloadsModulesByCoresAndNumInstances = weighModuleWorkloadByCoresAndNumInstances(workloadsModules,topology,sol,cloudCharacteristics);
+			
+		}
+		
+		//binary search between (floor(workload+incWorkload/2) ) and (workload+incWorkload)
+		double lowerWorkloadLimit=Math.floor(workload+(incWorkload/2.0));
+		double upperWorkloadLimit=workload+incWorkload;
+		
+		while(lowerWorkloadLimit+2.0<upperWorkloadLimit){ //TODO: I chose a value to add of 2.0 because the difference should be 
+																				//1.0 but there may be problems with the Double representation of values.
+																				//An arrival more does not (should not) make any difference but the comparison 
+																				//with doubles works better. Check this for accurate version 2.0.
+			//Middle point
+			double workloadToCheck = (lowerWorkloadLimit +upperWorkloadLimit) / 2.0;
+			workloadsModules = getWorkloadsArray(routes, workloadToCheck);
+			numVisitsModule = getNumVisitsArray(workloadsModules,workloadToCheck);
+			
+			//calculate the workload received by each core of a module: consider both number of cores 
+			//of a cloud offer and number of instances for such module
+			workloadsModulesByCoresAndNumInstances = weighModuleWorkloadByCoresAndNumInstances(workloadsModules,topology,sol,cloudCharacteristics);
+			
+			//Set upper or lower limit according to binary search.
+			if(getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances,mus)<=respTimeRequirement){
+				lowerWorkloadLimit=workloadToCheck;
+			}
+			else{
+				upperWorkloadLimit=workloadToCheck;
+			}
+		}
+		return lowerWorkloadLimit;
 	}
 
 }

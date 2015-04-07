@@ -18,6 +18,7 @@
 package eu.seaclouds.platform.planner.optimizer.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -334,6 +335,13 @@ public static QualityInformation getQualityRequirementsForTesting() {
 public static double getApplicationWorkloadTest() {
 	log.error("Dummy workload is assumed to be 10 requests per second");
 		return 10.0;
+}
+
+
+public static void AddReconfigurtionThresholds(	HashMap<String, ArrayList<Double>> thresholds,	Map<String, Object> applicationMap) {
+	// TODO Auto-generated method stub
+	Fillthis;
+	
 }
 
 

@@ -23,12 +23,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 public class Solution implements Iterable<String>{
 
 	/*Simple class that serves as a data structure to store a 
 	 * solution for the cloud in a Map of (moduleName, CloudOptionUsed)
 	 */
 	
+	static Logger log = LoggerFactory.getLogger(Solution.class);
 	
 	private Map<String, String> modName_ModOption; 
 	private Map<String, Integer> modName_NumInstances; 
@@ -55,6 +60,26 @@ public class Solution implements Iterable<String>{
 		return modName_NumInstances.get(key);
 	}
 	
+	public void modifyNumInstancesOfModule(String modulename,	int newInstances) {
+		
+		if(!modName_NumInstances.containsKey(modulename)){
+			log.error("trying to modify the number of instances of a module which does not exist");
+		}
+		else{
+			modName_NumInstances.put(modulename, newInstances);
+		}
+		
+	}
+	
+	public Solution clone(){
+		
+		Solution sol= new Solution();
+		for(String key : this){
+			sol.addItem(key, this.getCloudOfferNameForModule(key), this.getCloudInstancesForModule(key));
+		}
+		
+		return sol;
+	}
 	
 	//ITERATOR
 	public Iterator<String> iterator() {
@@ -82,6 +107,8 @@ public class Solution implements Iterable<String>{
         };
         return it;
     }
+
+
 	
 	
 }

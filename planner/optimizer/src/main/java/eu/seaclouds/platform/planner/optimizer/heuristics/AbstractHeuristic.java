@@ -121,16 +121,25 @@ public abstract class AbstractHeuristic implements SearchMethod {
 	 * @param cloudCharacteristics
 	 * This method uses performance evaluation techniques to propose the thresholds to reconfigure modules of the system until expiring the cost
 	 */
-	public void createReconfigurationThresholds(Solution sol,Map<String, Object> applicationMap, Topology topology, SuitableOptions cloudCharacteristics){
+	public HashMap<String,ArrayList<Double>> createReconfigurationThresholds(Solution sol,Map<String, Object> applicationMap, Topology topology, SuitableOptions cloudCharacteristics){
+		
 		
 		loadQualityRequirements(applicationMap);
 
-		QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
+		if(requirements.existResponseTimeRequirement()){
+			QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
+			
+			//A HashMap with all the keys of module names, and associated an arraylist with the thresholds for reconfigurations. 
+			HashMap<String,ArrayList<Double>> thresholds = new HashMap<String,ArrayList<Double>>();
 		
-		//A HashMap with all the keys of module names, and associated an arraylist with the thresholds for reconfigurations. 
-		HashMap<String,ArrayList<Double>> thresholds = new HashMap<String,ArrayList<Double>>();
-		//TODO: 
-			//thresholds=qualityAnalyzer.computeThresholds(sol,topology, requirements.getWorkload(),cloudCharacteristics);
+			thresholds = qualityAnalyzer.computeThresholds(sol,topology, requirements,cloudCharacteristics);
+			
+			return thresholds;
+		}
+		else{//There are not performance requirements, so no thresholds are created. 
+			return null;
+		}
+		
 	}
 
 	

@@ -65,6 +65,7 @@ public class OptimizerInitialDeployment {
 		
 		YAMLoptimizerParser.ReplaceSuitableServiceByHost(appMap);
 		
+		
 		 return YAMLoptimizerParser.FromMAPtoYAMLstring(appMap);
 	}
 

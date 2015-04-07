@@ -67,4 +67,12 @@ public class TopologyElement {
 		return dependences;
 	}
 
+	public boolean canScale() {
+		// TODO Auto-generated method stub
+		// TODO If it is agreed that some modules cannot scale out and then is also defined the language in which we represent such characteristic, 
+		// this method should implement the checking of whether a module can scale. Up to now, it is assumed that all can scale out, so the 
+		// structure is created. 
+		return true;
+	}
+
 }

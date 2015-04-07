@@ -17,11 +17,14 @@
 
 package eu.seaclouds.platform.planner.optimizer.heuristics;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.Topology;
+import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
 public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 
@@ -66,6 +69,9 @@ public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 		 }
 		 
 		 super.addSolutionToAppMap(currentSol, applicationMap);
+		 
+		 HashMap<String,ArrayList<Double>> thresholds = super.createReconfigurationThresholds(currentSol, applicationMap, topology, cloudOffers);
+		 YAMLoptimizerParser.AddReconfigurtionThresholds(thresholds,applicationMap);
 
 	}
 
