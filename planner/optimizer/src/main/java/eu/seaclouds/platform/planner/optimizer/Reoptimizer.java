@@ -25,7 +25,7 @@ public class Reoptimizer {
 
 	static Logger log = LoggerFactory.getLogger(Reoptimizer.class);
 	
-	public String optimize(String appModel, String suitableCloudOffer) {
+	public String[] optimize(String appModel, String suitableCloudOffer, int numPlansToGenerate_ArrayLength) {
 		// TODO Auto-generated method stub
 		return null;
 	}

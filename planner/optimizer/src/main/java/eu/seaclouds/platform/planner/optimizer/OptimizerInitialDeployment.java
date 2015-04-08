@@ -35,7 +35,7 @@ public class OptimizerInitialDeployment {
 	
 	static Logger log = LoggerFactory.getLogger(OptimizerInitialDeployment.class);
 
-	public String optimize(String appModel, String suitableCloudOffer) {
+	public String[] optimize(String appModel, String suitableCloudOffer, int numPlansToGenerate) {
 		
 		//Get app characteristics
 		Map<String, Object> appMap = YAMLoptimizerParser.GetMAPofAPP(appModel);		 
@@ -57,16 +57,19 @@ public class OptimizerInitialDeployment {
 		//Compute solution
 		//TODO Change the type of heuristic for another with better performance/output
 		SearchMethod engine = new RandomSearch();
-		engine.computeOptimizationProblem(appInfoSuitableOptions.clone(), appMap, topology);
+		Map<String,Object>[] mapSolutions = engine.computeOptimizationProblem(appInfoSuitableOptions.clone(), appMap, topology,numPlansToGenerate);
 		
-		if(appMap==null){
+		if(mapSolutions==null){
 			log.error("Map returned by Search engine is null");
 		}
 		
-		YAMLoptimizerParser.ReplaceSuitableServiceByHost(appMap);
+		String[] stringSolutions = new String[numPlansToGenerate];
+		for(int i=0; i<mapSolutions.length; i++){
+			YAMLoptimizerParser.ReplaceSuitableServiceByHost(mapSolutions[i]);
+			stringSolutions[i]=YAMLoptimizerParser.FromMAPtoYAMLstring(mapSolutions[i]);
+		}
 		
-		
-		 return YAMLoptimizerParser.FromMAPtoYAMLstring(appMap);
+		 return stringSolutions;
 	}
 
 	

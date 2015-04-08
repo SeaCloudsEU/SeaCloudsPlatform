@@ -31,7 +31,9 @@ public interface SearchMethod {
 	 * @param applicationMap
 	 * It changes the elements in CloudOffers, which reference the map in applicationMap
 	 * @param topology 
+	 * @param numPlansToGenerate 
+	 * @return 
 	 */
-	public void computeOptimizationProblem(SuitableOptions cloudOffers, Map<String, Object>applicationMap, Topology topology);
+	public Map<String, Object>[] computeOptimizationProblem(SuitableOptions cloudOffers, Map<String, Object>applicationMap, Topology topology, int numPlansToGenerate);
 	
 }

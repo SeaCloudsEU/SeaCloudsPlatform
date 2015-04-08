@@ -55,7 +55,7 @@ public String[] optimize(	 String appModel, String suitableCloudOffer){
 		OptimizerInitialDeployment initialOptimizer = new OptimizerInitialDeployment(); 
 		
 		try{
-			outputPlans=initialOptimizer.optimize(appModel, suitableCloudOffer);
+			outputPlans=initialOptimizer.optimize(appModel, suitableCloudOffer,NUMBER_OF_PLANS_GENERATED);
 			previousPlans=outputPlans;
 		}
 		catch(Error E){
@@ -68,7 +68,7 @@ public String[] optimize(	 String appModel, String suitableCloudOffer){
 		
 		try{
 		log.error("Calling a Replanning. The previously generated Plan will be used as a base");
-		outputPlans=optimizerReplanning.optimize(appModel,suitableCloudOffer);
+		outputPlans=optimizerReplanning.optimize(appModel,suitableCloudOffer,NUMBER_OF_PLANS_GENERATED);
 		previousPlans=outputPlans;
 		}
 		catch(Error E){
