@@ -10,10 +10,9 @@ node_templates:
     capabilities:
       database_endpoint:
         properties: {port: 80}
-    requirements: {host: AWS.compute.m1.large}
+    requirements: {host: AWS.compute.m1.small}
   webServer:
     type: seaClouds.nodes.WebServer
     capabilities: {host: seaclouds.nodes.WebApplication.PHP}
     requirements: {host: AWS.compute.m1.large}
-Reconfigurations: null
 
