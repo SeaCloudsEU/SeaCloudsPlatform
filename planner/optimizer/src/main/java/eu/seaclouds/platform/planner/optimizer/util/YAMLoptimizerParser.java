@@ -339,9 +339,25 @@ public static double getApplicationWorkloadTest() {
 }
 
 
-public static void AddReconfigurtionThresholds(	HashMap<String, ArrayList<Double>> thresholds,	Map<String, Object> applicationMap) {
+public static void AddReconfigurationThresholds(	HashMap<String, ArrayList<Double>> thresholds,	Map<String, Object> applicationMap) {
+	if(thresholds!=null){
+		applicationMap.put(TOSCAkeywords.RECONFIGURATION_WORKLOAD_TAG, thresholds);
+	}
+}
+
+
+
+/**
+ * @param yamlMap
+ * @return a clone of the Map
+ * It uses the funcionaalities to save as string "dump" and load to create a new Map 
+ */
+public static Map<String, Object> cloneYAML(Map<String, Object> yamlMap) {
 	
-	applicationMap.put(TOSCAkeywords.RECONFIGURATION_WORKLOAD_TAG, thresholds);
+	String stringyaml =YAMLoptimizerParser.FromMAPtoYAMLstring(yamlMap);
+	Map<String, Object> newMap = YAMLoptimizerParser.GetMAPofAPP(stringyaml);	
+	
+	return newMap;
 	
 }
 

@@ -19,6 +19,8 @@ package eu.seaclouds.platform.planner.optimizer.heuristics;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -190,6 +192,96 @@ public abstract class AbstractHeuristic implements SearchMethod {
 		
 	}
 	
+
+
+	private Solution[] mergeBestSolutions(Solution[] sols1, Solution[] sols2, int numPlansToGenerate) {
+		sortSolutionsByFitness(sols1);
+		sortSolutionsByFitness(sols2);
+		
+		Solution[] merged = new Solution[numPlansToGenerate];
+		
+		int index1=0; 
+		int index2=0;
+		
+		for(int i=0; i<merged.length; i++){
+			
+			if((index1<sols1.length)&&(index2<sols2.length)){
+				if(sols1[index1].getSolutionFitness()>=sols2[index2].getSolutionFitness()){
+					merged[i]=sols1[index1].clone();
+					index1++;
+				}
+				else{
+					merged[i]=sols2[index2].clone();
+					index2++;
+				}
+			}
+			else{
+				if((index1>=sols1.length)&&(index2<sols2.length)){
+					merged[i]=sols2[index2].clone();
+					index2++;
+				}
+				if((index1<sols1.length)&&(index2>=sols2.length)){
+					merged[i]=sols1[index1].clone();
+					index1++;
+				}
+				
+			}
+			
+				
+		}
+		return merged;
+	}
+
+	private void sortSolutionsByFitness(Solution[] bestSols) {
+		Arrays.sort(bestSols, Collections.reverseOrder());
+	}
+
+	protected void setFitnessOfSolutions(Solution[] bestSols, Map<String, Object> applicationMap, Topology topology, SuitableOptions cloudOffers) {
+		 for(int solindex=0; solindex<bestSols.length; solindex++){
+			 bestSols[solindex].setSolutionFitness(fitness(bestSols[solindex],applicationMap,topology,cloudOffers));
+		 }
+	}
+
+	/*
+	 * After some reading of Cloneable, I prefered to call directly the clone method of solutions one by one, instead of using the clone() methods of Arrays, 
+	 * which I was not sure what clone() methods of its elements was going to invoke.   
+	 */
+	protected Solution[] cloneSolutions(Solution[] old) {
+		
+		Solution[] news = new Solution[old.length];
+		for(int i=0; i<old.length; i++){
+			news[i] = old[i].clone(); 
+		}
+		
+		return news;
+		
+		
+	}
+
+	protected double getMinimumFitnessOfSolutions(Solution[] solutions) {
+		
+		double worstFitness = Double.POSITIVE_INFINITY;
+		
+		for(int i=0; i<solutions.length; i++){
+			if(solutions[i].getSolutionFitness() < worstFitness){
+				worstFitness=solutions[i].getSolutionFitness();
+			}
+		}
+		
+		return worstFitness;
+		
+	}
+	
+	protected double getMaximumFitnessOfSolutions(Solution[] solutions) {
+		double bestFitness = Double.NEGATIVE_INFINITY;
+		
+		for(int i=0; i<solutions.length; i++){
+			if(solutions[i].getSolutionFitness()>bestFitness){
+				bestFitness=solutions[i].getSolutionFitness();
+			}
+		}
+		return bestFitness;
+	}
 	
 	
 }

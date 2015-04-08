@@ -27,16 +27,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class Solution implements Iterable<String>{
+public class Solution implements Iterable<String>, Comparable<Solution>{
 
 	/*Simple class that serves as a data structure to store a 
 	 * solution for the cloud in a Map of (moduleName, CloudOptionUsed)
 	 */
 	
+	//"Note: this class has a natural ordering that is inconsistent with equals."
+	
+	private static final double COMPARATOR_LIMIT = 1000.0;
+
 	static Logger log = LoggerFactory.getLogger(Solution.class);
 	
 	private Map<String, String> modName_ModOption; 
 	private Map<String, Integer> modName_NumInstances; 
+	private double solutionFitness=0.0;
+	
 	
 	public Solution(){
 		modName_ModOption = new HashMap<String, String>();
@@ -60,6 +66,14 @@ public class Solution implements Iterable<String>{
 		return modName_NumInstances.get(key);
 	}
 	
+	public double getSolutionFitness() {
+		return solutionFitness;
+	}
+
+	public void setSolutionFitness(double solutionFitness) {
+		this.solutionFitness = solutionFitness;
+	}
+	
 	public void modifyNumInstancesOfModule(String modulename,	int newInstances) {
 		
 		if(!modName_NumInstances.containsKey(modulename)){
@@ -71,6 +85,7 @@ public class Solution implements Iterable<String>{
 		
 	}
 	
+	@Override
 	public Solution clone(){
 		
 		Solution sol= new Solution();
@@ -78,6 +93,7 @@ public class Solution implements Iterable<String>{
 			sol.addItem(key, this.getCloudOfferNameForModule(key), this.getCloudInstancesForModule(key));
 		}
 		
+		sol.solutionFitness=this.solutionFitness;
 		return sol;
 	}
 	
@@ -107,6 +123,13 @@ public class Solution implements Iterable<String>{
         };
         return it;
     }
+
+	@Override
+	public int compareTo(Solution o) {
+		return (int) ((this.solutionFitness*COMPARATOR_LIMIT)-(o.solutionFitness*COMPARATOR_LIMIT));
+	}
+
+
 
 
 	

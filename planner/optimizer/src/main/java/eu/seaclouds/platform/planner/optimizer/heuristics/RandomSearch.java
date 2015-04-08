@@ -17,7 +17,7 @@
 
 package eu.seaclouds.platform.planner.optimizer.heuristics;
 
-import java.util.ArrayList;
+import java.util.ArrayList; 
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,53 +44,92 @@ public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 	 * @see eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethod#computeOptimalSolution(eu.seaclouds.platform.planner.optimizer.SuitableOptions, java.util.Map)
 	 */
 	@Override
-	public void computeOptimizationProblem(SuitableOptions cloudOffers,	Map<String, Object> applicationMap, Topology topology) {
+	public Map<String, Object>[] computeOptimizationProblem(SuitableOptions cloudOffers,	Map<String, Object> applicationMap, Topology topology, int numPlansToGenerate) {
 		
 		//To findSolution method, we pass an Empty solution instead of a null value to or create a new method that does not consider the current one. 
 		//This way may help for replanning, when even the first attempt for solution will be based on the current deployment
-		 Solution bestSol = findSolution(new Solution(), cloudOffers, applicationMap);
+		 Solution[] bestSols = findSolutions(null, cloudOffers, applicationMap,numPlansToGenerate);
+		 		 
+		 setFitnessOfSolutions(bestSols,applicationMap,topology,cloudOffers);		 
 		 
-		 Solution currentSol=bestSol;
 		 
-		 double bestSolFitness = super.fitness(bestSol, applicationMap,topology,cloudOffers);
 		 
-		 int i=0;
-		 while(i<getMaxIterNoImprove()){
-		 
-			currentSol = findSolution(currentSol, cloudOffers, applicationMap);
-			 double currentSolFitness= super.fitness(currentSol, applicationMap, topology, cloudOffers);
-			 if(currentSolFitness>bestSolFitness){			 
-				 bestSol= currentSol;
-				 bestSolFitness= currentSolFitness;
-				 i=0;
+		 Solution[] currentSol= new Solution[1];
+		 int numItersNoImprovement=0;
+		 while(numItersNoImprovement<super.getMaxIterNoImprove()){
+			
+			 currentSol[0] = findSolution(cloudOffers, applicationMap);
+			 currentSol[0].setSolutionFitness(super.fitness(currentSol[0], applicationMap, topology, cloudOffers));
+			
+			 if(currentSol[0].getSolutionFitness()> getMinimumFitnessOfSolutions(bestSols)){			 
+				 insertOrdered(bestSols,currentSol[0]);
+				 numItersNoImprovement=0;
 			 }
 			 
-			 i++;
+			 numItersNoImprovement++;
 		 }
 		 
-		 super.addSolutionToAppMap(currentSol, applicationMap);
-		 
-		 HashMap<String,ArrayList<Double>> thresholds = super.createReconfigurationThresholds(currentSol, applicationMap, topology, cloudOffers);
-		 YAMLoptimizerParser.AddReconfigurtionThresholds(thresholds,applicationMap);
+		 return HashMapOfFoundSolutionsWithThresholds(bestSols, applicationMap, topology, cloudOffers, numPlansToGenerate);
 
 	}
 
 
+	private Map<String, Object>[] HashMapOfFoundSolutionsWithThresholds(Solution[] bestSols, Map<String, Object> applicMap,Topology topology, 
+																		SuitableOptions cloudOffers,int numPlansToGenerate) {
+		 @SuppressWarnings("unchecked")
+		Map<String, Object>[] solutions = new HashMap[numPlansToGenerate];
+		 for(int i=0; i<bestSols.length; i++){
+			 
+			 Map<String, Object> baseAppMap = YAMLoptimizerParser.cloneYAML(applicMap);
+			 
+			 super.addSolutionToAppMap(bestSols[i], baseAppMap);
+		 
+			 HashMap<String,ArrayList<Double>> thresholds = super.createReconfigurationThresholds(bestSols[i], baseAppMap, topology, cloudOffers);
+			 YAMLoptimizerParser.AddReconfigurationThresholds(thresholds,baseAppMap);
+			 
+			 solutions[i]=baseAppMap;
+		 }
+		 return solutions;		 
+	}
 
-	private Solution findSolution(Solution baseSolution, SuitableOptions cloudOffers, Map<String, Object> applicationMap) {
+	private void insertOrdered(Solution[] bestSols, Solution solution) {
+
+		int i=bestSols.length-1;
 		
-		Solution newSolution = new Solution();
+		while(bestSols[i].getSolutionFitness()<solution.getSolutionFitness()){ 
+			bestSols[i]=bestSols[i-1];
+			i--; 
+		}
+		bestSols[i]=solution;
 		
+	}
+
+
+	private Solution[] findSolutions(Solution baseSolution, SuitableOptions cloudOffers, Map<String, Object> applicationMap,int numPlansToGenerate) {
+		
+		Solution[] newSolutions = new Solution[numPlansToGenerate];
+		
+		for(int newSolIndex=0; newSolIndex<newSolutions.length; newSolIndex++){
+			
+			newSolutions[newSolIndex]=findSolution(cloudOffers, applicationMap);
+		}
+		
+		return newSolutions;
+		
+	}
+	
+	private Solution findSolution(SuitableOptions cloudOffers, Map<String, Object> applicationMap) {
+		
+		Solution currentSolution= new Solution();
 		for(String modName : cloudOffers.getStringIterator()){
 			
 			//TODO Consider also playing with the amount of instances used of a suitable option. 
 			int itemToUse = (int) Math.floor(Math.random()*cloudOffers.getSizeOfSuitableOptions(modName));
 			
-			newSolution.addItem(modName, cloudOffers.getIthSuitableOptionForModuleName(modName,itemToUse));
+			currentSolution.addItem(modName, cloudOffers.getIthSuitableOptionForModuleName(modName,itemToUse));
 		}
 		
-		return newSolution;
-		
+		return currentSolution;
 	}
 
 }
