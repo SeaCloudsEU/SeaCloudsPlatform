@@ -20,7 +20,7 @@
 package eu.seaclouds.platform.planner.optimizer.nfp;
 
 
-import java.util.ArrayList;
+import java.util.ArrayList;  
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,7 +37,7 @@ import eu.seaclouds.platform.planner.optimizer.TopologyElementCalled;
 public class QualityAnalyzer {
 
 	static Logger log = LoggerFactory.getLogger(QualityAnalyzer.class);
-	
+	 
 	private QualityInformation properties=null;
 	
 	private final double MAX_TIMES_WORKLOAD_FOR_THRESHOLDS;
@@ -74,7 +74,7 @@ public class QualityAnalyzer {
 		
 		//calculate the workload received by each core of a module: consider both number of cores 
 		//of a cloud offer and number of instances for such module
-		double [] workloadsModulesByCoresAndNumInstances = weighModuleWorkloadByCoresAndNumInstances(workloadsModules,topology,bestSol,cloudCharacteristics);
+		double [] workloadsModulesByCoresAndNumInstances = weightModuleWorkloadByCoresAndNumInstances(workloadsModules,topology,bestSol,cloudCharacteristics);
 		
 		double[] mus = getMusOfSelectedCloudOffers(bestSol,topology,cloudCharacteristics);
 		
@@ -111,6 +111,9 @@ public class QualityAnalyzer {
 	private double calculateRespTimeModule(double visits, double lambda, double mu) {
 		
 		double utilization = lambda/mu;
+		if(utilization>1.0){
+			return Double.POSITIVE_INFINITY;
+		}
 		double respTimeVisit = (1.0/mu)/(1.0-utilization);
 		
 		return visits * respTimeVisit;
@@ -154,7 +157,7 @@ public class QualityAnalyzer {
 
 
 
-	private double[] weighModuleWorkloadByCoresAndNumInstances(double[] workloadsModules, Topology topology, Solution bestSol,SuitableOptions cloudCharacteristics) {
+	private double[] weightModuleWorkloadByCoresAndNumInstances(double[] workloadsModules, Topology topology, Solution bestSol,SuitableOptions cloudCharacteristics) {
 		double[] ponderatedWorkloads = new double[workloadsModules.length];
 		for(int i=0; i<workloadsModules.length; i++){
 			
@@ -382,7 +385,7 @@ public class QualityAnalyzer {
 		
 		// TODO Auto-generated method stub
 		
-		// TODO It will be necessary to initiate the arrayList the first time that a threshold for a module is found 
+		
 		HashMap<String, ArrayList<Double>> thresholds = new HashMap<String,ArrayList<Double>>();
 		
 		Solution modifSol = solInput.clone();
@@ -405,6 +408,7 @@ public class QualityAnalyzer {
 		while(continueGeneratingThresholds(limitWorkload, workload, modifSol, requirements,cloudCharacteristics,existModulesToScaleOut) ){
 			//Stop condition is the highest allowed cost or, if cost is not specified, ten times the expected worklaod
 		
+			log.debug("Creating threshold for workload above " + limitWorkload);
 			limitWorkload = findWorkloadForWhichRespTimeIsExceeded(requirements.getResponseTime(), limitWorkload,routes,mus,modifSol,topology, cloudCharacteristics);
 			//get highest utilization
 			String moduleWithHighestUtilization = findHighestUtilizationModuleThatCanScale(limitWorkload,routes,mus,modifSol,topology, cloudCharacteristics);
@@ -463,7 +467,7 @@ public class QualityAnalyzer {
 		
 		//calculate the workload received by each core of a module: consider both number of cores 
 		//of a cloud offer and number of instances for such module
-		double [] workloadsModulesByCoresAndNumInstances = weighModuleWorkloadByCoresAndNumInstances(workloadsModules,topology,sol,cloudCharacteristics);
+		double [] workloadsModulesByCoresAndNumInstances = weightModuleWorkloadByCoresAndNumInstances(workloadsModules,topology,sol,cloudCharacteristics);
 		
 		//find upper value
 		double[] utilizations = utilizationOfEachModule(workloadsModulesByCoresAndNumInstances,mus);
@@ -546,10 +550,16 @@ public class QualityAnalyzer {
 		
 		//calculate the workload received by each core of a module: consider both number of cores 
 		//of a cloud offer and number of instances for such module
-		double [] workloadsModulesByCoresAndNumInstances = weighModuleWorkloadByCoresAndNumInstances(workloadsModules,topology,sol,cloudCharacteristics);
+		double [] workloadsModulesByCoresAndNumInstances = weightModuleWorkloadByCoresAndNumInstances(workloadsModules,topology,sol,cloudCharacteristics);
 		
+		log.debug("Response time is: " + getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances,mus) + " and "
+				+ "the performance requirement is " + respTimeRequirement);
 		//find upper value. TODO: It may not stop if there are only delay centers (not considered yet in the requirements). 
-		while(getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances,mus)<=respTimeRequirement){
+		while(isValidRespTime(getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances,mus),respTimeRequirement)){
+			
+			log.debug("Response time for workload " + (workload+incWorkload) + " is: " + getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances,mus) + " and "
+					+ "the performance requirement is " + respTimeRequirement);
+			
 			incWorkload=incWorkload*2.0;
 			
 			workloadsModules = getWorkloadsArray(routes, workload+incWorkload);
@@ -557,7 +567,7 @@ public class QualityAnalyzer {
 			
 			//calculate the workload received by each core of a module: consider both number of cores 
 			//of a cloud offer and number of instances for such module
-			workloadsModulesByCoresAndNumInstances = weighModuleWorkloadByCoresAndNumInstances(workloadsModules,topology,sol,cloudCharacteristics);
+			workloadsModulesByCoresAndNumInstances = weightModuleWorkloadByCoresAndNumInstances(workloadsModules,topology,sol,cloudCharacteristics);
 			
 		}
 		
@@ -576,10 +586,13 @@ public class QualityAnalyzer {
 			
 			//calculate the workload received by each core of a module: consider both number of cores 
 			//of a cloud offer and number of instances for such module
-			workloadsModulesByCoresAndNumInstances = weighModuleWorkloadByCoresAndNumInstances(workloadsModules,topology,sol,cloudCharacteristics);
+			workloadsModulesByCoresAndNumInstances = weightModuleWorkloadByCoresAndNumInstances(workloadsModules,topology,sol,cloudCharacteristics);
 			
 			//Set upper or lower limit according to binary search.
-			if(getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances,mus)<=respTimeRequirement){
+			double currentRespTime = getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances,mus);
+			log.debug("Response time for workload " + workloadToCheck + " is: " + currentRespTime + " and "
+					+ "the performance requirement is " + respTimeRequirement);
+			if(isValidRespTime(currentRespTime,respTimeRequirement)){
 				lowerWorkloadLimit=workloadToCheck;
 			}
 			else{
@@ -587,6 +600,10 @@ public class QualityAnalyzer {
 			}
 		}
 		return lowerWorkloadLimit;
+	}
+
+	private boolean isValidRespTime(double rt,	double rtreq) {
+		return (rt>=0)&&(rt<=rtreq);
 	}
 
 }

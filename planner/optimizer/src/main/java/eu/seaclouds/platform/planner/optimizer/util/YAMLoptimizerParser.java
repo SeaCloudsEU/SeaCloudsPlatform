@@ -229,8 +229,9 @@ private static double getPropertyOfCloudOffer(String cloudOfferProperty, Map<Str
 	}
 	else{
 		//Many times it will not exist the value and it will return 0
-		log.error("Property " + cloudOfferProperty + " not found. Need to populate better the YAML file with suitable cloud offers."
-				+ "REAL SOLUTION CANNOT BE COMPUTED. Just to keep working we assume a value 0.99 for whatever porperty in {performance, availability, cost}");
+		log.info("Property " + cloudOfferProperty + " not found. REAL SOLUTION CANNOT BE COMPUTED in case that " 
+				+ cloudOfferProperty + " requirement exist in the system. Just to keep working we assume a value 0.99 for whatever porperty in {performance, availability, cost}");
+		//valueOfProperty=0.99;
 	}
 	
 	return valueOfProperty;
@@ -339,8 +340,8 @@ public static double getApplicationWorkloadTest() {
 
 
 public static void AddReconfigurtionThresholds(	HashMap<String, ArrayList<Double>> thresholds,	Map<String, Object> applicationMap) {
-	// TODO Auto-generated method stub
-	Fillthis;
+	
+	applicationMap.put(TOSCAkeywords.RECONFIGURATION_WORKLOAD_TAG, thresholds);
 	
 }
 

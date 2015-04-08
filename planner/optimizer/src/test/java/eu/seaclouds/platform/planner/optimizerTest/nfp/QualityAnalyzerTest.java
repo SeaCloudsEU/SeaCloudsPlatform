@@ -20,6 +20,7 @@ package eu.seaclouds.platform.planner.optimizerTest.nfp;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.junit.Assert;
 import org.slf4j.Logger;
@@ -110,6 +111,8 @@ public void testAvailabilityEvaluation(){
 
 }
 
+
+
 @Test
 public void testCostEvaluation(){
 	
@@ -134,6 +137,26 @@ public void testCostEvaluation(){
 }
 
 
+@Test
+public void testReconfigurationThresholds(){
+	
+	log.info("==== TEST for RECONFIGURATION THRESHOLDS starts ====");
+	Solution bestSol=createSolution();
+	Topology topology = createTopology();
+	SuitableOptions cloudCharacteristics=createSuitableOptions();
+	
+	QualityInformation requirements= new QualityInformation();
+	requirements.setResponseTime(10.0);
+	requirements.setWorkload(10.0);
+	requirements.setCost(40.0);
+	
+	HashMap thresholds= analyzer.computeThresholds(bestSol, topology, requirements, cloudCharacteristics);
+	Assert.assertTrue("Compute thresholds returns null", thresholds!=null);
+	
+	log.info("Testing thresholds. Returned hashMap is " + thresholds);
+	
+	log.info("==== TEST for RECONFIGURATION THRESHOLDS starts ====");
+}
 
 
 

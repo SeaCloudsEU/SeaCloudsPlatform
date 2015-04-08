@@ -31,4 +31,6 @@ public class TOSCAkeywords {
 	public static final String CLOUD_OFFER_PROPERTY_PERFORMANCE = "performance";
 	public static final String CLOUD_OFFER_PROPERTY_COST = "cost";
 	
+	public static final String RECONFIGURATION_WORKLOAD_TAG = "Reconfigurations";
+	
 }

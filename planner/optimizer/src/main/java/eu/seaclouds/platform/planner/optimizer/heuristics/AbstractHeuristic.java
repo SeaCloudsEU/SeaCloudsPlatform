@@ -123,20 +123,27 @@ public abstract class AbstractHeuristic implements SearchMethod {
 	 */
 	public HashMap<String,ArrayList<Double>> createReconfigurationThresholds(Solution sol,Map<String, Object> applicationMap, Topology topology, SuitableOptions cloudCharacteristics){
 		
+		log.debug("Starting the creation of reconfiguration thresholds");
 		
 		loadQualityRequirements(applicationMap);
-
-		if(requirements.existResponseTimeRequirement()){
-			QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
+		QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
+		
+		//if the solution does not satisfy the performance requirements, nothing to do
+		double perfGoodness=requirements.getResponseTime() / qualityAnalyzer.computePerformance(sol,topology, requirements.getWorkload(),cloudCharacteristics).getResponseTime();
+		
+		if((requirements.existResponseTimeRequirement())&&(perfGoodness>=1.0)){//response time requirements are satisfied if perfGoodness>=1.0
+			
 			
 			//A HashMap with all the keys of module names, and associated an arraylist with the thresholds for reconfigurations. 
 			HashMap<String,ArrayList<Double>> thresholds = new HashMap<String,ArrayList<Double>>();
 		
 			thresholds = qualityAnalyzer.computeThresholds(sol,topology, requirements,cloudCharacteristics);
 			
+			log.debug("Finishing the creation of reconfiguration thresholds");
 			return thresholds;
 		}
 		else{//There are not performance requirements, so no thresholds are created. 
+			log.debug("Finishing the creation of reconfiguration thresholds because there were not performance requirements");
 			return null;
 		}
 		
