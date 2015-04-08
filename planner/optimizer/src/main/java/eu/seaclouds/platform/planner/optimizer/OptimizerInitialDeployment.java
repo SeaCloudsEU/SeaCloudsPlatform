@@ -49,8 +49,7 @@ public class OptimizerInitialDeployment {
 		switch(name){
 		case RANDOM: engine=new RandomSearch();
 					break;
-		case HILLCLIMB: engine= new HillClimb();
-					break;
+		//case HILLCLIMB: engine= new HillClimb(); break;
 					
 		//case SIMANNEALING: engine= new SimAnnealing(); break;
 		default: engine =new RandomSearch();
