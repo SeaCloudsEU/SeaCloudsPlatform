@@ -20,7 +20,6 @@ package eu.seaclouds.platform.planner.optimizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.seaclouds.platform.planner.optimizer.heuristics.HillClimb;
 import eu.seaclouds.platform.planner.optimizer.heuristics.RandomSearch;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethod;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
@@ -44,8 +43,7 @@ public class Reoptimizer {
 		switch(name){
 		case RANDOM: engine=new RandomSearch();
 					break;
-		case HILLCLIMB: engine= new HillClimb();
-					break;
+		//case HILLCLIMB: engine= new HillClimb();		break;
 					
 		//case SIMANNEALING: engine= new SimAnnealing(); break;
 		default: engine =new RandomSearch();
