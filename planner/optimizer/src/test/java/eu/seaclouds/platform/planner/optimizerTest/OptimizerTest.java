@@ -33,6 +33,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import eu.seaclouds.platform.planner.optimizer.Optimizer;
+import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
 
 
@@ -44,7 +45,7 @@ public class OptimizerTest {
 	private static String suitableCloudOffer;
 	private static final String APP_MODEL_FILENAME="./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/Matchmakeroutput.yaml";
 	private static final String CLOUD_OFFER_FILENAME="./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/cloudOffer.yaml";
-	private static final String OUTPUT_FILENAME="./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/output.yaml";
+	private static final String OUTPUT_FILENAME="./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/output";
 	private static final String OPEN_SQUARE_BRACKET="[";
 	private static final String CLOSE_SQUARE_BRACKET="]";
 	private static final double MAX_MILLIS_EXECUTING = 20000;
@@ -86,13 +87,27 @@ private static String filenameToString(String path)  throws IOException {
 
 
 @Test
-public void testPresenceSolution(){
+public void testPresenceSolutionRandom(){
 	
-	log.info("=== TEST for SOLUTION GENERATION of optimizer STARTED ===");
+	log.info("=== TEST for SOLUTION GENERATION of RANDOM optimizer STARTED ===");
 	
-	optimizer= new Optimizer();
+	optimizer= new Optimizer(3,SearchMethodName.RANDOM);
 	
-	String dam = optimizer.optimize(appModel, suitableCloudOffer);
+	String[] arrayDam = optimizer.optimize(appModel, suitableCloudOffer);
+	for(int damnum=0; damnum<arrayDam.length; damnum++){
+		
+		checkCorrectness(arrayDam[damnum]);
+		
+		saveFile(OUTPUT_FILENAME+damnum+".yaml",arrayDam[damnum]);
+	}
+	
+	log.info("=== TEST for SOLUTION GENERATION of RANDOM optimizer FINISEHD ===");
+	
+}
+
+private void checkCorrectness(String dam) {
+	
+	
 	Assert.assertFalse("Dam was not created, optimize method returns null", dam==null);
 	String damLines[] = dam.split(System.getProperty("line.separator"));
 	
@@ -121,12 +136,8 @@ public void testPresenceSolution(){
 	}
 	Assert.assertEquals("Optimizer did not find any of the services",numServices,numSuitableServicesFound);
 	
-	saveFile(OUTPUT_FILENAME,dam);
-	
-	
-	log.info("=== TEST for SOLUTION GENERATION of optimizer FINISEHD ===");
-	
 }
+
 
 private void saveFile(String outputFilename, String dam) {
 	PrintWriter out =null;

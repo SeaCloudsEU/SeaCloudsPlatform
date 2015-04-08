@@ -20,11 +20,38 @@ package eu.seaclouds.platform.planner.optimizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.seaclouds.platform.planner.optimizer.heuristics.HillClimb;
+import eu.seaclouds.platform.planner.optimizer.heuristics.RandomSearch;
+import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethod;
+import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
+
 
 public class Reoptimizer {
 
+	private final SearchMethodName searchName;
+	private SearchMethod engine; 
+	
 	static Logger log = LoggerFactory.getLogger(Reoptimizer.class);
 	
+	public Reoptimizer(){
+		engine = new RandomSearch();
+		searchName=SearchMethodName.RANDOM;
+	}
+	
+	public Reoptimizer(SearchMethodName name) {
+		searchName=name;
+		
+		switch(name){
+		case RANDOM: engine=new RandomSearch();
+					break;
+		case HILLCLIMB: engine= new HillClimb();
+					break;
+					
+		//case SIMANNEALING: engine= new SimAnnealing(); break;
+		default: engine =new RandomSearch();
+		}
+	}
+
 	public String[] optimize(String appModel, String suitableCloudOffer, int numPlansToGenerate_ArrayLength) {
 		// TODO Auto-generated method stub
 		return null;

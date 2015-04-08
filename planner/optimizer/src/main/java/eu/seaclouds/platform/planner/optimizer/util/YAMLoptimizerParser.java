@@ -230,7 +230,7 @@ private static double getPropertyOfCloudOffer(String cloudOfferProperty, Map<Str
 	else{
 		//Many times it will not exist the value and it will return 0
 		log.info("Property " + cloudOfferProperty + " not found. REAL SOLUTION CANNOT BE COMPUTED in case that " 
-				+ cloudOfferProperty + " requirement exist in the system. Just to keep working we assume a value 0.99 for whatever porperty in {performance, availability, cost}");
+				+ cloudOfferProperty + " requirement existed in the system. Just to keep working we assume a value 0.99 for whatever porperty in {performance, availability, cost}");
 		//valueOfProperty=0.99;
 	}
 	

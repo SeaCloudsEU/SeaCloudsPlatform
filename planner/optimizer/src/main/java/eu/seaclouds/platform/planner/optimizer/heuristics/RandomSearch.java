@@ -61,9 +61,11 @@ public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 			 currentSol[0] = findSolution(cloudOffers, applicationMap);
 			 currentSol[0].setSolutionFitness(super.fitness(currentSol[0], applicationMap, topology, cloudOffers));
 			
-			 if(currentSol[0].getSolutionFitness()> getMinimumFitnessOfSolutions(bestSols)){			 
-				 insertOrdered(bestSols,currentSol[0]);
-				 numItersNoImprovement=0;
+			 if(currentSol[0].getSolutionFitness()> super.getMinimumFitnessOfSolutions(bestSols)){	
+				 if(!currentSol[0].isContainedIn(bestSols)){
+					 insertOrdered(bestSols,currentSol[0]);
+					 numItersNoImprovement=0;
+				 }
 			 }
 			 
 			 numItersNoImprovement++;

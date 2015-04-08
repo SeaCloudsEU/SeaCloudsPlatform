@@ -24,16 +24,41 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.seaclouds.platform.planner.optimizer.heuristics.HillClimb;
 import eu.seaclouds.platform.planner.optimizer.heuristics.RandomSearch;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethod;
+import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
 
 
 public class OptimizerInitialDeployment {
 	
-	
+	private final SearchMethodName searchName;
+	private SearchMethod engine; 
 	static Logger log = LoggerFactory.getLogger(OptimizerInitialDeployment.class);
+
+	public OptimizerInitialDeployment(){
+		engine = new RandomSearch();
+		searchName=SearchMethodName.RANDOM;
+	}
+	
+	public OptimizerInitialDeployment(SearchMethodName name) {
+		searchName=name;
+		
+		switch(name){
+		case RANDOM: engine=new RandomSearch();
+					break;
+		case HILLCLIMB: engine= new HillClimb();
+					break;
+					
+		//case SIMANNEALING: engine= new SimAnnealing(); break;
+		default: engine =new RandomSearch();
+		//TODO:Complete with more methods
+		}
+		
+	}
+
 
 	public String[] optimize(String appModel, String suitableCloudOffer, int numPlansToGenerate) {
 		
@@ -55,8 +80,6 @@ public class OptimizerInitialDeployment {
 		
 		
 		//Compute solution
-		//TODO Change the type of heuristic for another with better performance/output
-		SearchMethod engine = new RandomSearch();
 		Map<String,Object>[] mapSolutions = engine.computeOptimizationProblem(appInfoSuitableOptions.clone(), appMap, topology,numPlansToGenerate);
 		
 		if(mapSolutions==null){

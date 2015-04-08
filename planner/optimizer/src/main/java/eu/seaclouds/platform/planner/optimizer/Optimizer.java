@@ -22,8 +22,10 @@ package eu.seaclouds.platform.planner.optimizer;
 
 
 
-import org.slf4j.Logger; 
+import org.slf4j.Logger;  
 import org.slf4j.LoggerFactory;
+
+import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 
 
  
@@ -32,13 +34,26 @@ public class Optimizer  {
 	
 	private static Logger log = LoggerFactory.getLogger(Optimizer.class);
 	private final int NUMBER_OF_PLANS_GENERATED;
+	private final SearchMethodName searchName;
 	
 	public Optimizer(){
 		NUMBER_OF_PLANS_GENERATED=5;
+		searchName=SearchMethodName.RANDOM;
 	}
 	
 	public Optimizer(int num){
 		NUMBER_OF_PLANS_GENERATED=num;
+		searchName=SearchMethodName.RANDOM;
+	}
+	
+	public Optimizer(SearchMethodName name){
+		NUMBER_OF_PLANS_GENERATED=5;
+		searchName=name;		
+	}
+	
+	public Optimizer(int num, SearchMethodName name){
+		NUMBER_OF_PLANS_GENERATED=num;
+		searchName=name;		
 	}
 	
 //Optimizer uses its previously generated plan as a source when replanning.
@@ -52,7 +67,7 @@ public String[] optimize(	 String appModel, String suitableCloudOffer){
 	outputPlans[0]="Plan generation was not possible";
 	
 	if(previousPlans==null){
-		OptimizerInitialDeployment initialOptimizer = new OptimizerInitialDeployment(); 
+		OptimizerInitialDeployment initialOptimizer = new OptimizerInitialDeployment(searchName); 
 		
 		try{
 			outputPlans=initialOptimizer.optimize(appModel, suitableCloudOffer,NUMBER_OF_PLANS_GENERATED);
@@ -64,7 +79,7 @@ public String[] optimize(	 String appModel, String suitableCloudOffer){
 		}
 	}
 	else{
-		Reoptimizer optimizerReplanning = new Reoptimizer();
+		Reoptimizer optimizerReplanning = new Reoptimizer(searchName);
 		
 		try{
 		log.error("Calling a Replanning. The previously generated Plan will be used as a base");

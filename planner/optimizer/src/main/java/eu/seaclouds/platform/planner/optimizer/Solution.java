@@ -85,6 +85,15 @@ public class Solution implements Iterable<String>, Comparable<Solution>{
 		
 	}
 	
+	public int size() {
+		return modName_ModOption.size();
+	}
+	
+	public boolean containsModuleName(String modn){
+		if(modName_ModOption==null){return false;} //Should never execute because the constructor already creates objects
+		 return modName_ModOption.containsKey(modn);
+	}
+	
 	@Override
 	public Solution clone(){
 		
@@ -95,6 +104,53 @@ public class Solution implements Iterable<String>, Comparable<Solution>{
 		
 		sol.solutionFitness=this.solutionFitness;
 		return sol;
+	}
+	
+	
+	@Override
+	public boolean equals(Object o){
+		
+		if (o == null) {return false;}
+	    if (o == this) {return true;}
+		
+	    Solution s;
+	    try{
+	    	 s = (Solution) o;
+	    }catch (ClassCastException e){
+	    	return false;
+	    }
+	    
+	    if(this.size()!=s.size()){
+	    	return false;
+	    }
+	    for(String modname : this){
+	    	if(!(
+	    			s.containsModuleName(modname) &&
+	    			s.getCloudOfferNameForModule(modname).equals(this.getCloudOfferNameForModule(modname)) &&
+	    			(s.getCloudInstancesForModule(modname)==this.getCloudInstancesForModule(modname))
+	    		)
+	    	){
+	    		return false;
+	    	}
+	    }
+	    
+	    return true;
+	}
+	
+	@Override
+	public int compareTo(Solution o) {
+		return (int) ((this.solutionFitness*COMPARATOR_LIMIT)-(o.solutionFitness*COMPARATOR_LIMIT));
+	}
+
+	public boolean isContainedIn(Solution[] sols) {
+		
+		for(int i=0; i<sols.length; i++){
+			if(this.equals(sols[i])){
+				return true;
+			}
+		}
+		return false;
+		
 	}
 	
 	//ITERATOR
@@ -124,10 +180,11 @@ public class Solution implements Iterable<String>, Comparable<Solution>{
         return it;
     }
 
-	@Override
-	public int compareTo(Solution o) {
-		return (int) ((this.solutionFitness*COMPARATOR_LIMIT)-(o.solutionFitness*COMPARATOR_LIMIT));
-	}
+
+	
+
+
+
 
 
 
