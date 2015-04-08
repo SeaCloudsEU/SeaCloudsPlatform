@@ -31,24 +31,32 @@ public class Optimizer  {
     
 	
 	private static Logger log = LoggerFactory.getLogger(Optimizer.class);
-
+	private final int NUMBER_OF_PLANS_GENERATED;
 	
-
+	public Optimizer(){
+		NUMBER_OF_PLANS_GENERATED=5;
+	}
+	
+	public Optimizer(int num){
+		NUMBER_OF_PLANS_GENERATED=num;
+	}
+	
 //Optimizer uses its previously generated plan as a source when replanning.
-private String previousPlan=null;
+private String[] previousPlans=null;
 
 
-public String optimize(	 String appModel, String suitableCloudOffer){
+public String[] optimize(	 String appModel, String suitableCloudOffer){
 
 
-	String outputPlan="Plan generation was not possible";
+	String[] outputPlans= new String[NUMBER_OF_PLANS_GENERATED];
+	outputPlans[0]="Plan generation was not possible";
 	
-	if(previousPlan==null){
+	if(previousPlans==null){
 		OptimizerInitialDeployment initialOptimizer = new OptimizerInitialDeployment(); 
 		
 		try{
-			outputPlan=initialOptimizer.optimize(appModel, suitableCloudOffer);
-			previousPlan=outputPlan;
+			outputPlans=initialOptimizer.optimize(appModel, suitableCloudOffer);
+			previousPlans=outputPlans;
 		}
 		catch(Error E){
 			log.error("Error optimizing the initial deployment");
@@ -60,15 +68,15 @@ public String optimize(	 String appModel, String suitableCloudOffer){
 		
 		try{
 		log.error("Calling a Replanning. The previously generated Plan will be used as a base");
-		outputPlan=optimizerReplanning.optimize(appModel,suitableCloudOffer);
-		previousPlan=outputPlan;
+		outputPlans=optimizerReplanning.optimize(appModel,suitableCloudOffer);
+		previousPlans=outputPlans;
 		}
 		catch(Error E){
 			log.error("Error optimizing the Replanning");
 			
 		}
 	}
-		return outputPlan;
+		return outputPlans;
 	
 	
 }
