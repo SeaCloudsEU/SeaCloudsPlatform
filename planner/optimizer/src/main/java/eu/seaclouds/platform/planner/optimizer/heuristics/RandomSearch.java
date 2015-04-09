@@ -17,14 +17,13 @@
 
 package eu.seaclouds.platform.planner.optimizer.heuristics;
 
-import java.util.ArrayList; 
-import java.util.HashMap;
+
 import java.util.Map;
 
 import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.Topology;
-import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
+
 
 public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 
@@ -50,7 +49,7 @@ public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 		//This way may help for replanning, when even the first attempt for solution will be based on the current deployment
 		 Solution[] bestSols = findSolutions(null, cloudOffers, applicationMap,numPlansToGenerate);
 		 		 
-		 setFitnessOfSolutions(bestSols,applicationMap,topology,cloudOffers);		 
+		 super.setFitnessOfSolutions(bestSols,applicationMap,topology,cloudOffers);		 
 		 
 		 
 		 
@@ -63,7 +62,7 @@ public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 			
 			 if(currentSol[0].getSolutionFitness()> super.getMinimumFitnessOfSolutions(bestSols)){	
 				 if(!currentSol[0].isContainedIn(bestSols)){
-					 insertOrdered(bestSols,currentSol[0]);
+					 super.insertOrdered(bestSols,currentSol[0]);
 					 numItersNoImprovement=0;
 				 }
 			 }
@@ -71,40 +70,12 @@ public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 			 numItersNoImprovement++;
 		 }
 		 
-		 return HashMapOfFoundSolutionsWithThresholds(bestSols, applicationMap, topology, cloudOffers, numPlansToGenerate);
+		 return super.hashMapOfFoundSolutionsWithThresholds(bestSols, applicationMap, topology, cloudOffers, numPlansToGenerate);
 
 	}
 
 
-	private Map<String, Object>[] HashMapOfFoundSolutionsWithThresholds(Solution[] bestSols, Map<String, Object> applicMap,Topology topology, 
-																		SuitableOptions cloudOffers,int numPlansToGenerate) {
-		 @SuppressWarnings("unchecked")
-		Map<String, Object>[] solutions = new HashMap[numPlansToGenerate];
-		 for(int i=0; i<bestSols.length; i++){
-			 
-			 Map<String, Object> baseAppMap = YAMLoptimizerParser.cloneYAML(applicMap);
-			 
-			 super.addSolutionToAppMap(bestSols[i], baseAppMap);
-		 
-			 HashMap<String,ArrayList<Double>> thresholds = super.createReconfigurationThresholds(bestSols[i], baseAppMap, topology, cloudOffers);
-			 YAMLoptimizerParser.AddReconfigurationThresholds(thresholds,baseAppMap);
-			 
-			 solutions[i]=baseAppMap;
-		 }
-		 return solutions;		 
-	}
-
-	private void insertOrdered(Solution[] bestSols, Solution solution) {
-
-		int i=bestSols.length-1;
 		
-		while(bestSols[i].getSolutionFitness()<solution.getSolutionFitness()){ 
-			bestSols[i]=bestSols[i-1];
-			i--; 
-		}
-		bestSols[i]=solution;
-		
-	}
 
 
 	private Solution[] findSolutions(Solution baseSolution, SuitableOptions cloudOffers, Map<String, Object> applicationMap,int numPlansToGenerate) {

@@ -421,6 +421,7 @@ public class QualityAnalyzer {
 			
 			if(moduleWithHighestUtilization==null){
 				existModulesToScaleOut=false;
+				//can be shortened to "existModulesToScaleOut=(!(moduleWithHighestUtilization==null));"
 			}
 		
 		}

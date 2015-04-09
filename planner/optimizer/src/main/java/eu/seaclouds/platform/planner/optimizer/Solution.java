@@ -66,6 +66,7 @@ public class Solution implements Iterable<String>, Comparable<Solution>{
 		return modName_NumInstances.get(key);
 	}
 	
+	
 	public double getSolutionFitness() {
 		return solutionFitness;
 	}
@@ -82,6 +83,15 @@ public class Solution implements Iterable<String>, Comparable<Solution>{
 		else{
 			modName_NumInstances.put(modulename, newInstances);
 		}
+		
+	}
+	
+	public void modifyCloudOfferOfModule(String modulename, CloudOffer newOffer) {
+		String nameOfOffer = newOffer.getName();
+		if(!modName_ModOption.containsKey(modulename)){
+			log.error("trying to modify the cloud offer of a module which does not exist");
+		}
+		modName_ModOption.put(modulename, nameOfOffer);
 		
 	}
 	
@@ -153,7 +163,7 @@ public class Solution implements Iterable<String>, Comparable<Solution>{
 		
 	}
 	
-	//ITERATOR
+	//ITERATOR //Iterates over names of modules
 	public Iterator<String> iterator() {
         Iterator<String> it = new Iterator<String>() {
 
@@ -179,6 +189,10 @@ public class Solution implements Iterable<String>, Comparable<Solution>{
         };
         return it;
     }
+
+
+
+
 
 
 	

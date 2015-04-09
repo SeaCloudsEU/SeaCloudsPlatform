@@ -111,7 +111,29 @@ public abstract class AbstractHeuristic implements SearchMethod {
 		else{
 			//some requirement was not satisfied, so the solution cannot be considered. 
 			//If a value of goodness is less than one it meant that the requirement was specified but not satisfied;
-			return Double.NEGATIVE_INFINITY;
+			//The value of fitness returned should be between 0 and 1 to show this fact. 
+			
+			//Each of the requirements specified add a value to the fitness between 0 and 1/numExistingRequirements
+			double partialFitness = 0.0;
+			double numExistingRequirements=0.0;
+			if(requirements.existResponseTimeRequirement()){
+				partialFitness+=Math.min(MAX_TIMES_IMPROVE_REQUIREMENT,perfGoodness);
+				numExistingRequirements++;
+			}
+			if(requirements.existAvailabilityRequirement()){
+				partialFitness+=Math.min(MAX_TIMES_IMPROVE_REQUIREMENT,availGoodness);
+				numExistingRequirements++;
+			}
+			if(requirements.existCostRequirement()){
+				partialFitness+=Math.min(MAX_TIMES_IMPROVE_REQUIREMENT,costGoodness);
+				numExistingRequirements++;
+			}
+			
+			return partialFitness / (MAX_TIMES_IMPROVE_REQUIREMENT * numExistingRequirements++);
+			
+			
+			
+		
 		}
 		
 	}
@@ -193,7 +215,9 @@ public abstract class AbstractHeuristic implements SearchMethod {
 	}
 	
 
-
+/*//Useful in the past and potentially useful in the future when generations 
+ * that reproduce are chosen as a subset of current current generation and their parents
+ * 
 	private Solution[] mergeBestSolutions(Solution[] sols1, Solution[] sols2, int numPlansToGenerate) {
 		sortSolutionsByFitness(sols1);
 		sortSolutionsByFitness(sols2);
@@ -231,8 +255,9 @@ public abstract class AbstractHeuristic implements SearchMethod {
 		}
 		return merged;
 	}
-
-	private void sortSolutionsByFitness(Solution[] bestSols) {
+*/
+	
+	protected void sortSolutionsByFitness(Solution[] bestSols) {
 		Arrays.sort(bestSols, Collections.reverseOrder());
 	}
 
@@ -260,28 +285,81 @@ public abstract class AbstractHeuristic implements SearchMethod {
 
 	protected double getMinimumFitnessOfSolutions(Solution[] solutions) {
 		
-		double worstFitness = Double.POSITIVE_INFINITY;
-		
-		for(int i=0; i<solutions.length; i++){
-			if(solutions[i].getSolutionFitness() < worstFitness){
-				worstFitness=solutions[i].getSolutionFitness();
-			}
-		}
-		
-		return worstFitness;
+		return getSolutionWithMinimumFitness(solutions).getSolutionFitness();
 		
 	}
 	
 	protected double getMaximumFitnessOfSolutions(Solution[] solutions) {
-		double bestFitness = Double.NEGATIVE_INFINITY;
-		
-		for(int i=0; i<solutions.length; i++){
-			if(solutions[i].getSolutionFitness()>bestFitness){
-				bestFitness=solutions[i].getSolutionFitness();
-			}
-		}
-		return bestFitness;
+		return getSolutionWithMaximumFitness(solutions).getSolutionFitness();
 	}
 	
+	
+	protected Solution getSolutionWithMaximumFitness(Solution[] solutions) {
+		Solution maxFitSol = solutions[0];
+		for(int i=0; i<solutions.length; i++){
+			if(solutions[i].getSolutionFitness()>maxFitSol.getSolutionFitness()){
+				maxFitSol=solutions[i];
+			}
+		}
+		
+		return maxFitSol;
+		
+	}
+	
+	protected Solution getSolutionWithMinimumFitness(Solution[] solutions) {
+		Solution minFitSol= solutions[0];
+		for(int i=0; i<solutions.length; i++){
+			if(solutions[i].getSolutionFitness()<minFitSol.getSolutionFitness()){
+				minFitSol=solutions[i];
+			}
+		}
+		return minFitSol;	
+	}
+	
+	
+	
+	protected void insertOrdered(Solution[] bestSols, Solution solution) {
+
+		
+		
+		if(solution.getSolutionFitness()<bestSols[bestSols.length-1].getSolutionFitness()){
+			return;
+		}
+		
+		int currentPos=bestSols.length-1;
+		while((currentPos>0) && (bestSols[currentPos-1].getSolutionFitness()<solution.getSolutionFitness())){ 
+			bestSols[currentPos]=bestSols[currentPos-1];
+			currentPos--; 
+		}
+		
+			bestSols[currentPos]=solution;
+		
+		
+	}
+	
+	protected Map<String, Object>[] hashMapOfFoundSolutionsWithThresholds(Solution[] bestSols, Map<String, Object> applicMap,Topology topology, 
+			SuitableOptions cloudOffers,int numPlansToGenerate) {
+		
+		@SuppressWarnings("unchecked")
+		Map<String, Object>[] solutions = new HashMap[numPlansToGenerate];
+		
+		for(int i=0; i<bestSols.length; i++){
+		
+			Map<String, Object> baseAppMap = YAMLoptimizerParser.cloneYAML(applicMap);
+		
+			addSolutionToAppMap(bestSols[i], baseAppMap);
+		
+			HashMap<String,ArrayList<Double>> thresholds = createReconfigurationThresholds(bestSols[i], baseAppMap, topology, cloudOffers);
+			YAMLoptimizerParser.AddReconfigurationThresholds(thresholds,baseAppMap);
+		
+			solutions[i]=baseAppMap;
+		}
+		return solutions;		 
+	}
+
+	protected boolean solutionShouldBeIncluded(Solution sol,Solution[] sols) {
+		return (sol.getSolutionFitness()>getMinimumFitnessOfSolutions(sols)) && (!sol.isContainedIn(sols));
+}
+
 	
 }

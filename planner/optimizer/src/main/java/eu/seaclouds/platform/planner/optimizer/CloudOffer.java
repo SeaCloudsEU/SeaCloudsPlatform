@@ -17,6 +17,8 @@
 
 package eu.seaclouds.platform.planner.optimizer;
 
+import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
+
 public class CloudOffer {
 
 	private String name;
@@ -101,6 +103,14 @@ public CloudOffer(String name, double performance, double availability,	double c
 
 	public void setNumCores(double numCores) {
 		this.numCores = numCores;
+	}
+
+	/**
+	 * @return The part of the cloud offer name before the first dot (".")
+	 */
+	public String getProviderName() {
+		//TODO: Test this method with several offers names since the split method gives curious results sometimes (null)
+		return name.split(TOSCAkeywords.CLOUD_OFFER_PROVIDER_NAME_SEPARATOR)[0];
 	}
 
 

@@ -33,4 +33,6 @@ public class TOSCAkeywords {
 	
 	public static final String RECONFIGURATION_WORKLOAD_TAG = "Reconfigurations";
 	
+	public static final String CLOUD_OFFER_PROVIDER_NAME_SEPARATOR = "\\.";
+	
 }
