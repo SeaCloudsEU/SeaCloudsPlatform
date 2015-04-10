@@ -98,12 +98,32 @@ public void testPresenceSolutionRandom(){
 		
 		checkCorrectness(arrayDam[damnum]);
 		
-		saveFile(OUTPUT_FILENAME+damnum+".yaml",arrayDam[damnum]);
+		saveFile(OUTPUT_FILENAME+SearchMethodName.RANDOM+damnum+".yaml",arrayDam[damnum]);
 	}
 	
 	log.info("=== TEST for SOLUTION GENERATION of RANDOM optimizer FINISEHD ===");
 	
 }
+
+@Test
+public void testPresenceSolutionHillClimb(){
+	
+	log.info("=== TEST for SOLUTION GENERATION of HILLCLIMB optimizer STARTED ===");
+	
+	optimizer= new Optimizer(3,SearchMethodName.HILLCLIMB);
+	
+	String[] arrayDam = optimizer.optimize(appModel, suitableCloudOffer);
+	for(int damnum=0; damnum<arrayDam.length; damnum++){
+		
+		checkCorrectness(arrayDam[damnum]);
+		
+		saveFile(OUTPUT_FILENAME+SearchMethodName.HILLCLIMB+damnum+".yaml",arrayDam[damnum]);
+	}
+	
+	log.info("=== TEST for SOLUTION GENERATION of HILLCLIMB optimizer FINISEHD ===");
+	
+}
+
 
 private void checkCorrectness(String dam) {
 	

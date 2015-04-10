@@ -191,7 +191,15 @@ public class Solution implements Iterable<String>, Comparable<Solution>{
     }
 
 
-
+	@Override
+	public String toString(){
+		String out="{";
+		for(String modulename : this){
+			out+=modulename+":"+modName_ModOption.get(modulename)+"-"+modName_NumInstances.get(modulename)+"  ";
+		}
+		out+="}";
+		return out;
+	}
 
 
 

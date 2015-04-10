@@ -19,6 +19,7 @@
 	package eu.seaclouds.platform.planner.optimizer.heuristics;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 	import eu.seaclouds.platform.planner.optimizer.Solution;
@@ -62,7 +63,7 @@ import eu.seaclouds.platform.planner.optimizer.Topology;
 				 boolean neighborsImprove=true;
 				 while(neighborsImprove){
 					 Solution[] candidates= findNeighbors(currentSol, cloudOffers, applicationMap, topology);
-					 log.debug("Found " + candidates.length + " neighbors of the solution");
+					 log.debug("Found " + candidates.length + " neighbors of the solution: Are " + Arrays.toString(candidates));
 					 super.setFitnessOfSolutions(candidates, applicationMap, topology, cloudOffers);
 					 Solution bestCandidate = super.getSolutionWithMaximumFitness(candidates);
 					 if(bestCandidate.getSolutionFitness()>currentSol.getSolutionFitness()){
