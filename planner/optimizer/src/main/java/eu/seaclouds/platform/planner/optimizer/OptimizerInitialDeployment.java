@@ -71,6 +71,8 @@ public class OptimizerInitialDeployment {
 		//TODO: Obtain Application topology. At 10/02/2015 this information is not included in the YAML. It's not possible to retrieve it
 		Topology topology = YAMLoptimizerParser.getApplicationTopology(appMap,allCloudOffers);
 		
+		
+		
 		//TODO: Remove the following temporal management of the lack of topology. Create an incorrect and ad-hoc one to keep the system working		
 		if(topology==null){
 			log.error("Topology could not be parsed. Not known quantity of calls between modules. Assuming the dummy case where"
@@ -78,6 +80,7 @@ public class OptimizerInitialDeployment {
 			topology = createAdHocTopologyFromSuitableOptions(appInfoSuitableOptions);
 		}
 		
+		log.debug("Server topology identified in the YAML file is: " + topology.toString());
 		
 		//Compute solution
 		Map<String,Object>[] mapSolutions = engine.computeOptimizationProblem(appInfoSuitableOptions.clone(), appMap, topology,numPlansToGenerate);

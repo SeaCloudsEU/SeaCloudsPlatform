@@ -179,7 +179,7 @@ public class YAMLmodulesOptimizerParser {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static double getMeasuredExecTime(Map<String, Object> module) {
+	public static double getMeasuredExecTimeMillis(Map<String, Object> module) {
 		 Map<String, Object> moduleInfo=null;
 		 Map<String, Object> moduleReqs=null;
 		   try{
@@ -236,6 +236,12 @@ public class YAMLmodulesOptimizerParser {
 		   return 0.0;
 	}
 
+	/**
+	 * @param module
+	 * @param modules
+	 * @return all the modules required by this module. Its required modules are the ones that satisfy all the next conditions: its name is under the 
+	 * "requirements" part of the module (but not under "host" key), its name is in the general list of existing modules,  
+	 */
 	@SuppressWarnings("unchecked")
 	public static List<String> ModuleRequirementsOfAModule(Map<String, Object> module, Map<String, Object> modules) {
 		
@@ -263,8 +269,10 @@ public class YAMLmodulesOptimizerParser {
 		   //if any of the module requirements has the name of potentialModuleName, then there is a requirement between modules. 
 		   for (Map.Entry<String, Object> entry : moduleReqs.entrySet()){
 			   try{
-				   if(isModuleName((String)entry.getValue(),modules)){
-					   reqnameslist.add((String)entry.getValue());
+				   if(isModuleName((String)entry.getValue(),modules)){// if it is a module
+					   if(!entry.getKey().equals(TOSCAkeywords.MODULE_REQUIREMENTS_HOST)){//it isn't its execution host
+						   reqnameslist.add((String)entry.getValue());
+					   }
 				   }
 			   }
 			   catch(ClassCastException E){//It wasnt a string, maybe they were constraints
@@ -274,6 +282,36 @@ public class YAMLmodulesOptimizerParser {
 		   return reqnameslist;
 		
 		
+	}
+
+	/**
+	 * @param module
+	 * @return the name of the host of a module. It looks the requirements::host value
+	 */
+	@SuppressWarnings("unchecked")
+	public static String getHostOfModule(Map<String, Object> module) {
+		
+		Map<String, Object> moduleReqs=null;
+		   try{
+			
+			  if(!module.containsKey(TOSCAkeywords.MODULE_REQUIREMENTS)){
+				   return null;
+			   }
+			   moduleReqs = (Map<String, Object>) module.get(TOSCAkeywords.MODULE_REQUIREMENTS);
+			   
+		
+		   }catch(ClassCastException E){
+				return null;
+			}
+		   	  
+		   try{
+			   return (String) moduleReqs.get(TOSCAkeywords.MODULE_REQUIREMENTS_HOST);
+		   }
+		   catch(ClassCastException E){//It wasnt a string the host information: weird 
+			   log.warn("Cast to String could not be performed for a host reqirement of a module" );
+			   return null;
+		   }
+		  
 	}
 
 

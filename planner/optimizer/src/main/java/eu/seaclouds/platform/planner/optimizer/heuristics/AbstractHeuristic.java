@@ -194,12 +194,12 @@ public abstract class AbstractHeuristic implements SearchMethod {
 
 	private void loadWorkload(Map<String, Object> applicationMap) {
 		if(requirements.getWorkload()<0.0){
-			requirements.setWorkload(YAMLoptimizerParser.getApplicationWorkload(applicationMap));
+			requirements.setWorkloadMinute(YAMLoptimizerParser.getApplicationWorkload(applicationMap));
 		}
 		//Maybe the previous operation did not work correctly because the workload could not be found in the YAML. Follow an ad-hoc solution to get some requirements
 		if(!requirements.hasValidWorkload()){
 			log.error("Valid workload information not found in the input document. Loading dummy quality requirements for testing purposes");
-			requirements.setWorkload(YAMLoptimizerParser.getApplicationWorkloadTest());
+			requirements.setWorkloadMinute(YAMLoptimizerParser.getApplicationWorkloadTest());
 		}
 		
 	}

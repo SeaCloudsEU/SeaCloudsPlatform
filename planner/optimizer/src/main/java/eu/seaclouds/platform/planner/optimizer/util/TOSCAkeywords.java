@@ -36,8 +36,8 @@ public class TOSCAkeywords {
 	public static final String APP_QOS_REQUIREMENTS = "QoSrequirementsPOC";
 	public static final String APP_PERFORMANCE_REQUIREMENTS = "responseTimePOC";
 	public static final String APP_AVAILABILITY_REQUIREMENTS = "availabilityPOC";
-	public static final String APP_COST_REQUIREMENTS = "costPOC";
-	public static final String APP_EXPECTED_WORKLOAD = "workloadPOC";
+	public static final String APP_COST_REQUIREMENTS_MONTH = "costPOC";
+	public static final String APP_EXPECTED_WORKLOAD_MINUTE = "workloadPOC";
 	
 	
 	public static final String MODULE_QOS_PROPERTIES = "QoSpropertiesPOC";

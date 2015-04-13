@@ -345,17 +345,17 @@ public static QualityInformation getQualityRequirements(Map<String, Object> appl
 	
 	//check availability
 	if(appReqs.containsKey(TOSCAkeywords.APP_AVAILABILITY_REQUIREMENTS)){
-		quality.setAvailability(Double.valueOf(((String) (appReqs.get(TOSCAkeywords.APP_AVAILABILITY_REQUIREMENTS)))).doubleValue());
+		quality.setAvailability((Double) appReqs.get(TOSCAkeywords.APP_AVAILABILITY_REQUIREMENTS));
 	}
 	
 	//check performance
 	if(appReqs.containsKey(TOSCAkeywords.APP_PERFORMANCE_REQUIREMENTS)){
-		quality.setResponseTime(Double.valueOf(((String) (appReqs.get(TOSCAkeywords.APP_PERFORMANCE_REQUIREMENTS)))).doubleValue());
+		quality.setResponseTimeMillis((Double) appReqs.get(TOSCAkeywords.APP_PERFORMANCE_REQUIREMENTS));
 	}
 	
 	//check cost
-	if(appReqs.containsKey(TOSCAkeywords.APP_COST_REQUIREMENTS)){
-		quality.setCost(Double.valueOf(((String) (appReqs.get(TOSCAkeywords.APP_COST_REQUIREMENTS)))).doubleValue());
+	if(appReqs.containsKey(TOSCAkeywords.APP_COST_REQUIREMENTS_MONTH)){
+		quality.setCostMonth((Double) appReqs.get(TOSCAkeywords.APP_COST_REQUIREMENTS_MONTH));
 	}
 	
 	//check whether any of them existed
@@ -390,8 +390,8 @@ public static double getApplicationWorkload(Map<String, Object> applicationMap) 
 	}
 	
 	//check existence of workload information
-	if(appReqs.containsKey(TOSCAkeywords.APP_EXPECTED_WORKLOAD)){
-		return (Double.valueOf(((String) (appReqs.get(TOSCAkeywords.APP_EXPECTED_WORKLOAD)))).doubleValue());
+	if(appReqs.containsKey(TOSCAkeywords.APP_EXPECTED_WORKLOAD_MINUTE)){
+		return (Double.valueOf(((String) (appReqs.get(TOSCAkeywords.APP_EXPECTED_WORKLOAD_MINUTE)))).doubleValue());
 	}
 	else{
 		return -1;
@@ -408,9 +408,47 @@ public static Topology getApplicationTopology(Map<String, Object> appMap, Map<St
 	Topology topology = new Topology();
 	
 	//gets the topology of the connected graph to element passed as argument. 
-	return getApplicationTopologyRecursive(initialElement.getKey(), 
+	 topology = getApplicationTopologyRecursive(initialElement.getKey(), 
 										(Map<String, Object>) initialElement.getValue(),topology,(Map<String, Object>) appMap.get(TOSCAkeywords.NODE_TEMPLATE),
 										allCloudOffers);
+	
+	 replaceModuleNameByHostName(topology, (Map<String, Object>) appMap.get(TOSCAkeywords.NODE_TEMPLATE));
+	 return topology;
+}
+
+
+private static void replaceModuleNameByHostName(Topology topology,Map<String, Object> modules) {
+	
+	for(String modName : topology.getModuleNamesIterator()){
+		String newName = getFinalHostNameOfModule(modules,modName);
+		topology.replaceElementName(modName,newName);
+	}
+	
+}
+
+
+private static String getFinalHostNameOfModule(Map<String, Object> modules,String modName) {
+	
+	Map<String, Object> module = null;
+	try{
+		if(modules.containsKey(modName)){
+			module = (Map<String, Object>) modules.get(modName);
+		}
+		else{
+			log.warn("Looking for module that do not exist in the set of application modules. Expecting errors in the execution");
+			return null;
+		}
+	}catch(ClassCastException E){
+		log.warn("set of application modules does not look well-formed . Expecting errors in the execution");
+		 return null;
+	}
+	
+	if(modules.containsKey(YAMLmodulesOptimizerParser.getHostOfModule(module))){
+		return getFinalHostNameOfModule(modules, YAMLmodulesOptimizerParser.getHostOfModule(module));
+	}
+	else{
+		return modName;
+	}
 	
 
 }
@@ -425,7 +463,7 @@ private static Topology getApplicationTopologyRecursive(String elementName, Map<
 	
 	TopologyElement newelement= new TopologyElement(elementName);
 	double hostPerformance = getPerformanceOfOfferByName(YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(element),allCloudOffers);
-	newelement.setExecTime(YAMLmodulesOptimizerParser.getMeasuredExecTime(element)*hostPerformance);
+	newelement.setExecTimeMillis(YAMLmodulesOptimizerParser.getMeasuredExecTimeMillis(element)*hostPerformance);
 	
 	
 	//The module does not have requiremetns
@@ -478,10 +516,31 @@ private static double getPerformanceOfOfferByName(String offername, Map<String, 
 		
 		
 		Map<String, Object> offer =null; 
+		Map<String, Object> offerprop =null; 
 		double offerperformance = 0.0;
+		
+		//check if offer has properties
 		try{
 			offer = (Map<String, Object>) allCloudOffers.get(offername);
-			offerperformance=Double.valueOf((String)offer.get(TOSCAkeywords.CLOUD_OFFER_PROPERTY_PERFORMANCE)).doubleValue();
+			
+			if(offer.containsKey(TOSCAkeywords.CLOUD_OFFER_PROPERTIES_TAG)){
+				offerprop = (Map<String, Object>) offer.get(TOSCAkeywords.CLOUD_OFFER_PROPERTIES_TAG);
+			}
+			else{
+				return 0.0;
+			}
+		}catch(ClassCastException E){
+			return 0.0;
+		}
+		
+		//check if properties have performance
+		try{	
+			if(offerprop.containsKey(TOSCAkeywords.CLOUD_OFFER_PROPERTY_PERFORMANCE)){
+				offerperformance=Double.valueOf((String)offerprop.get(TOSCAkeywords.CLOUD_OFFER_PROPERTY_PERFORMANCE)).doubleValue();
+			}
+			else{
+				log.warn("Not found performance of cloud offer called " + offername);
+			}
 		}catch(ClassCastException E){
 			return 0.0;
 		}
@@ -515,10 +574,26 @@ public static double getApplicationWorkloadTest() {
 
 public static void AddReconfigurationThresholds(	HashMap<String, ArrayList<Double>> thresholds,	Map<String, Object> applicationMap) {
 	if(thresholds!=null){
+		thresholdsFromSecondsToMinutes(thresholds);
 		applicationMap.put(TOSCAkeywords.RECONFIGURATION_WORKLOAD_TAG, thresholds);
 	}
 }
 
+
+
+private static void thresholdsFromSecondsToMinutes(HashMap<String, ArrayList<Double>> thresholds) {
+	
+	for(Map.Entry<String, ArrayList<Double>> entry : thresholds.entrySet()){
+		ArrayList<Double> list = entry.getValue();
+	
+		//multiply each element by the ratio between seconds and minutes (60)
+		for(int i=0; i<list.size(); i++){
+			list.set(i, list.get(i)*60.0);
+		}
+		
+	}
+	
+}
 
 
 /**

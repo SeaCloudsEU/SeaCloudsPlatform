@@ -44,6 +44,10 @@ public class TopologyElement {
 		return name;
 	}
 	
+	public void setName(String newname){
+		this.name=newname;
+	}
+	
 	public void addElementCalled(TopologyElementCalled e){
 		dependences.add(e);
 	}
@@ -91,6 +95,11 @@ public class TopologyElement {
 		// this method should implement the checking of whether a module can scale. Up to now, it is assumed that all can scale out, so the 
 		// structure is created. 
 		return true;
+	}
+
+	public void setExecTimeMillis(double d) {
+		setExecTime(d/1000.0);
+		
 	}
 
 

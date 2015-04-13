@@ -20,11 +20,11 @@ package eu.seaclouds.platform.planner.optimizer.nfp;
 
 public class QualityInformation {
 
-	
-	private double respTime=0;
+	//try to make the standard unit for time metric (the cost is instead measured in money/hour instead of money/second)
+	private double respTime=0; //inSeconds
 	private double availability=0;
-	private double cost=0;
-	private double workload=0;
+	private double cost=0; // in moneyUnits/hour
+	private double workload=0; //in seconds
 	
 	
 
@@ -36,6 +36,11 @@ public class QualityInformation {
 		this.respTime = respTime;
 	}
 
+	public void setResponseTimeMillis(Double resp) {
+		setResponseTime(resp/1000.0);	
+	}
+
+	
 	public boolean existResponseTimeRequirement(){
 		return respTime!=0.0;
 	}
@@ -60,6 +65,9 @@ public class QualityInformation {
 		this.cost = cost;
 	}
 
+	public void setCostMonth(double c) {
+		setCost(c/(30.0*24.0));
+	}
 
 	public double getCost() {
 		
@@ -84,6 +92,11 @@ public class QualityInformation {
 	public boolean hasValidWorkload() {
 		return workload>0;
 	}
+
+	public void setWorkloadMinute(double wkl) {
+		setWorkload(wkl/60.0);
+	}
+
 
 
 

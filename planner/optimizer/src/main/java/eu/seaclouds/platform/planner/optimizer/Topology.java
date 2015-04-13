@@ -20,10 +20,15 @@ package eu.seaclouds.platform.planner.optimizer;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import eu.seaclouds.platform.planner.optimizer.SuitableOptions.AbstractIterator;
+import eu.seaclouds.platform.planner.optimizer.SuitableOptions.ListIterator;
+import eu.seaclouds.platform.planner.optimizer.SuitableOptions.StringIterator;
 
 
 
@@ -95,6 +100,16 @@ public class Topology {
 		return modules.indexOf(initialElement);
 	}
 
+
+	public void replaceElementName(String modName, String newName) {
+		
+		for(TopologyElement e : modules){
+			if(e.getName().equals(modName)){
+				e.setName(newName);
+			}
+		}
+		
+	}
 	
 	
 	/**
@@ -122,5 +137,79 @@ public class Topology {
 	public boolean contains(String elementName) {
 		return getModule(elementName)!=null;
 	}
+
+	@Override
+	public String toString() {
+		String NL = System.getProperty("line.separator");
+		String out="";
+		for(TopologyElement mod : modules){
+			out+=mod.getName() + " : execTime - " + mod.getDefaultExecutionTime()+ " : dependences - {";
+			for(TopologyElementCalled modc : mod.getDependences()){
+				out+=modc.getElement().getName()+"("+modc.getProbCall()+"), ";
+			}
+			out+="}"+NL+NL;
+			
+		}
+		
+		return out;
+		
+	}
+	
+	
+	//ITERATORS
+	//ITERATOR OVER THE ELEMENTS
+	//@Override
+    abstract class AbstractIterator<T> implements Iterable<T>, Iterator<T>{
+    	 int currentIndex = 0;
+
+         @Override
+         public boolean hasNext() {
+             return currentIndex < modules.size();
+         }
+         
+         @Override
+         public void remove() {
+             // TODO Auto-generated method stub
+         }
+         
+         @Override
+         public Iterator<T> iterator() {
+             return this;
+         }
+             		
+    }
+    
+    class DependencyListsIterator extends AbstractIterator<List<TopologyElementCalled>>{
+    	
+    	@Override
+         public List<TopologyElementCalled> next() {
+         	List<TopologyElementCalled> currentList=modules.get(currentIndex).getDependences();
+         	currentIndex++;
+             return currentList;
+             		
+         }
+    }
+	
+    class ModuleNamesIterator extends AbstractIterator<String>{
+    	@Override
+        public String next() {
+        	String currentModName=modules.get(currentIndex).getName();
+        	currentIndex++;
+            return currentModName;
+    	}
+    }
+    
+    
+
+	public Iterable<List<TopologyElementCalled>> getDependencyListsIterator() {
+		
+		return new DependencyListsIterator();
+	}
+	
+	public Iterable<String> getModuleNamesIterator(){
+		return new  ModuleNamesIterator();
+	}
+
+
 	
 }
