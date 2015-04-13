@@ -50,6 +50,8 @@ public class OptimizerTest {
 	private static final String CLOSE_SQUARE_BRACKET="]";
 	private static final double MAX_MILLIS_EXECUTING = 20000;
 	
+	private static final int NUM_PLANS_TO_GENERATE=5;
+	
 	static Logger log = LoggerFactory.getLogger(OptimizerTest.class);
 	
 	
@@ -91,7 +93,7 @@ public void testPresenceSolutionRandom(){
 	
 	log.info("=== TEST for SOLUTION GENERATION of RANDOM optimizer STARTED ===");
 	
-	optimizer= new Optimizer(3,SearchMethodName.RANDOM);
+	optimizer= new Optimizer(NUM_PLANS_TO_GENERATE,SearchMethodName.RANDOM);
 	
 	String[] arrayDam = optimizer.optimize(appModel, suitableCloudOffer);
 	for(int damnum=0; damnum<arrayDam.length; damnum++){
@@ -110,7 +112,7 @@ public void testPresenceSolutionHillClimb(){
 	
 	log.info("=== TEST for SOLUTION GENERATION of HILLCLIMB optimizer STARTED ===");
 	
-	optimizer= new Optimizer(3,SearchMethodName.HILLCLIMB);
+	optimizer= new Optimizer(NUM_PLANS_TO_GENERATE,SearchMethodName.HILLCLIMB);
 	
 	String[] arrayDam = optimizer.optimize(appModel, suitableCloudOffer);
 	for(int damnum=0; damnum<arrayDam.length; damnum++){

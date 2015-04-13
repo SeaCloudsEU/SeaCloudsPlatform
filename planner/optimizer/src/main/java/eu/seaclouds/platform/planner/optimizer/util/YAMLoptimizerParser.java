@@ -391,7 +391,7 @@ public static double getApplicationWorkload(Map<String, Object> applicationMap) 
 	
 	//check existence of workload information
 	if(appReqs.containsKey(TOSCAkeywords.APP_EXPECTED_WORKLOAD_MINUTE)){
-		return (Double.valueOf(((String) (appReqs.get(TOSCAkeywords.APP_EXPECTED_WORKLOAD_MINUTE)))).doubleValue());
+		return (Double) appReqs.get(TOSCAkeywords.APP_EXPECTED_WORKLOAD_MINUTE);
 	}
 	else{
 		return -1;
@@ -456,7 +456,6 @@ private static String getFinalHostNameOfModule(Map<String, Object> modules,Strin
 
 private static Topology getApplicationTopologyRecursive(String elementName, Map<String, Object> element, Topology topology,Map<String, Object> modules, Map<String, Object> allCloudOffers) {
 	
-	// TODO Waiting for the decision on how topology is stored in the YAML
 	if(topology.contains(elementName)){
 		return topology;
 	}

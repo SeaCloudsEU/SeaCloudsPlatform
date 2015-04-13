@@ -20,7 +20,7 @@
 package eu.seaclouds.platform.planner.optimizer.nfp;
 
 
-import java.util.ArrayList;  
+import java.util.ArrayList;   
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,7 +36,11 @@ import eu.seaclouds.platform.planner.optimizer.TopologyElementCalled;
 
 public class QualityAnalyzer {
 
+	private final boolean IS_DEBUG;
+	private boolean defaultDebug =true;
 	static Logger log = LoggerFactory.getLogger(QualityAnalyzer.class);
+	
+	
 	 
 	private QualityInformation properties=null;
 	
@@ -48,6 +52,15 @@ public class QualityAnalyzer {
 		properties = new QualityInformation();
 		MAX_TIMES_WORKLOAD_FOR_THRESHOLDS=10.0;
 		WORKLOAD_INCREMENT_FOR_SEARCH=1.0;
+		IS_DEBUG=defaultDebug;
+	}
+	
+	public QualityAnalyzer( boolean debug) {
+		
+		properties = new QualityInformation();
+		MAX_TIMES_WORKLOAD_FOR_THRESHOLDS=10.0;
+		WORKLOAD_INCREMENT_FOR_SEARCH=1.0;
+		IS_DEBUG=debug;
 	}
 
 	public QualityAnalyzer(double maxWorkload) {
@@ -55,6 +68,17 @@ public class QualityAnalyzer {
 		properties = new QualityInformation();
 		MAX_TIMES_WORKLOAD_FOR_THRESHOLDS=maxWorkload;
 		WORKLOAD_INCREMENT_FOR_SEARCH=1.0;
+		IS_DEBUG=defaultDebug;
+	}
+	
+
+	
+	public QualityAnalyzer(double maxWorkload, boolean debug) {
+		
+		properties = new QualityInformation();
+		MAX_TIMES_WORKLOAD_FOR_THRESHOLDS=maxWorkload;
+		WORKLOAD_INCREMENT_FOR_SEARCH=1.0;
+		IS_DEBUG=debug;
 	}
 	
 	public QualityAnalyzer(double maxWorkload, double workloadIncrement) {
@@ -62,6 +86,15 @@ public class QualityAnalyzer {
 		properties = new QualityInformation();
 		MAX_TIMES_WORKLOAD_FOR_THRESHOLDS=maxWorkload;
 		WORKLOAD_INCREMENT_FOR_SEARCH=workloadIncrement;
+		IS_DEBUG=defaultDebug;
+	}
+
+	public QualityAnalyzer(double maxWorkload, double workloadIncrement, boolean debug) {
+		
+		properties = new QualityInformation();
+		MAX_TIMES_WORKLOAD_FOR_THRESHOLDS=maxWorkload;
+		WORKLOAD_INCREMENT_FOR_SEARCH=workloadIncrement;
+		IS_DEBUG=debug;
 	}
 
 	
@@ -553,14 +586,17 @@ public class QualityAnalyzer {
 		//of a cloud offer and number of instances for such module
 		double [] workloadsModulesByCoresAndNumInstances = weightModuleWorkloadByCoresAndNumInstances(workloadsModules,topology,sol,cloudCharacteristics);
 		
-		log.debug("Response time is: " + getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances,mus) + " and "
+		if(IS_DEBUG){
+			log.debug("Response time is: " + getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances,mus) + " and "
 				+ "the performance requirement is " + respTimeRequirement);
+		}
 		//find upper value. TODO: It may not stop if there are only delay centers (not considered yet in the requirements). 
 		while(isValidRespTime(getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances,mus),respTimeRequirement)){
 			
-			log.debug("Response time for workload " + (workload+incWorkload) + " is: " + getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances,mus) + " and "
+			if(IS_DEBUG){
+				log.debug("Response time for workload " + (workload+incWorkload) + " is: " + getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances,mus) + " and "
 					+ "the performance requirement is " + respTimeRequirement);
-			
+			}
 			incWorkload=incWorkload*2.0;
 			
 			workloadsModules = getWorkloadsArray(routes, workload+incWorkload);
