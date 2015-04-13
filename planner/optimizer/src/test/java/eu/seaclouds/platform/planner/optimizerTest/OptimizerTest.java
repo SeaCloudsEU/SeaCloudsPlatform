@@ -18,7 +18,7 @@
 
 package eu.seaclouds.platform.planner.optimizerTest;
 
-import java.io.FileNotFoundException;
+import java.io.FileNotFoundException; 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -43,8 +43,8 @@ public class OptimizerTest {
 	private static Optimizer optimizer;
 	private static String appModel;
 	private static String suitableCloudOffer;
-	private static final String APP_MODEL_FILENAME="./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/Matchmakeroutput.yaml";
-	private static final String CLOUD_OFFER_FILENAME="./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/cloudOffer.yaml";
+	private static final String APP_MODEL_FILENAME="./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/MatchmakeroutputWithQoS.yaml";
+	private static final String CLOUD_OFFER_FILENAME="./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/cloudOfferWithQoS.yaml";
 	private static final String OUTPUT_FILENAME="./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/output";
 	private static final String OPEN_SQUARE_BRACKET="[";
 	private static final String CLOSE_SQUARE_BRACKET="]";

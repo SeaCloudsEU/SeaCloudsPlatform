@@ -1,0 +1,42 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+node_templates:
+  nuroCaseStudy:
+    type: seaClouds.nodes.WebApplication.PHP
+    properties: {version: 5.5}
+    requirements: {host: webServer, database_endpoint: nuroDatabase}
+    QoSpropertiesPOC:
+      executionTimeMeasuredInPOC: AWS.compute.c1.medium
+      executionTimePOC: 50.0
+      OpProfilePOC: {nuroDatabase: 1.0}
+  nuroDatabase:
+    type: seaClouds.nodes.Database.MySQL
+    properties: {db_name: nuroDB, version: 5.1}
+    capabilities:
+      database_endpoint:
+        properties: {port: 80}
+    requirements:
+      host: seaclouds.nodes.Compute
+      constraints:
+        region: eu-west-1
+        firewall: true
+        cpuCores:
+          in_range: [1, 4]
+        localStorage: {greater_or_equal: 100}
+        memory: {greater_or_equal: 0.4}
+        suitableServices: [AWS.compute.c1.medium, AWS.compute.m1.small, AWS.compute.m1.medium,
+          AWS.compute.m1.large]
+    QoSpropertiesPOC: {executionTimeMeasuredInPOC: AWS.compute.c1.medium, executionTimePOC: 50.0}
+  webServer:
+    type: seaClouds.nodes.WebServer
+    capabilities: {host: seaclouds.nodes.WebApplication.PHP}
+    requirements:
+      host: seaclouds.nodes.Compute
+      constraints:
+        cpuCores:
+          in_range: [2, 8]
+        memory: {greater_or_equal: 0.4}
+        operatingSystem: linux.ubuntu
+        suitableServices: [AWS.compute.c1.medium, AWS.compute.m1.large, Rackspace.compute.compute1-15]
+QoSrequirementsPOC: {availabilityPOC: 0.99, responseTimePOC: 2000.0, workloadPOC: 100.0,
+  costPOC: 1500.0}
+

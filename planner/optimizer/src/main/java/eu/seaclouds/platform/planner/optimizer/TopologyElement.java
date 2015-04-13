@@ -25,9 +25,18 @@ public class TopologyElement {
 	private String name;
 	private List<TopologyElementCalled> dependences;
 	
+	//the execution time experienced in a machine of performance=1 .
+	//It is calculated as the execution time provided multiplied by the discovered performance of the machine.
+	private double execTimeInPowerlessMachine;
 	
 	public TopologyElement(String name){
 		this.name=name;
+		dependences = new ArrayList<TopologyElementCalled>();
+	}
+	
+	public TopologyElement(String name, double execTime){
+		this.name=name;
+		this.execTimeInPowerlessMachine=execTime;
 		dependences = new ArrayList<TopologyElementCalled>();
 	}
 	
@@ -38,6 +47,15 @@ public class TopologyElement {
 	public void addElementCalled(TopologyElementCalled e){
 		dependences.add(e);
 	}
+	
+	public void setExecTime(double d) {
+		this.execTimeInPowerlessMachine=d;
+	}
+	
+	public double getDefaultExecutionTime(){
+		return this.execTimeInPowerlessMachine;
+	}
+	
 	
 	public void addElementCalled(TopologyElement e){
 		TopologyElementCalled elementCalled = new TopologyElementCalled(e);
@@ -74,5 +92,7 @@ public class TopologyElement {
 		// structure is created. 
 		return true;
 	}
+
+
 
 }

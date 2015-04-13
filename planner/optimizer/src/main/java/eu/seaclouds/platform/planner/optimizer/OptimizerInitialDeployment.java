@@ -66,9 +66,10 @@ public class OptimizerInitialDeployment {
 		
 		//Get cloud offers
 		SuitableOptions appInfoSuitableOptions = YAMLoptimizerParser.GetSuitableCloudOptionsAndCharacteristicsForModules(appModel,suitableCloudOffer);
+		Map<String, Object> allCloudOffers = YAMLoptimizerParser.getMAPofCloudOffers(suitableCloudOffer);
 		
 		//TODO: Obtain Application topology. At 10/02/2015 this information is not included in the YAML. It's not possible to retrieve it
-		Topology topology = YAMLoptimizerParser.getApplicationTopology(appMap);
+		Topology topology = YAMLoptimizerParser.getApplicationTopology(appMap,allCloudOffers);
 		
 		//TODO: Remove the following temporal management of the lack of topology. Create an incorrect and ad-hoc one to keep the system working		
 		if(topology==null){

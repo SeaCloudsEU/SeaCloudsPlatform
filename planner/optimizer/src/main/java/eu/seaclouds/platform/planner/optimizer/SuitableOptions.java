@@ -22,9 +22,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
 
 
 public class SuitableOptions { //implements Iterable<List<String>
@@ -549,17 +552,5 @@ public class SuitableOptions { //implements Iterable<List<String>
 		}
 		return suitableOptionsCharacteristics.get(indexModule);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
 	
 }

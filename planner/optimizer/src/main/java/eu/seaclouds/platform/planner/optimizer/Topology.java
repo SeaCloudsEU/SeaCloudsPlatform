@@ -118,5 +118,9 @@ public class Topology {
 	public TopologyElement getElementIndex(int index) {
 		return modules.get(index);
 	}
+
+	public boolean contains(String elementName) {
+		return getModule(elementName)!=null;
+	}
 	
 }
