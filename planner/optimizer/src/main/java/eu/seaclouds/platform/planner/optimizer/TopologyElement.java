@@ -56,6 +56,11 @@ public class TopologyElement {
 		this.execTimeInPowerlessMachine=d;
 	}
 	
+	public void setExecTimeMillis(double d) {
+		setExecTime(d/1000.0);
+		
+	}
+	
 	public double getDefaultExecutionTime(){
 		return this.execTimeInPowerlessMachine;
 	}
@@ -97,10 +102,7 @@ public class TopologyElement {
 		return true;
 	}
 
-	public void setExecTimeMillis(double d) {
-		setExecTime(d/1000.0);
-		
-	}
+
 
 
 

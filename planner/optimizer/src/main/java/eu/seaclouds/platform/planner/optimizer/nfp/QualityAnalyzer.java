@@ -37,7 +37,7 @@ import eu.seaclouds.platform.planner.optimizer.TopologyElementCalled;
 public class QualityAnalyzer {
 
 	private final boolean IS_DEBUG;
-	private boolean defaultDebug =true;
+	private boolean defaultDebug =false;
 	static Logger log = LoggerFactory.getLogger(QualityAnalyzer.class);
 	
 	
@@ -441,7 +441,9 @@ public class QualityAnalyzer {
 		while(continueGeneratingThresholds(limitWorkload, workload, modifSol, requirements,cloudCharacteristics,existModulesToScaleOut) ){
 			//Stop condition is the highest allowed cost or, if cost is not specified, ten times the expected worklaod
 		
-			log.debug("Creating threshold for workload above " + limitWorkload);
+			if(IS_DEBUG){
+				log.debug("Creating threshold for workload above " + limitWorkload);
+			}
 			limitWorkload = findWorkloadForWhichRespTimeIsExceeded(requirements.getResponseTime(), limitWorkload,routes,mus,modifSol,topology, cloudCharacteristics);
 			//get highest utilization
 			String moduleWithHighestUtilization = findHighestUtilizationModuleThatCanScale(limitWorkload,routes,mus,modifSol,topology, cloudCharacteristics);
@@ -627,8 +629,10 @@ public class QualityAnalyzer {
 			
 			//Set upper or lower limit according to binary search.
 			double currentRespTime = getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances,mus);
-			log.debug("Response time for workload " + workloadToCheck + " is: " + currentRespTime + " and "
-					+ "the performance requirement is " + respTimeRequirement);
+			if(IS_DEBUG){
+				log.debug("Response time for workload " + workloadToCheck + " is: " + currentRespTime + " and "
+						+ "the performance requirement is " + respTimeRequirement);
+			}
 			if(isValidRespTime(currentRespTime,respTimeRequirement)){
 				lowerWorkloadLimit=workloadToCheck;
 			}

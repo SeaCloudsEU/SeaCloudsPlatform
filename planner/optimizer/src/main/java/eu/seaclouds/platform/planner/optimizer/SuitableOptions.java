@@ -50,10 +50,7 @@ public class SuitableOptions { //implements Iterable<List<String>
 	}
 	
 	public void addSuitableOptions(String moduleName, List<String> optionsNames, List<CloudOffer> OptionsCharacteristics){
-		
-		log.debug("Adding the cloud options of module " + moduleName + " which consists of " + optionsNames.size() + " elements");
-		
-		
+				
 		moduleNames.add(moduleName);
 		suitableOptionsNames.add(optionsNames);
 		suitableOptionsCharacteristics.add(OptionsCharacteristics);

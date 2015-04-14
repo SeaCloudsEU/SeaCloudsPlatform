@@ -35,6 +35,7 @@ public class Optimizer  {
 	private static Logger log = LoggerFactory.getLogger(Optimizer.class);
 	private final int NUMBER_OF_PLANS_GENERATED;
 	private final SearchMethodName searchName;
+
 	
 	public Optimizer(){
 		NUMBER_OF_PLANS_GENERATED=5;

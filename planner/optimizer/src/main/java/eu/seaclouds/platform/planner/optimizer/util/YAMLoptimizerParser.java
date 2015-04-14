@@ -37,8 +37,12 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 
 public class YAMLoptimizerParser {
 
-	static Logger log = LoggerFactory.getLogger(YAMLoptimizerParser.class);
+	//Reducing verbosity . If somebody knows a better approach for doing this (I could not set dynamically the level of the logging) it should be changed
 	private static int BeeingTooVerboseWithLackOfInformationInCloudOffers=3;
+	private static final boolean IS_DEBUG=false;
+	
+	
+	static Logger log = LoggerFactory.getLogger(YAMLoptimizerParser.class);
 
 	
 	
@@ -52,11 +56,12 @@ public class YAMLoptimizerParser {
 		
 		}
 		
-		log.debug( "Found list of suitable services: " + suitableOptions.toString() + " Removing it");
+		 if(IS_DEBUG){log.debug( "Found list of suitable services: " + suitableOptions.toString() + " Removing it");}
+		 
 		while(!suitableOptions.isEmpty()){
 			suitableOptions.remove(0);
 		}
-		log.debug("Removal complete");
+		
 		
 	}
 		
@@ -81,7 +86,9 @@ public class YAMLoptimizerParser {
 		   		   
 		   //If module found, go deeper to find for its suitable Options
 		   if(modulename.equals(entry.getKey())){
-			   log.debug("Found module " + modulename + " cleaning the potential options" ); 
+			   if(IS_DEBUG){
+				   log.debug("Found module " + modulename + " cleaning the potential options" ); 
+			   }
 			   return GetListOfSuitableOptionsForAlreadyFoundModule(entry.getValue());
 		   }
 		   
@@ -228,7 +235,7 @@ private static double getPropertyOfCloudOffer(String cloudOfferProperty, Map<Str
 	
 	if(propertiesOfOffer.containsKey(cloudOfferProperty)){
 		//If there is an error here, treat the value returned in the Map as List<String> instead of as String; i.e., add a .get(0)
-		valueOfProperty = Double.valueOf((propertiesOfOffer.get(cloudOfferProperty).toString())).doubleValue();
+		valueOfProperty = (Double) propertiesOfOffer.get(cloudOfferProperty);
 	}
 	else{
 		//Many times it will not exist the value and it will return 0
@@ -238,7 +245,7 @@ private static double getPropertyOfCloudOffer(String cloudOfferProperty, Map<Str
 				+ cloudOfferProperty + " requirement existed in the system");
 		BeeingTooVerboseWithLackOfInformationInCloudOffers--;
 		}
-		//valueOfProperty=0.99;
+		
 	}
 	
 	return valueOfProperty;
@@ -249,7 +256,7 @@ private static double getPropertyOfCloudOffer(String cloudOfferProperty, Map<Str
 public static void AddSuitableOfferForModule(String moduleName, String solutionName ,Map<String, Object> applicationMap) {
 	
 	List<String> options = GetListOfSuitableOptionsForModule(moduleName, applicationMap);
-	log.debug( "Adding selected offer " + solutionName +" to module " +moduleName + " with current suitable options " + options.toString());
+	if(IS_DEBUG){log.debug( "Adding selected offer " + solutionName +" to module " +moduleName + " with current suitable options " + options.toString());}
 	options.add(solutionName);
 }
 
@@ -535,7 +542,7 @@ private static double getPerformanceOfOfferByName(String offername, Map<String, 
 		//check if properties have performance
 		try{	
 			if(offerprop.containsKey(TOSCAkeywords.CLOUD_OFFER_PROPERTY_PERFORMANCE)){
-				offerperformance=Double.valueOf((String)offerprop.get(TOSCAkeywords.CLOUD_OFFER_PROPERTY_PERFORMANCE)).doubleValue();
+				offerperformance=(Double) offerprop.get(TOSCAkeywords.CLOUD_OFFER_PROPERTY_PERFORMANCE);
 			}
 			else{
 				log.warn("Not found performance of cloud offer called " + offername);

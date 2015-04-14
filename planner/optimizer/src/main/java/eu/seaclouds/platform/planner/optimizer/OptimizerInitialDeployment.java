@@ -32,7 +32,7 @@ import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
 
 
-public class OptimizerInitialDeployment {
+public class OptimizerInitialDeployment{
 	
 	
 	private SearchMethod engine; 
@@ -79,9 +79,7 @@ public class OptimizerInitialDeployment {
 					+ "all modules are called in sequence. The order of calls is random}");
 			topology = createAdHocTopologyFromSuitableOptions(appInfoSuitableOptions);
 		}
-		
-		log.debug("Server topology identified in the YAML file is: " + topology.toString());
-		
+				
 		//Compute solution
 		Map<String,Object>[] mapSolutions = engine.computeOptimizationProblem(appInfoSuitableOptions.clone(), appMap, topology,numPlansToGenerate);
 		

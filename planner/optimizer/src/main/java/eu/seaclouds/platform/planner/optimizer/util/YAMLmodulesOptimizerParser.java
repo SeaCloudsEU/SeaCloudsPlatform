@@ -192,7 +192,7 @@ public class YAMLmodulesOptimizerParser {
 			   
 			   //Check Existence of measured host
 			   if(moduleReqs.containsKey(TOSCAkeywords.MODULE_QOS_PERFORMANCE_MILLIS)){
-				  return Double.valueOf((String) moduleReqs.get(TOSCAkeywords.MODULE_QOS_PERFORMANCE_MILLIS)).doubleValue();
+				  return (Double) moduleReqs.get(TOSCAkeywords.MODULE_QOS_PERFORMANCE_MILLIS);
 			   }
 			   
 		
@@ -225,7 +225,7 @@ public class YAMLmodulesOptimizerParser {
 				  
 				Map<String, Object> opprofilemodule = (Map<String, Object>) moduleReqs.get(TOSCAkeywords.MODULE_QOS_OPERATIONAL_PROFILE);
 				   
-				  return Double.valueOf((String) opprofilemodule.get(moduleReqName)).doubleValue();
+				  return (Double) opprofilemodule.get(moduleReqName);
 			   }
 		   }catch(ClassCastException E){
 				return 1.0;

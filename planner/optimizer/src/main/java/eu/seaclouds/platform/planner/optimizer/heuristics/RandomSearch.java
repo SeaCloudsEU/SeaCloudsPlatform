@@ -49,7 +49,8 @@ public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 		//This way may help for replanning, when even the first attempt for solution will be based on the current deployment
 		 Solution[] bestSols = findSolutions(null, cloudOffers, applicationMap,numPlansToGenerate);
 		 		 
-		 super.setFitnessOfSolutions(bestSols,applicationMap,topology,cloudOffers);		 
+		 super.setFitnessOfSolutions(bestSols,applicationMap,topology,cloudOffers);	
+		 super.sortSolutionsByFitness(bestSols);
 		 
 		 
 		 
@@ -61,7 +62,7 @@ public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 			 currentSol[0].setSolutionFitness(super.fitness(currentSol[0], applicationMap, topology, cloudOffers));
 			
 			 if(currentSol[0].getSolutionFitness()> super.getMinimumFitnessOfSolutions(bestSols)){	
-				 if(!currentSol[0].isContainedIn(bestSols)){
+				 if(!currentSol[0].isContainedIn(bestSols)){					 
 					 super.insertOrdered(bestSols,currentSol[0]);
 					 numItersNoImprovement=0;
 				 }

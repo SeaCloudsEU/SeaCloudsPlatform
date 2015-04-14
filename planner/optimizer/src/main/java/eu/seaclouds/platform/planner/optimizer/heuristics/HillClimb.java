@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 	import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.Topology;
@@ -29,7 +32,7 @@ import eu.seaclouds.platform.planner.optimizer.Topology;
 
 	public class HillClimb  extends AbstractHeuristic implements SearchMethod  {
 
-		
+		static Logger log = LoggerFactory.getLogger(HillClimb.class);
 		
 		public HillClimb() {
 			super();
@@ -63,7 +66,7 @@ import eu.seaclouds.platform.planner.optimizer.Topology;
 				 boolean neighborsImprove=true;
 				 while(neighborsImprove){
 					 Solution[] candidates= findNeighbors(currentSol, cloudOffers, applicationMap, topology);
-					 log.debug("Found " + candidates.length + " neighbors of the solution: Are " + Arrays.toString(candidates));
+					 if(super.IS_DEBUG){log.debug("Found " + candidates.length + " neighbors of the solution: Are " + Arrays.toString(candidates));}
 					 super.setFitnessOfSolutions(candidates, applicationMap, topology, cloudOffers);
 					 Solution bestCandidate = super.getSolutionWithMaximumFitness(candidates);
 					 if(bestCandidate.getSolutionFitness()>currentSol.getSolutionFitness()){

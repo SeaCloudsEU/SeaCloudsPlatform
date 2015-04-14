@@ -38,11 +38,12 @@ import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
 public abstract class AbstractHeuristic implements SearchMethod {
 
+	
 	static Logger log = LoggerFactory.getLogger(AbstractHeuristic.class);
 	
 	private int MAX_ITER_NO_IMPROVE = 200;
 	private double MAX_TIMES_IMPROVE_REQUIREMENT=20;
-	
+	protected static final boolean IS_DEBUG=false;
 	
 	public AbstractHeuristic(int maxIter){
 		MAX_ITER_NO_IMPROVE=maxIter;
@@ -147,7 +148,7 @@ public abstract class AbstractHeuristic implements SearchMethod {
 	 */
 	public HashMap<String,ArrayList<Double>> createReconfigurationThresholds(Solution sol,Map<String, Object> applicationMap, Topology topology, SuitableOptions cloudCharacteristics){
 		
-		log.debug("Starting the creation of reconfiguration thresholds");
+		if(IS_DEBUG){log.debug("Starting the creation of reconfiguration thresholds");}
 		
 		loadQualityRequirements(applicationMap);
 		QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
@@ -163,7 +164,7 @@ public abstract class AbstractHeuristic implements SearchMethod {
 		
 			thresholds = qualityAnalyzer.computeThresholds(sol,topology, requirements,cloudCharacteristics);
 			
-			log.debug("Finishing the creation of reconfiguration thresholds");
+			if(IS_DEBUG){log.debug("Finishing the creation of reconfiguration thresholds");}
 			return thresholds;
 		}
 		else{//There are not performance requirements, so no thresholds are created. 
@@ -327,7 +328,7 @@ public abstract class AbstractHeuristic implements SearchMethod {
 		}
 		
 		int currentPos=bestSols.length-1;
-		while((currentPos>0) && (bestSols[currentPos-1].getSolutionFitness()<solution.getSolutionFitness())){ 
+		while((currentPos>0) && (bestSols[currentPos-1].getSolutionFitness()<=solution.getSolutionFitness())){ 
 			bestSols[currentPos]=bestSols[currentPos-1];
 			currentPos--; 
 		}
@@ -336,6 +337,9 @@ public abstract class AbstractHeuristic implements SearchMethod {
 		
 		
 	}
+	
+
+	
 	
 	protected Map<String, Object>[] hashMapOfFoundSolutionsWithThresholds(Solution[] bestSols, Map<String, Object> applicMap,Topology topology, 
 			SuitableOptions cloudOffers,int numPlansToGenerate) {
