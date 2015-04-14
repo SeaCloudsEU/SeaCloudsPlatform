@@ -169,7 +169,7 @@ public static SuitableOptions GetSuitableCloudOptionsAndCharacteristicsForModule
 			  // lookForSuitableOffersOfPotentialModuleName(entry.getValue(),1);
 	   
 	   if(potentialListOfOffersNames!=null){
-		   log.debug("Found suitable options, saving their reference. Module name= " + potentialModuleName + " cloud offers=" + potentialListOfOffersNames.toString());
+		   if(IS_DEBUG){log.debug("Found suitable options, saving their reference. Module name= " + potentialModuleName + " cloud offers=" + potentialListOfOffersNames.toString());}
 		   List<CloudOffer> potentialListOfOfferCharacteristics = getCloudOfferCharacteristcisByName(potentialListOfOffersNames,suitableCloudOffers);
 		   options.addSuitableOptions(potentialModuleName, potentialListOfOffersNames, potentialListOfOfferCharacteristics);
 	   }
