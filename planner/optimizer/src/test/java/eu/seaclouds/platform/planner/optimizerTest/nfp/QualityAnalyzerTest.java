@@ -150,7 +150,7 @@ public void testReconfigurationThresholds(){
 	requirements.setWorkload(10.0);
 	requirements.setCost(40.0);
 	
-	HashMap thresholds= analyzer.computeThresholds(bestSol, topology, requirements, cloudCharacteristics);
+	HashMap<String, ArrayList<Double>> thresholds= analyzer.computeThresholds(bestSol, topology, requirements, cloudCharacteristics);
 	Assert.assertTrue("Compute thresholds returns null", thresholds!=null);
 	
 	log.info("Testing thresholds. Returned hashMap is " + thresholds);

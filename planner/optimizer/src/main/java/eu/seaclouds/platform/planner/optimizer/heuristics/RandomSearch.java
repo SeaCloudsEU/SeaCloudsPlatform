@@ -28,6 +28,7 @@ import eu.seaclouds.platform.planner.optimizer.Topology;
 public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 
 	
+	private static final int DEFAULT_MAX_NUM_INSTANCES=10;
 	
 	public RandomSearch() {
 		super();
@@ -98,9 +99,10 @@ public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 		for(String modName : cloudOffers.getStringIterator()){
 			
 			//TODO Consider also playing with the amount of instances used of a suitable option. 
-			int itemToUse = (int) Math.floor(Math.random()*cloudOffers.getSizeOfSuitableOptions(modName));
+			int itemToUse = (int) Math.floor(Math.random()* (double)cloudOffers.getSizeOfSuitableOptions(modName));
+			int numInstances = (int) Math.floor(Math.random()*((double) DEFAULT_MAX_NUM_INSTANCES));
 			
-			currentSolution.addItem(modName, cloudOffers.getIthSuitableOptionForModuleName(modName,itemToUse));
+			currentSolution.addItem(modName, cloudOffers.getIthSuitableOptionForModuleName(modName,itemToUse),numInstances);
 		}
 		
 		return currentSolution;

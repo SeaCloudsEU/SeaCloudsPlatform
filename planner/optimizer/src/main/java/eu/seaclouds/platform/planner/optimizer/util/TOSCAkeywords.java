@@ -25,6 +25,7 @@ public class TOSCAkeywords {
 	public static final String MODULE_REQUIREMENTS_CONSTRAINTS = "constraints";
 	public static final String MODULE_REQUIREMENTS_HOST = "host";
 	public static final String CLOUD_OFFER_PROPERTIES_TAG = "properties";
+	public static final String MODULE_REQUIREMENTS_INSTANCES = "instances";
 	
 	//These ones have not been defined yet. I invent them
 	public static final String CLOUD_OFFER_PROPERTY_AVAILABILITY = "availabilityPOC";
@@ -47,6 +48,7 @@ public class TOSCAkeywords {
 	
 	
 	public static final String CLOUD_OFFER_PROVIDER_NAME_SEPARATOR = "\\.";
+	
 	
 	
 }

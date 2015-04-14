@@ -17,17 +17,15 @@
 
 package eu.seaclouds.platform.planner.optimizer;
 
-import java.util.ArrayList;
+import java.util.ArrayList; 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
 
 
 public class SuitableOptions { //implements Iterable<List<String>
@@ -192,7 +190,7 @@ public class SuitableOptions { //implements Iterable<List<String>
          
          @Override
          public void remove() {
-             // TODO Auto-generated method stub
+            
          }
          
          @Override
@@ -294,7 +292,6 @@ public class SuitableOptions { //implements Iterable<List<String>
 		Collections.sort(listToSort, new CloudOptionReversePerformanceComparator());
 		
 		//Replace the list of names to be present in the same order as in suitableoptionscharacteristics
-		//TODO: This part should require some tests to see if nothing is broken by sorting in this way
 		for(int i=0; i<listToSort.size(); i++){
 			suitableOptionsNames.get(listIndex).set(i, listToSort.get(i).getName());
 		}

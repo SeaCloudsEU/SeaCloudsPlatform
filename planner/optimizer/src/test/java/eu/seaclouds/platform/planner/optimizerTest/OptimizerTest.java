@@ -117,9 +117,11 @@ public void testPresenceSolutionHillClimb(){
 	String[] arrayDam = optimizer.optimize(appModel, suitableCloudOffer);
 	for(int damnum=0; damnum<arrayDam.length; damnum++){
 		
-		checkCorrectness(arrayDam[damnum]);
 		
+		checkCorrectness(arrayDam[damnum]);
 		saveFile(OUTPUT_FILENAME+SearchMethodName.HILLCLIMB+damnum+".yaml",arrayDam[damnum]);
+		
+		
 	}
 	
 	log.info("=== TEST for SOLUTION GENERATION of HILLCLIMB optimizer FINISEHD ===");

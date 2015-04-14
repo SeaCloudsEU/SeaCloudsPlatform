@@ -26,9 +26,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.seaclouds.platform.planner.optimizer.SuitableOptions.AbstractIterator;
-import eu.seaclouds.platform.planner.optimizer.SuitableOptions.ListIterator;
-import eu.seaclouds.platform.planner.optimizer.SuitableOptions.StringIterator;
 
 
 
@@ -169,7 +166,7 @@ public class Topology {
          
          @Override
          public void remove() {
-             // TODO Auto-generated method stub
+           
          }
          
          @Override

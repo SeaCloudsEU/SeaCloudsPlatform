@@ -210,7 +210,8 @@ public abstract class AbstractHeuristic implements SearchMethod {
 		for(String solkey :  currentSol){
 			
 			YAMLoptimizerParser.CleanSuitableOfferForModule(solkey, applicationMap);
-			YAMLoptimizerParser.AddSuitableOfferForModule(solkey, currentSol.getCloudOfferNameForModule(solkey),applicationMap);
+			YAMLoptimizerParser.AddSuitableOfferForModule(solkey, currentSol.getCloudOfferNameForModule(solkey), 
+															currentSol.getCloudInstancesForModule(solkey), applicationMap);
 		}
 		
 	}

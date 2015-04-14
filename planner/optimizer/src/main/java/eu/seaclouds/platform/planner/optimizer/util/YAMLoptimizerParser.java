@@ -92,10 +92,11 @@ public class YAMLoptimizerParser {
 			   return GetListOfSuitableOptionsForAlreadyFoundModule(entry.getValue());
 		   }
 		   
-		   //If module has not been found, look in depth for the module name (only useful in case that the YAML changes the hierarchy and module names become deeper in the tree)
+		   //If module has not been found, look in depth for the module name (only useful in case that the YAML changes the hierarchy and module names come deeper in the tree)
 		   else{
 			   
-			   //If follow the try/catch because I like more than the "instanceof" way. Trying always to avoid the utilization of "instanceof"...
+			   //If follow the try/catch because I like more than the "instanceof" way. 
+			   //Trying to avoid the utilization of "instanceof"...
 			  
 			   Map<String, Object> moduleInfo=null;
 			   try{
@@ -253,11 +254,13 @@ private static double getPropertyOfCloudOffer(String cloudOfferProperty, Map<Str
 }
 
 
-public static void AddSuitableOfferForModule(String moduleName, String solutionName ,Map<String, Object> applicationMap) {
+public static void AddSuitableOfferForModule(String moduleName, String solutionName ,int instances, Map<String, Object> applicationMap) {
 	
 	List<String> options = GetListOfSuitableOptionsForModule(moduleName, applicationMap);
-	if(IS_DEBUG){log.debug( "Adding selected offer " + solutionName +" to module " +moduleName + " with current suitable options " + options.toString());}
+	if(IS_DEBUG){log.debug( "Adding selected offer " + solutionName +" to module " +moduleName + " and instances "+ instances + " with current suitable options " + options.toString());}
 	options.add(solutionName);
+	options.add(String.valueOf(instances));
+
 }
 
 
@@ -307,23 +310,36 @@ public static void ReplaceSuitableServiceByHost(Map<String, Object> appMap) {
 	 for (Map.Entry<String, Object> entry : templates.entrySet())
 	 {
 	   
-	   if(containsSingleSuitableService(entry)){
-		   String suitableService= FindSuitableOptionsForEntry( entry.getKey(),entry).get(0);
+	   if(containsSingleSuitableServiceAndInstances(entry)){
+		   List<String> suitableOptions = FindSuitableOptionsForEntry( entry.getKey(),entry);
+		   String suitableService= suitableOptions.get(0);
+		   System.out.println("After execution, found suitable options suitable service name: " + suitableService);
+		   int numInstances= Integer.valueOf(suitableOptions.get(1)).intValue();
+		   System.out.println("After execution, found suitable options suitable number of instances: " + numInstances);
 		   Map<String, Object> moduleInfo=(Map<String, Object>)entry.getValue();
 		   Map<String, Object> moduleRequirements=(Map<String, Object>) moduleInfo.get(TOSCAkeywords.MODULE_REQUIREMENTS);
 		   moduleRequirements.remove(TOSCAkeywords.MODULE_REQUIREMENTS_CONSTRAINTS);
 		   moduleRequirements.put(TOSCAkeywords.MODULE_REQUIREMENTS_HOST, suitableService);
+		   moduleRequirements.put(TOSCAkeywords.MODULE_REQUIREMENTS_INSTANCES, numInstances);
 	   }
 		   
 	  }
 }
 
 
-private static boolean containsSingleSuitableService(Entry<String, Object> module) {
+private static boolean containsSingleSuitableServiceAndInstances(Entry<String, Object> module) {
 	List<String> suitableService= FindSuitableOptionsForEntry( module.getKey(),module);
 	if(suitableService!=null){
-		if(suitableService.size()==1){
-			return true;
+		if(suitableService.size()==2){
+			try{
+				if(Integer.valueOf(suitableService.get(1)).intValue()>0){
+					return true;
+				}
+			}
+			catch(NumberFormatException e){
+				return false;
+			}
+			
 		}
 	}
 	return false;
