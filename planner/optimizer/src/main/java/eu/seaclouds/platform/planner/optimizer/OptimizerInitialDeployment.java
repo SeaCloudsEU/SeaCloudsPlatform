@@ -81,7 +81,7 @@ public class OptimizerInitialDeployment{
 			topology = createAdHocTopologyFromSuitableOptions(appInfoSuitableOptions);
 		}
 				
-		log.debug("Topology read is: " + topology.toString());
+		
 		
 		//Compute solution
 		Map<String,Object>[] mapSolutions = engine.computeOptimizationProblem(appInfoSuitableOptions.clone(), appMap, topology,numPlansToGenerate);
