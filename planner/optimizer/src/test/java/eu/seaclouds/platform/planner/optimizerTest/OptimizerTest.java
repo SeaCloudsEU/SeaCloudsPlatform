@@ -98,8 +98,12 @@ public void testPresenceSolutionRandom(){
 	String[] arrayDam = optimizer.optimize(appModel, suitableCloudOffer);
 	for(int damnum=0; damnum<arrayDam.length; damnum++){
 		
-		checkCorrectness(arrayDam[damnum]);
-		
+		try{
+			checkCorrectness(arrayDam[damnum]);
+		}catch(Exception e){
+			log.error("There was an error in the check of correctness. Solution was: " + arrayDam[damnum]);
+			throw e;
+		}
 		saveFile(OUTPUT_FILENAME+SearchMethodName.RANDOM+damnum+".yaml",arrayDam[damnum]);
 	}
 	
@@ -117,8 +121,12 @@ public void testPresenceSolutionHillClimb(){
 	String[] arrayDam = optimizer.optimize(appModel, suitableCloudOffer);
 	for(int damnum=0; damnum<arrayDam.length; damnum++){
 		
-		
-		checkCorrectness(arrayDam[damnum]);
+		try{
+			checkCorrectness(arrayDam[damnum]);
+		}catch(Exception e){
+			log.error("There was an error in the check of correctness. Solution was: " + arrayDam[damnum]);
+			throw e;
+		}
 		saveFile(OUTPUT_FILENAME+SearchMethodName.HILLCLIMB+damnum+".yaml",arrayDam[damnum]);
 		
 		

@@ -73,6 +73,7 @@ public class OptimizerInitialDeployment{
 		
 		
 		
+		
 		//TODO: Remove the following temporal management of the lack of topology. Create an incorrect and ad-hoc one to keep the system working		
 		if(topology==null){
 			log.error("Topology could not be parsed. Not known quantity of calls between modules. Assuming the dummy case where"
@@ -80,6 +81,8 @@ public class OptimizerInitialDeployment{
 			topology = createAdHocTopologyFromSuitableOptions(appInfoSuitableOptions);
 		}
 				
+		log.debug("Topology read is: " + topology.toString());
+		
 		//Compute solution
 		Map<String,Object>[] mapSolutions = engine.computeOptimizationProblem(appInfoSuitableOptions.clone(), appMap, topology,numPlansToGenerate);
 		

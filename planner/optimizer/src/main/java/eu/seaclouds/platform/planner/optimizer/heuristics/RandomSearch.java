@@ -100,7 +100,7 @@ public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 			
 			//TODO Consider also playing with the amount of instances used of a suitable option. 
 			int itemToUse = (int) Math.floor(Math.random()* (double)cloudOffers.getSizeOfSuitableOptions(modName));
-			int numInstances = (int) Math.floor(Math.random()*((double) DEFAULT_MAX_NUM_INSTANCES));
+			int numInstances = ((int) Math.floor(Math.random()*((double) DEFAULT_MAX_NUM_INSTANCES)))+1;
 			
 			currentSolution.addItem(modName, cloudOffers.getIthSuitableOptionForModuleName(modName,itemToUse),numInstances);
 		}
