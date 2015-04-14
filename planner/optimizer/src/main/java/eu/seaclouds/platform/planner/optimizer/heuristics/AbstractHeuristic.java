@@ -43,6 +43,7 @@ public abstract class AbstractHeuristic implements SearchMethod {
 	
 	private int MAX_ITER_NO_IMPROVE = 200;
 	private double MAX_TIMES_IMPROVE_REQUIREMENT=20;
+	private static final int DEFAULT_MAX_NUM_INSTANCES=10;
 	protected static final boolean IS_DEBUG=false;
 	
 	public AbstractHeuristic(int maxIter){
@@ -364,7 +365,20 @@ public abstract class AbstractHeuristic implements SearchMethod {
 
 	protected boolean solutionShouldBeIncluded(Solution sol,Solution[] sols) {
 		return (sol.getSolutionFitness()>getMinimumFitnessOfSolutions(sols)) && (!sol.isContainedIn(sols));
-}
+	}
 
+	protected Solution findRandomSolution(SuitableOptions cloudOffers, Map<String, Object> applicationMap) {
+	Solution currentSolution= new Solution();
+	for(String modName : cloudOffers.getStringIterator()){
+		
+		//TODO Consider also playing with the amount of instances used of a suitable option. 
+		int itemToUse = (int) Math.floor(Math.random()* (double)cloudOffers.getSizeOfSuitableOptions(modName));
+		int numInstances = ((int) Math.floor(Math.random()*((double) DEFAULT_MAX_NUM_INSTANCES)))+1;
+		
+		currentSolution.addItem(modName, cloudOffers.getIthSuitableOptionForModuleName(modName,itemToUse),numInstances);
+	}
+	
+	return currentSolution;
+}
 	
 }

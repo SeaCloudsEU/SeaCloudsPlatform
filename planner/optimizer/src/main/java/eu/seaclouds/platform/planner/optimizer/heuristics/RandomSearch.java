@@ -59,7 +59,7 @@ public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 		 int numItersNoImprovement=0;
 		 while(numItersNoImprovement<super.getMaxIterNoImprove()){
 			
-			 currentSol[0] = findSolution(cloudOffers, applicationMap);
+			 currentSol[0] = super.findRandomSolution(cloudOffers, applicationMap);
 			 currentSol[0].setSolutionFitness(super.fitness(currentSol[0], applicationMap, topology, cloudOffers));
 			
 			 if(currentSol[0].getSolutionFitness()> super.getMinimumFitnessOfSolutions(bestSols)){	
@@ -86,26 +86,13 @@ public class RandomSearch extends AbstractHeuristic implements SearchMethod {
 		
 		for(int newSolIndex=0; newSolIndex<newSolutions.length; newSolIndex++){
 			
-			newSolutions[newSolIndex]=findSolution(cloudOffers, applicationMap);
+			newSolutions[newSolIndex]=super.findRandomSolution(cloudOffers, applicationMap);
 		}
 		
 		return newSolutions;
 		
 	}
 	
-	private Solution findSolution(SuitableOptions cloudOffers, Map<String, Object> applicationMap) {
-		
-		Solution currentSolution= new Solution();
-		for(String modName : cloudOffers.getStringIterator()){
-			
-			//TODO Consider also playing with the amount of instances used of a suitable option. 
-			int itemToUse = (int) Math.floor(Math.random()* (double)cloudOffers.getSizeOfSuitableOptions(modName));
-			int numInstances = ((int) Math.floor(Math.random()*((double) DEFAULT_MAX_NUM_INSTANCES)))+1;
-			
-			currentSolution.addItem(modName, cloudOffers.getIthSuitableOptionForModuleName(modName,itemToUse),numInstances);
-		}
-		
-		return currentSolution;
-	}
+	
 
 }

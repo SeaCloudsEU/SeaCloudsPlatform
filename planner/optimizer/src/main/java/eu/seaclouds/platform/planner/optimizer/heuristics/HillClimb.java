@@ -62,7 +62,7 @@ import eu.seaclouds.platform.planner.optimizer.Topology;
 			 int numItersNoImprovement=0;
 			 while(numItersNoImprovement<super.getMaxIterNoImprove()){ //each iteration finds a peak
 				 
-				 Solution currentSol = findSolution(cloudOffers,applicationMap);
+				 Solution currentSol = super.findRandomSolution(cloudOffers,applicationMap);
 				 boolean neighborsImprove=true;
 				 while(neighborsImprove){
 					 Solution[] candidates= findNeighbors(currentSol, cloudOffers, applicationMap, topology);
@@ -210,25 +210,13 @@ import eu.seaclouds.platform.planner.optimizer.Topology;
 			
 			for(int newSolIndex=0; newSolIndex<newSolutions.length; newSolIndex++){
 				
-				newSolutions[newSolIndex]=findSolution(cloudOffers, applicationMap);
+				newSolutions[newSolIndex]=super.findRandomSolution(cloudOffers, applicationMap);
 			}
 			
 			return newSolutions;
 			
 		}
 		
-		private Solution findSolution(SuitableOptions cloudOffers, Map<String, Object> applicationMap) {
-			
-			Solution currentSolution= new Solution();
-			for(String modName : cloudOffers.getStringIterator()){
-				
-				//TODO Consider also playing with the amount of instances used of a suitable option. 
-				int itemToUse = (int) Math.floor(Math.random()*cloudOffers.getSizeOfSuitableOptions(modName));
-				
-				currentSolution.addItem(modName, cloudOffers.getIthSuitableOptionForModuleName(modName,itemToUse));
-			}
-			
-			return currentSolution;
-		}
+
 		
 	}
