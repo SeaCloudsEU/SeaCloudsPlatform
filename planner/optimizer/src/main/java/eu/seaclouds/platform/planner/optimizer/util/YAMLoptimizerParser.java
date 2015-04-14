@@ -313,9 +313,9 @@ public static void ReplaceSuitableServiceByHost(Map<String, Object> appMap) {
 	   if(containsSingleSuitableServiceAndInstances(entry)){
 		   List<String> suitableOptions = FindSuitableOptionsForEntry( entry.getKey(),entry);
 		   String suitableService= suitableOptions.get(0);
-		   System.out.println("After execution, found suitable options suitable service name: " + suitableService);
+		  
 		   int numInstances= Integer.valueOf(suitableOptions.get(1)).intValue();
-		   System.out.println("After execution, found suitable options suitable number of instances: " + numInstances);
+		   
 		   Map<String, Object> moduleInfo=(Map<String, Object>)entry.getValue();
 		   Map<String, Object> moduleRequirements=(Map<String, Object>) moduleInfo.get(TOSCAkeywords.MODULE_REQUIREMENTS);
 		   moduleRequirements.remove(TOSCAkeywords.MODULE_REQUIREMENTS_CONSTRAINTS);
