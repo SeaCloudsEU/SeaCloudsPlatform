@@ -17,89 +17,75 @@
 
 package eu.seaclouds.platform.planner.optimizer.nfp;
 
-
 public class QualityInformation {
 
-	//try to make the standard unit for time metric (the cost is instead measured in money/hour instead of money/second)
-	private double respTime=0; //inSeconds
-	private double availability=0;
-	private double cost=0; // in moneyUnits/hour
-	private double workload=0; //in seconds
-	
-	
+   // try to make the standard unit for time metric (the cost is instead
+   // measured in money/hour instead of money/second)
+   private double respTime     = 0; // inSeconds
+   private double availability = 0;
+   private double cost         = 0; // in moneyUnits/hour
+   private double workload     = 0; // in seconds
 
-	public double getResponseTime() {
-		return respTime;
-	}
-	
-	public void setResponseTime(double respTime) {
-		this.respTime = respTime;
-	}
+   public double getResponseTime() {
+      return respTime;
+   }
 
-	public void setResponseTimeMillis(Double resp) {
-		setResponseTime(resp/1000.0);	
-	}
+   public void setResponseTime(double respTime) {
+      this.respTime = respTime;
+   }
 
-	
-	public boolean existResponseTimeRequirement(){
-		return respTime!=0.0;
-	}
-	
-	public double getAvailability() {	
-		return availability;
-	}
-	
-	
-	
-	public void setAvailability(double availability) {
-		this.availability = availability;
-	}
-	
-	public boolean existAvailabilityRequirement(){
-		return availability!=0.0;
-	}
-	
+   public void setResponseTimeMillis(Double resp) {
+      setResponseTime(resp / 1000.0);
+   }
 
+   public boolean existResponseTimeRequirement() {
+      return respTime != 0.0;
+   }
 
-	public void setCost(double cost) {
-		this.cost = cost;
-	}
+   public double getAvailability() {
+      return availability;
+   }
 
-	public void setCostMonth(double c) {
-		setCost(c/(30.0*24.0));
-	}
+   public void setAvailability(double availability) {
+      this.availability = availability;
+   }
 
-	public double getCost() {
-		
-		return cost;
-	}
+   public boolean existAvailabilityRequirement() {
+      return availability != 0.0;
+   }
 
-	public boolean existCostRequirement(){
-		return cost!=0.0;
-	}
-	
-	
-	public void setWorkload(double applicationWorkload) {
-		workload=applicationWorkload;
-		
-	}
+   public void setCost(double cost) {
+      this.cost = cost;
+   }
 
+   public void setCostMonth(double c) {
+      setCost(c / (30.0 * 24.0));
+   }
 
-	public double getWorkload() {
-		return workload;
-	}
+   public double getCost() {
 
-	public boolean hasValidWorkload() {
-		return workload>0;
-	}
+      return cost;
+   }
 
-	public void setWorkloadMinute(double wkl) {
-		setWorkload(wkl/60.0);
-	}
+   public boolean existCostRequirement() {
+      return cost != 0.0;
+   }
 
+   public void setWorkload(double applicationWorkload) {
+      workload = applicationWorkload;
 
+   }
 
+   public double getWorkload() {
+      return workload;
+   }
 
+   public boolean hasValidWorkload() {
+      return workload > 0;
+   }
 
+   public void setWorkloadMinute(double wkl) {
+      setWorkload(wkl / 60.0);
+   }
 
 }

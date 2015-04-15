@@ -15,11 +15,9 @@
  *    limitations under the License.
  */
 
-
-
 package eu.seaclouds.platform.planner.optimizer;
 
-import java.util.Map; 
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,105 +28,109 @@ import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethod;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
+public class OptimizerInitialDeployment {
 
+   private SearchMethod engine;
+   static Logger        log = LoggerFactory
+                                  .getLogger(OptimizerInitialDeployment.class);
 
-public class OptimizerInitialDeployment{
-	
-	
-	private SearchMethod engine; 
-	static Logger log = LoggerFactory.getLogger(OptimizerInitialDeployment.class);
+   public OptimizerInitialDeployment() {
+      engine = new BlindSearch();
 
-	public OptimizerInitialDeployment(){
-		engine = new BlindSearch();
-		
-	}
-	
-	public OptimizerInitialDeployment(SearchMethodName name) {
-		
-		
-		switch(name){
-		case BLINDSEARCH: engine=new BlindSearch();
-					break;
-		case HILLCLIMB: engine= new HillClimb(); break;
-					
-		//case SIMANNEALING: engine= new SimAnnealing(); break;
-		default: engine =new BlindSearch();
-		//TODO:Complete with more methods
-		}
-		
-	}
+   }
 
+   public OptimizerInitialDeployment(SearchMethodName name) {
 
-	public String[] optimize(String appModel, String suitableCloudOffer, int numPlansToGenerate) {
-		
-		//Get app characteristics
-		Map<String, Object> appMap = YAMLoptimizerParser.GetMAPofAPP(appModel);		 
-		
-		//Get cloud offers
-		SuitableOptions appInfoSuitableOptions = YAMLoptimizerParser.GetSuitableCloudOptionsAndCharacteristicsForModules(appModel,suitableCloudOffer);
-		Map<String, Object> allCloudOffers = YAMLoptimizerParser.getMAPofCloudOffers(suitableCloudOffer);
-		
-		//TODO: Obtain Application topology. At 10/02/2015 this information is not included in the YAML. It's not possible to retrieve it
-		Topology topology = YAMLoptimizerParser.getApplicationTopology(appMap,allCloudOffers);
-		
-		
-		
-		
-		//TODO: Remove the following temporal management of the lack of topology. Create an incorrect and ad-hoc one to keep the system working		
-		if(topology==null){
-			log.error("Topology could not be parsed. Not known quantity of calls between modules. Assuming the dummy case where"
-					+ "all modules are called in sequence. The order of calls is random}");
-			topology = createAdHocTopologyFromSuitableOptions(appInfoSuitableOptions);
-		}
-				
-		
-		
-		//Compute solution
-		Map<String,Object>[] mapSolutions = engine.computeOptimizationProblem(appInfoSuitableOptions.clone(), appMap, topology,numPlansToGenerate);
-		
-		if(mapSolutions==null){
-			log.error("Map returned by Search engine is null");
-		}
-		
-		String[] stringSolutions = new String[numPlansToGenerate];
-		for(int i=0; i<mapSolutions.length; i++){
-			YAMLoptimizerParser.ReplaceSuitableServiceByHost(mapSolutions[i]);
-			stringSolutions[i]=YAMLoptimizerParser.FromMAPtoYAMLstring(mapSolutions[i]);
-		}
-		
-		 return stringSolutions;
-	}
+      switch (name) {
+      case BLINDSEARCH:
+         engine = new BlindSearch();
+         break;
+      case HILLCLIMB:
+         engine = new HillClimb();
+         break;
 
-	
-	//TODO: Remove this method to avoid finishing weird executions when the YAML does not contain all the information. 
-	// Later it will be better an exception than a weird result. 
-	private Topology createAdHocTopologyFromSuitableOptions(SuitableOptions appInfoSuitableOptions) {
-		
-		Topology topology = new Topology();
-		
-		TopologyElement current=null;
-		TopologyElement previous=null;
-		
-		for(String moduleName : appInfoSuitableOptions.getStringIterator()){
-			
-			if(current==null){
-				//first element treated. None of them needs to point at it
-				current= new TopologyElement(moduleName);
-				topology.addModule(current);
-				
-			}
-			else{//There were explored already other modules
-				previous=current;
-				current = new TopologyElement(moduleName);
-				previous.addElementCalled(current);
-				topology.addModule(current);
-			}		
-			
-		}
-		
-		return topology;
-		
-	}
+      // case SIMANNEALING: engine= new SimAnnealing(); break;
+      default:
+         engine = new BlindSearch();
+         // TODO:Complete with more methods
+      }
 
+   }
+
+   public String[] optimize(String appModel, String suitableCloudOffer,
+         int numPlansToGenerate) {
+
+      // Get app characteristics
+      Map<String, Object> appMap = YAMLoptimizerParser.GetMAPofAPP(appModel);
+
+      // Get cloud offers
+      SuitableOptions appInfoSuitableOptions = YAMLoptimizerParser
+            .GetSuitableCloudOptionsAndCharacteristicsForModules(appModel,
+                  suitableCloudOffer);
+      Map<String, Object> allCloudOffers = YAMLoptimizerParser
+            .getMAPofCloudOffers(suitableCloudOffer);
+
+      // TODO: Obtain Application topology. At 10/02/2015 this information is
+      // not included in the YAML. It's not possible to retrieve it
+      Topology topology = YAMLoptimizerParser.getApplicationTopology(appMap,
+            allCloudOffers);
+
+      // TODO: Remove the following temporal management of the lack of topology.
+      // Create an incorrect and ad-hoc one to keep the system working
+      if (topology == null) {
+         log.error("Topology could not be parsed. Not known quantity of calls between modules. Assuming the dummy case where"
+               + "all modules are called in sequence. The order of calls is random}");
+         topology = createAdHocTopologyFromSuitableOptions(appInfoSuitableOptions);
+      }
+
+      // Compute solution
+      Map<String, Object>[] mapSolutions = engine.computeOptimizationProblem(
+            appInfoSuitableOptions.clone(), appMap, topology,
+            numPlansToGenerate);
+
+      if (mapSolutions == null) {
+         log.error("Map returned by Search engine is null");
+      }
+
+      String[] stringSolutions = new String[numPlansToGenerate];
+      for (int i = 0; i < mapSolutions.length; i++) {
+         YAMLoptimizerParser.ReplaceSuitableServiceByHost(mapSolutions[i]);
+         stringSolutions[i] = YAMLoptimizerParser
+               .FromMAPtoYAMLstring(mapSolutions[i]);
+      }
+
+      return stringSolutions;
+   }
+
+   // TODO: Remove this method to avoid finishing weird executions when the YAML
+   // does not contain all the information.
+   // Later it will be better an exception than a weird result.
+   private Topology createAdHocTopologyFromSuitableOptions(
+         SuitableOptions appInfoSuitableOptions) {
+
+      Topology topology = new Topology();
+
+      TopologyElement current = null;
+      TopologyElement previous = null;
+
+      for (String moduleName : appInfoSuitableOptions.getStringIterator()) {
+
+         if (current == null) {
+            // first element treated. None of them needs to point at it
+            current = new TopologyElement(moduleName);
+            topology.addModule(current);
+
+         } else {// There were explored already other modules
+            previous = current;
+            current = new TopologyElement(moduleName);
+            previous.addElementCalled(current);
+            topology.addModule(current);
+         }
+
+      }
+
+      return topology;
+
+   }
 
 }

@@ -15,86 +15,75 @@
  *    limitations under the License.
  */
 
-
-
-
 package eu.seaclouds.platform.planner.optimizer;
 
-
-
-import org.slf4j.Logger;  
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 
+public class Optimizer {
 
- 
-public class Optimizer  {
-    
-	
-	private static Logger log = LoggerFactory.getLogger(Optimizer.class);
-	private final int NUMBER_OF_PLANS_GENERATED;
-	private final SearchMethodName searchName;
+   private static Logger          log = LoggerFactory
+                                            .getLogger(Optimizer.class);
+   private final int              NUMBER_OF_PLANS_GENERATED;
+   private final SearchMethodName searchName;
 
-	
-	public Optimizer(){
-		NUMBER_OF_PLANS_GENERATED=5;
-		searchName=SearchMethodName.BLINDSEARCH;
-	}
-	
-	public Optimizer(int num){
-		NUMBER_OF_PLANS_GENERATED=num;
-		searchName=SearchMethodName.BLINDSEARCH;
-	}
-	
-	public Optimizer(SearchMethodName name){
-		NUMBER_OF_PLANS_GENERATED=5;
-		searchName=name;		
-	}
-	
-	public Optimizer(int num, SearchMethodName name){
-		NUMBER_OF_PLANS_GENERATED=num;
-		searchName=name;		
-	}
-	
-//Optimizer uses its previously generated plan as a source when replanning.
-private String[] previousPlans=null;
+   public Optimizer() {
+      NUMBER_OF_PLANS_GENERATED = 5;
+      searchName = SearchMethodName.BLINDSEARCH;
+   }
 
+   public Optimizer(int num) {
+      NUMBER_OF_PLANS_GENERATED = num;
+      searchName = SearchMethodName.BLINDSEARCH;
+   }
 
-public String[] optimize(	 String appModel, String suitableCloudOffer){
+   public Optimizer(SearchMethodName name) {
+      NUMBER_OF_PLANS_GENERATED = 5;
+      searchName = name;
+   }
 
+   public Optimizer(int num, SearchMethodName name) {
+      NUMBER_OF_PLANS_GENERATED = num;
+      searchName = name;
+   }
 
-	String[] outputPlans= new String[NUMBER_OF_PLANS_GENERATED];
-	outputPlans[0]="Plan generation was not possible";
-	
-	if(previousPlans==null){
-		OptimizerInitialDeployment initialOptimizer = new OptimizerInitialDeployment(searchName); 
-		
-		try{
-			outputPlans=initialOptimizer.optimize(appModel, suitableCloudOffer,NUMBER_OF_PLANS_GENERATED);
-			previousPlans=outputPlans;
-		}
-		catch(Error E){
-			log.error("Error optimizing the initial deployment");
-			
-		}
-	}
-	else{
-		Reoptimizer optimizerReplanning = new Reoptimizer(searchName);
-		
-		try{
-		log.error("Calling a Replanning. The previously generated Plan will be used as a base");
-		outputPlans=optimizerReplanning.optimize(appModel,suitableCloudOffer,NUMBER_OF_PLANS_GENERATED);
-		previousPlans=outputPlans;
-		}
-		catch(Error E){
-			log.error("Error optimizing the Replanning");
-			
-		}
-	}
-		return outputPlans;
-	
-	
-}
-	
+   // Optimizer uses its previously generated plan as a source when replanning.
+   private String[] previousPlans = null;
+
+   public String[] optimize(String appModel, String suitableCloudOffer) {
+
+      String[] outputPlans = new String[NUMBER_OF_PLANS_GENERATED];
+      outputPlans[0] = "Plan generation was not possible";
+
+      if (previousPlans == null) {
+         OptimizerInitialDeployment initialOptimizer = new OptimizerInitialDeployment(
+               searchName);
+
+         try {
+            outputPlans = initialOptimizer.optimize(appModel,
+                  suitableCloudOffer, NUMBER_OF_PLANS_GENERATED);
+            previousPlans = outputPlans;
+         } catch (Error E) {
+            log.error("Error optimizing the initial deployment");
+
+         }
+      } else {
+         Reoptimizer optimizerReplanning = new Reoptimizer(searchName);
+
+         try {
+            log.error("Calling a Replanning. The previously generated Plan will be used as a base");
+            outputPlans = optimizerReplanning.optimize(appModel,
+                  suitableCloudOffer, NUMBER_OF_PLANS_GENERATED);
+            previousPlans = outputPlans;
+         } catch (Error E) {
+            log.error("Error optimizing the Replanning");
+
+         }
+      }
+      return outputPlans;
+
+   }
+
 }

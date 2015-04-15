@@ -26,191 +26,183 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+public class Solution implements Iterable<String>, Comparable<Solution> {
 
-public class Solution implements Iterable<String>, Comparable<Solution>{
+   /*
+    * Simple class that serves as a data structure to store a solution for the
+    * cloud in a Map of (moduleName, CloudOptionUsed)
+    */
 
-	/*Simple class that serves as a data structure to store a 
-	 * solution for the cloud in a Map of (moduleName, CloudOptionUsed)
-	 */
-	
-	//"Note: this class has a natural ordering that is inconsistent with equals."
-	
-	private static final double COMPARATOR_LIMIT = 1000.0;
+   // "Note: this class has a natural ordering that is inconsistent with equals."
 
-	static Logger log = LoggerFactory.getLogger(Solution.class);
-	
-	private Map<String, String> modName_ModOption; 
-	private Map<String, Integer> modName_NumInstances; 
-	private double solutionFitness=0.0;
-	
-	
-	public Solution(){
-		modName_ModOption = new HashMap<String, String>();
-		modName_NumInstances = new HashMap<String, Integer>();
-	}
-	
-	public void addItem(String name, String cloudOption){
-		addItem(name, cloudOption,1);
-	}
-	
-	public void addItem(String name, String cloudOption, int numInstances){
-		modName_ModOption.put(name, cloudOption);
-		modName_NumInstances.put(name, numInstances);
-	}
-	
-	public String getCloudOfferNameForModule(String key){
-		return modName_ModOption.get(key);
-	}
-	
-	public int getCloudInstancesForModule(String key){
-		return modName_NumInstances.get(key);
-	}
-	
-	
-	public double getSolutionFitness() {
-		return solutionFitness;
-	}
+   private static final double  COMPARATOR_LIMIT = 1000.0;
 
-	public void setSolutionFitness(double solutionFitness) {
-		this.solutionFitness = solutionFitness;
-	}
-	
-	public void modifyNumInstancesOfModule(String modulename,	int newInstances) {
-		
-		if(!modName_NumInstances.containsKey(modulename)){
-			log.error("trying to modify the number of instances of a module which does not exist");
-		}
-		else{
-			modName_NumInstances.put(modulename, newInstances);
-		}
-		
-	}
-	
-	public void modifyCloudOfferOfModule(String modulename, CloudOffer newOffer) {
-		String nameOfOffer = newOffer.getName();
-		if(!modName_ModOption.containsKey(modulename)){
-			log.error("trying to modify the cloud offer of a module which does not exist");
-		}
-		modName_ModOption.put(modulename, nameOfOffer);
-		
-	}
-	
-	public int size() {
-		return modName_ModOption.size();
-	}
-	
-	public boolean containsModuleName(String modn){
-		if(modName_ModOption==null){return false;} //Should never execute because the constructor already creates objects
-		 return modName_ModOption.containsKey(modn);
-	}
-	
-	@Override
-	public Solution clone(){
-		
-		Solution sol= new Solution();
-		for(String key : this){
-			sol.addItem(key, this.getCloudOfferNameForModule(key), this.getCloudInstancesForModule(key));
-		}
-		
-		sol.solutionFitness=this.solutionFitness;
-		return sol;
-	}
-	
-	
-	@Override
-	public boolean equals(Object o){
-		
-		if (o == null) {return false;}
-	    if (o == this) {return true;}
-		
-	    Solution s;
-	    try{
-	    	 s = (Solution) o;
-	    }catch (ClassCastException e){
-	    	return false;
-	    }
-	    
-	    if(this.size()!=s.size()){
-	    	return false;
-	    }
-	    for(String modname : this){
-	    	if(!(
-	    			s.containsModuleName(modname) &&
-	    			s.getCloudOfferNameForModule(modname).equals(this.getCloudOfferNameForModule(modname)) &&
-	    			(s.getCloudInstancesForModule(modname)==this.getCloudInstancesForModule(modname))
-	    		)
-	    	){
-	    		return false;
-	    	}
-	    }
-	    
-	    return true;
-	}
-	
-	@Override
-	public int compareTo(Solution o) {
-		return (int) ((this.solutionFitness*COMPARATOR_LIMIT)-(o.solutionFitness*COMPARATOR_LIMIT));
-	}
+   static Logger                log              = LoggerFactory
+                                                       .getLogger(Solution.class);
 
-	public boolean isContainedIn(Solution[] sols) {
-		
-		for(int i=0; i<sols.length; i++){
-			if(this.equals(sols[i])){
-				return true;
-			}
-		}
-		return false;
-		
-	}
-	
-	//ITERATOR //Iterates over names of modules
-	public Iterator<String> iterator() {
-        Iterator<String> it = new Iterator<String>() {
+   private Map<String, String>  modName_ModOption;
+   private Map<String, Integer> modName_NumInstances;
+   private double               solutionFitness  = 0.0;
 
-        	private Set<Entry<String, String>> entries = modName_ModOption.entrySet();
-        	Iterator<Entry<String, String>> iteratorSet = entries.iterator();
+   public Solution() {
+      modName_ModOption = new HashMap<String, String>();
+      modName_NumInstances = new HashMap<String, Integer>();
+   }
 
-            @Override
-            public boolean hasNext() {
-                return iteratorSet.hasNext();
-                		
-            }
+   public void addItem(String name, String cloudOption) {
+      addItem(name, cloudOption, 1);
+   }
 
-            @Override
-            public String next() {
-            	return iteratorSet.next().getKey();
-            	                		
-            }
+   public void addItem(String name, String cloudOption, int numInstances) {
+      modName_ModOption.put(name, cloudOption);
+      modName_NumInstances.put(name, numInstances);
+   }
 
-            @Override
-            public void remove() {
-                // TODO Auto-generated method stub
-            }
-        };
-        return it;
-    }
+   public String getCloudOfferNameForModule(String key) {
+      return modName_ModOption.get(key);
+   }
 
+   public int getCloudInstancesForModule(String key) {
+      return modName_NumInstances.get(key);
+   }
 
-	@Override
-	public String toString(){
-		String out="{";
-		for(String modulename : this){
-			out+=modulename+":"+modName_ModOption.get(modulename)+"-"+modName_NumInstances.get(modulename)+"  ";
-		}
-		out+="}";
-		return out;
-	}
+   public double getSolutionFitness() {
+      return solutionFitness;
+   }
 
+   public void setSolutionFitness(double solutionFitness) {
+      this.solutionFitness = solutionFitness;
+   }
 
+   public void modifyNumInstancesOfModule(String modulename, int newInstances) {
 
-	
+      if (!modName_NumInstances.containsKey(modulename)) {
+         log.error("trying to modify the number of instances of a module which does not exist");
+      } else {
+         modName_NumInstances.put(modulename, newInstances);
+      }
 
+   }
 
+   public void modifyCloudOfferOfModule(String modulename, CloudOffer newOffer) {
+      String nameOfOffer = newOffer.getName();
+      if (!modName_ModOption.containsKey(modulename)) {
+         log.error("trying to modify the cloud offer of a module which does not exist");
+      }
+      modName_ModOption.put(modulename, nameOfOffer);
 
+   }
 
+   public int size() {
+      return modName_ModOption.size();
+   }
 
+   public boolean containsModuleName(String modn) {
+      if (modName_ModOption == null) {
+         return false;
+      } // Should never execute because the constructor already creates objects
+      return modName_ModOption.containsKey(modn);
+   }
 
+   @Override
+   public Solution clone() {
 
-	
-	
+      Solution sol = new Solution();
+      for (String key : this) {
+         sol.addItem(key, this.getCloudOfferNameForModule(key),
+               this.getCloudInstancesForModule(key));
+      }
+
+      sol.solutionFitness = this.solutionFitness;
+      return sol;
+   }
+
+   @Override
+   public boolean equals(Object o) {
+
+      if (o == null) {
+         return false;
+      }
+      if (o == this) {
+         return true;
+      }
+
+      Solution s;
+      try {
+         s = (Solution) o;
+      } catch (ClassCastException e) {
+         return false;
+      }
+
+      if (this.size() != s.size()) {
+         return false;
+      }
+      for (String modname : this) {
+         if (!(s.containsModuleName(modname)
+               && s.getCloudOfferNameForModule(modname).equals(
+                     this.getCloudOfferNameForModule(modname)) && (s
+                  .getCloudInstancesForModule(modname) == this
+               .getCloudInstancesForModule(modname)))) {
+            return false;
+         }
+      }
+
+      return true;
+   }
+
+   @Override
+   public int compareTo(Solution o) {
+      return (int) ((this.solutionFitness * COMPARATOR_LIMIT) - (o.solutionFitness * COMPARATOR_LIMIT));
+   }
+
+   public boolean isContainedIn(Solution[] sols) {
+
+      for (int i = 0; i < sols.length; i++) {
+         if (this.equals(sols[i])) {
+            return true;
+         }
+      }
+      return false;
+
+   }
+
+   // ITERATOR //Iterates over names of modules
+   public Iterator<String> iterator() {
+      Iterator<String> it = new Iterator<String>() {
+
+         private Set<Entry<String, String>> entries     = modName_ModOption
+                                                              .entrySet();
+         Iterator<Entry<String, String>>    iteratorSet = entries.iterator();
+
+         @Override
+         public boolean hasNext() {
+            return iteratorSet.hasNext();
+
+         }
+
+         @Override
+         public String next() {
+            return iteratorSet.next().getKey();
+
+         }
+
+         @Override
+         public void remove() {
+            // TODO Auto-generated method stub
+         }
+      };
+      return it;
+   }
+
+   @Override
+   public String toString() {
+      String out = "{";
+      for (String modulename : this) {
+         out += modulename + ":" + modName_ModOption.get(modulename) + "-"
+               + modName_NumInstances.get(modulename) + "  ";
+      }
+      out += "}";
+      return out;
+   }
+
 }

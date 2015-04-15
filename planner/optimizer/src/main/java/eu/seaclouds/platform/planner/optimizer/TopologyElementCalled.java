@@ -19,38 +19,39 @@ package eu.seaclouds.platform.planner.optimizer;
 
 public class TopologyElementCalled {
 
-	private double probCall=1.0; //NotProbabilty but operational profile (it can be higher than 1)
-	
-	//NOT used in this version. The number of calls is fixed to 1. A single value represents all the utilization. 
-	//private double meanNumberCalls=1.0;
-	
-	private TopologyElement element;
-	
-	public TopologyElementCalled(TopologyElement e){
-		//probability will keep its default value = 1.0
-		element=e;
-		
-	}
-	
-	public TopologyElementCalled(TopologyElement e, double proCall){
-		element=e;
-		probCall=proCall;
-	}
+   private double          probCall = 1.0; // NotProbabilty but operational
+                                           // profile (it can be higher than 1)
 
-	public double getProbCall() {
-		return probCall;
-	}
+   // NOT used in this version. The number of calls is fixed to 1. A single
+   // value represents all the utilization.
+   // private double meanNumberCalls=1.0;
 
-	public void setProbCall(double probCall) {
-		this.probCall = probCall;
-	}
+   private TopologyElement element;
 
+   public TopologyElementCalled(TopologyElement e) {
+      // probability will keep its default value = 1.0
+      element = e;
 
-	public TopologyElement getElement() {
-		return element;
-	}
+   }
 
-	public void setElement(TopologyElement element) {
-		this.element = element;
-	}
+   public TopologyElementCalled(TopologyElement e, double proCall) {
+      element = e;
+      probCall = proCall;
+   }
+
+   public double getProbCall() {
+      return probCall;
+   }
+
+   public void setProbCall(double probCall) {
+      this.probCall = probCall;
+   }
+
+   public TopologyElement getElement() {
+      return element;
+   }
+
+   public void setElement(TopologyElement element) {
+      this.element = element;
+   }
 }

@@ -24,37 +24,38 @@ import eu.seaclouds.platform.planner.optimizer.heuristics.BlindSearch;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethod;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 
-
 public class Reoptimizer {
 
-	private final SearchMethodName searchName;
-	private SearchMethod engine; 
-	
-	static Logger log = LoggerFactory.getLogger(Reoptimizer.class);
-	
-	public Reoptimizer(){
-		engine = new BlindSearch();
-		searchName=SearchMethodName.BLINDSEARCH;
-	}
-	
-	public Reoptimizer(SearchMethodName name) {
-		searchName=name;
-		
-		switch(name){
-		case BLINDSEARCH: engine=new BlindSearch();
-					break;
-		//case HILLCLIMB: engine= new HillClimb();		break;
-					
-		//case SIMANNEALING: engine= new SimAnnealing(); break;
-		default: engine =new BlindSearch();
-		}
-	}
+   private final SearchMethodName searchName;
+   private SearchMethod           engine;
 
-	public String[] optimize(String appModel, String suitableCloudOffer, int numPlansToGenerate_ArrayLength) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+   static Logger                  log = LoggerFactory
+                                            .getLogger(Reoptimizer.class);
 
+   public Reoptimizer() {
+      engine = new BlindSearch();
+      searchName = SearchMethodName.BLINDSEARCH;
+   }
 
-	
+   public Reoptimizer(SearchMethodName name) {
+      searchName = name;
+
+      switch (name) {
+      case BLINDSEARCH:
+         engine = new BlindSearch();
+         break;
+      // case HILLCLIMB: engine= new HillClimb(); break;
+
+      // case SIMANNEALING: engine= new SimAnnealing(); break;
+      default:
+         engine = new BlindSearch();
+      }
+   }
+
+   public String[] optimize(String appModel, String suitableCloudOffer,
+         int numPlansToGenerate_ArrayLength) {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
 }
