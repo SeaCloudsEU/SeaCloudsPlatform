@@ -1,0 +1,445 @@
+---
+tosca_definitions_version: tosca_simple_yaml_1_0
+node_templates: 
+
+############## AWS ###########################
+
+  AWS.compute.c1.medium:
+    type: seaclouds.nodes.Compute
+    properties:
+    #general compute properties
+        firewall: true
+        ipv4: true
+        ipv4PerVm: true
+        ipv6: true
+        ipv6PerVm: false
+        loadBalancing: true
+        multiIp: true
+        resizing: true
+        vpc: true
+        vpcVpn: true
+        serviceId: aws:ec2
+        region: {valid_values: [us, us-east-1\us-west-2, ap, ap-northeast-1, ap-southeast-1, ap-southeast-2, eu, eu-west-1, us-west-1, sa-east-1]}
+    #specific instance properties
+        instanceId: c1.medium
+        cpuCores: 2
+        localDiskType: sata
+        localStorage: 340
+        memory: 1.7
+        networkLinkDedicated: false
+        operatingSystem: {valid_values: [linux, linux.centos, linux.debian, linux.fedora, linux.gentoo, linux.rhel, linux.suse, linux.ubuntu, windows, windows.2008, windows.2012, freeBSD]}
+        unavailable: false
+        performancePOC: 55.0
+        availabilityPOC: 99.95
+        costPOC: 0.145
+    capabilities:
+        host: tosca.nodes.softwareComponent
+
+  AWS.compute.m1.small:
+    type: seaclouds.nodes.Compute
+    properties:
+    #general compute properties
+        firewall: true
+        ipv4: true
+        ipv4PerVm: true
+        ipv6: true
+        ipv6PerVm: false
+        loadBalancing: true
+        multiIp: true
+        resizing: true
+        vpc: true
+        vpcVpn: true
+        serviceId: aws:ec2
+        region: {valid_values: [us, us-east-1\us-west-2, ap, ap-northeast-1, ap-southeast-1, ap-southeast-2, eu, eu-west-1, us-west-1, sa-east-1]}
+    #specific instance properties  
+        instanceId: m1.small
+        cpuCores: 1
+        localDiskType: sata
+        localStorage: 160
+        memory: 1.7
+        networkLinkDedicated: false
+        operatingSystem: {valid_values: [linux, linux.centos, linux.debian, linux.fedora, linux.gentoo, linux.rhel, linux.suse, linux.ubuntu, windows, windows.2008, windows.2012, freeBSD]}
+        unavailable: false
+        performancePOC: 30.0
+        availabilityPOC: 99.95
+        costPOC: 0.06
+    capabilities:
+        host: tosca.nodes.softwareComponent
+
+
+  AWS.compute.m1.medium:
+    type: seaclouds.nodes.Compute
+    properties:
+    #general compute properties
+        firewall: true
+        ipv4: true
+        ipv4PerVm: true
+        ipv6: true
+        ipv6PerVm: false
+        loadBalancing: true
+        multiIp: true
+        resizing: true
+        vpc: true
+        vpcVpn: true
+        serviceId: aws:ec2
+        region: {valid_values: [us, us-east-1\us-west-2, ap, ap-northeast-1, ap-southeast-1, ap-southeast-2, eu, eu-west-1, us-west-1, sa-east-1]}
+    #specific instance properties  
+        instanceId: m1.medium
+        cpuCores: 1
+        localDiskType: sata
+        localStorage: 400
+        memory: 3.75
+        networkLinkDedicated: false
+        operatingSystem: {valid_values: [linux, linux.centos, linux.debian, linux.fedora, linux.gentoo, linux.rhel, linux.suse, linux.ubuntu, windows, windows.2008, windows.2012, freeBSD]}
+        unavailable: false
+        performancePOC: 40.0
+        availabilityPOC: 99.95
+        costPOC: 0.07
+    capabilities:
+        host: tosca.nodes.softwareComponent
+
+
+  AWS.compute.m1.large:
+    type: seaclouds.nodes.Compute
+    properties:
+    #general compute properties
+        firewall: true
+        ipv4: true
+        ipv4PerVm: true
+        ipv6: true
+        ipv6PerVm: false
+        loadBalancing: true
+        multiIp: true
+        resizing: true
+        vpc: true
+        vpcVpn: true
+        serviceId: aws:ec2
+        region: {valid_values: [us, us-east-1\us-west-2, ap, ap-northeast-1, ap-southeast-1, ap-southeast-2, eu, eu-west-1, us-west-1, sa-east-1]}
+    #specific instance properties  
+        instanceId: m1.large
+        cpuCores: 2
+        localDiskType: sata
+        localStorage: 840
+        memory: 7.5
+        networkLinkDedicated: false
+        operatingSystem: {valid_values: [linux, linux.centos, linux.debian, linux.fedora, linux.gentoo, linux.rhel, linux.suse, linux.ubuntu, windows, windows.2008, windows.2012, freeBSD]}
+        unavailable: false
+        performancePOC: 50.0
+        availabilityPOC: 99.95
+        costPOC: 0.14
+    capabilities:
+        host: tosca.nodes.softwareComponent
+
+
+  AWS.compute.t1.micro:
+    type: seaclouds.nodes.Compute
+    properties:
+    #general compute properties
+        firewall: true
+        ipv4: true
+        ipv4PerVm: true
+        ipv6: true
+        ipv6PerVm: false
+        loadBalancing: true
+        multiIp: true
+        resizing: true
+        vpc: true
+        vpcVpn: true
+        serviceId: aws:ec2
+        region: {valid_values: [us, us-east-1\us-west-2, ap, ap-northeast-1, ap-southeast-1, ap-southeast-2, eu, eu-west-1, us-west-1, sa-east-1]}
+    #specific instance properties  
+        instanceId: t1.micro
+        cpuCores: 1
+        memory: 0.61
+        networkLinkDedicated: false
+        operatingSystem: {valid_values: [linux, linux.centos, linux.debian, linux.fedora, linux.gentoo, linux.rhel, linux.suse, linux.ubuntu, windows, windows.2008, windows.2012, freeBSD]}
+        unavailable: false
+        performancePOC: 10
+        availabilityPOC: 99.95
+        costPOC: 0.013
+    capabilities:
+        host: tosca.nodes.softwareComponent
+
+  AWS.compute.t2.small:
+    type: seaclouds.nodes.Compute
+    properties:
+    #general compute properties
+        firewall: true
+        ipv4: true
+        ipv4PerVm: true
+        ipv6: true
+        ipv6PerVm: false
+        loadBalancing: true
+        multiIp: true
+        resizing: true
+        vpc: true
+        vpcVpn: true
+        serviceId: aws:ec2
+        region: {valid_values: [us, us-east-1\us-west-2, ap, ap-northeast-1, ap-southeast-1, ap-southeast-2, eu, eu-west-1, us-west-1, sa-east-1]}
+    #specific instance properties  
+        instanceId: t2.small
+        cpuCores: 1
+        memory: 2.0
+        networkLinkDedicated: false
+        operatingSystem: {valid_values: [linux, linux.centos, linux.debian, linux.fedora, linux.gentoo, linux.rhel, linux.suse, linux.ubuntu, windows, windows.2008, windows.2012, freeBSD]}
+        unavailable: false
+        performancePOC: 20.0
+        availabilityPOC: 99.95
+        costPOC: 0.26
+    capabilities:
+        host: tosca.nodes.softwareComponent
+
+############## RACKSPACE ###########################        
+        
+  Rackspace.compute.1gb:
+    type: seaclouds.nodes.Compute
+    properties:
+    #general compute properties
+        firewall: false
+        ipv4: true
+        ipv4PerVm: true
+        ipv6: true
+        ipv6PerVm: true
+        loadBalancing: true
+        multiIp: true
+        resizing: true
+        vpc: true
+        vpcVpn: true
+        serviceId: rackspace:servers
+        region: {valid_values: [us, us-north, ap, ap-east, eu, eu-africa, eu-north, eu-west, oceania, us-east, us-midwest, us-south, us-south-southatlantic, us-south, westsouthcentral]}
+    #specific instance properties  
+        instanceId: 1gb
+        cpuCores: 1
+        localStorage: 40
+        memory: 1.0
+        networkLinkDedicated: false
+        operatingSystem: {valid_values: [linux, linux.centos, linux.debian, linux.fedora, linux.gentoo, linux.rhel, linux.suse, linux.ubuntu, windows, windows.2008, windows.2012, freeBSD]}
+        unavailable: false
+        performancePOC: 15.0
+        availabilityPOC: 99.861
+        costPOC: 0.032
+    capabilities:
+        host: tosca.nodes.softwareComponent
+    
+  Rackspace.compute.compute1-15:
+    type: seaclouds.nodes.Compute
+    properties:
+    #general compute properties
+        firewall: false
+        ipv4: true
+        ipv4PerVm: true
+        ipv6: true
+        ipv6PerVm: true
+        loadBalancing: true
+        multiIp: true
+        resizing: true
+        vpc: true
+        vpcVpn: true
+        serviceId: rackspace:servers
+        region: {valid_values: [us, us-north, ap, ap-east, eu, eu-africa, eu-north, eu-west, oceania, us-east, us-midwest, us-south, us-south-southatlantic, us-south, westsouthcentral]}
+    #specific instance properties  
+        instanceId: compute1-15
+        cpuCores: 8
+        memory: 15.0
+        networkLinkDedicated: false
+        operatingSystem: {valid_values: [linux, linux.centos, linux.debian, linux.fedora, linux.gentoo, linux.rhel, linux.suse, linux.ubuntu, windows, windows.2008, windows.2012, freeBSD]}
+        unavailable: false
+        performancePOC: 100.0
+        availabilityPOC: 99.861
+        costPOC: 0.32
+    capabilities:
+        host: tosca.nodes.softwareComponent 
+       
+############## HP HELION ###########################
+        
+  HP.compute.standard.xsmall:
+    type: seaclouds.nodes.Compute
+    properties:
+    #general compute properties
+        firewall: true
+        ipv4: true
+        ipv4PerVm: false 
+        ipv6: false
+        ipv6PerVm: false
+        loadBalancing: true
+        multiIp: true
+        #resizing: 
+        vpc: true
+        vpcVpn: true
+        serviceId: hp:servers
+        region: {valid_values: [us, us-west, us-east]}
+    #specific instance properties  
+        instanceId: 100
+        cpuCores: 1
+        #localDiskType: 
+        localStorage: 10
+        memory: 1.0 #GB
+        networkLinkDedicated: false
+        operatingSystem: {valid_values: [linux, linux.centos, linux.debian, linux.fedora, linux.suse, linux.ubuntu, windows, windows.2008, windows.2008ee, windows.2008r2]}
+        unavailable: false
+        performancePOC: 22.0
+        availabilityPOC: 99.95
+        costPOC: 0.03
+    capabilities:
+        host: tosca.nodes.softwareComponent  
+        
+
+  HP.compute.standard.small:
+    type: seaclouds.nodes.Compute
+    properties:
+    #general compute properties
+        firewall: true
+        ipv4: true
+        ipv4PerVm: false 
+        ipv6: false
+        ipv6PerVm: false
+        loadBalancing: true
+        multiIp: true
+        #resizing: 
+        vpc: true
+        vpcVpn: true
+        serviceId: hp:servers
+        region: {valid_values: [us, us-west, us-east]}
+    #specific instance properties  
+        instanceId: 101
+        cpuCores: 2
+        #localDiskType: 
+        localStorage: 30
+        memory: 2.0 #GB
+        networkLinkDedicated: false
+        operatingSystem: {valid_values: [linux, linux.centos, linux.debian, linux.fedora, linux.suse, linux.ubuntu, windows, windows.2008, windows.2008ee, windows.2008r2]}
+        unavailable: false
+        performancePOC: 44.0
+        availabilityPOC: 99.95
+        costPOC: 0.06
+    capabilities:
+        host: tosca.nodes.softwareComponent  
+        
+      
+  HP.compute.standard.medium:
+    type: seaclouds.nodes.Compute
+    properties:
+    #general compute properties
+        firewall: true
+        ipv4: true
+        ipv4PerVm: false 
+        ipv6: false
+        ipv6PerVm: false
+        loadBalancing: true
+        multiIp: true
+        #resizing: 
+        vpc: true
+        vpcVpn: true
+        serviceId: hp:servers
+        region: {valid_values: [us, us-west, us-east]}
+    #specific instance properties  
+        instanceId: 102
+        cpuCores: 2
+        #localDiskType: 
+        localStorage: 30
+        memory: 4.0 #GB
+        networkLinkDedicated: false
+        operatingSystem: {valid_values: [linux, linux.centos, linux.debian, linux.fedora, linux.suse, linux.ubuntu, windows, windows.2008, windows.2008ee, windows.2008r2]}
+        unavailable: false
+        performancePOC:  66.0
+        availabilityPOC: 99.95
+        costPOC: 0.12
+    capabilities:
+        host: tosca.nodes.softwareComponent    
+        
+        
+  HP.compute.standard.large:
+    type: seaclouds.nodes.Compute
+    properties:
+    #general compute properties
+        firewall: true
+        ipv4: true
+        ipv4PerVm: false 
+        ipv6: false
+        ipv6PerVm: false
+        loadBalancing: true
+        multiIp: true
+        #resizing: 
+        vpc: true
+        vpcVpn: true
+        serviceId: hp:servers
+        region: {valid_values: [us, us-west, us-east]}
+    #specific instance properties  
+        instanceId: 103
+        cpuCores: 4
+        #localDiskType: 
+        localStorage: 30
+        memory: 8.2 #GB
+        networkLinkDedicated: false
+        operatingSystem: {valid_values: [linux, linux.centos, linux.debian, linux.fedora, linux.suse, linux.ubuntu, windows, windows.2008, windows.2008ee, windows.2008r2]}
+        unavailable: false
+        performancePOC:  132.0
+        availabilityPOC: 99.95
+        costPOC: 0.24
+    capabilities:
+        host: tosca.nodes.softwareComponent
+        
+        
+  HP.compute.standard.xlarge:
+    type: seaclouds.nodes.Compute
+    properties:
+    #general compute properties
+        firewall: true
+        ipv4: true
+        ipv4PerVm: false 
+        ipv6: false
+        ipv6PerVm: false
+        loadBalancing: true
+        multiIp: true
+        #resizing: 
+        vpc: true
+        vpcVpn: true
+        serviceId: hp:servers
+        region: {valid_values: [us, us-west, us-east]}
+    #specific instance properties  
+        instanceId: 104
+        cpuCores: 4
+        #localDiskType: 
+        localStorage: 30
+        memory: 15.3 #GB
+        networkLinkDedicated: false
+        operatingSystem: {valid_values: [linux, linux.centos, linux.debian, linux.fedora, linux.suse, linux.ubuntu, windows, windows.2008, windows.2008ee, windows.2008r2]}
+        unavailable: false
+        performancePOC:  200.0
+        availabilityPOC: 99.95
+        costPOC: 0.45
+    capabilities:
+        host: tosca.nodes.softwareComponent
+        
+        
+        
+  HP.compute.standard.2xlarge:
+    type: seaclouds.nodes.Compute
+    properties:
+    #general compute properties
+        firewall: true
+        ipv4: true
+        ipv4PerVm: false 
+        ipv6: false
+        ipv6PerVm: false
+        loadBalancing: true
+        multiIp: true
+        #resizing: 
+        vpc: true
+        vpcVpn: true
+        serviceId: hp:servers
+        region: {valid_values: [us, us-west, us-east]}
+    #specific instance properties  
+        instanceId: 105
+        cpuCores: 8
+        #localDiskType: 
+        localStorage: 30
+        memory: 30.7 #GB
+        networkLinkDedicated: false
+        operatingSystem: {valid_values: [linux, linux.centos, linux.debian, linux.fedora, linux.suse, linux.ubuntu, windows, windows.2008, windows.2008ee, windows.2008r2]}
+        unavailable: false
+        performancePOC:  400.0
+        availabilityPOC: 99.95
+        costPOC: 0.9
+    capabilities:
+        host: tosca.nodes.softwareComponent  
