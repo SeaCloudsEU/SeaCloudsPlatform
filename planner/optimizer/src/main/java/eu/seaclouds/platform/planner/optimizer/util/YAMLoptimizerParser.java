@@ -39,10 +39,9 @@ public class YAMLoptimizerParser {
    // Reducing verbosity . If somebody knows a better approach for doing this (I
    // could not set dynamically the level of the logging) it should be changed
    private static int           BeeingTooVerboseWithLackOfInformationInCloudOffers = 3;
-   private static final boolean IS_DEBUG                                           = false;
+   private static final boolean IS_DEBUG  = false;
 
-   static Logger                log                                                = LoggerFactory
-                                                                                         .getLogger(YAMLoptimizerParser.class);
+   static Logger                log       = LoggerFactory.getLogger(YAMLoptimizerParser.class);
 
    public static void CleanSuitableOfferForModule(String modulename,
          Map<String, Object> appMap) {
@@ -167,7 +166,7 @@ public class YAMLoptimizerParser {
          String potentialModuleName = entry.getKey();
          List<String> potentialListOfOffersNames = GetListOfSuitableOptionsForAlreadyFoundModule(entry
                .getValue());
-         // lookForSuitableOffersOfPotentialModuleName(entry.getValue(),1);
+        
 
          if (potentialListOfOffersNames != null) {
             if (IS_DEBUG) {
@@ -292,6 +291,7 @@ public class YAMLoptimizerParser {
 
    public static Map<String, Object> getMAPofCloudOffers(String cloudOfferString) {
       Yaml yamlApp = new Yaml();
+      @SuppressWarnings("unchecked")
       Map<String, Object> cloudOfferFileMap = (Map<String, Object>) yamlApp
             .load(cloudOfferString);
       if (!cloudOfferFileMap.containsKey(TOSCAkeywords.NODE_TEMPLATE)) {

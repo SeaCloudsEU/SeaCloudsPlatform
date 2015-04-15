@@ -25,7 +25,6 @@ import eu.seaclouds.platform.planner.optimizer.Topology;
 
 public class BlindSearch extends AbstractHeuristic implements SearchMethod {
 
-   private static final int DEFAULT_MAX_NUM_INSTANCES = 10;
 
    public BlindSearch() {
       super();

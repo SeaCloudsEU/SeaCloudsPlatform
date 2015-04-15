@@ -270,7 +270,6 @@ public class QualityAnalyzer {
 
       if (topology.indexOf(initialElement) != 0) {
          log.warn("Index replacements in topology elements did not work!");
-         ;
       }
 
       // TODO: improve this solution implementing an iterator over the modules
@@ -410,7 +409,6 @@ public class QualityAnalyzer {
          Solution solInput, Topology topology, QualityInformation requirements,
          SuitableOptions cloudCharacteristics) {
 
-      // TODO Auto-generated method stub
 
       HashMap<String, ArrayList<Double>> thresholds = new HashMap<String, ArrayList<Double>>();
 
@@ -461,6 +459,7 @@ public class QualityAnalyzer {
             existModulesToScaleOut = false;
             // can be shortened to
             // "existModulesToScaleOut=(!(moduleWithHighestUtilization==null));"
+            // but it is less readable in my opinion. 
          }
 
       }
@@ -526,24 +525,9 @@ public class QualityAnalyzer {
                                             // the first one that can scale
                maxUtilizationIndex = i;
             } else {
-               if (utilizations[i] > utilizations[maxUtilizationIndex]) { // It
-                                                                          // could
-                                                                          // be
-                                                                          // done
-                                                                          // as
-                                                                          // an
-                                                                          // OR
-                                                                          // in
-                                                                          // the
-                                                                          // previous
-                                                                          // condition,
-                                                                          // but
-                                                                          // this
-                                                                          // is
-                                                                          // a
-                                                                          // safe
-                  // manner as the order in which Java evaluates disyuntive
-                  // conditions
+               if (utilizations[i] > utilizations[maxUtilizationIndex]) { 
+                   //It could  be done as an OR in the previous condition, but this is 
+                   //a safe manner as the order in which Java evaluates disyuntive conditions
                   maxUtilizationIndex = i;
                }
             }
@@ -659,28 +643,13 @@ public class QualityAnalyzer {
       double lowerWorkloadLimit = Math.floor(workload + (incWorkload / 2.0));
       double upperWorkloadLimit = workload + incWorkload;
 
-      while (lowerWorkloadLimit + 2.0 < upperWorkloadLimit) { // TODO: I chose a
-                                                              // value to add of
-                                                              // 2.0 because the
-                                                              // difference
-                                                              // should be
-                                                              // 1.0 but there
-                                                              // may be problems
-                                                              // with the Double
-                                                              // representation
-                                                              // of values.
-                                                              // An arrival more
-                                                              // does not
-                                                              // (should not)
-                                                              // make any
-                                                              // difference but
-                                                              // the comparison
-                                                              // with doubles
-                                                              // works better.
-                                                              // Check this for
-                                                              // accurate
-                                                              // version 2.0.
-         // Middle point
+      while (lowerWorkloadLimit + 2.0 < upperWorkloadLimit) { 
+         
+         // TODO: I chose a value to add of 2.0 because the difference should be
+         // 1.0 but there may be problems with the Double representation of values. One
+         // arrival more does not (should not) make any difference but the comparison with
+         // doubles works better.Check this for accurate version 2.0. Middle point
+         
          double workloadToCheck = (lowerWorkloadLimit + upperWorkloadLimit) / 2.0;
          workloadsModules = getWorkloadsArray(routes, workloadToCheck);
          numVisitsModule = getNumVisitsArray(workloadsModules, workloadToCheck);

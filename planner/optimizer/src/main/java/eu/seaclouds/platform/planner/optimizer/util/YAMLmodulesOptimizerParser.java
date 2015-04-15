@@ -73,11 +73,9 @@ public class YAMLmodulesOptimizerParser {
    }
 
    /**
-    * @param value
-    *           . The string to check whether it is a name of one of the
+    * @param value. The string to check whether it is a name of one of the
     *           modules.
-    * @param modulesMap
-    *           . A MAP of the information of all modules, being the key of the
+    * @param modulesMap. A MAP of the information of all modules, being the key of the
     *           map teh module names
     * @return
     */
@@ -154,7 +152,8 @@ public class YAMLmodulesOptimizerParser {
 
             }
          } catch (ClassCastException E) {
-            // Nothing to do
+            // Nothing to do, this entry was not a module or it did not 
+            // have a host. Keep looping
          }
       }
       return false;

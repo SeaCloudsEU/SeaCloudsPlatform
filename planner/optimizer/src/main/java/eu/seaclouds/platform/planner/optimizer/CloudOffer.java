@@ -89,6 +89,7 @@ public class CloudOffer {
       this.cost = cost;
    }
 
+   @Override
    public CloudOffer clone() {
       return new CloudOffer(name, performance, availability, cost);
    }

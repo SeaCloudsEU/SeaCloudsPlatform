@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.seaclouds.platform.planner.optimizer.heuristics.BlindSearch;
+import eu.seaclouds.platform.planner.optimizer.heuristics.HillClimb;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethod;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 
@@ -44,9 +45,9 @@ public class Reoptimizer {
       case BLINDSEARCH:
          engine = new BlindSearch();
          break;
-      // case HILLCLIMB: engine= new HillClimb(); break;
+      case HILLCLIMB: engine= new HillClimb(); break;
 
-      // case SIMANNEALING: engine= new SimAnnealing(); break;
+
       default:
          engine = new BlindSearch();
       }

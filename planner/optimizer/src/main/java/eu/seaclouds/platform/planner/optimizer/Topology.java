@@ -28,8 +28,7 @@ public class Topology {
 
    static Logger                 log = LoggerFactory.getLogger(Topology.class);
 
-   // A hashMap indexed by the module name, which is in turn duplicated because
-   // it is contained insiede TopologyElement
+
    private List<TopologyElement> modules;
 
    public Topology() {
@@ -172,6 +171,7 @@ public class Topology {
 
    }
 
+   //Iterator that returns list of dependencies
    class DependencyListsIterator extends
          AbstractIterator<List<TopologyElementCalled>> {
 
@@ -185,6 +185,7 @@ public class Topology {
       }
    }
 
+   //Iterator that returns module names
    class ModuleNamesIterator extends AbstractIterator<String> {
       @Override
       public String next() {

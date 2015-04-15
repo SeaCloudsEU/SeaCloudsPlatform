@@ -33,7 +33,7 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
-public abstract class AbstractHeuristic implements SearchMethod {
+public abstract class AbstractHeuristic{
 
    static Logger                  log                           = LoggerFactory
                                                                       .getLogger(AbstractHeuristic.class);
@@ -51,10 +51,7 @@ public abstract class AbstractHeuristic implements SearchMethod {
    public AbstractHeuristic() {
    }
 
-   /*
-    * @Override public abstract void computeOptimalSolution(SuitableOptions
-    * cloudOffers, Map<String, Object> applicationMap);
-    */
+
 
    public void setMaxIterNoImprove(int value) {
       MAX_ITER_NO_IMPROVE = value;
@@ -248,35 +245,45 @@ public abstract class AbstractHeuristic implements SearchMethod {
 
    }
 
-   /*
-    * //Useful in the past and potentially useful in the future when generations
-    * that reproduce are chosen as a subset of current current generation and
-    * their parents
-    * 
-    * private Solution[] mergeBestSolutions(Solution[] sols1, Solution[] sols2,
-    * int numPlansToGenerate) { sortSolutionsByFitness(sols1);
-    * sortSolutionsByFitness(sols2);
-    * 
-    * Solution[] merged = new Solution[numPlansToGenerate];
-    * 
-    * int index1=0; int index2=0;
-    * 
-    * for(int i=0; i<merged.length; i++){
-    * 
-    * if((index1<sols1.length)&&(index2<sols2.length)){
-    * if(sols1[index1].getSolutionFitness
-    * ()>=sols2[index2].getSolutionFitness()){ merged[i]=sols1[index1].clone();
-    * index1++; } else{ merged[i]=sols2[index2].clone(); index2++; } } else{
-    * if((index1>=sols1.length)&&(index2<sols2.length)){
-    * merged[i]=sols2[index2].clone(); index2++; }
-    * if((index1<sols1.length)&&(index2>=sols2.length)){
-    * merged[i]=sols1[index1].clone(); index1++; }
-    * 
-    * }
-    * 
-    * 
-    * } return merged; }
-    */
+   
+
+     
+     protected Solution[] mergeBestSolutions(Solution[] sols1, Solution[] sols2,     int numPlansToGenerate) { 
+        //TODO: this method has never been tested
+      sortSolutionsByFitness(sols1);
+      sortSolutionsByFitness(sols2);
+
+      Solution[] merged = new Solution[numPlansToGenerate];
+
+      int index1 = 0;
+      int index2 = 0;
+
+      for (int i = 0; i < merged.length; i++) {
+
+         if ((index1 < sols1.length) && (index2 < sols2.length)) {
+            if (sols1[index1].getSolutionFitness() >= sols2[index2]
+                  .getSolutionFitness()) {
+               merged[i] = sols1[index1].clone();
+               index1++;
+            } else {
+               merged[i] = sols2[index2].clone();
+               index2++;
+            }
+         } else {
+            if ((index1 >= sols1.length) && (index2 < sols2.length)) {
+               merged[i] = sols2[index2].clone();
+               index2++;
+            }
+            if ((index1 < sols1.length) && (index2 >= sols2.length)) {
+               merged[i] = sols1[index1].clone();
+               index1++;
+            }
+
+         }
+     
+     
+     } return merged; }
+    
 
    protected void sortSolutionsByFitness(Solution[] bestSols) {
       Arrays.sort(bestSols, Collections.reverseOrder());
@@ -393,10 +400,11 @@ public abstract class AbstractHeuristic implements SearchMethod {
       Solution currentSolution = new Solution();
       for (String modName : cloudOffers.getStringIterator()) {
 
-         // TODO Consider also playing with the amount of instances used of a
-         // suitable option.
+         //element to use
          int itemToUse = (int) Math.floor(Math.random()
                * (double) cloudOffers.getSizeOfSuitableOptions(modName));
+         
+         //number of instances
          int numInstances = ((int) Math.floor(Math.random()
                * ((double) DEFAULT_MAX_NUM_INSTANCES))) + 1;
 

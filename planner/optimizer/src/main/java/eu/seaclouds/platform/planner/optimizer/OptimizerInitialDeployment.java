@@ -48,8 +48,6 @@ public class OptimizerInitialDeployment {
       case HILLCLIMB:
          engine = new HillClimb();
          break;
-
-      // case SIMANNEALING: engine= new SimAnnealing(); break;
       default:
          engine = new BlindSearch();
          // TODO:Complete with more methods

@@ -39,7 +39,6 @@ public class QualityAnalyzerTest {
 
    private static QualityAnalyzer analyzer;
 
-   // private static final double MAX_MILLIS_EXECUTING = 20000;
 
    static Logger                  log = LoggerFactory
                                             .getLogger(QualityAnalyzerTest.class);

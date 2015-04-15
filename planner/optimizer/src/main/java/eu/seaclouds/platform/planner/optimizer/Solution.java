@@ -167,6 +167,7 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
    }
 
    // ITERATOR //Iterates over names of modules
+   @Override
    public Iterator<String> iterator() {
       Iterator<String> it = new Iterator<String>() {
 
@@ -188,7 +189,7 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
 
          @Override
          public void remove() {
-            // TODO Auto-generated method stub
+            
          }
       };
       return it;

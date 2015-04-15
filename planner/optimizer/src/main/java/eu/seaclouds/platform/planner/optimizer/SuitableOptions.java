@@ -52,23 +52,6 @@ public class SuitableOptions { // implements Iterable<List<String>
       suitableOptionsCharacteristics.add(OptionsCharacteristics);
    }
 
-   /*
-    * Better not exposing the getter method because it's referencing the input
-    * yaml, not copying it
-    * 
-    * 
-    * public List<String> getSuitableOptions(String moduleName){
-    * 
-    * int i=0; boolean found=false; while((i<moduleNames.size())&& (!found)){
-    * if(moduleNames.get(i).equalsIgnoreCase(moduleName)){ found=true; } else{
-    * i++; } }
-    * 
-    * if(found){ return suitableOptions.get(i); } else{System.out.println(
-    * "getSuitableOptions@SuitableOptions: Error, name of module not found: Return NULL"
-    * );}
-    * 
-    * return null; }
-    */
 
    public int getSizeOfSuitableOptions(String moduleName) {
 
@@ -92,6 +75,7 @@ public class SuitableOptions { // implements Iterable<List<String>
       return -1;
    }
 
+   @Override
    public SuitableOptions clone() {
 
       SuitableOptions cloned = new SuitableOptions();
@@ -141,8 +125,7 @@ public class SuitableOptions { // implements Iterable<List<String>
 
       if (found) {
 
-         // if module found and there exist suitable options for it (i.e.,
-         // suitableOptions.get(i).size()>0).
+         // if module found and there exist suitable options for it (i.e., if suitableOptions.get(i).size()>0).
          if (suitableOptionsNames.get(i).size() > 0) {
             return suitableOptionsNames.get(i).get(optionPosition);
          } else {
@@ -157,7 +140,6 @@ public class SuitableOptions { // implements Iterable<List<String>
    }
 
    // ITERATOR OVER THE ELEMENTS
-   // @Override
    abstract class AbstractIterator<T> implements Iterable<T>, Iterator<T> {
       int currentIndex = 0;
 

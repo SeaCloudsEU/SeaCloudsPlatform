@@ -22,8 +22,8 @@ public class TopologyElementCalled {
    private double          probCall = 1.0; // NotProbabilty but operational
                                            // profile (it can be higher than 1)
 
-   // NOT used in this version. The number of calls is fixed to 1. A single
-   // value represents all the utilization.
+   // This version does NOT use the concept of "mean number of calls" used in this version. 
+   // The number of calls is fixed to 1. A single value represents all the utilization.
    // private double meanNumberCalls=1.0;
 
    private TopologyElement element;

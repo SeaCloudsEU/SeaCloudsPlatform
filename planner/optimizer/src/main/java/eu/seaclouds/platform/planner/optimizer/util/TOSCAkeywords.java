@@ -27,7 +27,7 @@ public class TOSCAkeywords {
    public static final String CLOUD_OFFER_PROPERTIES_TAG          = "properties";
    public static final String MODULE_REQUIREMENTS_INSTANCES       = "instances";
 
-   // These ones have not been defined yet. I invent them
+   // These ones have not been defined yet. I temporarily use this definition
    public static final String CLOUD_OFFER_PROPERTY_AVAILABILITY   = "availabilityPOC";
    public static final String CLOUD_OFFER_PROPERTY_PERFORMANCE    = "performancePOC";
    public static final String CLOUD_OFFER_PROPERTY_COST           = "costPOC";

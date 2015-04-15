@@ -30,7 +30,7 @@ import eu.seaclouds.platform.planner.optimizer.Topology;
 
 public class HillClimb extends AbstractHeuristic implements SearchMethod {
 
-   static Logger log = LoggerFactory.getLogger(HillClimb.class);
+   static Logger logHill = LoggerFactory.getLogger(HillClimb.class);
 
    public HillClimb() {
       super();
@@ -78,7 +78,7 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
             Solution[] candidates = findNeighbors(currentSol, cloudOffers,
                   applicationMap, topology);
             if (AbstractHeuristic.IS_DEBUG) {
-               log.debug("Found " + candidates.length
+               logHill.debug("Found " + candidates.length
                      + " neighbors of the solution: Are "
                      + Arrays.toString(candidates));
             }
