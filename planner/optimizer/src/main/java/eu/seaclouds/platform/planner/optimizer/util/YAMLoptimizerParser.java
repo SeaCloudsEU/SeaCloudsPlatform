@@ -168,12 +168,16 @@ public class YAMLoptimizerParser {
 
       HashMap<String, Double> qosPropsMap = new HashMap<String, Double>();
 
+      if(sol.getSolutionQuality()==null){log.warn("quality Of Solution Not Found for solution: " + sol.toString() );}
+      try{
       if (sol.getSolutionQuality().existAvailabilityRequirement()) {
          qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_AVAILABILITY, sol
                .getSolutionQuality().getAvailability());
 
       }
+      }catch(Exception E){log.warn("Availability not found for solutiot: " + sol.toString() );}
 
+     
       if (sol.getSolutionQuality().existCostRequirement()) {
          qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_COST_HOUR, sol
                .getSolutionQuality().getCost());
