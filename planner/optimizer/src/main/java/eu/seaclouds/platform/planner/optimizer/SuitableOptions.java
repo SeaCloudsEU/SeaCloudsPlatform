@@ -17,7 +17,6 @@
 
 package eu.seaclouds.platform.planner.optimizer;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

@@ -15,11 +15,9 @@
  *    limitations under the License.
  */
 
-
 package eu.seaclouds.platform.planner.optimizer;
 
 import java.util.Map;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

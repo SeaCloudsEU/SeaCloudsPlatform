@@ -15,7 +15,6 @@
  *    limitations under the License.
  */
 
-
 package eu.seaclouds.platform.planner.optimizer.heuristics;
 
 import java.util.Map;
@@ -24,7 +23,6 @@ import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.Topology;
 
 public interface SearchMethod {
-
 
    /**
     * @param cloudOffers

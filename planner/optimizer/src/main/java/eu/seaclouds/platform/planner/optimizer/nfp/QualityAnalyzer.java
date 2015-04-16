@@ -15,7 +15,6 @@
  *    limitations under the License.
  */
 
-
 package eu.seaclouds.platform.planner.optimizer.nfp;
 
 import java.util.ArrayList;
@@ -35,7 +34,6 @@ import eu.seaclouds.platform.planner.optimizer.TopologyElement;
 import eu.seaclouds.platform.planner.optimizer.TopologyElementCalled;
 
 public class QualityAnalyzer {
-
 
    private final boolean      IS_DEBUG;
    private boolean            defaultDebug = false;
@@ -96,15 +94,15 @@ public class QualityAnalyzer {
       IS_DEBUG = debug;
    }
 
-   
    /**
-    * @return This method returns the summary of all the quality values (one for each property) already calculated by the object. 
-    * NOTE that it does not calculate any new property value 
+    * @return This method returns the summary of all the quality values (one for
+    *         each property) already calculated by the object. NOTE that it does
+    *         not calculate any new property value
     */
    public QualityInformation getAllComputedQualities() {
       return properties;
    }
-   
+
    // routing matrix with the OpProfile (the item in 0 is the mainly called)
    private double[][] routes = null;
 
@@ -175,9 +173,9 @@ public class QualityAnalyzer {
 
       if (CloudOffer.providerNameOfCloudOffer(cloudOfferCallingElement).equals(
             CloudOffer.providerNameOfCloudOffer(cloudOfferCalledElement))) {
-         
+
          return cloudCharacteristics.getLatencyIntraDatacenter();
-         
+
       } else {
          return cloudCharacteristics.getLatencyInterCloud();
       }
@@ -488,7 +486,6 @@ public class QualityAnalyzer {
          log.debug("Reconfiguration Thresholds not created because Response Time requirement or expected workload was not found.");
          return null;
       }
-      
 
       double[] mus = getMusOfSelectedCloudOffers(modifSol, topology,
             cloudCharacteristics);
@@ -504,12 +501,11 @@ public class QualityAnalyzer {
             log.debug("Creating threshold for workload above " + limitWorkload);
          }
          limitWorkload = findWorkloadForWhichRespTimeIsExceeded(
-               requirements.getResponseTime(), limitWorkload, mus,
-               modifSol, topology, cloudCharacteristics);
+               requirements.getResponseTime(), limitWorkload, mus, modifSol,
+               topology, cloudCharacteristics);
          // get highest utilization
          String moduleWithHighestUtilization = findHighestUtilizationModuleThatCanScale(
-               limitWorkload, mus, modifSol, topology,
-               cloudCharacteristics);
+               limitWorkload, mus, modifSol, topology, cloudCharacteristics);
 
          // put the value in the hashMap. "moduleWithHighestUtilization" may be
          // null
@@ -568,8 +564,8 @@ public class QualityAnalyzer {
     *         were included programming)
     */
    private String findHighestUtilizationModuleThatCanScale(
-         double limitWorkload, double[] mus, Solution sol,
-         Topology topology, SuitableOptions cloudCharacteristics) {
+         double limitWorkload, double[] mus, Solution sol, Topology topology,
+         SuitableOptions cloudCharacteristics) {
 
       double[] workloadsModules = getWorkloadsArray(routes, limitWorkload);
 
@@ -653,9 +649,8 @@ public class QualityAnalyzer {
     *         time is not satisfied
     */
    private double findWorkloadForWhichRespTimeIsExceeded(
-         double respTimeRequirement, double workload,
-         double[] mus, Solution sol, Topology topology,
-         SuitableOptions cloudCharacteristics) {
+         double respTimeRequirement, double workload, double[] mus,
+         Solution sol, Topology topology, SuitableOptions cloudCharacteristics) {
 
       double incWorkload = WORKLOAD_INCREMENT_FOR_SEARCH;
 
@@ -750,6 +745,5 @@ public class QualityAnalyzer {
    private boolean isValidRespTime(double rt, double rtreq) {
       return (rt >= 0) && (rt <= rtreq);
    }
-
 
 }

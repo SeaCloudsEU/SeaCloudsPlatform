@@ -33,8 +33,6 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
-
-
 public abstract class AbstractHeuristic {
 
    static Logger                  log                           = LoggerFactory
@@ -137,9 +135,9 @@ public abstract class AbstractHeuristic {
                   costGoodness);
             numExistingRequirements++;
          }
-         
+
          bestSol.setSolutionQuality(qualityAnalyzer.getAllComputedQualities());
-         
+
          return partialFitness
                / (MAX_TIMES_IMPROVE_REQUIREMENT * numExistingRequirements++);
 
@@ -240,16 +238,16 @@ public abstract class AbstractHeuristic {
 
          YAMLoptimizerParser
                .CleanSuitableOfferForModule(solkey, applicationMap);
-         
+
          YAMLoptimizerParser.AddSuitableOfferForModule(solkey,
                currentSol.getCloudOfferNameForModule(solkey),
                currentSol.getCloudInstancesForModule(solkey), applicationMap);
-         
-         YAMLoptimizerParser.AddQualityOfSolution(currentSol,applicationMap);
+
+         YAMLoptimizerParser.AddQualityOfSolution(currentSol, applicationMap);
       }
 
    }
- 
+
    protected Solution[] mergeBestSolutions(Solution[] sols1, Solution[] sols2,
          int numPlansToGenerate) {
       // TODO: this method has never been tested

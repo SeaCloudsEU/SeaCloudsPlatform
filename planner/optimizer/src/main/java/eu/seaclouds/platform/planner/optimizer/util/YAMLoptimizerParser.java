@@ -17,7 +17,6 @@
 
 package eu.seaclouds.platform.planner.optimizer.util;
 
-
 import java.util.ArrayList;
 
 import java.util.HashMap;
@@ -36,7 +35,6 @@ import eu.seaclouds.platform.planner.optimizer.Topology;
 import eu.seaclouds.platform.planner.optimizer.TopologyElement;
 import eu.seaclouds.platform.planner.optimizer.TopologyElementCalled;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
-
 
 public class YAMLoptimizerParser {
 
@@ -154,37 +152,40 @@ public class YAMLoptimizerParser {
       return null;
 
    }
-   
+
    @SuppressWarnings("unchecked")
    public static void AddQualityOfSolution(Solution sol,
          Map<String, Object> applicationMapComplete) {
-      
+
       Map<String, Object> appMap;
-      try{
-         appMap = (Map<String, Object>) applicationMapComplete.get(TOSCAkeywords.NODE_TEMPLATE);
-        
-      }catch(ClassCastException e){
-            return;
-         }
-      
-      HashMap<String,Double> qosPropsMap=new HashMap<String,Double>();
-         
-      if(sol.getSolutionQuality().existAvailabilityRequirement()){
-            qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_AVAILABILITY, sol.getSolutionQuality().getAvailability());
-            
-         }
-         
-         if(sol.getSolutionQuality().existCostRequirement()){
-            qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_COST_HOUR, sol.getSolutionQuality().getCost());
-         }
-         
-         if(sol.getSolutionQuality().existResponseTimeRequirement()){
-            qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_PERFORMANCE_MILLIS, sol.getSolutionQuality().getResponseTime());
-            
-         }
-         
-         appMap.put(TOSCAkeywords.EXPECTED_QUALITY_PROPERTIES, qosPropsMap);
-      
+      try {
+         appMap = (Map<String, Object>) applicationMapComplete
+               .get(TOSCAkeywords.NODE_TEMPLATE);
+
+      } catch (ClassCastException e) {
+         return;
+      }
+
+      HashMap<String, Double> qosPropsMap = new HashMap<String, Double>();
+
+      if (sol.getSolutionQuality().existAvailabilityRequirement()) {
+         qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_AVAILABILITY, sol
+               .getSolutionQuality().getAvailability());
+
+      }
+
+      if (sol.getSolutionQuality().existCostRequirement()) {
+         qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_COST_HOUR, sol
+               .getSolutionQuality().getCost());
+      }
+
+      if (sol.getSolutionQuality().existResponseTimeRequirement()) {
+         qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_PERFORMANCE_MILLIS, sol
+               .getSolutionQuality().getResponseTime());
+
+      }
+
+      appMap.put(TOSCAkeywords.EXPECTED_QUALITY_PROPERTIES, qosPropsMap);
 
    }
 
@@ -219,9 +220,11 @@ public class YAMLoptimizerParser {
                   potentialListOfOfferCharacteristics);
 
             options.setLatencyDatacenterMillis(getCloudLatency(
-                  suitableCloudOffers, TOSCAkeywords.LATENCY_INTRA_DATACENTER_MILLIS));
+                  suitableCloudOffers,
+                  TOSCAkeywords.LATENCY_INTRA_DATACENTER_MILLIS));
             options.setLatencyInternetMillis(getCloudLatency(
-                  suitableCloudOffers, TOSCAkeywords.LATENCY_INTER_DATACENTER_MILLIS));
+                  suitableCloudOffers,
+                  TOSCAkeywords.LATENCY_INTER_DATACENTER_MILLIS));
          }
 
       }
@@ -343,9 +346,6 @@ public class YAMLoptimizerParser {
       options.add(String.valueOf(instances));
 
    }
-   
-   
-   
 
    @SuppressWarnings("unchecked")
    public static Map<String, Object> GetMAPofAPP(String appModel) {
@@ -768,7 +768,4 @@ public class YAMLoptimizerParser {
       return false;
    }
 
-
-
 }
-
