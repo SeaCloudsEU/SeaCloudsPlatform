@@ -31,8 +31,14 @@ public class TOSCAkeywords {
    public static final String CLOUD_OFFER_PROPERTY_AVAILABILITY   = "availabilityPOC";
    public static final String CLOUD_OFFER_PROPERTY_PERFORMANCE    = "performancePOC";
    public static final String CLOUD_OFFER_PROPERTY_COST           = "costPOC";
+   public static final String LATENCY_INTER_DATACENTER_MILLIS     = "latencyExternalPOC";
+   public static final String LATENCY_INTRA_DATACENTER_MILLIS     = "latencyInternalPOC";
 
-   public static final String RECONFIGURATION_WORKLOAD_TAG        = "Reconfigurations";
+   public static final String RECONFIGURATION_WORKLOAD_TAG        = "ReconfigurationsPOC";
+   public static final String EXPECTED_QUALITY_PROPERTIES         = "ExpectedQualityPOC";
+   public static final String EXPECTED_QOS_PERFORMANCE_MILLIS     = "expectedExecutionTimePOC";
+   public static final String EXPECTED_QOS_AVAILABILITY           = "expectedAvailabilityPOC";
+   public static final String EXPECTED_QOS_COST_HOUR              = "expectedCostPOC";
 
    public static final String APP_QOS_REQUIREMENTS                = "QoSrequirementsPOC";
    public static final String APP_PERFORMANCE_REQUIREMENTS        = "responseTimePOC";

@@ -33,7 +33,7 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
-public abstract class AbstractHeuristic{
+public abstract class AbstractHeuristic {
 
    static Logger                  log                           = LoggerFactory
                                                                       .getLogger(AbstractHeuristic.class);
@@ -50,8 +50,6 @@ public abstract class AbstractHeuristic{
 
    public AbstractHeuristic() {
    }
-
-
 
    public void setMaxIterNoImprove(int value) {
       MAX_ITER_NO_IMPROVE = value;
@@ -137,7 +135,9 @@ public abstract class AbstractHeuristic{
                   costGoodness);
             numExistingRequirements++;
          }
-
+         
+         bestSol.setSolutionQuality(qualityAnalyzer.getAllComputedQualities());
+         
          return partialFitness
                / (MAX_TIMES_IMPROVE_REQUIREMENT * numExistingRequirements++);
 
@@ -238,18 +238,19 @@ public abstract class AbstractHeuristic{
 
          YAMLoptimizerParser
                .CleanSuitableOfferForModule(solkey, applicationMap);
+         
          YAMLoptimizerParser.AddSuitableOfferForModule(solkey,
                currentSol.getCloudOfferNameForModule(solkey),
                currentSol.getCloudInstancesForModule(solkey), applicationMap);
+         
+         YAMLoptimizerParser.AddQualityOfSolution(currentSol,applicationMap);
       }
 
    }
 
-   
-
-     
-     protected Solution[] mergeBestSolutions(Solution[] sols1, Solution[] sols2,     int numPlansToGenerate) { 
-        //TODO: this method has never been tested
+   protected Solution[] mergeBestSolutions(Solution[] sols1, Solution[] sols2,
+         int numPlansToGenerate) {
+      // TODO: this method has never been tested
       sortSolutionsByFitness(sols1);
       sortSolutionsByFitness(sols2);
 
@@ -280,10 +281,10 @@ public abstract class AbstractHeuristic{
             }
 
          }
-     
-     
-     } return merged; }
-    
+
+      }
+      return merged;
+   }
 
    protected void sortSolutionsByFitness(Solution[] bestSols) {
       Arrays.sort(bestSols, Collections.reverseOrder());
@@ -400,11 +401,11 @@ public abstract class AbstractHeuristic{
       Solution currentSolution = new Solution();
       for (String modName : cloudOffers.getStringIterator()) {
 
-         //element to use
+         // element to use
          int itemToUse = (int) Math.floor(Math.random()
                * (double) cloudOffers.getSizeOfSuitableOptions(modName));
-         
-         //number of instances
+
+         // number of instances
          int numInstances = ((int) Math.floor(Math.random()
                * ((double) DEFAULT_MAX_NUM_INSTANCES))) + 1;
 

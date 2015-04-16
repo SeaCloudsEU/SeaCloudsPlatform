@@ -443,3 +443,6 @@ node_templates:
         costPOC: 0.9
     capabilities:
         host: tosca.nodes.softwareComponent  
+        
+  latencyExternalPOC: 200.0
+  latencyInternalPOC: 2.0

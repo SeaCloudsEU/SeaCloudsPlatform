@@ -36,6 +36,10 @@ public class SuitableOptions { // implements Iterable<List<String>
    private ArrayList<List<String>>     suitableOptionsNames;
    private ArrayList<List<CloudOffer>> suitableOptionsCharacteristics;
 
+   private double                      latencyInternetMillis;
+
+   private double                      latencyDatacenterMillis;
+
    public SuitableOptions() {
 
       moduleNames = new ArrayList<String>();
@@ -51,7 +55,6 @@ public class SuitableOptions { // implements Iterable<List<String>
       suitableOptionsNames.add(optionsNames);
       suitableOptionsCharacteristics.add(OptionsCharacteristics);
    }
-
 
    public int getSizeOfSuitableOptions(String moduleName) {
 
@@ -125,7 +128,8 @@ public class SuitableOptions { // implements Iterable<List<String>
 
       if (found) {
 
-         // if module found and there exist suitable options for it (i.e., if suitableOptions.get(i).size()>0).
+         // if module found and there exist suitable options for it (i.e., if
+         // suitableOptions.get(i).size()>0).
          if (suitableOptionsNames.get(i).size() > 0) {
             return suitableOptionsNames.get(i).get(optionPosition);
          } else {
@@ -535,6 +539,22 @@ public class SuitableOptions { // implements Iterable<List<String>
          return null;
       }
       return suitableOptionsCharacteristics.get(indexModule);
+   }
+
+   public double getLatencyIntraDatacenter() {
+      return latencyDatacenterMillis;
+   }
+
+   public double getLatencyInterCloud() {
+      return latencyInternetMillis;
+   }
+
+   public void setLatencyInternetMillis(double latencyInternetMillis) {
+      this.latencyInternetMillis = latencyInternetMillis;
+   }
+
+   public void setLatencyDatacenterMillis(double latencyDatacenterMillis) {
+      this.latencyDatacenterMillis = latencyDatacenterMillis;
    }
 
 }

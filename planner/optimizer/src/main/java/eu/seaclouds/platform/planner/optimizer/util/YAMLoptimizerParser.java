@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import eu.seaclouds.platform.planner.optimizer.CloudOffer;
+import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.Topology;
 import eu.seaclouds.platform.planner.optimizer.TopologyElement;
@@ -39,9 +40,10 @@ public class YAMLoptimizerParser {
    // Reducing verbosity . If somebody knows a better approach for doing this (I
    // could not set dynamically the level of the logging) it should be changed
    private static int           BeeingTooVerboseWithLackOfInformationInCloudOffers = 3;
-   private static final boolean IS_DEBUG  = false;
+   private static final boolean IS_DEBUG                                           = false;
 
-   static Logger                log       = LoggerFactory.getLogger(YAMLoptimizerParser.class);
+   static Logger                log                                                = LoggerFactory
+                                                                                         .getLogger(YAMLoptimizerParser.class);
 
    public static void CleanSuitableOfferForModule(String modulename,
          Map<String, Object> appMap) {
@@ -149,6 +151,39 @@ public class YAMLoptimizerParser {
       return null;
 
    }
+   
+   @SuppressWarnings("unchecked")
+   public static void AddQualityOfSolution(Solution sol,
+         Map<String, Object> applicationMapComplete) {
+      
+      Map<String, Object> appMap;
+      try{
+         appMap = (Map<String, Object>) applicationMapComplete.get(TOSCAkeywords.NODE_TEMPLATE);
+        
+      }catch(ClassCastException e){
+            return;
+         }
+      
+      HashMap<String,Double> qosPropsMap=new HashMap<String,Double>();
+         
+      if(sol.getSolutionQuality().existAvailabilityRequirement()){
+            qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_AVAILABILITY, sol.getSolutionQuality().getAvailability());
+            
+         }
+         
+         if(sol.getSolutionQuality().existCostRequirement()){
+            qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_COST_HOUR, sol.getSolutionQuality().getCost());
+         }
+         
+         if(sol.getSolutionQuality().existResponseTimeRequirement()){
+            qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_PERFORMANCE_MILLIS, sol.getSolutionQuality().getResponseTime());
+            
+         }
+         
+         appMap.put(TOSCAkeywords.EXPECTED_QUALITY_PROPERTIES, qosPropsMap);
+      
+
+   }
 
    @SuppressWarnings("unchecked")
    public static SuitableOptions GetSuitableCloudOptionsAndCharacteristicsForModules(
@@ -166,7 +201,6 @@ public class YAMLoptimizerParser {
          String potentialModuleName = entry.getKey();
          List<String> potentialListOfOffersNames = GetListOfSuitableOptionsForAlreadyFoundModule(entry
                .getValue());
-        
 
          if (potentialListOfOffersNames != null) {
             if (IS_DEBUG) {
@@ -180,11 +214,33 @@ public class YAMLoptimizerParser {
             options.addSuitableOptions(potentialModuleName,
                   potentialListOfOffersNames,
                   potentialListOfOfferCharacteristics);
+
+            options.setLatencyDatacenterMillis(getCloudLatency(
+                  suitableCloudOffers, TOSCAkeywords.LATENCY_INTRA_DATACENTER_MILLIS));
+            options.setLatencyInternetMillis(getCloudLatency(
+                  suitableCloudOffers, TOSCAkeywords.LATENCY_INTER_DATACENTER_MILLIS));
          }
 
       }
 
       return options;
+   }
+
+   private static double getCloudLatency(String suitableCloudOffers,
+         String latencyKeyword) {
+
+      Map<String, Object> cloudOffersMap = GetMAPofAPP(suitableCloudOffers);
+      try {
+         @SuppressWarnings("unchecked")
+         Map<String, Object> cloudMap = (Map<String, Object>) cloudOffersMap
+               .get(TOSCAkeywords.NODE_TEMPLATE);
+         if (cloudMap.containsKey(latencyKeyword)) {
+            return (Double) cloudMap.get(latencyKeyword);
+         }
+      } catch (ClassCastException E) {
+         return 0.0;
+      }
+      return 0.0;
    }
 
    private static List<CloudOffer> getCloudOfferCharacteristcisByName(
@@ -229,9 +285,11 @@ public class YAMLoptimizerParser {
       offer.setAvailability(getPropertyOfCloudOffer(
             TOSCAkeywords.CLOUD_OFFER_PROPERTY_AVAILABILITY,
             (Map<String, Object>) cloudMap.get(potentialOffer)));
+
       offer.setPerformance(getPropertyOfCloudOffer(
             TOSCAkeywords.CLOUD_OFFER_PROPERTY_PERFORMANCE,
             (Map<String, Object>) cloudMap.get(potentialOffer)));
+
       offer.setCost(getPropertyOfCloudOffer(
             TOSCAkeywords.CLOUD_OFFER_PROPERTY_COST,
             (Map<String, Object>) cloudMap.get(potentialOffer)));
@@ -282,6 +340,9 @@ public class YAMLoptimizerParser {
       options.add(String.valueOf(instances));
 
    }
+   
+   
+   
 
    @SuppressWarnings("unchecked")
    public static Map<String, Object> GetMAPofAPP(String appModel) {
@@ -703,5 +764,7 @@ public class YAMLoptimizerParser {
       }
       return false;
    }
+
+
 
 }

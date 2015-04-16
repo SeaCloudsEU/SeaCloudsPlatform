@@ -25,6 +25,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.seaclouds.platform.planner.optimizer.CloudOffer;
 import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.Topology;
@@ -92,11 +93,25 @@ public class QualityAnalyzer {
       IS_DEBUG = debug;
    }
 
+   
+   /**
+    * @return This method returns the summary of all the quality values (one for each property) already calculated by the object. 
+    * NOTE that it does not calculate any new property value 
+    */
+   public QualityInformation getAllComputedQualities() {
+      return properties;
+   }
+   
+   // routing matrix with the OpProfile (the item in 0 is the mainly called)
+   private double[][] routes = null;
+
    public QualityInformation computePerformance(Solution bestSol,
          Topology topology, double workload,
          SuitableOptions cloudCharacteristics) {
 
-      double[][] routes = getRoutingMatrix(topology);
+      if (routes == null) {
+         routes = getRoutingMatrix(topology);
+      }
       double[] workloadsModules = getWorkloadsArray(routes, workload);
       double[] numVisitsModule = getNumVisitsArray(workloadsModules, workload);
 
@@ -112,10 +127,58 @@ public class QualityAnalyzer {
       double respTime = getSystemRespTime(numVisitsModule,
             workloadsModulesByCoresAndNumInstances, mus);
 
+      respTime += addNetworkDelays(bestSol, topology, numVisitsModule,
+            cloudCharacteristics);
+
       // after computing, save the performance info in properties.performance
       properties.setResponseTime(respTime);
 
       return properties;
+   }
+
+   private double addNetworkDelays(Solution bestSol, Topology topology,
+         double[] numVisitsModule, SuitableOptions cloudCharacteristics) {
+
+      double networkDelay = 0.0;
+
+      for (int i = 0; i < topology.size(); i++) {
+         TopologyElement element = topology.getElementIndex(i);
+
+         double sumOfDelaysSingleModule = 0.0;
+
+         for (TopologyElementCalled elementCalled : element) {
+            sumOfDelaysSingleModule += elementCalled.getProbCall()
+                  * latencyBetweenElements(bestSol, element.getName(),
+                        elementCalled.getElement().getName(),
+                        cloudCharacteristics);
+         }
+
+         networkDelay += numVisitsModule[i] * sumOfDelaysSingleModule;
+
+      }
+
+      return networkDelay;
+
+   }
+
+   private double latencyBetweenElements(Solution bestSol,
+         String callingModuleName, String calledModuleName,
+         SuitableOptions cloudCharacteristics) {
+
+      String cloudOfferCallingElement = bestSol
+            .getCloudProviderNameForModule(callingModuleName);
+      String cloudOfferCalledElement = bestSol
+            .getCloudProviderNameForModule(calledModuleName);
+
+      if (CloudOffer.providerNameOfCloudOffer(cloudOfferCallingElement).equals(
+            CloudOffer.providerNameOfCloudOffer(cloudOfferCalledElement))) {
+         
+         return cloudCharacteristics.getLatencyIntraDatacenter();
+         
+      } else {
+         return cloudCharacteristics.getLatencyInterCloud();
+      }
+
    }
 
    private double getSystemRespTime(double[] numVisitsModule,
@@ -409,7 +472,6 @@ public class QualityAnalyzer {
          Solution solInput, Topology topology, QualityInformation requirements,
          SuitableOptions cloudCharacteristics) {
 
-
       HashMap<String, ArrayList<Double>> thresholds = new HashMap<String, ArrayList<Double>>();
 
       Solution modifSol = solInput.clone();
@@ -423,7 +485,7 @@ public class QualityAnalyzer {
          log.debug("Reconfiguration Thresholds not created because Response Time requirement or expected workload was not found.");
          return null;
       }
-      double[][] routes = getRoutingMatrix(topology);
+      
 
       double[] mus = getMusOfSelectedCloudOffers(modifSol, topology,
             cloudCharacteristics);
@@ -439,11 +501,11 @@ public class QualityAnalyzer {
             log.debug("Creating threshold for workload above " + limitWorkload);
          }
          limitWorkload = findWorkloadForWhichRespTimeIsExceeded(
-               requirements.getResponseTime(), limitWorkload, routes, mus,
+               requirements.getResponseTime(), limitWorkload, mus,
                modifSol, topology, cloudCharacteristics);
          // get highest utilization
          String moduleWithHighestUtilization = findHighestUtilizationModuleThatCanScale(
-               limitWorkload, routes, mus, modifSol, topology,
+               limitWorkload, mus, modifSol, topology,
                cloudCharacteristics);
 
          // put the value in the hashMap. "moduleWithHighestUtilization" may be
@@ -459,7 +521,7 @@ public class QualityAnalyzer {
             existModulesToScaleOut = false;
             // can be shortened to
             // "existModulesToScaleOut=(!(moduleWithHighestUtilization==null));"
-            // but it is less readable in my opinion. 
+            // but it is less readable in my opinion.
          }
 
       }
@@ -503,7 +565,7 @@ public class QualityAnalyzer {
     *         were included programming)
     */
    private String findHighestUtilizationModuleThatCanScale(
-         double limitWorkload, double[][] routes, double[] mus, Solution sol,
+         double limitWorkload, double[] mus, Solution sol,
          Topology topology, SuitableOptions cloudCharacteristics) {
 
       double[] workloadsModules = getWorkloadsArray(routes, limitWorkload);
@@ -525,9 +587,11 @@ public class QualityAnalyzer {
                                             // the first one that can scale
                maxUtilizationIndex = i;
             } else {
-               if (utilizations[i] > utilizations[maxUtilizationIndex]) { 
-                   //It could  be done as an OR in the previous condition, but this is 
-                   //a safe manner as the order in which Java evaluates disyuntive conditions
+               if (utilizations[i] > utilizations[maxUtilizationIndex]) {
+                  // It could be done as an OR in the previous condition, but
+                  // this is
+                  // a safe manner as the order in which Java evaluates
+                  // disyuntive conditions
                   maxUtilizationIndex = i;
                }
             }
@@ -586,7 +650,7 @@ public class QualityAnalyzer {
     *         time is not satisfied
     */
    private double findWorkloadForWhichRespTimeIsExceeded(
-         double respTimeRequirement, double workload, double[][] routes,
+         double respTimeRequirement, double workload,
          double[] mus, Solution sol, Topology topology,
          SuitableOptions cloudCharacteristics) {
 
@@ -643,13 +707,16 @@ public class QualityAnalyzer {
       double lowerWorkloadLimit = Math.floor(workload + (incWorkload / 2.0));
       double upperWorkloadLimit = workload + incWorkload;
 
-      while (lowerWorkloadLimit + 2.0 < upperWorkloadLimit) { 
-         
+      while (lowerWorkloadLimit + 2.0 < upperWorkloadLimit) {
+
          // TODO: I chose a value to add of 2.0 because the difference should be
-         // 1.0 but there may be problems with the Double representation of values. One
-         // arrival more does not (should not) make any difference but the comparison with
-         // doubles works better.Check this for accurate version 2.0. Middle point
-         
+         // 1.0 but there may be problems with the Double representation of
+         // values. One
+         // arrival more does not (should not) make any difference but the
+         // comparison with
+         // doubles works better.Check this for accurate version 2.0. Middle
+         // point
+
          double workloadToCheck = (lowerWorkloadLimit + upperWorkloadLimit) / 2.0;
          workloadsModules = getWorkloadsArray(routes, workloadToCheck);
          numVisitsModule = getNumVisitsArray(workloadsModules, workloadToCheck);
@@ -680,5 +747,7 @@ public class QualityAnalyzer {
    private boolean isValidRespTime(double rt, double rtreq) {
       return (rt >= 0) && (rt <= rtreq);
    }
+
+
 
 }

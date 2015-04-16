@@ -26,6 +26,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
+
 public class Solution implements Iterable<String>, Comparable<Solution> {
 
    /*
@@ -43,10 +45,20 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
    private Map<String, String>  modName_ModOption;
    private Map<String, Integer> modName_NumInstances;
    private double               solutionFitness  = 0.0;
+   private QualityInformation solutionQuality;
 
    public Solution() {
       modName_ModOption = new HashMap<String, String>();
       modName_NumInstances = new HashMap<String, Integer>();
+   }
+   
+
+   public QualityInformation getSolutionQuality() {
+      return solutionQuality;
+   }
+
+   public void setSolutionQuality(QualityInformation solutionQuality) {
+      this.solutionQuality = solutionQuality;
    }
 
    public void addItem(String name, String cloudOption) {
@@ -60,6 +72,12 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
 
    public String getCloudOfferNameForModule(String key) {
       return modName_ModOption.get(key);
+   }
+
+   // returns the provider name of the selected offer of a module
+   public String getCloudProviderNameForModule(String calledElementName) {
+      return CloudOffer
+            .providerNameOfCloudOffer(getCloudOfferNameForModule(calledElementName));
    }
 
    public int getCloudInstancesForModule(String key) {
@@ -189,7 +207,7 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
 
          @Override
          public void remove() {
-            
+
          }
       };
       return it;
@@ -205,5 +223,6 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
       out += "}";
       return out;
    }
+
 
 }

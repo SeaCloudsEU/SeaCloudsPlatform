@@ -18,9 +18,10 @@
 package eu.seaclouds.platform.planner.optimizer;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class TopologyElement {
+public class TopologyElement implements Iterable<TopologyElementCalled> {
 
    private String                      name;
    private List<TopologyElementCalled> dependences;
@@ -103,6 +104,34 @@ public class TopologyElement {
       // scale. Up to now, it is assumed that all can scale out, so the
       // structure is created.
       return true;
+   }
+
+   // ITERATOR //Iterates over names of modules
+   @Override
+   public Iterator<TopologyElementCalled> iterator() {
+      Iterator<TopologyElementCalled> it = new Iterator<TopologyElementCalled>() {
+
+         int currentIndex = 0;
+
+         @Override
+         public boolean hasNext() {
+            return currentIndex < dependences.size();
+
+         }
+
+         @Override
+         public TopologyElementCalled next() {
+            TopologyElementCalled currentEl = dependences.get(currentIndex);
+            currentIndex++;
+            return currentEl;
+         }
+
+         @Override
+         public void remove() {
+
+         }
+      };
+      return it;
    }
 
 }

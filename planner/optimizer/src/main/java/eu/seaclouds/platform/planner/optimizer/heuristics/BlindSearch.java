@@ -25,7 +25,6 @@ import eu.seaclouds.platform.planner.optimizer.Topology;
 
 public class BlindSearch extends AbstractHeuristic implements SearchMethod {
 
-
    public BlindSearch() {
       super();
 
