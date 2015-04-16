@@ -45,8 +45,9 @@ public class Reoptimizer {
       case BLINDSEARCH:
          engine = new BlindSearch();
          break;
-      case HILLCLIMB: engine= new HillClimb(); break;
-
+      case HILLCLIMB:
+         engine = new HillClimb();
+         break;
 
       default:
          engine = new BlindSearch();

@@ -39,7 +39,6 @@ public class QualityAnalyzerTest {
 
    private static QualityAnalyzer analyzer;
 
-
    static Logger                  log = LoggerFactory
                                             .getLogger(QualityAnalyzerTest.class);
 

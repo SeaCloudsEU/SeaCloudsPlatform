@@ -57,6 +57,11 @@ public class CloudOffer {
       this.cost = 0;
    }
 
+   public static String providerNameOfCloudOffer(String cloudOfferName) {
+      return cloudOfferName
+            .split(TOSCAkeywords.CLOUD_OFFER_PROVIDER_NAME_SEPARATOR)[0];
+   }
+
    public String getName() {
       return name;
    }
@@ -108,6 +113,8 @@ public class CloudOffer {
    public String getProviderName() {
       // TODO: Test this method with several offers names since the split method
       // gives curious results sometimes (null)
+      // It could be also used the static method providerNameOfClokudOffer
+      // passing as argument the name of this object
       return name.split(TOSCAkeywords.CLOUD_OFFER_PROVIDER_NAME_SEPARATOR)[0];
    }
 

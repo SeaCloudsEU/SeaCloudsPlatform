@@ -33,7 +33,7 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
-public abstract class AbstractHeuristic{
+public abstract class AbstractHeuristic {
 
    static Logger                  log                           = LoggerFactory
                                                                       .getLogger(AbstractHeuristic.class);
@@ -50,8 +50,6 @@ public abstract class AbstractHeuristic{
 
    public AbstractHeuristic() {
    }
-
-
 
    public void setMaxIterNoImprove(int value) {
       MAX_ITER_NO_IMPROVE = value;
