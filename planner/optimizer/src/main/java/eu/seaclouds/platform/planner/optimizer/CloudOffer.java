@@ -96,7 +96,7 @@ public class CloudOffer {
 
    @Override
    public CloudOffer clone() {
-      return new CloudOffer(name, performance, availability, cost);
+      return new CloudOffer(name, performance, availability, cost, numCores);
    }
 
    public double getNumCores() {

@@ -72,8 +72,9 @@ public abstract class AbstractHeuristic {
    public double fitness(Solution bestSol, Map<String, Object> applicationMap,
          Topology topology, SuitableOptions cloudCharacteristics) {
 
-      loadQualityRequirements(applicationMap);
-
+      if(requirements==null){
+         loadQualityRequirements(applicationMap);
+      }
       QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
 
       // calculates how well it satisfies performance reuquirement. Method
@@ -104,8 +105,9 @@ public abstract class AbstractHeuristic {
                / qualityAnalyzer.computeCost(bestSol, cloudCharacteristics);
       }
 
+      double fitness = 0.0;
       if ((perfGoodness >= 1) && (availGoodness >= 1) && (costGoodness >= 1)) {
-         return Math.min(MAX_TIMES_IMPROVE_REQUIREMENT, perfGoodness)
+         fitness = Math.min(MAX_TIMES_IMPROVE_REQUIREMENT, perfGoodness)
                + Math.min(MAX_TIMES_IMPROVE_REQUIREMENT, availGoodness)
                + Math.min(MAX_TIMES_IMPROVE_REQUIREMENT, costGoodness);
       } else {
@@ -136,13 +138,17 @@ public abstract class AbstractHeuristic {
             numExistingRequirements++;
          }
 
-         bestSol.setSolutionQuality(qualityAnalyzer.getAllComputedQualities());
+         if(qualityAnalyzer.getAllComputedQualities()==null){
+            log.warn("something werid is happening because quality values are null");
+         }
 
-         return partialFitness
+         fitness= partialFitness
                / (MAX_TIMES_IMPROVE_REQUIREMENT * numExistingRequirements++);
-
       }
-
+      
+      bestSol.setSolutionQuality(qualityAnalyzer.getAllComputedQualities());
+      return fitness;
+      
    }
 
    /**
@@ -371,6 +377,9 @@ public abstract class AbstractHeuristic {
          Solution[] bestSols, Map<String, Object> applicMap, Topology topology,
          SuitableOptions cloudOffers, int numPlansToGenerate) {
 
+      if(AbstractHeuristic.IS_DEBUG){
+         checkQualityAttachedToSolutions(bestSols);
+      }
       @SuppressWarnings("unchecked")
       Map<String, Object>[] solutions = new HashMap[numPlansToGenerate];
 
@@ -415,6 +424,16 @@ public abstract class AbstractHeuristic {
       }
 
       return currentSolution;
+   }
+
+   protected void checkQualityAttachedToSolutions(Solution[] bestSols) {
+      
+      for(int i=0; i<bestSols.length; i++){
+         if(bestSols[i].getSolutionQuality()==null){
+            log.info("Solution has its quality NULL" + bestSols[i].toString());
+         }
+      }
+      
    }
 
 }

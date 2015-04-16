@@ -188,6 +188,8 @@ public class YAMLoptimizerParser {
                .getSolutionQuality().getResponseTime());
 
       }
+      
+      qosPropsMap.put(TOSCAkeywords.OVERALL_QOS_FITNESS, sol.getSolutionFitness());
 
       appMap.put(TOSCAkeywords.EXPECTED_QUALITY_PROPERTIES, qosPropsMap);
 

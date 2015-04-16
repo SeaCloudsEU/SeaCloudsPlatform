@@ -39,6 +39,7 @@ public class TOSCAkeywords {
    public static final String EXPECTED_QOS_PERFORMANCE_MILLIS     = "expectedExecutionTimePOC";
    public static final String EXPECTED_QOS_AVAILABILITY           = "expectedAvailabilityPOC";
    public static final String EXPECTED_QOS_COST_HOUR              = "expectedCostPOC";
+   public static final String OVERALL_QOS_FITNESS                 = "fitness";
 
    public static final String APP_QOS_REQUIREMENTS                = "QoSrequirementsPOC";
    public static final String APP_PERFORMANCE_REQUIREMENTS        = "responseTimePOC";
