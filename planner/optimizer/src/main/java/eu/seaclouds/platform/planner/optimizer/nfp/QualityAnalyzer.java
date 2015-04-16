@@ -15,9 +15,11 @@
  *    limitations under the License.
  */
 
+
 package eu.seaclouds.platform.planner.optimizer.nfp;
 
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,6 +35,7 @@ import eu.seaclouds.platform.planner.optimizer.TopologyElement;
 import eu.seaclouds.platform.planner.optimizer.TopologyElementCalled;
 
 public class QualityAnalyzer {
+
 
    private final boolean      IS_DEBUG;
    private boolean            defaultDebug = false;
@@ -747,7 +750,6 @@ public class QualityAnalyzer {
    private boolean isValidRespTime(double rt, double rtreq) {
       return (rt >= 0) && (rt <= rtreq);
    }
-
 
 
 }

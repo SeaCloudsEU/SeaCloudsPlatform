@@ -26,6 +26,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 
 public class Solution implements Iterable<String>, Comparable<Solution> {
@@ -223,6 +224,4 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
       out += "}";
       return out;
    }
-
-
 }

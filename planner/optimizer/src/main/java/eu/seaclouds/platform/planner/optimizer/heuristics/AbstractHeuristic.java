@@ -33,6 +33,8 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
+
+
 public abstract class AbstractHeuristic {
 
    static Logger                  log                           = LoggerFactory

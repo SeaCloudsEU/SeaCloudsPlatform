@@ -17,6 +17,7 @@
 
 package eu.seaclouds.platform.planner.optimizer;
 
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -556,5 +557,4 @@ public class SuitableOptions { // implements Iterable<List<String>
    public void setLatencyDatacenterMillis(double latencyDatacenterMillis) {
       this.latencyDatacenterMillis = latencyDatacenterMillis;
    }
-
 }

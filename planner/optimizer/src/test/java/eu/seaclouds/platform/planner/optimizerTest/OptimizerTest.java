@@ -15,6 +15,7 @@
  *    limitations under the License.
  */
 
+
 package eu.seaclouds.platform.planner.optimizerTest;
 
 import java.io.FileNotFoundException;
@@ -210,5 +211,4 @@ public class OptimizerTest {
    public void testFinishced() {
       log.info("===== ALL TESTS FOR OPTIMIZER FINISHED ===");
    }
-
 }

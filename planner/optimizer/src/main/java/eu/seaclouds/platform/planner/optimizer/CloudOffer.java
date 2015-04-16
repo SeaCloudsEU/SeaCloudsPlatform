@@ -21,6 +21,7 @@ import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
 
 public class CloudOffer {
 
+
    private String name;
    private double performance;
    private double availability;

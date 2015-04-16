@@ -15,7 +15,10 @@
  *    limitations under the License.
  */
 
+
 package eu.seaclouds.platform.planner.optimizer.heuristics;
+
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +26,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
@@ -264,3 +268,4 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
    }
 
 }
+

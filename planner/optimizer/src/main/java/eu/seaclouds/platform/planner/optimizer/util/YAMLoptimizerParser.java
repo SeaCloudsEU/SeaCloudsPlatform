@@ -17,7 +17,9 @@
 
 package eu.seaclouds.platform.planner.optimizer.util;
 
+
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +36,7 @@ import eu.seaclouds.platform.planner.optimizer.Topology;
 import eu.seaclouds.platform.planner.optimizer.TopologyElement;
 import eu.seaclouds.platform.planner.optimizer.TopologyElementCalled;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
+
 
 public class YAMLoptimizerParser {
 
@@ -768,3 +771,4 @@ public class YAMLoptimizerParser {
 
 
 }
+

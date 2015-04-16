@@ -442,7 +442,11 @@ node_templates:
         availabilityPOC: 99.95
         costPOC: 0.9
     capabilities:
+<<<<<<< HEAD
         host: tosca.nodes.softwareComponent  
         
   latencyExternalPOC: 200.0
   latencyInternalPOC: 2.0
+=======
+        host: tosca.nodes.softwareComponent  
+>>>>>>> origin/optimizer

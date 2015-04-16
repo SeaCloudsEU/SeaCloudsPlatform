@@ -17,6 +17,7 @@
 
 package eu.seaclouds.platform.planner.optimizer.nfp;
 
+
 public class QualityInformation {
 
    // try to make the standard unit for time metric (the cost is instead

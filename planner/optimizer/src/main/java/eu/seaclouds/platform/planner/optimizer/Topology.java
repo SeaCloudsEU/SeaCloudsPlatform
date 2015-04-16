@@ -17,12 +17,14 @@
 
 package eu.seaclouds.platform.planner.optimizer;
 
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public class Topology {
 

@@ -15,6 +15,7 @@
  *    limitations under the License.
  */
 
+
 package eu.seaclouds.platform.planner.optimizerTest.nfp;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import eu.seaclouds.platform.planner.optimizer.Topology;
 import eu.seaclouds.platform.planner.optimizer.TopologyElement;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
+
 
 public class QualityAnalyzerTest {
 
