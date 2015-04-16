@@ -244,7 +244,7 @@ public abstract class AbstractHeuristic {
    }
 
     
-
+ 
      
      protected Solution[] mergeBestSolutions(Solution[] sols1, Solution[] sols2,     int numPlansToGenerate) { 
         //TODO: this method has never been tested
