@@ -14,17 +14,20 @@ node_templates:
     capabilities:
       database_endpoint:
         properties: {port: 80}
-    requirements: {host: AWS.compute.m1.medium, instances: 1}
+    requirements: {host: AWS.compute.m1.medium, instances: 2}
     QoSpropertiesPOC: {executionTimeMeasuredInPOC: AWS.compute.c1.medium, executionTimePOC: 50.0}
   webServer:
     type: seaClouds.nodes.WebServer
     capabilities: {host: seaclouds.nodes.WebApplication.PHP}
     requirements: {host: AWS.compute.m1.large, instances: 1}
+  ExpectedQualityPOC: {expectedAvailabilityPOC: 0.9994972563725003, fitness: 32.6419286441162,
+    expectedCostPOC: 0.28, expectedExecutionTimePOC: 0.3766053764041804}
 QoSrequirementsPOC: {availabilityPOC: 0.99, responseTimePOC: 2000.0, workloadPOC: 100.0,
   costPOC: 1500.0}
-Reconfigurations:
-  nuroDatabase: [120.0, 360.0, 480.0, 720.0, 840.0, 1080.0, 1200.0, 1440.0, 1680.0,
-    1800.0, 2040.0, 2160.0, 2400.0, 2580.0, 2820.0, 2940.0, 3180.0, 3300.0, 3540.0,
-    3660.0, 3900.0, 4020.0, 4260.0, 4380.0, 4620.0]
-  webServer: [2520.0]
+ReconfigurationsPOC:
+  nuroDatabase: [369.99999999999994, 544.9999999999999, 722.5, 901.2499999999999,
+    1080.6249999999998, 1260.3125, 1500.0, 1620.0, 1860.0, 1980.0, 2220.0, 2340.0,
+    2580.0, 2820.0, 2940.0, 3180.0, 3300.0, 3540.0, 3660.0, 3900.0, 4020.0, 4260.0,
+    4380.0, 4620.0]
+  webServer: [2580.0]
 
