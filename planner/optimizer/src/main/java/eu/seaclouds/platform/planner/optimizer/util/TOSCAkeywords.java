@@ -25,7 +25,9 @@ public class TOSCAkeywords {
    public static final String MODULE_REQUIREMENTS_CONSTRAINTS     = "constraints";
    public static final String MODULE_REQUIREMENTS_HOST            = "host";
    public static final String CLOUD_OFFER_PROPERTIES_TAG          = "properties";
-   public static final String MODULE_REQUIREMENTS_INSTANCES       = "instances";
+   public static final String CLOUD_OFFER_NUM_CORES_TAG           = "cpuCores";
+  
+   public static final String MODULE_PROPOSED_INSTANCES       = "instancesPOC";
 
    // These ones have not been defined yet. I temporarily use this definition
    public static final String CLOUD_OFFER_PROPERTY_AVAILABILITY   = "availabilityPOC";
@@ -39,7 +41,7 @@ public class TOSCAkeywords {
    public static final String EXPECTED_QOS_PERFORMANCE_MILLIS     = "expectedExecutionTimePOC";
    public static final String EXPECTED_QOS_AVAILABILITY           = "expectedAvailabilityPOC";
    public static final String EXPECTED_QOS_COST_HOUR              = "expectedCostPOC";
-   public static final String OVERALL_QOS_FITNESS                 = "fitness";
+   public static final String OVERALL_QOS_FITNESS                 = "fitnessPOC";
 
    public static final String APP_QOS_REQUIREMENTS                = "QoSrequirementsPOC";
    public static final String APP_PERFORMANCE_REQUIREMENTS        = "responseTimePOC";

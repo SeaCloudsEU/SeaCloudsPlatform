@@ -63,7 +63,7 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
             numPlansToGenerate);
       super.setFitnessOfSolutions(bestSols, applicationMap, topology,
             cloudOffers);
-      if(AbstractHeuristic.IS_DEBUG){
+      if (AbstractHeuristic.IS_DEBUG) {
          log.debug("Start checking the presence of quality attached to solutions after the first generation HILLCLIMB");
          super.checkQualityAttachedToSolutions(bestSols);
       }
@@ -75,8 +75,7 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
                                                                     // finds a
                                                                     // peak
 
-         Solution currentSol = super.findRandomSolution(cloudOffers,
-               applicationMap);
+         Solution currentSol = super.findRandomSolution(cloudOffers);
          boolean neighborsImprove = true;
          while (neighborsImprove) {
             Solution[] candidates = findNeighbors(currentSol, cloudOffers,
@@ -104,23 +103,23 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
          if (super.solutionShouldBeIncluded(currentSol, bestSols)) {
             super.insertOrdered(bestSols, currentSol);
             numItersNoImprovement = 0;
-            
-            //if(AbstractHeuristic.IS_DEBUG){
-               log.debug("Start checking the presence of quality attached to solutions after adding a solution in HILLCLIMB");
-               super.checkQualityAttachedToSolutions(bestSols);
-            //}
-            
+
+            // if(AbstractHeuristic.IS_DEBUG){
+            log.debug("Start checking the presence of quality attached to solutions after adding a solution in HILLCLIMB");
+            super.checkQualityAttachedToSolutions(bestSols);
+            // }
+
          } else {
             numItersNoImprovement++;
          }
 
       }
-      
-      //if(AbstractHeuristic.IS_DEBUG){
-         log.debug("Start checking the presence of quality attached to solutions after adding a solution in HILLCLIMB");
-         super.checkQualityAttachedToSolutions(bestSols);
-      //}
-      
+
+      // if(AbstractHeuristic.IS_DEBUG){
+      log.debug("Start checking the presence of quality attached to solutions after adding a solution in HILLCLIMB");
+      super.checkQualityAttachedToSolutions(bestSols);
+      // }
+
       return super.hashMapOfFoundSolutionsWithThresholds(bestSols,
             applicationMap, topology, cloudOffers, numPlansToGenerate);
 
@@ -270,8 +269,7 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
 
       for (int newSolIndex = 0; newSolIndex < newSolutions.length; newSolIndex++) {
 
-         newSolutions[newSolIndex] = super.findRandomSolution(cloudOffers,
-               applicationMap);
+         newSolutions[newSolIndex] = super.findRandomSolution(cloudOffers);
       }
 
       return newSolutions;

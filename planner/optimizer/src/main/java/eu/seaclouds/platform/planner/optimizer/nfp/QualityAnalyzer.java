@@ -18,7 +18,6 @@
 package eu.seaclouds.platform.planner.optimizer.nfp;
 
 import java.util.ArrayList;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,6 +25,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import scala.actors.threadpool.Arrays;
 import eu.seaclouds.platform.planner.optimizer.CloudOffer;
 import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
@@ -125,6 +125,13 @@ public class QualityAnalyzer {
       double[] mus = getMusOfSelectedCloudOffers(bestSol, topology,
             cloudCharacteristics);
 
+      log.debug("Solution to check the mus is: " + bestSol.toString());
+      log.debug("Mus of servers are: " + Arrays.toString(mus));
+      log.debug("Num visits modules is: " + Arrays.toString(numVisitsModule));
+      log.debug("Workload received of modules: "
+            + Arrays.toString(workloadsModules));
+      log.debug("Workload received of each execution unit by its numberOfInstances and Cores: "
+            + Arrays.toString(workloadsModulesByCoresAndNumInstances));
       double respTime = getSystemRespTime(numVisitsModule,
             workloadsModulesByCoresAndNumInstances, mus);
 
@@ -233,7 +240,8 @@ public class QualityAnalyzer {
          String cloudChosenForModule = bestSol
                .getCloudOfferNameForModule(moduleName);
          mus[i] = cloudCharacteristics.getCloudCharacteristics(moduleName,
-               cloudChosenForModule).getPerformance();
+               cloudChosenForModule).getPerformance()
+                 / topology.getElementIndex(i).getDefaultExecutionTime() ;
       }
 
       return mus;
@@ -256,6 +264,10 @@ public class QualityAnalyzer {
                moduleName, cloudChosenForModule).getNumCores();
          ponderatedWorkloads[i] = workloadsModules[i]
                / (numInstances * numCores);
+
+         log.debug("Number of instances used for module " + moduleName
+               + " is : " + numInstances + " and num Cores of the offer is"
+               + numCores);
       }
 
       return ponderatedWorkloads;

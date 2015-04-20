@@ -54,7 +54,7 @@ public class TopologyElement implements Iterable<TopologyElementCalled> {
       dependences.add(e);
    }
 
-   public void setExecTime(double d) {
+   private void setExecTime(double d) {
       this.execTimeInPowerlessMachine = d;
    }
 

@@ -72,7 +72,7 @@ public abstract class AbstractHeuristic {
    public double fitness(Solution bestSol, Map<String, Object> applicationMap,
          Topology topology, SuitableOptions cloudCharacteristics) {
 
-      if(requirements==null){
+      if (requirements == null) {
          loadQualityRequirements(applicationMap);
       }
       QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
@@ -87,6 +87,14 @@ public abstract class AbstractHeuristic {
                / qualityAnalyzer.computePerformance(bestSol, topology,
                      requirements.getWorkload(), cloudCharacteristics)
                      .getResponseTime();
+
+         log.debug("Candidate Solution evaluated gave a response time of "
+               + qualityAnalyzer.computePerformance(bestSol, topology,
+                     requirements.getWorkload(), cloudCharacteristics)
+                     .getResponseTime() + " while the requirements were "
+               + requirements.getResponseTime() + " and the workload was "
+               + requirements.getWorkload());
+
       }
 
       // calculates how well it satisfies availability reuquirement, if it
@@ -138,17 +146,17 @@ public abstract class AbstractHeuristic {
             numExistingRequirements++;
          }
 
-         if(qualityAnalyzer.getAllComputedQualities()==null){
+         if (qualityAnalyzer.getAllComputedQualities() == null) {
             log.warn("something werid is happening because quality values are null");
          }
 
-         fitness= partialFitness
+         fitness = partialFitness
                / (MAX_TIMES_IMPROVE_REQUIREMENT * numExistingRequirements++);
       }
-      
+
       bestSol.setSolutionQuality(qualityAnalyzer.getAllComputedQualities());
       return fitness;
-      
+
    }
 
    /**
@@ -377,7 +385,7 @@ public abstract class AbstractHeuristic {
          Solution[] bestSols, Map<String, Object> applicMap, Topology topology,
          SuitableOptions cloudOffers, int numPlansToGenerate) {
 
-      if(AbstractHeuristic.IS_DEBUG){
+      if (AbstractHeuristic.IS_DEBUG) {
          checkQualityAttachedToSolutions(bestSols);
       }
       @SuppressWarnings("unchecked")
@@ -405,8 +413,7 @@ public abstract class AbstractHeuristic {
             && (!sol.isContainedIn(sols));
    }
 
-   protected Solution findRandomSolution(SuitableOptions cloudOffers,
-         Map<String, Object> applicationMap) {
+   protected Solution findRandomSolution(SuitableOptions cloudOffers) {
       Solution currentSolution = new Solution();
       for (String modName : cloudOffers.getStringIterator()) {
 
@@ -427,13 +434,13 @@ public abstract class AbstractHeuristic {
    }
 
    protected void checkQualityAttachedToSolutions(Solution[] bestSols) {
-      
-      for(int i=0; i<bestSols.length; i++){
-         if(bestSols[i].getSolutionQuality()==null){
+
+      for (int i = 0; i < bestSols.length; i++) {
+         if (bestSols[i].getSolutionQuality() == null) {
             log.info("Solution has its quality NULL" + bestSols[i].toString());
          }
       }
-      
+
    }
 
 }
