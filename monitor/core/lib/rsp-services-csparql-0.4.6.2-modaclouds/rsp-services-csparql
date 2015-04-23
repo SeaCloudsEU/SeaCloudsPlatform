@@ -1,0 +1,31 @@
+#!/bin/sh
+
+export RSP_SERVICES_CSPARQL_HOME="${RSP_SERVICES_CSPARQL_HOME:-$PWD}"
+
+if [ ! -e "$RSP_SERVICES_CSPARQL_HOME" ]
+then
+    echo "$RSP_SERVICES_CSPARQL_HOME does not exist" 1>&2
+    exit 1
+    fi
+
+JAR="$RSP_SERVICES_CSPARQL_HOME/rsp-services-csparql.jar"
+if [ ! -e "$JAR" ]
+then
+    echo "Can't find jarfile to run"
+    exit 1
+fi
+
+# Deal with Cygwin path issues
+cygwin=false
+case "`uname`" in
+    CYGWIN*) cygwin=true;;
+esac
+if [ "$cygwin" = "true" ]
+then
+    JAR=`cygpath -w "$JAR"`
+    RSP_SERVICES_CSPARQL_HOME=`cygpath -w "$RSP_SERVICES_CSPARQL_HOME"`
+fi
+
+JVM_ARGS=${JVM_ARGS:--Xmx1200M}
+
+exec java  $JVM_ARGS -jar "$JAR" "$@"

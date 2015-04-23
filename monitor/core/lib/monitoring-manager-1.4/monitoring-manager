@@ -1,0 +1,31 @@
+#!/bin/sh
+
+export MONITORING_MANAGER_HOME="${MONITORING_MANAGER_HOME:-$PWD}"
+
+if [ ! -e "$MONITORING_MANAGER_HOME" ]
+then
+    echo "$MONITORING_MANAGER_HOME does not exist" 1>&2
+    exit 1
+fi
+
+JAR="$MONITORING_MANAGER_HOME/monitoring-manager.jar"
+if [ ! -e "$JAR" ]
+then
+    echo "Can't find jarfile to run"
+    exit 1
+fi
+
+# Deal with Cygwin path issues
+cygwin=false
+case "`uname`" in
+    CYGWIN*) cygwin=true;;
+esac
+if [ "$cygwin" = "true" ]
+then
+    JAR=`cygpath -w "$JAR"`
+    MONITORING_MANAGER_HOME=`cygpath -w "$MONITORING_MANAGER_HOME"`
+fi
+
+JVM_ARGS=${JVM_ARGS:--Xmx1200M}
+
+exec java  $JVM_ARGS -jar "$JAR" "$@"
