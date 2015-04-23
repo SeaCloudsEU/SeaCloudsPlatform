@@ -26,55 +26,61 @@ The project is divided in the following components referred in the documentation
 * **api**: TODO.
 * **sla**: is in charge of mapping the low level information gathered from the Monitor into business level information about the fulfillment of the SLA defined for a SeaClouds application. [More information](.sla/README.md).
 
-## Adding new features
+# How to contribute
+## Create an Issue in Github
+The first step is usually to create or find an issue in SeaClouds' Github for your feature request or fix. For small changes this isn‚Äôt necessary, but it‚Äôs good to see if your change fixes an existing issue anyway.
 
+Some good references for working with GitHub are below. We ask that you keep your change rebased to master as much as possible, and we will ask you to rebase again if master has moved before accepting your patch.
 
-If you've built something which you think others could use, or are interested in doing so it's easy to give back to the community. Just:
+- [Setting Up Git with GitHub](https://help.github.com/articles/set-up-git)
+- [Forking a Repository](https://help.github.com/articles/fork-a-repo)
+- [Submitting Pull Requests](https://help.github.com/articles/using-pull-requests)
+- [Rebasing your Branch](https://help.github.com/articles/interactive-rebase)
+- [Pushing to a remote](https://help.github.com/articles/pushing-to-a-remote/)
 
-* Tell the SeaClouds mailing list about your work or interest.
-* Create your fork of the project on GitHub.
-* Clone it to your local machine and do your work on it.
-* Push it, and tell everyone about it.
-* Issue a pull request from your GitHub repo.
-#### Git Commit Guidelines
+For more information, please look at [github FAQ](https://help.github.com/)
 
-We have very precise rules over how our git commit messages can be formatted. This leads to more readable messages that are easy to follow when looking through the project history.
+## Before creating the PR
+Some best practices to submit a good PR:
+- create a feature branch (feature/SEACLOUDS-2345) or a fix branch (fix/SEACLOUDS-123) on your forked repository 
+- code your patch
+- rebase your branch
+- test your code locally!
+- commit your code and push it to a remote
+- create the PR from Github website
+
+Your commit messages must properly describes the changes that have been made and their purpose (here are some [guidelines](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html)). If your contributions fix a Github issue, then ensure that you follow our rules about the commit message.
 
 Each commit must have the following structure (since 17/12/2014):
 ```<type>(<scope>): <subject>```
-( e.g. ìFIX (dashboard): Modified resizing on app-monitoring sectionî )
+( e.g. ‚ÄúFIX (dashboard): Modified resizing on app-monitoring section‚Äù )
 
-###### Type
-
+### Type
 * **FEATURE** : A new feature.
 * **FIX**: A bug fix.
 * **DOCS**: Documentation only changes.
 * **STYLE**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc).
 * **TEST**: Adding missing tests.
 
-###### Scope
+### Scope
+Scope of the changes, often it will be the name of the module involved in this commit (planner, monitor, deployer‚Ä¶).
 
-Scope of the changes, often it will be the name of the module involved in this commit (planner, monitor, deployerÖ).
-
-
-#### Some Words of Advice
+## Some Words of Advice
 
 * Include documentation and tests.
 * Keep your code clean and readable (avoid pushing commented code!)
 * Try to imitate the existing code style. New code added to Git is expected to match
 the overall style of existing code.
 
-
-Donít get discouraged! We estimate that the response time from the
+Don‚Äôt get discouraged! We estimate that the response time from the
 maintainers is between 5 nanoseconds and when-we-can-answer-you.
 
 # Bug triage
-
-If you find a bug while using or contributing to SeaClouds feel free to create a new issue on GitHub and label it as ìbugî. Some advices when reporting:
+If you find a bug while using or contributing to SeaClouds feel free to create a new issue on GitHub and label it as ‚Äúbug‚Äù. Some advices when reporting:
 
 * Make sure your bug is not already reported before posting it.
-* Provide all the error logs and information that can help us understand whatís going on (using a snippet tool like [Gist](https://gist.github.com/) or [Pastebin](http://pastebin.com/) is recommended when handling large logs).
-* Is the bug reproducible? List the steps and platforms used necessary to make it visible (which browser are you using, which Java version, Ö)
+* Provide all the error logs and information that can help us understand what‚Äôs going on (using a snippet tool like [Gist](https://gist.github.com/) or [Pastebin](http://pastebin.com/) is recommended when handling large logs).
+* Is the bug reproducible? List the steps and platforms used necessary to make it visible (which browser are you using, which Java version, ‚Ä¶)
 
 # Documentation
 
