@@ -18,7 +18,7 @@ package eu.seaclouds.platform.dashboard.servlets;
 
 import brooklyn.rest.client.BrooklynApi;
 import com.google.gson.Gson;
-import eu.seaclouds.platform.dashboard.ConfigParameters;
+import eu.seaclouds.platform.dashboard.connectors.DeployerConnector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -31,13 +31,13 @@ import java.io.IOException;
  * @author Adrian Nieto
  */
 public class AddApplicationsServlet extends HttpServlet {
-    final static BrooklynApi BROOKLKYN_API = new BrooklynApi(ConfigParameters.DEPLOYER_ENDPOINT);
+    static BrooklynApi BROOKLYN_API = DeployerConnector.getConnection();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String yaml = request.getParameter("yaml");
         if (yaml != null) {
-            Response res = BROOKLKYN_API.getApplicationApi().createFromYaml(yaml);
+            Response res = BROOKLYN_API.getApplicationApi().createFromYaml(yaml);
 
             if (res.getStatus() >=  400) {
                 response.sendError(500, "Connection error: couldn't reach SeaClouds endpoint");

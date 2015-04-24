@@ -22,7 +22,7 @@ import brooklyn.rest.domain.SensorSummary;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import eu.seaclouds.platform.dashboard.ConfigParameters;
+import eu.seaclouds.platform.dashboard.connectors.DeployerConnector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -37,8 +37,7 @@ import java.util.List;
  * @author Adrian Nieto
  */
 public class GetAvailableMetricsServlet extends HttpServlet {
-    final static BrooklynApi BROOKLKYN_API = new BrooklynApi(ConfigParameters.MONITOR_ENDPOINT);
-
+    static BrooklynApi BROOKLYN_API = DeployerConnector.getConnection();
 
     private boolean isNumberType(SensorSummary sensor){
         return sensor.getType().equals("java.lang.Integer")
@@ -57,10 +56,7 @@ public class GetAvailableMetricsServlet extends HttpServlet {
 
             JsonArray parentJson = new JsonArray();
 
-
-
-
-            for(EntitySummary entitySummary : BROOKLKYN_API.getEntityApi().list(application)) {
+            for(EntitySummary entitySummary : BROOKLYN_API.getEntityApi().list(application)) {
                 JsonObject entitySumaryJson = new JsonObject();
                 entitySumaryJson.addProperty("id", entitySummary.getId());
                 entitySumaryJson.addProperty("name", entitySummary.getName());
@@ -69,7 +65,7 @@ public class GetAvailableMetricsServlet extends HttpServlet {
                 JsonArray entityMetricsJsonArray = new JsonArray();
                 entitySumaryJson.add("metrics", entityMetricsJsonArray);
 
-                List<SensorSummary> sensorSummaryList = BROOKLKYN_API.getSensorApi().list(application, entitySummary.getId());
+                List<SensorSummary> sensorSummaryList = BROOKLYN_API.getSensorApi().list(application, entitySummary.getId());
                 Collections.sort(sensorSummaryList, new Comparator<SensorSummary>() {
                     @Override
                     public int compare(SensorSummary s1, SensorSummary s2) {
