@@ -125,19 +125,23 @@ public class QualityAnalyzer {
       double[] mus = getMusOfSelectedCloudOffers(bestSol, topology,
             cloudCharacteristics);
 
-      log.debug("Solution to check the mus is: " + bestSol.toString());
-      log.debug("Mus of servers are: " + Arrays.toString(mus));
-      log.debug("Num visits modules is: " + Arrays.toString(numVisitsModule));
-      log.debug("Workload received of modules: "
-            + Arrays.toString(workloadsModules));
-      log.debug("Workload received of each execution unit by its numberOfInstances and Cores: "
-            + Arrays.toString(workloadsModulesByCoresAndNumInstances));
+      if (IS_DEBUG) {
+         log.debug("Solution to check the mus is: " + bestSol.toString());
+         log.debug("Mus of servers are: " + Arrays.toString(mus));
+         log.debug("Num visits modules is: " + Arrays.toString(numVisitsModule));
+         log.debug("Workload received of modules: "
+               + Arrays.toString(workloadsModules));
+         log.debug("Workload received of each execution unit by its numberOfInstances and Cores: "
+               + Arrays.toString(workloadsModulesByCoresAndNumInstances));
+      }
       double respTime = getSystemRespTime(numVisitsModule,
             workloadsModulesByCoresAndNumInstances, mus);
 
       respTime += addNetworkDelays(bestSol, topology, numVisitsModule,
             cloudCharacteristics);
-
+      if(IS_DEBUG){
+         log.debug("calculated response time of the solution is: " + respTime);
+      }
       // after computing, save the performance info in properties.performance
       properties.setResponseTime(respTime);
 
@@ -236,12 +240,28 @@ public class QualityAnalyzer {
 
       double[] mus = new double[topology.size()];
       for (int i = 0; i < mus.length; i++) {
+
          String moduleName = topology.getElementIndex(i).getName();
          String cloudChosenForModule = bestSol
                .getCloudOfferNameForModule(moduleName);
          mus[i] = cloudCharacteristics.getCloudCharacteristics(moduleName,
                cloudChosenForModule).getPerformance()
-                 / topology.getElementIndex(i).getDefaultExecutionTime() ;
+               / topology.getElementIndex(i).getDefaultExecutionTime();
+
+         if (IS_DEBUG) {
+            log.debug("Default execution time of module "
+                  + i
+                  + " with name "
+                  + topology.getElementIndex(i).getName()
+                  + " is "
+                  + topology.getElementIndex(i).getDefaultExecutionTime()
+                  + " and using cloud option "
+                  + bestSol.getCloudOfferNameForModule(moduleName)
+                  + " with performance "
+                  + cloudCharacteristics.getCloudCharacteristics(moduleName,
+                        cloudChosenForModule).getPerformance() + " its Mu is "
+                  + mus[i]);
+         }
       }
 
       return mus;
@@ -265,9 +285,11 @@ public class QualityAnalyzer {
          ponderatedWorkloads[i] = workloadsModules[i]
                / (numInstances * numCores);
 
-         log.debug("Number of instances used for module " + moduleName
-               + " is : " + numInstances + " and num Cores of the offer is"
-               + numCores);
+         if (IS_DEBUG) {
+            log.debug("Number of instances used for module " + moduleName
+                  + " is : " + numInstances + " and num Cores of the offer is"
+                  + numCores);
+         }
       }
 
       return ponderatedWorkloads;
@@ -476,7 +498,7 @@ public class QualityAnalyzer {
       }
 
       // after computing, save the cost info in properties.availability
-      properties.setCost(cost);
+      properties.setCostHour(cost);
       return cost;
 
    }
@@ -644,7 +666,7 @@ public class QualityAnalyzer {
       }
       if (requirements.existCostRequirement()) {
          return computeCost(sol, cloudCharacteristics) <= requirements
-               .getCost();
+               .getCostHour();
       }
       return limitWorkload <= (MAX_TIMES_WORKLOAD_FOR_THRESHOLDS * workload);
 

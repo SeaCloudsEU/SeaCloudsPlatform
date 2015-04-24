@@ -17,8 +17,11 @@
 
 package eu.seaclouds.platform.planner.optimizer;
 
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import eu.seaclouds.platform.planner.optimizer.heuristics.BlindSearch;
 import eu.seaclouds.platform.planner.optimizer.heuristics.HillClimb;
@@ -54,6 +57,7 @@ public class Reoptimizer {
       }
    }
 
+   
    public String[] optimize(String appModel, String suitableCloudOffer,
          int numPlansToGenerate_ArrayLength) {
       // TODO Auto-generated method stub

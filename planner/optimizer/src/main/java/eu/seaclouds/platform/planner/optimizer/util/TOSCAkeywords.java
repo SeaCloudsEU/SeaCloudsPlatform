@@ -38,9 +38,9 @@ public class TOSCAkeywords {
 
    public static final String RECONFIGURATION_WORKLOAD_TAG        = "ReconfigurationsPOC";
    public static final String EXPECTED_QUALITY_PROPERTIES         = "ExpectedQualityPOC";
-   public static final String EXPECTED_QOS_PERFORMANCE_MILLIS     = "expectedExecutionTimePOC";
+   public static final String EXPECTED_QOS_PERFORMANCE_SEC     = "expectedExecutionTimePOC";
    public static final String EXPECTED_QOS_AVAILABILITY           = "expectedAvailabilityPOC";
-   public static final String EXPECTED_QOS_COST_HOUR              = "expectedCostPOC";
+   public static final String EXPECTED_QOS_COST_MONTH              = "expectedCostPOC";
    public static final String OVERALL_QOS_FITNESS                 = "fitnessPOC";
 
    public static final String APP_QOS_REQUIREMENTS                = "QoSrequirementsPOC";

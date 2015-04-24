@@ -38,7 +38,7 @@ public abstract class AbstractHeuristic {
    static Logger                  log                           = LoggerFactory
                                                                       .getLogger(AbstractHeuristic.class);
 
-   private int                    MAX_ITER_NO_IMPROVE           = 200;
+   private int                    MAX_ITER_NO_IMPROVE           = 200;                                    // 200;
    private double                 MAX_TIMES_IMPROVE_REQUIREMENT = 20;
    private static final int       DEFAULT_MAX_NUM_INSTANCES     = 10;
    protected static final boolean IS_DEBUG                      = false;
@@ -83,17 +83,18 @@ public abstract class AbstractHeuristic {
       // guiding the search method towards better solutions
       double perfGoodness = 1;
       if (requirements.existResponseTimeRequirement()) {
-         perfGoodness = requirements.getResponseTime()
-               / qualityAnalyzer.computePerformance(bestSol, topology,
-                     requirements.getWorkload(), cloudCharacteristics)
-                     .getResponseTime();
 
-         log.debug("Candidate Solution evaluated gave a response time of "
-               + qualityAnalyzer.computePerformance(bestSol, topology,
-                     requirements.getWorkload(), cloudCharacteristics)
-                     .getResponseTime() + " while the requirements were "
-               + requirements.getResponseTime() + " and the workload was "
-               + requirements.getWorkload());
+         double computedPerformance = qualityAnalyzer.computePerformance(
+               bestSol, topology, requirements.getWorkload(),
+               cloudCharacteristics).getResponseTime();
+         perfGoodness = requirements.getResponseTime() / computedPerformance;
+
+         if (IS_DEBUG) {
+            log.debug("Candidate Solution evaluated gave a response time of "
+                  + computedPerformance + " while the requirements were "
+                  + requirements.getResponseTime() + " and the workload was "
+                  + requirements.getWorkload());
+         }
 
       }
 
@@ -109,7 +110,7 @@ public abstract class AbstractHeuristic {
       // calculates how well it satisfies cost reuquirement, if it exists
       double costGoodness = 1;
       if (requirements.existCostRequirement()) {
-         costGoodness = requirements.getCost()
+         costGoodness = requirements.getCostHour()
                / qualityAnalyzer.computeCost(bestSol, cloudCharacteristics);
       }
 
@@ -181,6 +182,7 @@ public abstract class AbstractHeuristic {
 
       // if the solution does not satisfy the performance requirements, nothing
       // to do
+      if(IS_DEBUG){log.debug("Create reconfiguration Thresholds method is going to call the compute Performance");}
       double perfGoodness = requirements.getResponseTime()
             / qualityAnalyzer.computePerformance(sol, topology,
                   requirements.getWorkload(), cloudCharacteristics)
@@ -203,7 +205,9 @@ public abstract class AbstractHeuristic {
          return thresholds;
       } else {// There are not performance requirements, so no thresholds are
               // created.
-         log.debug("Finishing the creation of reconfiguration thresholds because there were not performance requirements");
+         log.debug("Finishing the creation of reconfiguration thresholds because there "
+               + "were not performance requirements or solution could not satisfy performance. Solution: " + 
+               sol.toString() + " quality attributes: " + sol.getSolutionQuality().toString());
          return null;
       }
 

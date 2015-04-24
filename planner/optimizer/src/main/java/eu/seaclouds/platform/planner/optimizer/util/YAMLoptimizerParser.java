@@ -182,12 +182,12 @@ public class YAMLoptimizerParser {
       }
 
       if (sol.getSolutionQuality().existCostRequirement()) {
-         qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_COST_HOUR, sol
-               .getSolutionQuality().getCost());
+         qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_COST_MONTH, sol
+               .getSolutionQuality().getCostMonth());
       }
 
       if (sol.getSolutionQuality().existResponseTimeRequirement()) {
-         qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_PERFORMANCE_MILLIS, sol
+         qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_PERFORMANCE_SEC, sol
                .getSolutionQuality().getResponseTime());
 
       }
@@ -724,7 +724,7 @@ public class YAMLoptimizerParser {
       requirements = new QualityInformation();
       requirements.setResponseTime(1.0);
       requirements.setAvailability(0.9);
-      requirements.setCost(10.0);
+      requirements.setCostHour(10.0);
       requirements.setWorkload(-1.0);
 
       return requirements;

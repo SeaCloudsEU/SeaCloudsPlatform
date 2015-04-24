@@ -64,7 +64,8 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
       super.setFitnessOfSolutions(bestSols, applicationMap, topology,
             cloudOffers);
       if (AbstractHeuristic.IS_DEBUG) {
-         log.debug("Start checking the presence of quality attached to solutions after the first generation HILLCLIMB");
+         logHill
+               .debug("Start checking the presence of quality attached to solutions after the first generation HILLCLIMB");
          super.checkQualityAttachedToSolutions(bestSols);
       }
       super.sortSolutionsByFitness(bestSols);
@@ -104,10 +105,11 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
             super.insertOrdered(bestSols, currentSol);
             numItersNoImprovement = 0;
 
-            // if(AbstractHeuristic.IS_DEBUG){
-            log.debug("Start checking the presence of quality attached to solutions after adding a solution in HILLCLIMB");
-            super.checkQualityAttachedToSolutions(bestSols);
-            // }
+            if (AbstractHeuristic.IS_DEBUG) {
+               logHill
+                     .debug("Start checking the presence of quality attached to solutions after adding a solution in HILLCLIMB");
+               super.checkQualityAttachedToSolutions(bestSols);
+            }
 
          } else {
             numItersNoImprovement++;
@@ -115,10 +117,11 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
 
       }
 
-      // if(AbstractHeuristic.IS_DEBUG){
-      log.debug("Start checking the presence of quality attached to solutions after adding a solution in HILLCLIMB");
-      super.checkQualityAttachedToSolutions(bestSols);
-      // }
+      if (AbstractHeuristic.IS_DEBUG) {
+         logHill
+               .debug("Start checking the presence of quality attached to solutions after adding a solution in HILLCLIMB");
+         super.checkQualityAttachedToSolutions(bestSols);
+      }
 
       return super.hashMapOfFoundSolutionsWithThresholds(bestSols,
             applicationMap, topology, cloudOffers, numPlansToGenerate);
