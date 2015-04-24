@@ -109,10 +109,14 @@
 
 		<dependency>
          	<groupId>monitoring-manager</groupId>
-         	<artifactId>monitoring-manager-1.4</artifactId>
+         	<artifactId>monitoring-manager</artifactId>
          	<scope>system</scope>
          	<version>1.4</version>
+<<<<<<< Upstream, based on origin/dionysis-branch
          	<systemPath>${basedir}\lib\monitoring-manager.jar</systemPath>
+=======
+         	<systemPath>${basedir}\lib\monitoring-manager-1.4.jar</systemPath>
+>>>>>>> 2620543 SeaClouds monitoring RestFul Web service
       	</dependency>
 
       	<!--<dependency>
