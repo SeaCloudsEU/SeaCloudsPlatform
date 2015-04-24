@@ -23,8 +23,10 @@ import brooklyn.rest.domain.LocationSummary;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import eu.seaclouds.platform.dashboard.ConfigParameters;
+import eu.seaclouds.platform.dashboard.connectors.DeployerConnector;
 import org.jboss.resteasy.client.ClientResponseFailure;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -39,11 +41,11 @@ import java.util.List;
  * @author Adrian Nieto
  */
 public class ListApplicationsServlet extends HttpServlet {
-    final static BrooklynApi BROOKLKYN_API = new BrooklynApi(ConfigParameters.DEPLOYER_ENDPOINT);
-
+    static Logger log = LoggerFactory.getLogger(ListApplicationsServlet.class);
+    static BrooklynApi BROOKLYN_API = DeployerConnector.getConnection();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<ApplicationSummary> applicationSummaries = BROOKLKYN_API.getApplicationApi().list();
+        List<ApplicationSummary> applicationSummaries = BROOKLYN_API.getApplicationApi().list();
 
         Collections.sort(applicationSummaries, new Comparator<ApplicationSummary>() {
             @Override
@@ -52,74 +54,68 @@ public class ListApplicationsServlet extends HttpServlet {
             }
         });
 
+        JsonArray jsonResult = new JsonArray();
 
-        if (applicationSummaries == null) {
-            response.sendError(500, "Connection error: couldn't reach SeaClouds endpoint");
-        } else {
+        for (ApplicationSummary application : applicationSummaries) {
 
-            JsonArray jsonResult = new JsonArray();
+            JsonObject jsonApplication = new JsonObject();
+            jsonResult.add(jsonApplication);
 
-            for (ApplicationSummary application : applicationSummaries) {
+            jsonApplication.addProperty("id", application.getId());
+            jsonApplication.addProperty("status", application.getStatus().toString());
 
-                JsonObject jsonApplication = new JsonObject();
-                jsonResult.add(jsonApplication);
+            JsonObject jsonSpec = new JsonObject();
+            jsonApplication.add("spec", jsonSpec);
 
-                jsonApplication.addProperty("id", application.getId());
-                jsonApplication.addProperty("status", application.getStatus().toString());
+            jsonSpec.addProperty("name", application.getSpec().getName());
+            jsonSpec.addProperty("type", application.getSpec().getName());
 
-                JsonObject jsonSpec = new JsonObject();
-                jsonApplication.add("spec", jsonSpec);
+            JsonArray jsonDescendantsEntities = new JsonArray();
+            jsonApplication.add("descendants", jsonDescendantsEntities);
 
-                jsonSpec.addProperty("name", application.getSpec().getName());
-                jsonSpec.addProperty("type", application.getSpec().getName());
+            List<EntitySummary> descendants;
+            try {
+                descendants = BROOKLYN_API.getEntityApi().list(application.getId());
 
-                JsonArray jsonDescendantsEntities = new JsonArray();
-                jsonApplication.add("descendants", jsonDescendantsEntities);
-
-                List<EntitySummary> descendants;
-                try {
-                    descendants = BROOKLKYN_API.getEntityApi().list(application.getId());
-
-                    if (descendants != null) {
-                        for (EntitySummary childEntity : descendants) {
-                            JsonObject jsonDescendantEntity = new JsonObject();
-                            jsonDescendantsEntities.add(jsonDescendantEntity);
+                if (descendants != null) {
+                    for (EntitySummary childEntity : descendants) {
+                        JsonObject jsonDescendantEntity = new JsonObject();
+                        jsonDescendantsEntities.add(jsonDescendantEntity);
 
 
-                            jsonDescendantEntity.addProperty("id", childEntity.getId());
-                            jsonDescendantEntity.addProperty("name", childEntity.getName());
-                            jsonDescendantEntity.addProperty("type", childEntity.getType());
+                        jsonDescendantEntity.addProperty("id", childEntity.getId());
+                        jsonDescendantEntity.addProperty("name", childEntity.getName());
+                        jsonDescendantEntity.addProperty("type", childEntity.getType());
 
-                            JsonArray jsonArrayLocations = new JsonArray();
-                            jsonDescendantEntity.add("locations", jsonArrayLocations);
+                        JsonArray jsonArrayLocations = new JsonArray();
+                        jsonDescendantEntity.add("locations", jsonArrayLocations);
 
-                            List<LocationSummary> locations = BROOKLKYN_API.getEntityApi().getLocations(application.getId(), childEntity.getId());
-                            if (locations != null) {
+                        List<LocationSummary> locations = BROOKLYN_API.getEntityApi().getLocations(application.getId(), childEntity.getId());
+                        if (locations != null) {
 
-                                for (LocationSummary locationSummary : locations) {
-                                    LocationSummary locationDetails = BROOKLKYN_API.getLocationApi().get(locationSummary.getId(), null);
+                            for (LocationSummary locationSummary : locations) {
+                                LocationSummary locationDetails = BROOKLYN_API.getLocationApi().get(locationSummary.getId(), null);
 
-                                    if (locationDetails != null) {
-                                        JsonObject jsonLocation = new JsonObject();
-                                        jsonArrayLocations.add(jsonLocation);
-                                        jsonLocation.addProperty("id", locationDetails.getId());
-                                        jsonLocation.addProperty("name", locationDetails.getName());
-                                        jsonLocation.addProperty("type", locationDetails.getType());
-                                        jsonLocation.addProperty("spec", locationDetails.getSpec());
-                                    }
+                                if (locationDetails != null) {
+                                    JsonObject jsonLocation = new JsonObject();
+                                    jsonArrayLocations.add(jsonLocation);
+                                    jsonLocation.addProperty("id", locationDetails.getId());
+                                    jsonLocation.addProperty("name", locationDetails.getName());
+                                    jsonLocation.addProperty("type", locationDetails.getType());
+                                    jsonLocation.addProperty("spec", locationDetails.getSpec());
                                 }
                             }
                         }
                     }
-                } catch (ClientResponseFailure e) {
-                    // The application removed after calling getApplicationApi().list()
-                    jsonResult.remove(jsonApplication);
                 }
+            } catch (ClientResponseFailure e) {
+                // The application removed after calling getApplicationApi().list()
+                jsonResult.remove(jsonApplication);
             }
-
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(new Gson().toJson(jsonResult));
         }
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(new Gson().toJson(jsonResult));
     }
 }

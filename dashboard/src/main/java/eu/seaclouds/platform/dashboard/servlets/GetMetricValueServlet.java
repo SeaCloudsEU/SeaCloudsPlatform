@@ -17,12 +17,8 @@
 package eu.seaclouds.platform.dashboard.servlets;
 
 import brooklyn.rest.client.BrooklynApi;
-import brooklyn.rest.domain.EntitySummary;
-import brooklyn.rest.domain.SensorSummary;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import eu.seaclouds.platform.dashboard.ConfigParameters;
+import eu.seaclouds.platform.dashboard.connectors.DeployerConnector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -34,7 +30,7 @@ import java.io.IOException;
  * @author Adrian Nieto
  */
 public class GetMetricValueServlet extends HttpServlet {
-    final static BrooklynApi BROOKLKYN_API = new BrooklynApi(ConfigParameters.MONITOR_ENDPOINT);
+    static BrooklynApi BROOKLYN_API = DeployerConnector.getConnection();
 
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -42,7 +38,7 @@ public class GetMetricValueServlet extends HttpServlet {
         String entity = request.getParameter("entity");
         String sensor = request.getParameter("sensor");
 
-        Object sensorValue = BROOKLKYN_API.getSensorApi().get(application, entity, sensor, true);
+        Object sensorValue = BROOKLYN_API.getSensorApi().get(application, entity, sensor, true);
 
         if (sensorValue == null){
             response.sendError(500, "Connection error: couldn't reach SeaClouds endpoint");
