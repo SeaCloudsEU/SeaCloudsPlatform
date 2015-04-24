@@ -4,7 +4,7 @@ import java.io.File;
 
 import javax.swing.JOptionPane;
 
-import core.BatchFile;
+import core.WindowsBatchFileExecution;
 import core.OperatingSystem;
 import core.TxtFileWriter;
 
@@ -24,8 +24,6 @@ public class MODACloudsMonitoringInitiation {
 
 	private static final String SERVER_CSPARQL = "/rsp-services-csparql-0.4.6.2-modaclouds";
 
-	private static final String SERVER_MONITORING_MANAGER = "/monitoring-manager-1.4";
-
 
 	//Methods.
 	public static void initiate( String IPofKB, String portOfKB, String IPofDA, String portOfDA, String IPofMM, String portOfMM, String privatePortOfMM, String seaCloudsFolder ){
@@ -34,7 +32,7 @@ public class MODACloudsMonitoringInitiation {
 
 			createBatchfile( IPofKB, portOfKB, IPofDA, portOfDA, IPofMM, portOfMM, privatePortOfMM, seaCloudsFolder );
 
-			BatchFile.execute( INIT_BATCH_FILE );
+			WindowsBatchFileExecution.execute( INIT_BATCH_FILE );
 		}
 
 		else if( OperatingSystem.isUnix() ) JOptionPane.showMessageDialog( null, "To initialize for the case of Unix", "Unix", JOptionPane.ERROR_MESSAGE );
@@ -53,18 +51,21 @@ public class MODACloudsMonitoringInitiation {
 								  "\n" + "set \"MODACLOUDS_MONITORING_MANAGER_PORT=" + portOfMM + "\"" +
 								  "\n" + "set \"MODACLOUDS_MONITORING_MANAGER_PRIVATE_PORT=" + privatePortOfMM + "\"" +
 								  "\n" + "set \"MODACLOUDS_MONITORING_MANAGER_PRIVATE_IP=" + IPofMM + "\"" +
-								  "\n" + "set \"MODACLOUDS_MONITORING_MONITORING_METRICS_FILE \"" + seaCloudsFolder + SERVER_MONITORING_METRICS + "\"\n" +
+								  "\n" + "set \"MODACLOUDS_MONITORING_MONITORING_METRICS_FILE=" + new File( seaCloudsFolder + SERVER_MONITORING_METRICS ).getAbsolutePath() + "\"\n" +
 
+
+								  "cd " + seaCloudsFolder + SERVER_FUSEKI + "\n" +
+
+								  "mkdir \"ds\"\n" +
 
 								  "del \"" + file.getAbsolutePath() + "\"\n" +
 
-								  "cd " + seaCloudsFolder + SERVER_FUSEKI + "\n" +
 								  "START CMD /C CALL fuseki-server.bat --update --port " + portOfKB + " --loc ./ds /modaclouds/kb\n" +
 
 								  "cd .." + SERVER_CSPARQL + "\n" +
 								  "START CMD /C CALL java -jar rsp-services-csparql.jar\n" +
 
-								  "cd .." + SERVER_MONITORING_MANAGER + "\n" +
+								  "cd ..\n" +
 								  "START CMD /C CALL java -jar monitoring-manager.jar\n" +
 								  "exit";
 

@@ -23,10 +23,10 @@ import api.controller.Controller;
 
 import com.google.common.io.ByteStreams;
 
-import core.BatchFile;
 import core.ControllerImpl;
 import core.TxtFileReader;
 import core.TxtFileWriter;
+import core.WindowsBatchFileExecution;
 import core.RESTCalls.RESTGet;
 import core.RESTCalls.RESTPost;
 
@@ -50,27 +50,16 @@ public class Monitor {
 	private static final String LOCAL_RESOURCES = "/core/resources";
 	private static final String SERVER_RESOURCES = "/resources";
 
-	private static final String LOCAL_CSPARQL = "/core/lib/rsp-services-csparql-0.4.6.2-modaclouds";
-	private static final String SERVER_CSPARQL = "/rsp-services-csparql-0.4.6.2-modaclouds";
-
-	private static final String LOCAL_MONITORING_MANAGER = "/core/lib/monitoring-manager-1.4";
-	private static final String SERVER_MONITORING_MANAGER = "/monitoring-manager-1.4";
+	private static final String LOCAL_MONITORING_MANAGER = "/core/lib/";
+	private static final String SERVER_MONITORING_MANAGER = "/";
 
 	private static final String MONITORING_RULES_FILE = "/core/resources/monitoringRules";
 
 	private static final String DEPLOYMENT_MODEL_FILE = "/core/resources/deploymentModel.json";
 
-	private static final String LOCAL_DATA_COLLECTORS = "/core/lib/dataCollectors";
-	private static final String SERVER_DATA_COLLECTORS = "/dataCollectors";
+	private static final String LOCAL_DATA_COLLECTORS = "/core/lib/";
 	private static final String DATA_COLLECTORS_FILE_NAME = "data-collector-1.3-SNAPSHOT.jar";
 	private static final String DATA_COLLECTORS_INSTALLATION_FILE_NAME = "dataCollectorsInstallation.bat";
-
-	private static final String LOCAL_SIGAR = "/core/lib/hyperic-sigar-1.6.4";
-	private static final String SERVER_SIGAR = "/hyperic-sigar-1.6.4";
-	private static final String CLIENT_SIGAR = "./lib/hyperic-sigar-1.6.4";
-
-	private static final String LOCAL_METRICS_OBSERVER = "/core/lib/metrics-observer";
-	private static final String SERVER_METRICS_OBSERVER = "/metrics-observer";
 
 
 	@POST
@@ -682,9 +671,7 @@ public class Monitor {
 
              			TxtFileWriter.write( fileContent, DATA_COLLECTORS_INSTALLATION_FILE_NAME );
 
-             			TxtFileWriter.copyFolder( new File( parentDir + LOCAL_SIGAR ), new File( CLIENT_SIGAR ) );
-
-    					BatchFile.execute( DATA_COLLECTORS_INSTALLATION_FILE_NAME );
+             			WindowsBatchFileExecution.execute( DATA_COLLECTORS_INSTALLATION_FILE_NAME );
 
     					Thread.sleep( 5000 );
 
@@ -822,17 +809,17 @@ public class Monitor {
 
 		TxtFileWriter.copyFolder( new File( serverSourcesPath + LOCAL_RESOURCES ), new File( SEACLOUDS_FOLDER + SERVER_RESOURCES ) );
 
-		TxtFileWriter.copyFolder( new File( serverSourcesPath + LOCAL_CSPARQL ), new File( SEACLOUDS_FOLDER + SERVER_CSPARQL ) );
+		//TxtFileWriter.copyFolder( new File( serverSourcesPath + LOCAL_CSPARQL ), new File( SEACLOUDS_FOLDER + SERVER_CSPARQL ) );
 
 		TxtFileWriter.copyFolder( new File( serverSourcesPath + LOCAL_FUSEKI ), new File( SEACLOUDS_FOLDER + SERVER_FUSEKI ) );
 
 		TxtFileWriter.copyFolder( new File( serverSourcesPath + LOCAL_MONITORING_MANAGER ), new File( SEACLOUDS_FOLDER + SERVER_MONITORING_MANAGER ) );
 
-		TxtFileWriter.copyFolder( new File( serverSourcesPath + LOCAL_DATA_COLLECTORS ), new File( SEACLOUDS_FOLDER + SERVER_DATA_COLLECTORS ) );
+		TxtFileWriter.copyFolder( new File( serverSourcesPath + LOCAL_DATA_COLLECTORS ), new File( SEACLOUDS_FOLDER ) );
 
-		TxtFileWriter.copyFolder( new File( serverSourcesPath + LOCAL_SIGAR ), new File( SEACLOUDS_FOLDER + SERVER_SIGAR ) );
+		//TxtFileWriter.copyFolder( new File( serverSourcesPath + LOCAL_SIGAR ), new File( SEACLOUDS_FOLDER + SERVER_SIGAR ) );
 
-		TxtFileWriter.copyFolder( new File( serverSourcesPath + LOCAL_METRICS_OBSERVER ), new File( SEACLOUDS_FOLDER + SERVER_METRICS_OBSERVER ) );
+		//TxtFileWriter.copyFolder( new File( serverSourcesPath + LOCAL_METRICS_OBSERVER ), new File( SEACLOUDS_FOLDER + SERVER_METRICS_OBSERVER ) );
 	}
 
     /*private static URI getBaseURI(){

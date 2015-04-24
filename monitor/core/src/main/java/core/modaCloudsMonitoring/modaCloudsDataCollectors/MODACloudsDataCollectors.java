@@ -62,7 +62,7 @@ public class MODACloudsDataCollectors {
 
 		Map<String,String> collectorExecutionCommandMapping = new HashMap<String,String>();
 
-		collectorExecutionCommandMapping.put( "sigar", "lib/hyperic-sigar-1.6.4/sigar-bin/lib/" );
+		collectorExecutionCommandMapping.put( "sigar", "lib/hyperic-sigar-1.6.4/sigar-bin/lib" );
 			/*metricCollectorMapping.put("cpustolen", "sigar");
 				metricCollectorMapping.put("memused", "sigar");
 				metricCollectorMapping.put("threads_running", "mysql");
@@ -119,7 +119,7 @@ public class MODACloudsDataCollectors {
 
 		if ( executionCommand == null ) System.err.println( "Metric name = " + metricName + " was NOT found." );
 
-		else executionCommand = "START CMD /C CALL java -Djava.library.path=" + executionCommand + " -jar " + dataCollectorsFileName + " kb" +
+		else executionCommand = "START CMD /C CALL java -Djava.library.path=" + executionCommand + " -jar ./" + dataCollectorsFileName + " kb" +
 												   "\nexit";
 
 

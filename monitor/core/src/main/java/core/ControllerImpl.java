@@ -21,10 +21,10 @@ import core.modaCloudsMonitoring.modaCloudsMonitoringRules.MODACloudsMonitoringR
 public class ControllerImpl implements Controller {
 
 	//Constants.
-	private static final String SEACLOUDS_FOLDER = "./SeaClouds";
+	private static final String SEACLOUDS_FOLDER = "SeaClouds";
 	private static final String INITIALIZATION_CONFIGURATION_FILE_ON_SERVER = SEACLOUDS_FOLDER + "/storedInitialization.properties";
 
-	private static final String SERVER_DATA_COLLECTORS_PATH = "./SeaClouds/dataCollectors";
+	private static final String SERVER_DATA_COLLECTORS_PATH = "SeaClouds/";
 	private static final String DATA_COLLECTORS_FILE_NAME = "data-collector-1.3-SNAPSHOT.jar";
 
 

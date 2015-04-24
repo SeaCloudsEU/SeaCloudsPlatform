@@ -36,7 +36,7 @@
     <guava.version>18.0</guava.version>
     <javatuples.version>1.2</javatuples.version>
     <testng.version>6.1.1</testng.version>
-    <brooklyn.version>0.7.0-SNAPSHOT</brooklyn.version>
+    <!-- <brooklyn.version>0.7.0-SNAPSHOT</brooklyn.version>-->
     <jetty.version>9.2.4.v20141103</jetty.version>
     <junit.version>4.11</junit.version>
   </properties>
@@ -69,10 +69,10 @@
   </distributionManagement>
 
   <dependencies>
-    <dependency>
+    <!-- <dependency>
       <groupId>org.apache.brooklyn</groupId>
       <artifactId>brooklyn-rest-client</artifactId>
-    </dependency>
+    </dependency> -->
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
@@ -134,7 +134,7 @@
           <target>1.7</target>
         </configuration>
       </plugin>
-      <plugin>
+      <!-- <plugin>
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
         <version>0.11</version>
@@ -159,7 +159,7 @@
             <exclude>**/*.log</exclude>
             <exclude>**/target/**</exclude>
 
-            <!-- files not requiring licence -->
+            
             <exclude>ignored/**</exclude>
             <exclude>**/*.md</exclude>
             <exclude>**/*.svg</exclude>
@@ -178,16 +178,16 @@
 
           </excludes>
         </configuration>
-      </plugin>
+      </plugin>-->
     </plugins>
   </build>
   <dependencyManagement>
     <dependencies>
-      <dependency>
+      <!-- <dependency>
         <groupId>org.apache.brooklyn</groupId>
         <artifactId>brooklyn-rest-client</artifactId>
         <version>${brooklyn.version}</version>
-      </dependency>
+      </dependency>-->
       <dependency>
         <groupId>org.testng</groupId>
         <artifactId>testng</artifactId>
