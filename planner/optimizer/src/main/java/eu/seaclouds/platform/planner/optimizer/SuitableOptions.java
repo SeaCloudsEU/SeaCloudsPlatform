@@ -109,6 +109,10 @@ public class SuitableOptions { // implements Iterable<List<String>
          }
          cloned.suitableOptionsCharacteristics.add(clonedList2);
       }
+      
+      cloned.setLatencyInternetMillis(latencyInternetMillis);
+      cloned.setLatencyDatacenterMillis(latencyDatacenterMillis);
+
 
       return cloned;
    }
@@ -541,12 +545,20 @@ public class SuitableOptions { // implements Iterable<List<String>
       return suitableOptionsCharacteristics.get(indexModule);
    }
 
-   public double getLatencyIntraDatacenter() {
+   public double getLatencyIntraDatacenterMillis() {
       return latencyDatacenterMillis;
    }
 
-   public double getLatencyInterCloud() {
+   public double getLatencyInterCloudMillis() {
       return latencyInternetMillis;
+   }
+   
+   public double getLatencyIntraDatacenterSec() {
+      return getLatencyIntraDatacenterMillis()/1000.0;
+   }
+
+   public double getLatencyInterCloudSec() {
+      return getLatencyInterCloudMillis()/1000.0;
    }
 
    public void setLatencyInternetMillis(double latencyInternetMillis) {

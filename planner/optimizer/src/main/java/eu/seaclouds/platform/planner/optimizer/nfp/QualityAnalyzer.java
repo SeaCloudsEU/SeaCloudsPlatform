@@ -137,10 +137,16 @@ public class QualityAnalyzer {
       double respTime = getSystemRespTime(numVisitsModule,
             workloadsModulesByCoresAndNumInstances, mus);
 
+      if (IS_DEBUG) {
+         log.debug("calculated response time of the solution "
+               + bestSol.toString() + " without considering latencies is: "
+               + respTime);
+      }
       respTime += addNetworkDelays(bestSol, topology, numVisitsModule,
             cloudCharacteristics);
-      if(IS_DEBUG){
-         log.debug("calculated response time of the solution is: " + respTime);
+      if (IS_DEBUG) {
+         log.debug("calculated response time of the solution"
+               + bestSol.toString() + " is: " + respTime);
       }
       // after computing, save the performance info in properties.performance
       properties.setResponseTime(respTime);
@@ -165,6 +171,12 @@ public class QualityAnalyzer {
                         cloudCharacteristics);
          }
 
+         if (IS_DEBUG) {
+            log.debug("calculated network delay for module " + i
+                  + " in solution " + bestSol.toString()
+                  + " is (numVisitsModule[i] * sumOfDelaysSingleModule): "
+                  + numVisitsModule[i] * sumOfDelaysSingleModule);
+         }
          networkDelay += numVisitsModule[i] * sumOfDelaysSingleModule;
 
       }
@@ -185,10 +197,23 @@ public class QualityAnalyzer {
       if (CloudOffer.providerNameOfCloudOffer(cloudOfferCallingElement).equals(
             CloudOffer.providerNameOfCloudOffer(cloudOfferCalledElement))) {
 
-         return cloudCharacteristics.getLatencyIntraDatacenter();
+         if (IS_DEBUG) {
+            log.debug("latency between modules " + callingModuleName + " and "
+                  + calledModuleName + " is "
+                  + cloudCharacteristics.getLatencyIntraDatacenterSec());
+         }
+
+         return cloudCharacteristics.getLatencyIntraDatacenterSec();
 
       } else {
-         return cloudCharacteristics.getLatencyInterCloud();
+
+         if (IS_DEBUG) {
+            log.debug("latency between modules " + callingModuleName + " and "
+                  + calledModuleName + " is "
+                  + cloudCharacteristics.getLatencyInterCloudSec());
+         }
+
+         return cloudCharacteristics.getLatencyInterCloudSec();
       }
 
    }

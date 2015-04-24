@@ -90,7 +90,7 @@ public abstract class AbstractHeuristic {
          perfGoodness = requirements.getResponseTime() / computedPerformance;
 
          if (IS_DEBUG) {
-            log.debug("Candidate Solution evaluated gave a response time of "
+            log.debug("Candidate Solution " +bestSol.toString() + " evaluated gave a response time of "
                   + computedPerformance + " while the requirements were "
                   + requirements.getResponseTime() + " and the workload was "
                   + requirements.getWorkload());

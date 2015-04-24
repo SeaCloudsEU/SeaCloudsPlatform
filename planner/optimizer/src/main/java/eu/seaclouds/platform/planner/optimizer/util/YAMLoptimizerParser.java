@@ -229,15 +229,13 @@ public class YAMLoptimizerParser {
                   potentialListOfOffersNames,
                   potentialListOfOfferCharacteristics);
 
-            options.setLatencyDatacenterMillis(getCloudLatency(
-                  suitableCloudOffers,
-                  TOSCAkeywords.LATENCY_INTRA_DATACENTER_MILLIS));
-            options.setLatencyInternetMillis(getCloudLatency(
-                  suitableCloudOffers,
-                  TOSCAkeywords.LATENCY_INTER_DATACENTER_MILLIS));
          }
-
       }
+      // Retrieve communication latencies
+      options.setLatencyDatacenterMillis(getCloudLatency(suitableCloudOffers,
+            TOSCAkeywords.LATENCY_INTRA_DATACENTER_MILLIS));
+      options.setLatencyInternetMillis(getCloudLatency(suitableCloudOffers,
+            TOSCAkeywords.LATENCY_INTER_DATACENTER_MILLIS));
 
       return options;
    }
@@ -251,11 +249,13 @@ public class YAMLoptimizerParser {
          Map<String, Object> cloudMap = (Map<String, Object>) cloudOffersMap
                .get(TOSCAkeywords.NODE_TEMPLATE);
          if (cloudMap.containsKey(latencyKeyword)) {
+
             return (Double) cloudMap.get(latencyKeyword);
          }
       } catch (ClassCastException E) {
          return 0.0;
       }
+
       return 0.0;
    }
 
@@ -295,33 +295,32 @@ public class YAMLoptimizerParser {
          String potentialOffer, Map<String, Object> cloudOffersMap) {
 
       Map<String, Object> cloudMap = cloudOffersMap;
-     
-      if(cloudOffersMap.containsKey(TOSCAkeywords.NODE_TEMPLATE)){
+
+      if (cloudOffersMap.containsKey(TOSCAkeywords.NODE_TEMPLATE)) {
          cloudMap = (Map<String, Object>) cloudOffersMap
-            .get(TOSCAkeywords.NODE_TEMPLATE);
+               .get(TOSCAkeywords.NODE_TEMPLATE);
       }
 
       CloudOffer offer;
-      try{
-      offer = new CloudOffer(potentialOffer);
-      
-      offer.setAvailability(getPropertyOfCloudOffer(
-            TOSCAkeywords.CLOUD_OFFER_PROPERTY_AVAILABILITY,
-            (Map<String, Object>) cloudMap.get(potentialOffer)));
+      try {
+         offer = new CloudOffer(potentialOffer);
 
-      offer.setPerformance(getPropertyOfCloudOffer(
-            TOSCAkeywords.CLOUD_OFFER_PROPERTY_PERFORMANCE,
-            (Map<String, Object>) cloudMap.get(potentialOffer)));
+         offer.setAvailability(getPropertyOfCloudOffer(
+               TOSCAkeywords.CLOUD_OFFER_PROPERTY_AVAILABILITY,
+               (Map<String, Object>) cloudMap.get(potentialOffer)));
 
-      offer.setCost(getPropertyOfCloudOffer(
-            TOSCAkeywords.CLOUD_OFFER_PROPERTY_COST,
-            (Map<String, Object>) cloudMap.get(potentialOffer)));
+         offer.setPerformance(getPropertyOfCloudOffer(
+               TOSCAkeywords.CLOUD_OFFER_PROPERTY_PERFORMANCE,
+               (Map<String, Object>) cloudMap.get(potentialOffer)));
 
-      offer.setNumCores(getPropertyOfCloudOffer(
-            TOSCAkeywords.CLOUD_OFFER_NUM_CORES_TAG,
-            (Map<String, Object>) cloudMap.get(potentialOffer)),true);
-      }
-      catch(NullPointerException E){
+         offer.setCost(getPropertyOfCloudOffer(
+               TOSCAkeywords.CLOUD_OFFER_PROPERTY_COST,
+               (Map<String, Object>) cloudMap.get(potentialOffer)));
+
+         offer.setNumCores(
+               getPropertyOfCloudOffer(TOSCAkeywords.CLOUD_OFFER_NUM_CORES_TAG,
+                     (Map<String, Object>) cloudMap.get(potentialOffer)), true);
+      } catch (NullPointerException E) {
          return null;
       }
 
@@ -339,7 +338,8 @@ public class YAMLoptimizerParser {
       if (propertiesOfOffer.containsKey(cloudOfferProperty)) {
          // If there is an error here, treat the value returned in the Map as
          // List<String> instead of as String; i.e., add a .get(0)
-            valueOfProperty = castToDouble(propertiesOfOffer.get(cloudOfferProperty));
+         valueOfProperty = castToDouble(propertiesOfOffer
+               .get(cloudOfferProperty));
 
       } else {
          // Many times it will not exist the value and it will return 0
@@ -359,42 +359,37 @@ public class YAMLoptimizerParser {
    }
 
    private static double castToDouble(Object object) {
-      double result=-1.0;
-      boolean success=false;
-      
-      if(!success){
-         try{
+      double result = -1.0;
+      boolean success = false;
+
+      if (!success) {
+         try {
             result = (Double) object;
-            success=true;
-         }
-         catch(ClassCastException E){
-            //nothing to do, it was not double
+            success = true;
+         } catch (ClassCastException E) {
+            // nothing to do, it was not double
          }
       }
-      
-      if(!success){
-         try{
+
+      if (!success) {
+         try {
             result = ((Integer) object).doubleValue();
-            success=true;
-         }
-         catch(ClassCastException E){
-            //nothing to do, it was not Integer
+            success = true;
+         } catch (ClassCastException E) {
+            // nothing to do, it was not Integer
          }
       }
-      
-      if(!success){
-         try{
+
+      if (!success) {
+         try {
             result = Double.parseDouble((String) object);
-            success=true;
-         }
-         catch(ClassCastException E){
-            //nothing to do, it was not String
+            success = true;
+         } catch (ClassCastException E) {
+            // nothing to do, it was not String
          }
       }
-      
+
       return result;
-      
-      
 
    }
 
@@ -695,17 +690,17 @@ public class YAMLoptimizerParser {
 
    }
 
-
    private static double getPerformanceOfOfferByName(String offername,
          Map<String, Object> allCloudOffers) {
 
       if (!allCloudOffers.containsKey(offername)) {
          return 0.0;
       }
-      
-      CloudOffer offer = getAllCharacteristicsOfCloudOffer(offername, allCloudOffers);
-      
-      if(offer==null){
+
+      CloudOffer offer = getAllCharacteristicsOfCloudOffer(offername,
+            allCloudOffers);
+
+      if (offer == null) {
          return 0.0;
       }
 
