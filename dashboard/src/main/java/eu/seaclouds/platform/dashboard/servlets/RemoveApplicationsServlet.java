@@ -18,7 +18,7 @@ package eu.seaclouds.platform.dashboard.servlets;
 
 import brooklyn.rest.client.BrooklynApi;
 import com.google.gson.Gson;
-import eu.seaclouds.platform.dashboard.ConfigParameters;
+import eu.seaclouds.platform.dashboard.connectors.DeployerConnector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -31,7 +31,7 @@ import java.io.IOException;
  * @author MBarrientos
  */
 public class RemoveApplicationsServlet extends HttpServlet {
-    final static BrooklynApi BROOKLKYN_API = new BrooklynApi(ConfigParameters.DEPLOYER_ENDPOINT);
+    static BrooklynApi BROOKLYN_API = DeployerConnector.getConnection();
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -40,7 +40,7 @@ public class RemoveApplicationsServlet extends HttpServlet {
         if (application != null) {
 
 
-            Response res = BROOKLKYN_API.getApplicationApi().delete(application);
+            Response res = BROOKLYN_API.getApplicationApi().delete(application);
 
             if (res.getStatus() >=  400) {
                 response.sendError(500, "Connection error: couldn't reach SeaClouds endpoint");
