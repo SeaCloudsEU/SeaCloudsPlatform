@@ -28,7 +28,7 @@ public class TopologyElement implements Iterable<TopologyElementCalled> {
 
    // the execution time experienced in a machine of performance=1 .
    // It is calculated as the execution time provided multiplied by the
-   // discovered performance of the machine.
+   // discovered performance of the machine. In seconds
    private double                      execTimeInPowerlessMachine;
 
    public TopologyElement(String name) {
@@ -54,7 +54,7 @@ public class TopologyElement implements Iterable<TopologyElementCalled> {
       dependences.add(e);
    }
 
-   public void setExecTime(double d) {
+   private void setExecTime(double d) {
       this.execTimeInPowerlessMachine = d;
    }
 

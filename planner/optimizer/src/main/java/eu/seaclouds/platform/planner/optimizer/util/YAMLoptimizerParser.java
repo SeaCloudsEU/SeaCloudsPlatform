@@ -151,37 +151,51 @@ public class YAMLoptimizerParser {
       return null;
 
    }
-   
+
    @SuppressWarnings("unchecked")
    public static void AddQualityOfSolution(Solution sol,
          Map<String, Object> applicationMapComplete) {
-      
+
       Map<String, Object> appMap;
-      try{
-         appMap = (Map<String, Object>) applicationMapComplete.get(TOSCAkeywords.NODE_TEMPLATE);
-        
-      }catch(ClassCastException e){
-            return;
+      try {
+         appMap = (Map<String, Object>) applicationMapComplete
+               .get(TOSCAkeywords.NODE_TEMPLATE);
+
+      } catch (ClassCastException e) {
+         return;
+      }
+
+      HashMap<String, Double> qosPropsMap = new HashMap<String, Double>();
+
+      if (sol.getSolutionQuality() == null) {
+         log.warn("quality Of Solution Not Found for solution: "
+               + sol.toString());
+      }
+      try {
+         if (sol.getSolutionQuality().existAvailabilityRequirement()) {
+            qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_AVAILABILITY, sol
+                  .getSolutionQuality().getAvailability());
+
          }
-      
-      HashMap<String,Double> qosPropsMap=new HashMap<String,Double>();
-         
-      if(sol.getSolutionQuality().existAvailabilityRequirement()){
-            qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_AVAILABILITY, sol.getSolutionQuality().getAvailability());
-            
-         }
-         
-         if(sol.getSolutionQuality().existCostRequirement()){
-            qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_COST_HOUR, sol.getSolutionQuality().getCost());
-         }
-         
-         if(sol.getSolutionQuality().existResponseTimeRequirement()){
-            qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_PERFORMANCE_MILLIS, sol.getSolutionQuality().getResponseTime());
-            
-         }
-         
-         appMap.put(TOSCAkeywords.EXPECTED_QUALITY_PROPERTIES, qosPropsMap);
-      
+      } catch (Exception E) {
+         log.warn("Availability not found for solutiot: " + sol.toString());
+      }
+
+      if (sol.getSolutionQuality().existCostRequirement()) {
+         qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_COST_MONTH, sol
+               .getSolutionQuality().getCostMonth());
+      }
+
+      if (sol.getSolutionQuality().existResponseTimeRequirement()) {
+         qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_PERFORMANCE_SEC, sol
+               .getSolutionQuality().getResponseTime());
+
+      }
+
+      qosPropsMap.put(TOSCAkeywords.OVERALL_QOS_FITNESS,
+            sol.getSolutionFitness());
+
+      appMap.put(TOSCAkeywords.EXPECTED_QUALITY_PROPERTIES, qosPropsMap);
 
    }
 
@@ -216,9 +230,11 @@ public class YAMLoptimizerParser {
                   potentialListOfOfferCharacteristics);
 
             options.setLatencyDatacenterMillis(getCloudLatency(
-                  suitableCloudOffers, TOSCAkeywords.LATENCY_INTRA_DATACENTER_MILLIS));
+                  suitableCloudOffers,
+                  TOSCAkeywords.LATENCY_INTRA_DATACENTER_MILLIS));
             options.setLatencyInternetMillis(getCloudLatency(
-                  suitableCloudOffers, TOSCAkeywords.LATENCY_INTER_DATACENTER_MILLIS));
+                  suitableCloudOffers,
+                  TOSCAkeywords.LATENCY_INTER_DATACENTER_MILLIS));
          }
 
       }
@@ -278,10 +294,17 @@ public class YAMLoptimizerParser {
    private static CloudOffer getAllCharacteristicsOfCloudOffer(
          String potentialOffer, Map<String, Object> cloudOffersMap) {
 
-      Map<String, Object> cloudMap = (Map<String, Object>) cloudOffersMap
+      Map<String, Object> cloudMap = cloudOffersMap;
+     
+      if(cloudOffersMap.containsKey(TOSCAkeywords.NODE_TEMPLATE)){
+         cloudMap = (Map<String, Object>) cloudOffersMap
             .get(TOSCAkeywords.NODE_TEMPLATE);
+      }
 
-      CloudOffer offer = new CloudOffer(potentialOffer);
+      CloudOffer offer;
+      try{
+      offer = new CloudOffer(potentialOffer);
+      
       offer.setAvailability(getPropertyOfCloudOffer(
             TOSCAkeywords.CLOUD_OFFER_PROPERTY_AVAILABILITY,
             (Map<String, Object>) cloudMap.get(potentialOffer)));
@@ -293,6 +316,14 @@ public class YAMLoptimizerParser {
       offer.setCost(getPropertyOfCloudOffer(
             TOSCAkeywords.CLOUD_OFFER_PROPERTY_COST,
             (Map<String, Object>) cloudMap.get(potentialOffer)));
+
+      offer.setNumCores(getPropertyOfCloudOffer(
+            TOSCAkeywords.CLOUD_OFFER_NUM_CORES_TAG,
+            (Map<String, Object>) cloudMap.get(potentialOffer)),true);
+      }
+      catch(NullPointerException E){
+         return null;
+      }
 
       return offer;
    }
@@ -308,7 +339,8 @@ public class YAMLoptimizerParser {
       if (propertiesOfOffer.containsKey(cloudOfferProperty)) {
          // If there is an error here, treat the value returned in the Map as
          // List<String> instead of as String; i.e., add a .get(0)
-         valueOfProperty = (Double) propertiesOfOffer.get(cloudOfferProperty);
+            valueOfProperty = castToDouble(propertiesOfOffer.get(cloudOfferProperty));
+
       } else {
          // Many times it will not exist the value and it will return 0
          // Try to make theo output less verbose
@@ -326,6 +358,46 @@ public class YAMLoptimizerParser {
 
    }
 
+   private static double castToDouble(Object object) {
+      double result=-1.0;
+      boolean success=false;
+      
+      if(!success){
+         try{
+            result = (Double) object;
+            success=true;
+         }
+         catch(ClassCastException E){
+            //nothing to do, it was not double
+         }
+      }
+      
+      if(!success){
+         try{
+            result = ((Integer) object).doubleValue();
+            success=true;
+         }
+         catch(ClassCastException E){
+            //nothing to do, it was not Integer
+         }
+      }
+      
+      if(!success){
+         try{
+            result = Double.parseDouble((String) object);
+            success=true;
+         }
+         catch(ClassCastException E){
+            //nothing to do, it was not String
+         }
+      }
+      
+      return result;
+      
+      
+
+   }
+
    public static void AddSuitableOfferForModule(String moduleName,
          String solutionName, int instances, Map<String, Object> applicationMap) {
 
@@ -340,9 +412,6 @@ public class YAMLoptimizerParser {
       options.add(String.valueOf(instances));
 
    }
-   
-   
-   
 
    @SuppressWarnings("unchecked")
    public static Map<String, Object> GetMAPofAPP(String appModel) {
@@ -403,7 +472,7 @@ public class YAMLoptimizerParser {
                   .remove(TOSCAkeywords.MODULE_REQUIREMENTS_CONSTRAINTS);
             moduleRequirements.put(TOSCAkeywords.MODULE_REQUIREMENTS_HOST,
                   suitableService);
-            moduleRequirements.put(TOSCAkeywords.MODULE_REQUIREMENTS_INSTANCES,
+            moduleRequirements.put(TOSCAkeywords.MODULE_PROPOSED_INSTANCES,
                   numInstances);
          }
 
@@ -626,45 +695,22 @@ public class YAMLoptimizerParser {
 
    }
 
-   @SuppressWarnings("unchecked")
+
    private static double getPerformanceOfOfferByName(String offername,
          Map<String, Object> allCloudOffers) {
 
       if (!allCloudOffers.containsKey(offername)) {
          return 0.0;
       }
-
-      Map<String, Object> offer = null;
-      Map<String, Object> offerprop = null;
-      double offerperformance = 0.0;
-
-      // check if offer has properties
-      try {
-         offer = (Map<String, Object>) allCloudOffers.get(offername);
-
-         if (offer.containsKey(TOSCAkeywords.CLOUD_OFFER_PROPERTIES_TAG)) {
-            offerprop = (Map<String, Object>) offer
-                  .get(TOSCAkeywords.CLOUD_OFFER_PROPERTIES_TAG);
-         } else {
-            return 0.0;
-         }
-      } catch (ClassCastException E) {
+      
+      CloudOffer offer = getAllCharacteristicsOfCloudOffer(offername, allCloudOffers);
+      
+      if(offer==null){
          return 0.0;
       }
 
-      // check if properties have performance
-      try {
-         if (offerprop
-               .containsKey(TOSCAkeywords.CLOUD_OFFER_PROPERTY_PERFORMANCE)) {
-            offerperformance = (Double) offerprop
-                  .get(TOSCAkeywords.CLOUD_OFFER_PROPERTY_PERFORMANCE);
-         } else {
-            log.warn("Not found performance of cloud offer called " + offername);
-         }
-      } catch (ClassCastException E) {
-         return 0.0;
-      }
-      return offerperformance;
+      return offer.getPerformance();
+
    }
 
    public static QualityInformation getQualityRequirementsForTesting() {
@@ -678,7 +724,7 @@ public class YAMLoptimizerParser {
       requirements = new QualityInformation();
       requirements.setResponseTime(1.0);
       requirements.setAvailability(0.9);
-      requirements.setCost(10.0);
+      requirements.setCostHour(10.0);
       requirements.setWorkload(-1.0);
 
       return requirements;
@@ -764,7 +810,5 @@ public class YAMLoptimizerParser {
       }
       return false;
    }
-
-
 
 }

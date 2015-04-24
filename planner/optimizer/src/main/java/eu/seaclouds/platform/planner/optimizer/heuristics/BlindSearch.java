@@ -61,10 +61,15 @@ public class BlindSearch extends AbstractHeuristic implements SearchMethod {
       int numItersNoImprovement = 0;
       while (numItersNoImprovement < super.getMaxIterNoImprove()) {
 
-         currentSol[0] = super.findRandomSolution(cloudOffers, applicationMap);
+         currentSol[0] = super.findRandomSolution(cloudOffers);
          currentSol[0].setSolutionFitness(super.fitness(currentSol[0],
                applicationMap, topology, cloudOffers));
 
+         if (AbstractHeuristic.IS_DEBUG) {
+            log.debug("Start checking the presence of quality attached to solutions after generating a new random solution in BLIND. With sol= "
+                  + currentSol[0].toString());
+            super.checkQualityAttachedToSolutions(currentSol);
+         }
          if (currentSol[0].getSolutionFitness() > super
                .getMinimumFitnessOfSolutions(bestSols)) {
             if (!currentSol[0].isContainedIn(bestSols)) {
@@ -89,8 +94,7 @@ public class BlindSearch extends AbstractHeuristic implements SearchMethod {
 
       for (int newSolIndex = 0; newSolIndex < newSolutions.length; newSolIndex++) {
 
-         newSolutions[newSolIndex] = super.findRandomSolution(cloudOffers,
-               applicationMap);
+         newSolutions[newSolIndex] = super.findRandomSolution(cloudOffers);
       }
 
       return newSolutions;

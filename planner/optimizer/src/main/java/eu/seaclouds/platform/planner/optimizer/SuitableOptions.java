@@ -556,5 +556,4 @@ public class SuitableOptions { // implements Iterable<List<String>
    public void setLatencyDatacenterMillis(double latencyDatacenterMillis) {
       this.latencyDatacenterMillis = latencyDatacenterMillis;
    }
-
 }

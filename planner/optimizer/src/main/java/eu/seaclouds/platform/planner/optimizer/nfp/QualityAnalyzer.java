@@ -25,6 +25,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import scala.actors.threadpool.Arrays;
 import eu.seaclouds.platform.planner.optimizer.CloudOffer;
 import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
@@ -93,15 +94,15 @@ public class QualityAnalyzer {
       IS_DEBUG = debug;
    }
 
-   
    /**
-    * @return This method returns the summary of all the quality values (one for each property) already calculated by the object. 
-    * NOTE that it does not calculate any new property value 
+    * @return This method returns the summary of all the quality values (one for
+    *         each property) already calculated by the object. NOTE that it does
+    *         not calculate any new property value
     */
    public QualityInformation getAllComputedQualities() {
       return properties;
    }
-   
+
    // routing matrix with the OpProfile (the item in 0 is the mainly called)
    private double[][] routes = null;
 
@@ -124,12 +125,23 @@ public class QualityAnalyzer {
       double[] mus = getMusOfSelectedCloudOffers(bestSol, topology,
             cloudCharacteristics);
 
+      if (IS_DEBUG) {
+         log.debug("Solution to check the mus is: " + bestSol.toString());
+         log.debug("Mus of servers are: " + Arrays.toString(mus));
+         log.debug("Num visits modules is: " + Arrays.toString(numVisitsModule));
+         log.debug("Workload received of modules: "
+               + Arrays.toString(workloadsModules));
+         log.debug("Workload received of each execution unit by its numberOfInstances and Cores: "
+               + Arrays.toString(workloadsModulesByCoresAndNumInstances));
+      }
       double respTime = getSystemRespTime(numVisitsModule,
             workloadsModulesByCoresAndNumInstances, mus);
 
       respTime += addNetworkDelays(bestSol, topology, numVisitsModule,
             cloudCharacteristics);
-
+      if(IS_DEBUG){
+         log.debug("calculated response time of the solution is: " + respTime);
+      }
       // after computing, save the performance info in properties.performance
       properties.setResponseTime(respTime);
 
@@ -172,9 +184,9 @@ public class QualityAnalyzer {
 
       if (CloudOffer.providerNameOfCloudOffer(cloudOfferCallingElement).equals(
             CloudOffer.providerNameOfCloudOffer(cloudOfferCalledElement))) {
-         
+
          return cloudCharacteristics.getLatencyIntraDatacenter();
-         
+
       } else {
          return cloudCharacteristics.getLatencyInterCloud();
       }
@@ -228,11 +240,28 @@ public class QualityAnalyzer {
 
       double[] mus = new double[topology.size()];
       for (int i = 0; i < mus.length; i++) {
+
          String moduleName = topology.getElementIndex(i).getName();
          String cloudChosenForModule = bestSol
                .getCloudOfferNameForModule(moduleName);
          mus[i] = cloudCharacteristics.getCloudCharacteristics(moduleName,
-               cloudChosenForModule).getPerformance();
+               cloudChosenForModule).getPerformance()
+               / topology.getElementIndex(i).getDefaultExecutionTime();
+
+         if (IS_DEBUG) {
+            log.debug("Default execution time of module "
+                  + i
+                  + " with name "
+                  + topology.getElementIndex(i).getName()
+                  + " is "
+                  + topology.getElementIndex(i).getDefaultExecutionTime()
+                  + " and using cloud option "
+                  + bestSol.getCloudOfferNameForModule(moduleName)
+                  + " with performance "
+                  + cloudCharacteristics.getCloudCharacteristics(moduleName,
+                        cloudChosenForModule).getPerformance() + " its Mu is "
+                  + mus[i]);
+         }
       }
 
       return mus;
@@ -255,6 +284,12 @@ public class QualityAnalyzer {
                moduleName, cloudChosenForModule).getNumCores();
          ponderatedWorkloads[i] = workloadsModules[i]
                / (numInstances * numCores);
+
+         if (IS_DEBUG) {
+            log.debug("Number of instances used for module " + moduleName
+                  + " is : " + numInstances + " and num Cores of the offer is"
+                  + numCores);
+         }
       }
 
       return ponderatedWorkloads;
@@ -463,7 +498,7 @@ public class QualityAnalyzer {
       }
 
       // after computing, save the cost info in properties.availability
-      properties.setCost(cost);
+      properties.setCostHour(cost);
       return cost;
 
    }
@@ -485,7 +520,6 @@ public class QualityAnalyzer {
          log.debug("Reconfiguration Thresholds not created because Response Time requirement or expected workload was not found.");
          return null;
       }
-      
 
       double[] mus = getMusOfSelectedCloudOffers(modifSol, topology,
             cloudCharacteristics);
@@ -501,12 +535,11 @@ public class QualityAnalyzer {
             log.debug("Creating threshold for workload above " + limitWorkload);
          }
          limitWorkload = findWorkloadForWhichRespTimeIsExceeded(
-               requirements.getResponseTime(), limitWorkload, mus,
-               modifSol, topology, cloudCharacteristics);
+               requirements.getResponseTime(), limitWorkload, mus, modifSol,
+               topology, cloudCharacteristics);
          // get highest utilization
          String moduleWithHighestUtilization = findHighestUtilizationModuleThatCanScale(
-               limitWorkload, mus, modifSol, topology,
-               cloudCharacteristics);
+               limitWorkload, mus, modifSol, topology, cloudCharacteristics);
 
          // put the value in the hashMap. "moduleWithHighestUtilization" may be
          // null
@@ -565,8 +598,8 @@ public class QualityAnalyzer {
     *         were included programming)
     */
    private String findHighestUtilizationModuleThatCanScale(
-         double limitWorkload, double[] mus, Solution sol,
-         Topology topology, SuitableOptions cloudCharacteristics) {
+         double limitWorkload, double[] mus, Solution sol, Topology topology,
+         SuitableOptions cloudCharacteristics) {
 
       double[] workloadsModules = getWorkloadsArray(routes, limitWorkload);
 
@@ -633,7 +666,7 @@ public class QualityAnalyzer {
       }
       if (requirements.existCostRequirement()) {
          return computeCost(sol, cloudCharacteristics) <= requirements
-               .getCost();
+               .getCostHour();
       }
       return limitWorkload <= (MAX_TIMES_WORKLOAD_FOR_THRESHOLDS * workload);
 
@@ -650,9 +683,8 @@ public class QualityAnalyzer {
     *         time is not satisfied
     */
    private double findWorkloadForWhichRespTimeIsExceeded(
-         double respTimeRequirement, double workload,
-         double[] mus, Solution sol, Topology topology,
-         SuitableOptions cloudCharacteristics) {
+         double respTimeRequirement, double workload, double[] mus,
+         Solution sol, Topology topology, SuitableOptions cloudCharacteristics) {
 
       double incWorkload = WORKLOAD_INCREMENT_FOR_SEARCH;
 
@@ -747,7 +779,5 @@ public class QualityAnalyzer {
    private boolean isValidRespTime(double rt, double rtreq) {
       return (rt >= 0) && (rt <= rtreq);
    }
-
-
 
 }

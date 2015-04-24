@@ -133,9 +133,9 @@ public class QualityAnalyzerTest {
       SuitableOptions cloudCharacteristics = createSuitableOptions();
 
       QualityInformation requirements = new QualityInformation();
-      requirements.setResponseTime(10.0);
+      requirements.setResponseTime(1000.0);
       requirements.setWorkload(10.0);
-      requirements.setCost(40.0);
+      requirements.setCostHour(40.0);
 
       HashMap<String, ArrayList<Double>> thresholds = analyzer
             .computeThresholds(bestSol, topology, requirements,
@@ -159,8 +159,8 @@ public class QualityAnalyzerTest {
 
    private Topology createTopology() {
 
-      TopologyElement e1 = new TopologyElement("Module1");
-      TopologyElement e2 = new TopologyElement("Module2");
+      TopologyElement e1 = new TopologyElement("Module1",1.0); //name and execution time
+      TopologyElement e2 = new TopologyElement("Module2",1.0); //name and execution time
 
       e1.addElementCalled(e2);
 
