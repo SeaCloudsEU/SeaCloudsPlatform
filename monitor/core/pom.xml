@@ -158,7 +158,10 @@
             			<configuration>
                 		<tasks>
                     		<unzip src="${project.build.directory}\jena-fuseki-1.1.1-distribution.zip" dest="${basedir}\lib" />
+                    		<delete file="${project.build.directory}\jena-fuseki-1.1.1-distribution.zip"/>
+
                     		<unzip src="${project.build.directory}\rsp-services-csparql-0.4.6.2-modaclouds-distribution.zip" dest="${basedir}\lib" />
+                    		<delete file="${project.build.directory}\rsp-services-csparql-0.4.6.2-modaclouds-distribution.zip"/>
                 		</tasks>
             			</configuration>
             			<goals>

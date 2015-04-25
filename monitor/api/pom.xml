@@ -97,30 +97,6 @@
          	<systemPath>${basedir}/../core/target/monitor-core-0.1.0-SNAPSHOT.jar</systemPath>
       	</dependency>
 
-		<!--<dependency>
-			<groupId>org.fusesource</groupId>
-			<artifactId>sigar</artifactId>
-			<version>1.6.4</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.jena</groupId>
-			<artifactId>jena-fuseki</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>it.polimi.csparqool</groupId>
-			<artifactId>csparqool</artifactId>
-			<version>1.2.2</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>-->
-
 		<dependency>
 			<groupId>it.polimi.modaclouds.monitoring</groupId>
 			<artifactId>metrics-observer</artifactId>
@@ -159,14 +135,14 @@
 
 			<plugin>
         		<artifactId>maven-antrun-plugin</artifactId>
-        		<version>1.4</version>
+        		<version>1.6</version>
         		<executions>
           			<execution>
-            			<phase>generate-test-resources</phase>
+            			<phase>generate-resources</phase>
             			<configuration>
               			<tasks>
-              				<mkdir dir="${basedir}\lib"/>
-                			<mkdir dir="${basedir}\WebContent\WEB-INF\lib"/>
+              				<mkdir dir="${basedir}/lib/"/>
+                			<mkdir dir="${basedir}/WebContent/WEB-INF/lib/"/>
               			</tasks>
             			</configuration>
             			<goals>
@@ -178,7 +154,60 @@
 
 			<plugin>
     			<artifactId>maven-antrun-plugin</artifactId>
-    			<version>1.1</version>
+    			<version>1.6</version>
+    			<executions>
+        			<execution>
+            			<id>download-files</id>
+            			<!--<phase>clean</phase>-->
+            			<phase>process-resources</phase>
+            			<goals>
+                			<goal>run</goal>
+            			</goals>
+            			<configuration>
+                			<target>
+                    			<!-- download files -->
+                    			<get src="http://www.java2s.com/Code/JarDownload/httpclient/httpclient-4.2.1.jar.zip"
+                         			dest="${project.build.directory}"
+                         			verbose="false"
+                         			usetimestamp="true"/>
+                         		<get src="http://www.java2s.com/Code/JarDownload/httpcore/httpcore-4.2.1.jar.zip"
+                         			dest="${project.build.directory}"
+                         			verbose="false"
+                         			usetimestamp="true"/>
+                         		<get src="http://jcenter.bintray.com/com/sun/jersey/jersey-core/1.19/jersey-core-1.19.jar"
+                         			dest="${project.build.directory}"
+                         			verbose="false"
+                         			usetimestamp="true"/>
+                         		<get src="http://jcenter.bintray.com/com/sun/jersey/jersey-server/1.19/jersey-server-1.19.jar"
+                         			dest="${project.build.directory}"
+                         			verbose="false"
+                         			usetimestamp="true"/>
+                         		<get src="http://jcenter.bintray.com/com/sun/jersey/jersey-servlet/1.19/jersey-servlet-1.19.jar"
+                         			dest="${project.build.directory}"
+                         			verbose="false"
+                         			usetimestamp="true"/>
+                         		<get src="https://github.com/deib-polimi/modaclouds-metrics-observer/releases/download/v3.0.1/metrics-observer-3.0.1.jar"
+                         			dest="${project.build.directory}"
+                         			verbose="false"
+                         			usetimestamp="true"/>
+                         		<get src="http://www.java2s.com/Code/JarDownload/commons-logging/commons-logging-api-1.1.1.jar.zip"
+                         			dest="${project.build.directory}"
+                         			verbose="false"
+                         			usetimestamp="true"/>
+                         		<get src="http://jcenter.bintray.com/com/sun/jersey/jersey-bundle/1.19/jersey-bundle-1.19.jar"
+                         			dest="${project.build.directory}"
+                         			verbose="false"
+                         			usetimestamp="true"/>
+                    			
+                 			</target>
+             			</configuration>
+         			</execution>
+     			</executions>
+ 			</plugin>
+ 
+			<plugin>
+    			<artifactId>maven-antrun-plugin</artifactId>
+    			<version>1.6</version>
     			<executions>
         			<execution>
             			<phase>test</phase>
@@ -189,14 +218,11 @@
                 				<tasks>
                     				<copy file="${basedir}\..\core\target\monitor-core-0.1.0-SNAPSHOT.jar" tofile="${basedir}\WebContent\WEB-INF\lib\monitor-core-0.1.0-SNAPSHOT.jar"/>
                     				<copy file="${basedir}\..\core\lib\data-collector-1.3-SNAPSHOT.jar" tofile="${basedir}\WebContent\WEB-INF\lib\data-collector-1.3-SNAPSHOT.jar"/>
-                    				<copy file="${user.home}\.m2\repository\org\apache\httpcomponents\httpclient\4.2.1\httpclient-4.2.1.jar" tofile="${basedir}\WebContent\WEB-INF\lib\httpclient-4.2.1.jar"/>
-                    				<copy file="${user.home}\.m2\repository\org\apache\httpcomponents\httpcore\4.2.1\httpcore-4.2.1.jar" tofile="${basedir}\WebContent\WEB-INF\lib\httpcore-4.2.1.jar"/>
-                    				<copy file="${user.home}\.m2\repository\com\sun\jersey\jersey-core\1.19\jersey-core-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-core-1.19.jar"/>
-                   					<copy file="${user.home}\.m2\repository\com\sun\jersey\jersey-server\1.19\jersey-server-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-server-1.19.jar"/>
-                   					<copy file="${user.home}\.m2\repository\com\sun\jersey\jersey-servlet\1.19\jersey-servlet-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-servlet-1.19.jar"/>
-                   					<copy file="${user.home}\.m2\repository\it\polimi\modaclouds\monitoring\metrics-observer\3.0.1\metrics-observer-3.0.1.jar" tofile="${basedir}\WebContent\WEB-INF\lib\metrics-observer-3.0.1.jar"/>
-                   					<copy file="${user.home}\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar" tofile="${basedir}\WebContent\WEB-INF\lib\commons-logging-1.1.1.jar"/>
-                   					<copy file="${user.home}\.m2\repository\com\sun\jersey\jersey-bundle\1.19\jersey-bundle-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-bundle-1.19.jar"/>
+                    				<move file="${project.build.directory}\jersey-core-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-core-1.19.jar"/>
+                    				<move file="${project.build.directory}\jersey-server-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-server-1.19.jar"/>
+                    				<move file="${project.build.directory}\jersey-servlet-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-servlet-1.19.jar"/>
+                    				<move file="${project.build.directory}\metrics-observer-3.0.1.jar" tofile="${basedir}\WebContent\WEB-INF\lib\metrics-observer-3.0.1.jar"/>
+                   					<move file="${project.build.directory}\jersey-bundle-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-bundle-1.19.jar"/>
                     			</tasks>
                 			</configuration>
             		</execution>
@@ -208,11 +234,20 @@
 			    <version>1.6</version>
     			<executions>
         			<execution>
-            			<id>prepare</id>
-            			<phase>validate</phase>
+            			<phase>install</phase>
             			<configuration>
                 		<tasks>
                     		<unzip src="${basedir}\..\core\target\hyperic-sigar-1.6.4.zip" dest="${basedir}\lib" />
+                    		<delete file="${basedir}\..\core\target\hyperic-sigar-1.6.4.zip"/>
+
+                    		<unzip src="${project.build.directory}/httpclient-4.2.1.jar.zip" dest="${basedir}/WebContent/WEB-INF/lib" />
+                    		<delete file="${project.build.directory}/httpclient-4.2.1.jar.zip"/>
+
+                    		<unzip src="${project.build.directory}/httpcore-4.2.1.jar.zip" dest="${basedir}/WebContent/WEB-INF/lib" />
+                    		<delete file="${project.build.directory}/httpcore-4.2.1.jar.zip"/>
+
+                    		<unzip src="${project.build.directory}/commons-logging-api-1.1.1.jar.zip" dest="${basedir}/WebContent/WEB-INF/lib" />
+                    		<delete file="${project.build.directory}/commons-logging-api-1.1.1.jar.zip"/>
                 		</tasks>
             			</configuration>
             			<goals>
