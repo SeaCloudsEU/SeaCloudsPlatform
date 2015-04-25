@@ -41,7 +41,7 @@ public class Monitor {
 
 	//Constants.
 	private static final String INITIALIZATION_CONFIGURATION_FILE = "./resources/initialization.properties";
-	private static final String SEACLOUDS_FOLDER = "./SeaClouds";
+	private static final String SEACLOUDS_FOLDER = "SeaClouds";
 	private static final String INITIALIZATION_CONFIGURATION_FILE_ON_SERVER = SEACLOUDS_FOLDER + "/storedInitialization.properties";
 
 	private static final String LOCAL_FUSEKI = "/core/lib/jena-fuseki-1.1.1";

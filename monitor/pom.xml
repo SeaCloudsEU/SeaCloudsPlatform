@@ -111,5 +111,5 @@
 		</plugin>-->
     </plugins>
   </build>
-  <groupId>eu.seaclouds-project</groupId>
+  <groupId>eu.seaclouds-project.monitor</groupId>
 </project>

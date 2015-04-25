@@ -66,7 +66,7 @@ public class MODACloudsMonitoringInitiation {
 								  "START CMD /C CALL java -jar rsp-services-csparql.jar\n" +
 
 								  "cd ..\n" +
-								  "START CMD /C CALL java -jar monitoring-manager.jar\n" +
+								  "START CMD /C CALL java -jar monitoring-manager-1.4.jar\n" +
 								  "exit";
 
 		TxtFileWriter.write( content, INIT_BATCH_FILE );
