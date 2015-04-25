@@ -83,124 +83,72 @@
 			</exclusions>
 		</dependency>
 
-		<!--<dependency>
-			<groupId>org.fusesource</groupId>
-			<artifactId>sigar</artifactId>
-			<version>1.6.4</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.jena</groupId>
-			<artifactId>jena-fuseki</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>it.polimi.csparqool</groupId>
-			<artifactId>csparqool</artifactId>
-			<version>1.2.2</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>-->
-
 		<dependency>
          	<groupId>monitoring-manager</groupId>
          	<artifactId>monitoring-manager</artifactId>
          	<scope>system</scope>
          	<version>1.4</version>
-         	<systemPath>${basedir}\lib\monitoring-manager-1.4.jar</systemPath>
+         	<systemPath>${basedir}/lib/monitoring-manager-1.4.jar</systemPath>
       	</dependency>
-
-      	<!--<dependency>
-         	<groupId>it.polimi.modaclouds.monitoring</groupId>
-         	<artifactId>monitoring-manager</artifactId>
-         	<version>1.4</version>
-      	</dependency>-->
 
       	<dependency>
       		<groupId>data-collector</groupId>
 			<artifactId>data-collector</artifactId>
-			<version>1.3-SNAPSHOT</version>
 			<scope>system</scope>
-			<systemPath>${basedir}\lib\data-collector-1.3-SNAPSHOT.jar</systemPath>
+			<version>1.3-SNAPSHOT</version>
+			<systemPath>${basedir}/lib/data-collector-1.3-SNAPSHOT.jar</systemPath>
 		</dependency>
 
-		<dependency>
+		<!--<dependency>
 			<groupId>com.googlecode.maven-download-plugin</groupId>
 			<artifactId>maven-download-plugin</artifactId>
 			<version>1.0.0</version>
-		</dependency>
+		</dependency>-->
 	</dependencies>
 
 
 	<build>
 		<plugins>
 			<plugin>
-	  			<groupId>com.googlecode.maven-download-plugin</groupId>
-	  			<artifactId>maven-download-plugin</artifactId>
-	  			<version>1.0.0</version>
-	  			<executions>
-	    			<execution>
-	      				<phase>process-resources</phase>
-	      				<goals>
-	        				<goal>wget</goal>
-	      				</goals>
-	      				<configuration>
-	        				<url>http://sourceforge.net/projects/sigar/files/latest/download?source=files</url>
-	        				<outputFileName>hyperic-sigar-1.6.4.zip</outputFileName>
-	        				<targetDirectory>${project.build.directory}</targetDirectory>
-	        				<!--<url>http://archive.apache.org/dist/jena/binaries/jena-fuseki-1.1.1-distribution.zip</url>
-	       					<outputFileName>jena-fuseki-1.1.1-distribution.zip</outputFileName>
-	        				<targetDirectory>${project.build.directory}</targetDirectory>-->
-	      				</configuration>
-	    			</execution>
-	  			</executions>
-			</plugin>
-
-			<!--<plugin>
-	  			<groupId>com.googlecode.maven-download-plugin</groupId>
-	  			<artifactId>maven-download-plugin</artifactId>
-	  			<version>1.0.0</version>
-	  			<executions>
-	    			<execution>
-	      				<phase>initialize</phase>
-	      				<goals>
-	        				<goal>wget</goal>
-	      				</goals>
-	      				<configuration>
-	       					<url>http://archive.apache.org/dist/jena/binaries/jena-fuseki-1.1.1-distribution.zip</url>
-	       					<outputFileName>jena-fuseki-1.1.1-distribution.zip</outputFileName>
-	       					<targetDirectory>${project.build.directory}</targetDirectory>
-	       				</configuration>
-	    			</execution>
-	  			</executions>
-			</plugin>-->
-
-			<!--<plugin>
-	  			<groupId>com.googlecode.maven-download-plugin</groupId>
-	  			<artifactId>maven-download-plugin</artifactId>
-	  			<version>1.0.0</version>
-	  			<executions>
-	    			<execution>
-	      				<phase>initialize</phase>
-	      				<goals>
-	        				<goal>wget</goal>
-	      				</goals>
-	      				<configuration>
-	       					<url>https://github.com/imperial-modaclouds/modaclouds-data-collectors/releases/download/1.3-Snapshot/data-collector-1.3-SNAPSHOT.jar</url>
-	       					<outputFileName>data-collector-1.3-SNAPSHOT.jar</outputFileName>
-	       					<targetDirectory>${project.build.directory}</targetDirectory>
-	       				</configuration>
-	    			</execution>
-	  			</executions>
-			</plugin>-->
+    			<artifactId>maven-antrun-plugin</artifactId>
+    			<executions>
+        			<execution>
+            			<id>download-files</id>
+            			<!--<phase>clean</phase>-->
+            			<phase>process-resources</phase>
+            			<goals>
+                			<goal>run</goal>
+            			</goals>
+            			<configuration>
+                			<target>
+                    			<!-- download files -->
+                    			<get src="http://archive.apache.org/dist/jena/binaries/jena-fuseki-1.1.1-distribution.zip"
+                         			dest="${project.build.directory}"
+                         			verbose="false"
+                         			usetimestamp="true"/>
+                    			<get src="https://magelan.googlecode.com/files/hyperic-sigar-1.6.4.zip"
+	        			            dest="${project.build.directory}"
+    	                		    verbose="false"
+        	                 		usetimestamp="true"/>
+                    			<get src="http://www.cs.uoi.gr/~dathanas/rsp-services-csparql-0.4.6.2-modaclouds-distribution.zip"
+                         			dest="${project.build.directory}"
+                         			verbose="false"
+                         			usetimestamp="true"/>
+                         		<!--<get src="http://www.cs.uoi.gr/~dathanas/monitoring-manager-1.4.jar"
+                         			dest="${project.build.directory}"
+                         			verbose="false"
+                         			usetimestamp="true"/>
+                         		<get src="https://github.com/imperial-modaclouds/modaclouds-data-collectors/releases/download/1.3-Snapshot/data-collector-1.3-SNAPSHOT.jar"
+                         			dest="${project.build.directory}"
+                         			verbose="false"
+                         			usetimestamp="true"/>-->
+                 			</target>
+             			</configuration>
+         			</execution>
+     			</executions>
+ 			</plugin>
 
 			<plugin>
-    			<groupId>org.apache.maven.plugins</groupId>
     			<artifactId>maven-antrun-plugin</artifactId>
 			    <version>1.6</version>
     			<executions>
@@ -209,8 +157,8 @@
             			<phase>install</phase>
             			<configuration>
                 		<tasks>
-                    		<unzip src="${basedir}\lib\jena-fuseki-1.1.1-distribution.zip" dest="${basedir}\lib" />
-                    		<unzip src="${basedir}\lib\rsp-services-csparql-0.4.6.2-modaclouds-distribution.zip" dest="${basedir}\lib" />
+                    		<unzip src="${project.build.directory}\jena-fuseki-1.1.1-distribution.zip" dest="${basedir}\lib" />
+                    		<unzip src="${project.build.directory}\rsp-services-csparql-0.4.6.2-modaclouds-distribution.zip" dest="${basedir}\lib" />
                 		</tasks>
             			</configuration>
             			<goals>
@@ -221,7 +169,6 @@
 			</plugin>
 
 			<plugin>
-            	<groupId>org.apache.maven.plugins</groupId>
             	<artifactId>maven-clean-plugin</artifactId>
             	<version>2.4.1</version>
             	<configuration>
@@ -237,7 +184,9 @@
                 	</filesets>
             	</configuration>
         	</plugin>
+
 		</plugins>
+
 	</build>
 
 	<groupId>eu.seaclouds-project.monitor.core</groupId>
