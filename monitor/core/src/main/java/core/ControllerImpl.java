@@ -34,58 +34,6 @@ public class ControllerImpl implements Controller {
 
 
 		return "[INFO] Monitor controller: MODACLouds monitoring platform has been initialized.";
-
-
-		/*try{
-
-			storeInitializationData( initializationData );
-		}
-
-		catch( IOException ex ){
-
-			ex.printStackTrace();
-		}*/
-
-
-		/*try{
-
-			System.out.println( "\nGive the IP of the knowledge base:" );
-			System.out.print( "IP = " );
-
-			BufferedReader input = new BufferedReader( new InputStreamReader( System.in ) );
-			IPofKB = input.readLine();
-			if( IPofKB == null || ( IPofKB != null && IPofKB.equals( "" ) ) ) IPofKB = EndpointIP.getIP(); 
-
-			System.out.println( "\nGive the IP of the data analyzer:" );
-			System.out.print( "IP = " );
-
-			input = new BufferedReader( new InputStreamReader( System.in ) );
-			IPofDA = input.readLine();
-			if( IPofDA == null || ( IPofDA != null && IPofDA.equals( "" ) ) ) IPofDA = EndpointIP.getIP();
-
-
-			System.out.println( "\nGive the IP of the monitoring manager:" );
-			System.out.print( "IP = " );
-
-			input = new BufferedReader( new InputStreamReader( System.in ) );
-			IPofMM = input.readLine();
-			if( IPofMM == null || ( IPofMM != null && IPofMM.equals( "" ) ) ) IPofMM = EndpointIP.getIP();
-
-
-			System.out.println( "\nGive the metric name:" );
-			System.out.print( "Metric name = " );
-
-			input = new BufferedReader( new InputStreamReader( System.in ) );
-			metricName = input.readLine();
-			if( metricName == null || ( metricName != null && metricName.equals( "" ) ) ) metricName = "CPUUtilization";
-		}
-
-		catch( Exception ex ){
-
-			ex.printStackTrace();
-
-			System.exit( -1 );
-		}*/
 	}
 
 	public String initializeMonitor( String IPofKB, String IPofDA, String IPofMM, String portOfKB, String portOfDA, String portOfMM, String privatePortOfMM, String SLAServiceURIRulesReady, String SLAServiceURIReplanning, String DashboardURIRulesReady, String DashboardURIReplanning, String PlannerURIRulesReady, String PlannerURIReplanning ){
@@ -94,57 +42,6 @@ public class ControllerImpl implements Controller {
 
 
 		return "[INFO] Monitor controller: MODACLouds monitoring platform has been initialized.";
-
-
-		/*try{
-
-			storeInitializationData( initializationData );
-		}
-
-		catch( IOException ex ){
-
-			ex.printStackTrace();
-		}*/
-
-		/*try{
-
-			System.out.println( "\nGive the IP of the knowledge base:" );
-			System.out.print( "IP = " );
-
-			BufferedReader input = new BufferedReader( new InputStreamReader( System.in ) );
-			IPofKB = input.readLine();
-			if( IPofKB == null || ( IPofKB != null && IPofKB.equals( "" ) ) ) IPofKB = EndpointIP.getIP(); 
-
-			System.out.println( "\nGive the IP of the data analyzer:" );
-			System.out.print( "IP = " );
-
-			input = new BufferedReader( new InputStreamReader( System.in ) );
-			IPofDA = input.readLine();
-			if( IPofDA == null || ( IPofDA != null && IPofDA.equals( "" ) ) ) IPofDA = EndpointIP.getIP();
-
-
-			System.out.println( "\nGive the IP of the monitoring manager:" );
-			System.out.print( "IP = " );
-
-			input = new BufferedReader( new InputStreamReader( System.in ) );
-			IPofMM = input.readLine();
-			if( IPofMM == null || ( IPofMM != null && IPofMM.equals( "" ) ) ) IPofMM = EndpointIP.getIP();
-
-
-			System.out.println( "\nGive the metric name:" );
-			System.out.print( "Metric name = " );
-
-			input = new BufferedReader( new InputStreamReader( System.in ) );
-			metricName = input.readLine();
-			if( metricName == null || ( metricName != null && metricName.equals( "" ) ) ) metricName = "CPUUtilization";
-		}
-
-		catch( Exception ex ){
-
-			ex.printStackTrace();
-
-			System.exit( -1 );
-		}*/
 	}
 
 	private void storeInitializationData( String IPofKB, String IPofDA, String IPofMM, String portOfKB, String portOfDA, String portOfMM, String privatePortOfMM, String SLAServiceURIRulesReady, String SLAServiceURIReplanning, String DashboardURIRulesReady, String DashboardURIReplanning, String PlannerURIRulesReady, String PlannerURIReplanning ){

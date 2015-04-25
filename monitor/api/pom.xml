@@ -158,6 +158,26 @@
 			</plugin>
 
 			<plugin>
+        		<groupId>org.apache.maven.plugins</groupId>
+        		<artifactId>maven-antrun-plugin</artifactId>
+        		<version>1.4</version>
+        		<executions>
+          			<execution>
+            			<phase>generate-test-resources</phase>
+            			<configuration>
+              			<tasks>
+              				<mkdir dir="${basedir}\lib"/>
+                			<mkdir dir="${basedir}\WebContent\WEB-INF\lib"/>
+              			</tasks>
+            			</configuration>
+            			<goals>
+              				<goal>run</goal>
+            			</goals>
+          			</execution>
+        		</executions>
+      		</plugin>
+
+			<plugin>
     			<groupId>org.apache.maven.plugins</groupId>
     			<artifactId>maven-antrun-plugin</artifactId>
     			<version>1.1</version>
@@ -169,17 +189,16 @@
             				</goals>
             				<configuration>
                 				<tasks>
-                    				<echo>Using env.test.properties</echo>
-                    					<copy file="${basedir}\..\core\target\monitor-core-0.1.0-SNAPSHOT.jar" tofile="${basedir}\WebContent\WEB-INF\lib\monitor-core-0.1.0-SNAPSHOT.jar"/>
-                    					<copy file="${basedir}\..\core\lib\data-collector-1.3-SNAPSHOT.jar" tofile="${basedir}\WebContent\WEB-INF\lib\data-collector-1.3-SNAPSHOT.jar"/>
-                    					<copy file="${user.home}\.m2\repository\org\apache\httpcomponents\httpclient\4.2.1\httpclient-4.2.1.jar" tofile="${basedir}\WebContent\WEB-INF\lib\httpclient-4.2.1.jar"/>
-                    					<copy file="${user.home}\.m2\repository\org\apache\httpcomponents\httpcore\4.2.1\httpcore-4.2.1.jar" tofile="${basedir}\WebContent\WEB-INF\lib\httpcore-4.2.1.jar"/>
-                    					<copy file="${user.home}\.m2\repository\com\sun\jersey\jersey-core\1.19\jersey-core-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-core-1.19.jar"/>
-                    					<copy file="${user.home}\.m2\repository\com\sun\jersey\jersey-server\1.19\jersey-server-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-server-1.19.jar"/>
-                    					<copy file="${user.home}\.m2\repository\com\sun\jersey\jersey-servlet\1.19\jersey-servlet-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-servlet-1.19.jar"/>
-                    					<copy file="${user.home}\.m2\repository\it\polimi\modaclouds\monitoring\metrics-observer\3.0.1\metrics-observer-3.0.1.jar" tofile="${basedir}\WebContent\WEB-INF\lib\metrics-observer-3.0.1.jar"/>
-                    					<copy file="${user.home}\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar" tofile="${basedir}\WebContent\WEB-INF\lib\commons-logging-1.1.1.jar"/>
-                    					<copy file="${user.home}\.m2\repository\com\sun\jersey\jersey-bundle\1.19\jersey-bundle-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-bundle-1.19.jar"/>
+                    				<copy file="${basedir}\..\core\target\monitor-core-0.1.0-SNAPSHOT.jar" tofile="${basedir}\WebContent\WEB-INF\lib\monitor-core-0.1.0-SNAPSHOT.jar"/>
+                    				<copy file="${basedir}\..\core\lib\data-collector-1.3-SNAPSHOT.jar" tofile="${basedir}\WebContent\WEB-INF\lib\data-collector-1.3-SNAPSHOT.jar"/>
+                    				<copy file="${user.home}\.m2\repository\org\apache\httpcomponents\httpclient\4.2.1\httpclient-4.2.1.jar" tofile="${basedir}\WebContent\WEB-INF\lib\httpclient-4.2.1.jar"/>
+                    				<copy file="${user.home}\.m2\repository\org\apache\httpcomponents\httpcore\4.2.1\httpcore-4.2.1.jar" tofile="${basedir}\WebContent\WEB-INF\lib\httpcore-4.2.1.jar"/>
+                    				<copy file="${user.home}\.m2\repository\com\sun\jersey\jersey-core\1.19\jersey-core-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-core-1.19.jar"/>
+                   					<copy file="${user.home}\.m2\repository\com\sun\jersey\jersey-server\1.19\jersey-server-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-server-1.19.jar"/>
+                   					<copy file="${user.home}\.m2\repository\com\sun\jersey\jersey-servlet\1.19\jersey-servlet-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-servlet-1.19.jar"/>
+                   					<copy file="${user.home}\.m2\repository\it\polimi\modaclouds\monitoring\metrics-observer\3.0.1\metrics-observer-3.0.1.jar" tofile="${basedir}\WebContent\WEB-INF\lib\metrics-observer-3.0.1.jar"/>
+                   					<copy file="${user.home}\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar" tofile="${basedir}\WebContent\WEB-INF\lib\commons-logging-1.1.1.jar"/>
+                   					<copy file="${user.home}\.m2\repository\com\sun\jersey\jersey-bundle\1.19\jersey-bundle-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-bundle-1.19.jar"/>
                     			</tasks>
                 			</configuration>
             		</execution>
@@ -205,6 +224,26 @@
         			</execution>
     			</executions>
 			</plugin>
+
+			<plugin>
+            	<groupId>org.apache.maven.plugins</groupId>
+            	<artifactId>maven-clean-plugin</artifactId>
+            	<version>2.4.1</version>
+            	<configuration>
+                	<filesets>
+                    	<fileset>
+                        	<directory>${basedir}</directory>
+                        	<includes>
+                            	<include>**/lib/**</include>
+                            	<include>**/WebContent/WEB-INF/lib/**</include>
+                            	<include>**/data-collector-1.3-SNAPSHOT.jar</include>
+                            	<include>**/dataCollectorsInstallation.bat</include>
+                        	</includes>
+                        	<followSymlinks>false</followSymlinks>
+                    	</fileset>
+                	</filesets>
+            	</configuration>
+        	</plugin>
 
 			<!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>

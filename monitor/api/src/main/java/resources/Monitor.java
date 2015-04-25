@@ -129,6 +129,8 @@ public class Monitor {
 
 		//serverSourcesPath = serverSourcesPath.replace( '+', '/' ); //System.out.println( "\nserverSourcesPath = " + serverSourcesPath );
 
+		delete( new File( SEACLOUDS_FOLDER ) );
+
 		copySourceFiles( serverSourcesPath );
 
 
@@ -767,13 +769,6 @@ public class Monitor {
 
 			ex.printStackTrace();
 		}
-
-
-        //Get plain text.
-        //System.out.println(service.path("rest").path("monitor/initiate").accept(MediaType.TEXT_PLAIN).get(String.class));
-
-        // The HTML  
-        //System.out.println(service.path("rest").path("testMessage").accept(MediaType.TEXT_HTML).get(String.class));  
     }
 
 	private static Properties read( String initilizationFile ){
@@ -804,6 +799,28 @@ public class Monitor {
 
  		return properties;
 	}
+
+	private static void delete( File folder ){
+
+	    if( folder.exists() ){ //PrintMessages.print( folder.getPath() );
+
+	      File[] files = folder.listFiles();
+
+	      //PrintMessages.stdPrintLn( "\n" );
+
+	      for( int i = 0; files != null && i < files.length; i++ ){
+
+	    	  //PrintMessages.stdPrintLn( "Deleting: " + files[ i ].getAbsolutePath() );
+
+	    	  if( files[ i ].isDirectory() ) delete( files[ i ] );
+
+	    	  else files[ i ].delete();
+	      }
+
+
+	      folder.delete(); 
+	    }
+	  }
 
 	private static void copySourceFiles( String serverSourcesPath ){
 

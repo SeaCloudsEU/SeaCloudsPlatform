@@ -33,6 +33,8 @@ public class MODACloudsMonitoringInitiation {
 			createBatchfile( IPofKB, portOfKB, IPofDA, portOfDA, IPofMM, portOfMM, privatePortOfMM, seaCloudsFolder );
 
 			WindowsBatchFileExecution.execute( INIT_BATCH_FILE );
+
+			new File( INIT_BATCH_FILE ).delete();
 		}
 
 		else if( OperatingSystem.isUnix() ) JOptionPane.showMessageDialog( null, "To initialize for the case of Unix", "Unix", JOptionPane.ERROR_MESSAGE );
