@@ -98,12 +98,6 @@
 			<version>1.3-SNAPSHOT</version>
 			<systemPath>${basedir}/lib/data-collector-1.3-SNAPSHOT.jar</systemPath>
 		</dependency>
-
-		<!--<dependency>
-			<groupId>com.googlecode.maven-download-plugin</groupId>
-			<artifactId>maven-download-plugin</artifactId>
-			<version>1.0.0</version>
-		</dependency>-->
 	</dependencies>
 
 
