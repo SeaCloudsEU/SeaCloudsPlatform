@@ -25,8 +25,8 @@
   <modules>
     <module>monitor</module>
     <module>deployer</module>
-    <module>planner</module>
-    <module>dashboard</module>
+    <!--<module>planner</module>
+    <module>dashboard</module>-->
   </modules>
   <packaging>pom</packaging>
   <name>SeaClouds Platform</name>
