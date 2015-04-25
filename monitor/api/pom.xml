@@ -94,7 +94,7 @@
          	<artifactId>monitor-core</artifactId>
          	<version>0.1.0-SNAPSHOT</version>
          	<scope>system</scope>
-         	<systemPath>${basedir}\..\core\target\monitor-core-0.1.0-SNAPSHOT.jar</systemPath>
+         	<systemPath>${basedir}/../core/target/monitor-core-0.1.0-SNAPSHOT.jar</systemPath>
       	</dependency>
 
 		<!--<dependency>
