@@ -82,9 +82,9 @@ public class OptimizerTest {
    }
 
    @Test
-   public void testPresenceSolutionRandom() {
+   public void testPresenceSolutionBlind() {
 
-      log.info("=== TEST for SOLUTION GENERATION of RANDOM optimizer STARTED ===");
+      log.info("=== TEST for SOLUTION GENERATION of BLIND optimizer STARTED ===");
 
       optimizer = new Optimizer(NUM_PLANS_TO_GENERATE,
             SearchMethodName.BLINDSEARCH);
@@ -103,7 +103,7 @@ public class OptimizerTest {
                + ".yaml", arrayDam[damnum]);
       }
 
-      log.info("=== TEST for SOLUTION GENERATION of RANDOM optimizer FINISEHD ===");
+      log.info("=== TEST for SOLUTION GENERATION of BLIND optimizer FINISEHD ===");
 
    }
 
@@ -210,5 +210,4 @@ public class OptimizerTest {
    public void testFinishced() {
       log.info("===== ALL TESTS FOR OPTIMIZER FINISHED ===");
    }
-
 }
