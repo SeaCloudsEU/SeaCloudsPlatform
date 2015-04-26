@@ -1,10 +1,15 @@
 language: java
 before_install: "git clone -b travis `git config --get remote.origin.url` target/travis"
 
-script: if [ "$TRAVIS_BRANCH" == "master" ]; then
-           mvn clean deploy --settings target/travis/settings.xml;
+script: if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+          echo "Skipping snapshot deployment: was pull request."
+        elif [ "$TRAVIS_BRANCH" != "master" ]; then
+          echo "Skipping snapshot deployment: wrong branch. Expected '$BRANCH' but was '$TRAVIS_BRANCH'."
+
         else
-           mvn clean install;
+          echo "Deploying snapshot..."
+          mvn deploy --settings target/travis/settings.xml
+          echo "Snapshot deployed!"
         fi
 
 sudo: false
