@@ -33,12 +33,12 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
-public abstract class AbstractHeuristic{
+public abstract class AbstractHeuristic {
 
    static Logger                  log                           = LoggerFactory
                                                                       .getLogger(AbstractHeuristic.class);
 
-   private int                    MAX_ITER_NO_IMPROVE           = 200;
+   private int                    MAX_ITER_NO_IMPROVE           = 200;                                    // 200;
    private double                 MAX_TIMES_IMPROVE_REQUIREMENT = 20;
    private static final int       DEFAULT_MAX_NUM_INSTANCES     = 10;
    protected static final boolean IS_DEBUG                      = false;
@@ -50,8 +50,6 @@ public abstract class AbstractHeuristic{
 
    public AbstractHeuristic() {
    }
-
-
 
    public void setMaxIterNoImprove(int value) {
       MAX_ITER_NO_IMPROVE = value;
@@ -74,8 +72,9 @@ public abstract class AbstractHeuristic{
    public double fitness(Solution bestSol, Map<String, Object> applicationMap,
          Topology topology, SuitableOptions cloudCharacteristics) {
 
-      loadQualityRequirements(applicationMap);
-
+      if (requirements == null) {
+         loadQualityRequirements(applicationMap);
+      }
       QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
 
       // calculates how well it satisfies performance reuquirement. Method
@@ -84,10 +83,20 @@ public abstract class AbstractHeuristic{
       // guiding the search method towards better solutions
       double perfGoodness = 1;
       if (requirements.existResponseTimeRequirement()) {
-         perfGoodness = requirements.getResponseTime()
-               / qualityAnalyzer.computePerformance(bestSol, topology,
-                     requirements.getWorkload(), cloudCharacteristics)
-                     .getResponseTime();
+
+         double computedPerformance = qualityAnalyzer.computePerformance(
+               bestSol, topology, requirements.getWorkload(),
+               cloudCharacteristics).getResponseTime();
+         perfGoodness = requirements.getResponseTime() / computedPerformance;
+
+         if (IS_DEBUG) {
+            log.debug("Candidate Solution " + bestSol.toString()
+                  + " evaluated gave a response time of " + computedPerformance
+                  + " while the requirements were "
+                  + requirements.getResponseTime() + " and the workload was "
+                  + requirements.getWorkload());
+         }
+
       }
 
       // calculates how well it satisfies availability reuquirement, if it
@@ -102,12 +111,13 @@ public abstract class AbstractHeuristic{
       // calculates how well it satisfies cost reuquirement, if it exists
       double costGoodness = 1;
       if (requirements.existCostRequirement()) {
-         costGoodness = requirements.getCost()
+         costGoodness = requirements.getCostHour()
                / qualityAnalyzer.computeCost(bestSol, cloudCharacteristics);
       }
 
+      double fitness = 0.0;
       if ((perfGoodness >= 1) && (availGoodness >= 1) && (costGoodness >= 1)) {
-         return Math.min(MAX_TIMES_IMPROVE_REQUIREMENT, perfGoodness)
+         fitness = Math.min(MAX_TIMES_IMPROVE_REQUIREMENT, perfGoodness)
                + Math.min(MAX_TIMES_IMPROVE_REQUIREMENT, availGoodness)
                + Math.min(MAX_TIMES_IMPROVE_REQUIREMENT, costGoodness);
       } else {
@@ -138,10 +148,16 @@ public abstract class AbstractHeuristic{
             numExistingRequirements++;
          }
 
-         return partialFitness
-               / (MAX_TIMES_IMPROVE_REQUIREMENT * numExistingRequirements++);
+         if (qualityAnalyzer.getAllComputedQualities() == null) {
+            log.warn("something werid is happening because quality values are null");
+         }
 
+         fitness = partialFitness
+               / (MAX_TIMES_IMPROVE_REQUIREMENT * numExistingRequirements++);
       }
+
+      bestSol.setSolutionQuality(qualityAnalyzer.getAllComputedQualities());
+      return fitness;
 
    }
 
@@ -167,6 +183,9 @@ public abstract class AbstractHeuristic{
 
       // if the solution does not satisfy the performance requirements, nothing
       // to do
+      if (IS_DEBUG) {
+         log.debug("Create reconfiguration Thresholds method is going to call the compute Performance");
+      }
       double perfGoodness = requirements.getResponseTime()
             / qualityAnalyzer.computePerformance(sol, topology,
                   requirements.getWorkload(), cloudCharacteristics)
@@ -189,7 +208,11 @@ public abstract class AbstractHeuristic{
          return thresholds;
       } else {// There are not performance requirements, so no thresholds are
               // created.
-         log.debug("Finishing the creation of reconfiguration thresholds because there were not performance requirements");
+         log.debug("Finishing the creation of reconfiguration thresholds because there "
+               + "were not performance requirements or solution could not satisfy performance. Solution: "
+               + sol.toString()
+               + " quality attributes: "
+               + sol.getSolutionQuality().toString());
          return null;
       }
 
@@ -238,18 +261,21 @@ public abstract class AbstractHeuristic{
 
          YAMLoptimizerParser
                .CleanSuitableOfferForModule(solkey, applicationMap);
+
          YAMLoptimizerParser.AddSuitableOfferForModule(solkey,
                currentSol.getCloudOfferNameForModule(solkey),
                currentSol.getCloudInstancesForModule(solkey), applicationMap);
+
+         YAMLoptimizerParser.AddQualityOfSolution(currentSol, applicationMap);
+
       }
 
    }
 
-   
+   protected Solution[] mergeBestSolutions(Solution[] sols1, Solution[] sols2,
+         int numPlansToGenerate) {
+      // TODO: this method has never been tested
 
-     
-     protected Solution[] mergeBestSolutions(Solution[] sols1, Solution[] sols2,     int numPlansToGenerate) { 
-        //TODO: this method has never been tested
       sortSolutionsByFitness(sols1);
       sortSolutionsByFitness(sols2);
 
@@ -280,10 +306,10 @@ public abstract class AbstractHeuristic{
             }
 
          }
-     
-     
-     } return merged; }
-    
+
+      }
+      return merged;
+   }
 
    protected void sortSolutionsByFitness(Solution[] bestSols) {
       Arrays.sort(bestSols, Collections.reverseOrder());
@@ -370,6 +396,9 @@ public abstract class AbstractHeuristic{
          Solution[] bestSols, Map<String, Object> applicMap, Topology topology,
          SuitableOptions cloudOffers, int numPlansToGenerate) {
 
+      if (AbstractHeuristic.IS_DEBUG) {
+         checkQualityAttachedToSolutions(bestSols);
+      }
       @SuppressWarnings("unchecked")
       Map<String, Object>[] solutions = new HashMap[numPlansToGenerate];
 
@@ -395,16 +424,15 @@ public abstract class AbstractHeuristic{
             && (!sol.isContainedIn(sols));
    }
 
-   protected Solution findRandomSolution(SuitableOptions cloudOffers,
-         Map<String, Object> applicationMap) {
+   protected Solution findRandomSolution(SuitableOptions cloudOffers) {
       Solution currentSolution = new Solution();
       for (String modName : cloudOffers.getStringIterator()) {
 
-         //element to use
+         // element to use
          int itemToUse = (int) Math.floor(Math.random()
                * (double) cloudOffers.getSizeOfSuitableOptions(modName));
-         
-         //number of instances
+
+         // number of instances
          int numInstances = ((int) Math.floor(Math.random()
                * ((double) DEFAULT_MAX_NUM_INSTANCES))) + 1;
 
@@ -414,6 +442,16 @@ public abstract class AbstractHeuristic{
       }
 
       return currentSolution;
+   }
+
+   protected void checkQualityAttachedToSolutions(Solution[] bestSols) {
+
+      for (int i = 0; i < bestSols.length; i++) {
+         if (bestSols[i].getSolutionQuality() == null) {
+            log.info("Solution has its quality NULL" + bestSols[i].toString());
+         }
+      }
+
    }
 
 }

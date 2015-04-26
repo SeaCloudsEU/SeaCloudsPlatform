@@ -22,7 +22,7 @@ import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
 public class CloudOffer {
 
    private String name;
-   private double performance;
+   private double performanceForExecutionUnit;
    private double availability;
    private double cost;
    private double numCores;
@@ -36,7 +36,7 @@ public class CloudOffer {
       // (it works because, although it is not very modular to store
       // info here, CloudOffers are members of a list of SuitableSolutions for
       // module).
-      this.performance = performance;
+      this.performanceForExecutionUnit = performance;
       this.availability = availability;
       this.cost = cost;
       this.numCores = numCores;
@@ -52,9 +52,15 @@ public class CloudOffer {
 
    public CloudOffer(String name) {
       this.name = name;
-      this.performance = 0;
+      // in service rate
+      this.performanceForExecutionUnit = 0;
       this.availability = 0;
       this.cost = 0;
+   }
+
+   public static String providerNameOfCloudOffer(String cloudOfferName) {
+      return cloudOfferName
+            .split(TOSCAkeywords.CLOUD_OFFER_PROVIDER_NAME_SEPARATOR)[0];
    }
 
    public String getName() {
@@ -66,11 +72,11 @@ public class CloudOffer {
    }
 
    public double getPerformance() {
-      return performance;
+      return performanceForExecutionUnit;
    }
 
    public void setPerformance(double performance) {
-      this.performance = performance;
+      this.performanceForExecutionUnit = performance;
    }
 
    public double getAvailability() {
@@ -91,7 +97,8 @@ public class CloudOffer {
 
    @Override
    public CloudOffer clone() {
-      return new CloudOffer(name, performance, availability, cost);
+      return new CloudOffer(name, performanceForExecutionUnit, availability,
+            cost, numCores);
    }
 
    public double getNumCores() {
@@ -102,12 +109,23 @@ public class CloudOffer {
       this.numCores = numCores;
    }
 
+   public void setNumCores(double numCores, boolean adjustPerformanceOfOffer) {
+
+      if (adjustPerformanceOfOffer) {
+         setPerformance(getPerformance() / numCores);
+      }
+      setNumCores(numCores);
+
+   }
+
    /**
     * @return The part of the cloud offer name before the first dot (".")
     */
    public String getProviderName() {
       // TODO: Test this method with several offers names since the split method
       // gives curious results sometimes (null)
+      // It could be also used the static method providerNameOfClokudOffer
+      // passing as argument the name of this object
       return name.split(TOSCAkeywords.CLOUD_OFFER_PROVIDER_NAME_SEPARATOR)[0];
    }
 

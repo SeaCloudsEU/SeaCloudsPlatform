@@ -25,6 +25,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import scala.actors.threadpool.Arrays;
+import eu.seaclouds.platform.planner.optimizer.CloudOffer;
 import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.Topology;
@@ -92,11 +94,25 @@ public class QualityAnalyzer {
       IS_DEBUG = debug;
    }
 
+   /**
+    * @return This method returns the summary of all the quality values (one for
+    *         each property) already calculated by the object. NOTE that it does
+    *         not calculate any new property value
+    */
+   public QualityInformation getAllComputedQualities() {
+      return properties;
+   }
+
+   // routing matrix with the OpProfile (the item in 0 is the mainly called)
+   private double[][] routes = null;
+
    public QualityInformation computePerformance(Solution bestSol,
          Topology topology, double workload,
          SuitableOptions cloudCharacteristics) {
 
-      double[][] routes = getRoutingMatrix(topology);
+      if (routes == null) {
+         routes = getRoutingMatrix(topology);
+      }
       double[] workloadsModules = getWorkloadsArray(routes, workload);
       double[] numVisitsModule = getNumVisitsArray(workloadsModules, workload);
 
@@ -109,13 +125,97 @@ public class QualityAnalyzer {
       double[] mus = getMusOfSelectedCloudOffers(bestSol, topology,
             cloudCharacteristics);
 
+      if (IS_DEBUG) {
+         log.debug("Solution to check the mus is: " + bestSol.toString());
+         log.debug("Mus of servers are: " + Arrays.toString(mus));
+         log.debug("Num visits modules is: " + Arrays.toString(numVisitsModule));
+         log.debug("Workload received of modules: "
+               + Arrays.toString(workloadsModules));
+         log.debug("Workload received of each execution unit by its numberOfInstances and Cores: "
+               + Arrays.toString(workloadsModulesByCoresAndNumInstances));
+      }
       double respTime = getSystemRespTime(numVisitsModule,
             workloadsModulesByCoresAndNumInstances, mus);
 
+      if (IS_DEBUG) {
+         log.debug("calculated response time of the solution "
+               + bestSol.toString() + " without considering latencies is: "
+               + respTime);
+      }
+      respTime += addNetworkDelays(bestSol, topology, numVisitsModule,
+            cloudCharacteristics);
+      if (IS_DEBUG) {
+         log.debug("calculated response time of the solution"
+               + bestSol.toString() + " is: " + respTime);
+      }
       // after computing, save the performance info in properties.performance
       properties.setResponseTime(respTime);
 
       return properties;
+   }
+
+   private double addNetworkDelays(Solution bestSol, Topology topology,
+         double[] numVisitsModule, SuitableOptions cloudCharacteristics) {
+
+      double networkDelay = 0.0;
+
+      for (int i = 0; i < topology.size(); i++) {
+         TopologyElement element = topology.getElementIndex(i);
+
+         double sumOfDelaysSingleModule = 0.0;
+
+         for (TopologyElementCalled elementCalled : element) {
+            sumOfDelaysSingleModule += elementCalled.getProbCall()
+                  * latencyBetweenElements(bestSol, element.getName(),
+                        elementCalled.getElement().getName(),
+                        cloudCharacteristics);
+         }
+
+         if (IS_DEBUG) {
+            log.debug("calculated network delay for module " + i
+                  + " in solution " + bestSol.toString()
+                  + " is (numVisitsModule[i] * sumOfDelaysSingleModule): "
+                  + numVisitsModule[i] * sumOfDelaysSingleModule);
+         }
+         networkDelay += numVisitsModule[i] * sumOfDelaysSingleModule;
+
+      }
+
+      return networkDelay;
+
+   }
+
+   private double latencyBetweenElements(Solution bestSol,
+         String callingModuleName, String calledModuleName,
+         SuitableOptions cloudCharacteristics) {
+
+      String cloudOfferCallingElement = bestSol
+            .getCloudProviderNameForModule(callingModuleName);
+      String cloudOfferCalledElement = bestSol
+            .getCloudProviderNameForModule(calledModuleName);
+
+      if (CloudOffer.providerNameOfCloudOffer(cloudOfferCallingElement).equals(
+            CloudOffer.providerNameOfCloudOffer(cloudOfferCalledElement))) {
+
+         if (IS_DEBUG) {
+            log.debug("latency between modules " + callingModuleName + " and "
+                  + calledModuleName + " is "
+                  + cloudCharacteristics.getLatencyIntraDatacenterSec());
+         }
+
+         return cloudCharacteristics.getLatencyIntraDatacenterSec();
+
+      } else {
+
+         if (IS_DEBUG) {
+            log.debug("latency between modules " + callingModuleName + " and "
+                  + calledModuleName + " is "
+                  + cloudCharacteristics.getLatencyInterCloudSec());
+         }
+
+         return cloudCharacteristics.getLatencyInterCloudSec();
+      }
+
    }
 
    private double getSystemRespTime(double[] numVisitsModule,
@@ -165,11 +265,28 @@ public class QualityAnalyzer {
 
       double[] mus = new double[topology.size()];
       for (int i = 0; i < mus.length; i++) {
+
          String moduleName = topology.getElementIndex(i).getName();
          String cloudChosenForModule = bestSol
                .getCloudOfferNameForModule(moduleName);
          mus[i] = cloudCharacteristics.getCloudCharacteristics(moduleName,
-               cloudChosenForModule).getPerformance();
+               cloudChosenForModule).getPerformance()
+               / topology.getElementIndex(i).getDefaultExecutionTime();
+
+         if (IS_DEBUG) {
+            log.debug("Default execution time of module "
+                  + i
+                  + " with name "
+                  + topology.getElementIndex(i).getName()
+                  + " is "
+                  + topology.getElementIndex(i).getDefaultExecutionTime()
+                  + " and using cloud option "
+                  + bestSol.getCloudOfferNameForModule(moduleName)
+                  + " with performance "
+                  + cloudCharacteristics.getCloudCharacteristics(moduleName,
+                        cloudChosenForModule).getPerformance() + " its Mu is "
+                  + mus[i]);
+         }
       }
 
       return mus;
@@ -192,6 +309,12 @@ public class QualityAnalyzer {
                moduleName, cloudChosenForModule).getNumCores();
          ponderatedWorkloads[i] = workloadsModules[i]
                / (numInstances * numCores);
+
+         if (IS_DEBUG) {
+            log.debug("Number of instances used for module " + moduleName
+                  + " is : " + numInstances + " and num Cores of the offer is"
+                  + numCores);
+         }
       }
 
       return ponderatedWorkloads;
@@ -400,7 +523,7 @@ public class QualityAnalyzer {
       }
 
       // after computing, save the cost info in properties.availability
-      properties.setCost(cost);
+      properties.setCostHour(cost);
       return cost;
 
    }
@@ -408,7 +531,6 @@ public class QualityAnalyzer {
    public HashMap<String, ArrayList<Double>> computeThresholds(
          Solution solInput, Topology topology, QualityInformation requirements,
          SuitableOptions cloudCharacteristics) {
-
 
       HashMap<String, ArrayList<Double>> thresholds = new HashMap<String, ArrayList<Double>>();
 
@@ -423,7 +545,6 @@ public class QualityAnalyzer {
          log.debug("Reconfiguration Thresholds not created because Response Time requirement or expected workload was not found.");
          return null;
       }
-      double[][] routes = getRoutingMatrix(topology);
 
       double[] mus = getMusOfSelectedCloudOffers(modifSol, topology,
             cloudCharacteristics);
@@ -439,12 +560,11 @@ public class QualityAnalyzer {
             log.debug("Creating threshold for workload above " + limitWorkload);
          }
          limitWorkload = findWorkloadForWhichRespTimeIsExceeded(
-               requirements.getResponseTime(), limitWorkload, routes, mus,
-               modifSol, topology, cloudCharacteristics);
+               requirements.getResponseTime(), limitWorkload, mus, modifSol,
+               topology, cloudCharacteristics);
          // get highest utilization
          String moduleWithHighestUtilization = findHighestUtilizationModuleThatCanScale(
-               limitWorkload, routes, mus, modifSol, topology,
-               cloudCharacteristics);
+               limitWorkload, mus, modifSol, topology, cloudCharacteristics);
 
          // put the value in the hashMap. "moduleWithHighestUtilization" may be
          // null
@@ -459,7 +579,7 @@ public class QualityAnalyzer {
             existModulesToScaleOut = false;
             // can be shortened to
             // "existModulesToScaleOut=(!(moduleWithHighestUtilization==null));"
-            // but it is less readable in my opinion. 
+            // but it is less readable in my opinion.
          }
 
       }
@@ -503,8 +623,8 @@ public class QualityAnalyzer {
     *         were included programming)
     */
    private String findHighestUtilizationModuleThatCanScale(
-         double limitWorkload, double[][] routes, double[] mus, Solution sol,
-         Topology topology, SuitableOptions cloudCharacteristics) {
+         double limitWorkload, double[] mus, Solution sol, Topology topology,
+         SuitableOptions cloudCharacteristics) {
 
       double[] workloadsModules = getWorkloadsArray(routes, limitWorkload);
 
@@ -525,9 +645,11 @@ public class QualityAnalyzer {
                                             // the first one that can scale
                maxUtilizationIndex = i;
             } else {
-               if (utilizations[i] > utilizations[maxUtilizationIndex]) { 
-                   //It could  be done as an OR in the previous condition, but this is 
-                   //a safe manner as the order in which Java evaluates disyuntive conditions
+               if (utilizations[i] > utilizations[maxUtilizationIndex]) {
+                  // It could be done as an OR in the previous condition, but
+                  // this is
+                  // a safe manner as the order in which Java evaluates
+                  // disyuntive conditions
                   maxUtilizationIndex = i;
                }
             }
@@ -569,7 +691,7 @@ public class QualityAnalyzer {
       }
       if (requirements.existCostRequirement()) {
          return computeCost(sol, cloudCharacteristics) <= requirements
-               .getCost();
+               .getCostHour();
       }
       return limitWorkload <= (MAX_TIMES_WORKLOAD_FOR_THRESHOLDS * workload);
 
@@ -586,9 +708,8 @@ public class QualityAnalyzer {
     *         time is not satisfied
     */
    private double findWorkloadForWhichRespTimeIsExceeded(
-         double respTimeRequirement, double workload, double[][] routes,
-         double[] mus, Solution sol, Topology topology,
-         SuitableOptions cloudCharacteristics) {
+         double respTimeRequirement, double workload, double[] mus,
+         Solution sol, Topology topology, SuitableOptions cloudCharacteristics) {
 
       double incWorkload = WORKLOAD_INCREMENT_FOR_SEARCH;
 
@@ -643,13 +764,16 @@ public class QualityAnalyzer {
       double lowerWorkloadLimit = Math.floor(workload + (incWorkload / 2.0));
       double upperWorkloadLimit = workload + incWorkload;
 
-      while (lowerWorkloadLimit + 2.0 < upperWorkloadLimit) { 
-         
+      while (lowerWorkloadLimit + 2.0 < upperWorkloadLimit) {
+
          // TODO: I chose a value to add of 2.0 because the difference should be
-         // 1.0 but there may be problems with the Double representation of values. One
-         // arrival more does not (should not) make any difference but the comparison with
-         // doubles works better.Check this for accurate version 2.0. Middle point
-         
+         // 1.0 but there may be problems with the Double representation of
+         // values. One
+         // arrival more does not (should not) make any difference but the
+         // comparison with
+         // doubles works better.Check this for accurate version 2.0. Middle
+         // point
+
          double workloadToCheck = (lowerWorkloadLimit + upperWorkloadLimit) / 2.0;
          workloadsModules = getWorkloadsArray(routes, workloadToCheck);
          numVisitsModule = getNumVisitsArray(workloadsModules, workloadToCheck);
