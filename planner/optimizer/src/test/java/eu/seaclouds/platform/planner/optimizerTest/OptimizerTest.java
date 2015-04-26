@@ -88,7 +88,6 @@ public class OptimizerTest {
 
       optimizer = new Optimizer(NUM_PLANS_TO_GENERATE,
             SearchMethodName.BLINDSEARCH);
-      
 
       String[] arrayDam = optimizer.optimize(appModel, suitableCloudOffer);
       for (int damnum = 0; damnum < arrayDam.length; damnum++) {

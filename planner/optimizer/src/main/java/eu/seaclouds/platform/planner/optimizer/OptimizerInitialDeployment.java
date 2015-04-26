@@ -19,10 +19,8 @@ package eu.seaclouds.platform.planner.optimizer;
 
 import java.util.Map;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 import eu.seaclouds.platform.planner.optimizer.heuristics.HillClimb;
 import eu.seaclouds.platform.planner.optimizer.heuristics.BlindSearch;
@@ -56,7 +54,6 @@ public class OptimizerInitialDeployment {
       }
 
    }
-
 
    public String[] optimize(String appModel, String suitableCloudOffer,
          int numPlansToGenerate) {

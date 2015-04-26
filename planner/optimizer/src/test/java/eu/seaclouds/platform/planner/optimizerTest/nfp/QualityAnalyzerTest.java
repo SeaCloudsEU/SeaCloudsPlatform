@@ -159,8 +159,12 @@ public class QualityAnalyzerTest {
 
    private Topology createTopology() {
 
-      TopologyElement e1 = new TopologyElement("Module1",1.0); //name and execution time
-      TopologyElement e2 = new TopologyElement("Module2",1.0); //name and execution time
+      TopologyElement e1 = new TopologyElement("Module1", 1.0); // name and
+                                                                // execution
+                                                                // time
+      TopologyElement e2 = new TopologyElement("Module2", 1.0); // name and
+                                                                // execution
+                                                                // time
 
       e1.addElementCalled(e2);
 

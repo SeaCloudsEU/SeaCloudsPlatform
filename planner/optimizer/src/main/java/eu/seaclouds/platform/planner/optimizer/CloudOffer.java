@@ -97,7 +97,8 @@ public class CloudOffer {
 
    @Override
    public CloudOffer clone() {
-      return new CloudOffer(name, performanceForExecutionUnit, availability, cost, numCores);
+      return new CloudOffer(name, performanceForExecutionUnit, availability,
+            cost, numCores);
    }
 
    public double getNumCores() {
@@ -109,14 +110,14 @@ public class CloudOffer {
    }
 
    public void setNumCores(double numCores, boolean adjustPerformanceOfOffer) {
-     
-      if(adjustPerformanceOfOffer){
-         setPerformance(getPerformance()/numCores);
+
+      if (adjustPerformanceOfOffer) {
+         setPerformance(getPerformance() / numCores);
       }
       setNumCores(numCores);
-      
+
    }
-   
+
    /**
     * @return The part of the cloud offer name before the first dot (".")
     */
@@ -127,7 +128,5 @@ public class CloudOffer {
       // passing as argument the name of this object
       return name.split(TOSCAkeywords.CLOUD_OFFER_PROVIDER_NAME_SEPARATOR)[0];
    }
-
-
 
 }

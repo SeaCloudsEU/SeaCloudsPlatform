@@ -90,8 +90,9 @@ public abstract class AbstractHeuristic {
          perfGoodness = requirements.getResponseTime() / computedPerformance;
 
          if (IS_DEBUG) {
-            log.debug("Candidate Solution " +bestSol.toString() + " evaluated gave a response time of "
-                  + computedPerformance + " while the requirements were "
+            log.debug("Candidate Solution " + bestSol.toString()
+                  + " evaluated gave a response time of " + computedPerformance
+                  + " while the requirements were "
                   + requirements.getResponseTime() + " and the workload was "
                   + requirements.getWorkload());
          }
@@ -182,7 +183,9 @@ public abstract class AbstractHeuristic {
 
       // if the solution does not satisfy the performance requirements, nothing
       // to do
-      if(IS_DEBUG){log.debug("Create reconfiguration Thresholds method is going to call the compute Performance");}
+      if (IS_DEBUG) {
+         log.debug("Create reconfiguration Thresholds method is going to call the compute Performance");
+      }
       double perfGoodness = requirements.getResponseTime()
             / qualityAnalyzer.computePerformance(sol, topology,
                   requirements.getWorkload(), cloudCharacteristics)
@@ -206,8 +209,10 @@ public abstract class AbstractHeuristic {
       } else {// There are not performance requirements, so no thresholds are
               // created.
          log.debug("Finishing the creation of reconfiguration thresholds because there "
-               + "were not performance requirements or solution could not satisfy performance. Solution: " + 
-               sol.toString() + " quality attributes: " + sol.getSolutionQuality().toString());
+               + "were not performance requirements or solution could not satisfy performance. Solution: "
+               + sol.toString()
+               + " quality attributes: "
+               + sol.getSolutionQuality().toString());
          return null;
       }
 
@@ -257,7 +262,6 @@ public abstract class AbstractHeuristic {
          YAMLoptimizerParser
                .CleanSuitableOfferForModule(solkey, applicationMap);
 
-
          YAMLoptimizerParser.AddSuitableOfferForModule(solkey,
                currentSol.getCloudOfferNameForModule(solkey),
                currentSol.getCloudInstancesForModule(solkey), applicationMap);
@@ -267,7 +271,6 @@ public abstract class AbstractHeuristic {
       }
 
    }
-
 
    protected Solution[] mergeBestSolutions(Solution[] sols1, Solution[] sols2,
          int numPlansToGenerate) {
@@ -303,10 +306,10 @@ public abstract class AbstractHeuristic {
             }
 
          }
-     
-     
-     } return merged; }
-    
+
+      }
+      return merged;
+   }
 
    protected void sortSolutionsByFitness(Solution[] bestSols) {
       Arrays.sort(bestSols, Collections.reverseOrder());
@@ -425,11 +428,11 @@ public abstract class AbstractHeuristic {
       Solution currentSolution = new Solution();
       for (String modName : cloudOffers.getStringIterator()) {
 
-         //element to use
+         // element to use
          int itemToUse = (int) Math.floor(Math.random()
                * (double) cloudOffers.getSizeOfSuitableOptions(modName));
-         
-         //number of instances
+
+         // number of instances
          int numInstances = ((int) Math.floor(Math.random()
                * ((double) DEFAULT_MAX_NUM_INSTANCES))) + 1;
 
