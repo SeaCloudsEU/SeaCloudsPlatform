@@ -1,17 +1,8 @@
 language: java
 before_install: "git clone -b travis `git config --get remote.origin.url` target/travis"
-script: if [ "$TRAVIS_REPO_SLUG" != "SeaCloudsEU/SeaCloudsPlatform" ]; then
-          echo "Skipping snapshot deployment: wrong repository. Expected '$SLUG' but was '$TRAVIS_REPO_SLUG'."
-        elif [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-          echo "Skipping snapshot deployment: was pull request."
-        elif [ "$TRAVIS_BRANCH" != "master" ]; then
-          echo "Skipping snapshot deployment: wrong branch. Expected 'master' but was '$TRAVIS_BRANCH'."
-        else
-          echo "Deploying snapshot..."
-          mvn clean source:jar javadoc:jar deploy --settings target/travis/settings.xml" -Dmaven.test.skip=true
-          echo "Snapshot deployed!"
-        fi
 
+after_success:
+  - .buildscript/deploy_snapshot.sh
 sudo: false
 
 branches:
@@ -21,3 +12,7 @@ env:
   global:
     - secure: "q6oLIb4TpyVxy6jcauijVcGkkTr3xe5dfcII5yJs48r2FzcZeAYqPvifb9G9tlOiK5igXJrEa2GmNytlI9NijOIAt8BBV34xIovwkupwJ9qGAxG2E5hHbAjGiRaICTglkH+psgaPuPe4W8UgmWCSNt9bM12F1bVHsXXftWx/880="
     - secure: "VYSXB7Myuqbkyt9vjiro09R6e44G2xAie8Q8lYfJreghp7kTIUeH3cCY9gMRb8pMiYadVtF01hzJWaf6PaApScNivmMUkvzGGvfnRX1FbBoxL9CIhkZkmofoyvqiobE4moZpDl6wje7APAch2b/D9Q4CmNQf7eBFic9XissQqA4="
+
+cache:
+  directories:
+    - $HOME/.m2
