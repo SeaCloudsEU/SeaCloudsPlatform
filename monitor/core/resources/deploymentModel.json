@@ -1,0 +1,15 @@
+{
+  "cloudProviders": [
+    {
+      "id": "amazon"
+    }
+  ],
+  "vMs": [
+    {
+      "numberOfCPUs": 2,
+      "cloudProvider": "amazon",
+      "type": "Frontend",
+      "id": "frontend1"
+    }
+  ]
+}
