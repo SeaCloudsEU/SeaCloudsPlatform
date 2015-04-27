@@ -72,7 +72,12 @@
     <dependency>
       <groupId>org.apache.brooklyn</groupId>
       <artifactId>brooklyn-rest-client</artifactId>
-    </dependency>
+    </dependency> 
+    <!--<dependency>
+    	<groupId>io.brooklyn</groupId>
+    	<artifactId>brooklyn-rest-client</artifactId>
+    	<version>0.7.0-M1</version>
+	</dependency>-->
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
@@ -134,7 +139,7 @@
           <target>1.7</target>
         </configuration>
       </plugin>
-      <plugin>
+      <!--<plugin>
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
         <version>0.11</version>
@@ -159,7 +164,6 @@
             <exclude>**/*.log</exclude>
             <exclude>**/target/**</exclude>
 
-            <!-- files not requiring licence -->
             <exclude>ignored/**</exclude>
             <exclude>**/*.md</exclude>
             <exclude>**/*.svg</exclude>
@@ -178,7 +182,7 @@
 
           </excludes>
         </configuration>
-      </plugin>
+      </plugin>-->
     </plugins>
   </build>
   <dependencyManagement>
