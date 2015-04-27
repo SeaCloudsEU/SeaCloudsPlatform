@@ -31,28 +31,28 @@ import java.io.IOException;
  * @author MBarrientos
  */
 public class RemoveApplicationsServlet extends HttpServlet {
-    static BrooklynApi BROOKLYN_API = DeployerConnector.getConnection();
+
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+        BrooklynApi BROOKLYN_API = new DeployerConnector().getConnection();
         String application = request.getParameter("application");
-        if (application != null) {
-
+        if (application != null & BROOKLYN_API != null) {
 
             Response res = BROOKLYN_API.getApplicationApi().delete(application);
 
             if (res.getStatus() >=  400) {
-                response.sendError(500, "Connection error: couldn't reach SeaClouds endpoint");
+                response.sendError(500, "Connection error: couldn't reach Deployer endpoint");
             } else {
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
                 response.getWriter().write(new Gson().toJson(res.getStatus()));
             }
 
+        } else if (BROOKLYN_API == null) {
+            response.sendError(500, "Connection error: couldn't reach Deployer endpoint");
         } else {
             response.sendError(404, "Resource not found");
-
         }
     }
 }
