@@ -134,7 +134,7 @@
           <target>1.7</target>
         </configuration>
       </plugin>
-      <!-- <plugin>
+      <plugin>
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
         <version>0.11</version>
@@ -159,6 +159,7 @@
             <exclude>**/*.log</exclude>
             <exclude>**/target/**</exclude>
 
+            <!-- files not requiring licence -->
             <exclude>ignored/**</exclude>
             <exclude>**/*.md</exclude>
             <exclude>**/*.svg</exclude>
@@ -177,7 +178,7 @@
 
           </excludes>
         </configuration>
-      </plugin>-->
+      </plugin>
     </plugins>
   </build>
   <dependencyManagement>
