@@ -25,14 +25,23 @@ public class TOSCAkeywords {
    public static final String MODULE_REQUIREMENTS_CONSTRAINTS     = "constraints";
    public static final String MODULE_REQUIREMENTS_HOST            = "host";
    public static final String CLOUD_OFFER_PROPERTIES_TAG          = "properties";
-   public static final String MODULE_REQUIREMENTS_INSTANCES       = "instances";
+   public static final String CLOUD_OFFER_NUM_CORES_TAG           = "cpuCores";
+
+   public static final String MODULE_PROPOSED_INSTANCES           = "instancesPOC";
 
    // These ones have not been defined yet. I temporarily use this definition
    public static final String CLOUD_OFFER_PROPERTY_AVAILABILITY   = "availabilityPOC";
    public static final String CLOUD_OFFER_PROPERTY_PERFORMANCE    = "performancePOC";
    public static final String CLOUD_OFFER_PROPERTY_COST           = "costPOC";
+   public static final String LATENCY_INTER_DATACENTER_MILLIS     = "latencyExternalPOC";
+   public static final String LATENCY_INTRA_DATACENTER_MILLIS     = "latencyInternalPOC";
 
-   public static final String RECONFIGURATION_WORKLOAD_TAG        = "Reconfigurations";
+   public static final String RECONFIGURATION_WORKLOAD_TAG        = "ReconfigurationsPOC";
+   public static final String EXPECTED_QUALITY_PROPERTIES         = "ExpectedQualityPOC";
+   public static final String EXPECTED_QOS_PERFORMANCE_SEC        = "expectedExecutionTimePOC";
+   public static final String EXPECTED_QOS_AVAILABILITY           = "expectedAvailabilityPOC";
+   public static final String EXPECTED_QOS_COST_MONTH             = "expectedCostPOC";
+   public static final String OVERALL_QOS_FITNESS                 = "fitnessPOC";
 
    public static final String APP_QOS_REQUIREMENTS                = "QoSrequirementsPOC";
    public static final String APP_PERFORMANCE_REQUIREMENTS        = "responseTimePOC";
