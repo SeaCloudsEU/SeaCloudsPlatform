@@ -32,8 +32,6 @@ public class GetMatchmakingServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-
         String yaml = request.getParameter("yaml");
 
         if (yaml == null) {

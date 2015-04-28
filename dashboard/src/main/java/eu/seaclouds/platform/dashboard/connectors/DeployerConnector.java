@@ -28,27 +28,28 @@ import org.slf4j.LoggerFactory;
 public class DeployerConnector {
     static Logger log = LoggerFactory.getLogger(DeployerConnector.class);
 
-    private static BrooklynApi brooklynApi;
+    private BrooklynApi brooklynApi;
 
-    public static BrooklynApi getConnection() {
-        if (brooklynApi == null) {
-            if (ConfigParameters.DEPLOYER_ENDPOINT == null){
-                log.error("Deployer endpoint is not properly set");
+    public DeployerConnector(){
+        if (ConfigParameters.DEPLOYER_ENDPOINT == null){
+            log.error("Deployer endpoint is not properly set");
+        } else {
+            log.debug("Connecting to Deployer at " + ConfigParameters.DEPLOYER_ENDPOINT);
+
+            if (ConfigParameters.DEPLOYER_USERNAME == null){
+                log.info("Login username not defined. Accessing without login credentials...");
+                brooklynApi = new BrooklynApi(
+                        ConfigParameters.DEPLOYER_ENDPOINT);
             } else {
-                log.debug("Connecting to Deployer at " + ConfigParameters.DEPLOYER_ENDPOINT);
-
-                if (ConfigParameters.DEPLOYER_USERNAME == null){
-                    log.info("Login username not defined. Accessing without login credentials...");
-                    brooklynApi = new BrooklynApi(
-                            ConfigParameters.DEPLOYER_ENDPOINT);
-                } else {
-                    brooklynApi = new BrooklynApi(
-                            ConfigParameters.DEPLOYER_ENDPOINT,
-                            ConfigParameters.DEPLOYER_USERNAME,
-                            ConfigParameters.DEPLOYER_PASSWORD);
-                }
+                brooklynApi = new BrooklynApi(
+                        ConfigParameters.DEPLOYER_ENDPOINT,
+                        ConfigParameters.DEPLOYER_USERNAME,
+                        ConfigParameters.DEPLOYER_PASSWORD);
             }
         }
+    }
+
+    public BrooklynApi getConnection() {
         return brooklynApi;
     }
 }

@@ -37,8 +37,6 @@ import java.util.List;
  * @author Adrian Nieto
  */
 public class GetAvailableMetricsServlet extends HttpServlet {
-    static BrooklynApi BROOKLYN_API = DeployerConnector.getConnection();
-
     private boolean isNumberType(SensorSummary sensor){
         return sensor.getType().equals("java.lang.Integer")
                 || sensor.getType().equals("java.lang.Double")
@@ -54,40 +52,45 @@ public class GetAvailableMetricsServlet extends HttpServlet {
         String application =  request.getParameter("application");
         if(application != null){
 
-            JsonArray parentJson = new JsonArray();
+            BrooklynApi BROOKLYN_API = new DeployerConnector().getConnection();
+            if (BROOKLYN_API != null) {
+                JsonArray parentJson = new JsonArray();
 
-            for(EntitySummary entitySummary : BROOKLYN_API.getEntityApi().list(application)) {
-                JsonObject entitySumaryJson = new JsonObject();
-                entitySumaryJson.addProperty("id", entitySummary.getId());
-                entitySumaryJson.addProperty("name", entitySummary.getName());
-                entitySumaryJson.addProperty("type", entitySummary.getType());
+                for (EntitySummary entitySummary : BROOKLYN_API.getEntityApi().list(application)) {
+                    JsonObject entitySumaryJson = new JsonObject();
+                    entitySumaryJson.addProperty("id", entitySummary.getId());
+                    entitySumaryJson.addProperty("name", entitySummary.getName());
+                    entitySumaryJson.addProperty("type", entitySummary.getType());
 
-                JsonArray entityMetricsJsonArray = new JsonArray();
-                entitySumaryJson.add("metrics", entityMetricsJsonArray);
+                    JsonArray entityMetricsJsonArray = new JsonArray();
+                    entitySumaryJson.add("metrics", entityMetricsJsonArray);
 
-                List<SensorSummary> sensorSummaryList = BROOKLYN_API.getSensorApi().list(application, entitySummary.getId());
-                Collections.sort(sensorSummaryList, new Comparator<SensorSummary>() {
-                    @Override
-                    public int compare(SensorSummary s1, SensorSummary s2) {
-                        return s1.getName().compareTo(s2.getName());
+                    List<SensorSummary> sensorSummaryList = BROOKLYN_API.getSensorApi().list(application, entitySummary.getId());
+                    Collections.sort(sensorSummaryList, new Comparator<SensorSummary>() {
+                        @Override
+                        public int compare(SensorSummary s1, SensorSummary s2) {
+                            return s1.getName().compareTo(s2.getName());
+                        }
+                    });
+
+                    for (SensorSummary sensorSummary : sensorSummaryList) {
+                        if (isNumberType(sensorSummary)) {
+                            entityMetricsJsonArray.add(new Gson().toJsonTree(sensorSummary));
+                        }
+
                     }
-                });
 
-                for (SensorSummary sensorSummary : sensorSummaryList) {
-                    if(isNumberType(sensorSummary)) {
-                        entityMetricsJsonArray.add(new Gson().toJsonTree(sensorSummary));
-                    }
-
+                    parentJson.add(entitySumaryJson);
                 }
 
-                parentJson.add(entitySumaryJson);
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(parentJson.toString());
+            } else {
+                response.sendError(500, "Connection error: couldn't reach Deployer endpoint");
             }
 
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(parentJson.toString());
-
-        }else{
+        } else {
               response.sendError(404, "Connection error resource not found");
 
          }
