@@ -6,22 +6,22 @@ node_templates:
     requirements: {host: webServer, database_endpoint: nuroDatabase}
     QoSpropertiesPOC:
       executionTimeMeasuredInPOC: AWS.compute.c1.medium
-      executionTimePOC: 50.0
-      OpProfilePOC: {nuroDatabase: 10.98}
+      executionTimePOC: 100.0
+      OpProfilePOC: {nuroDatabase: 4.0}
   nuroDatabase:
     type: seaClouds.nodes.Database.MySQL
     properties: {db_name: nuroDB, version: 5.1}
     capabilities:
       database_endpoint:
         properties: {port: 80}
-    requirements: {host: AWS.compute.c1.medium, instances: 2}
-    QoSpropertiesPOC: {executionTimeMeasuredInPOC: AWS.compute.c1.medium, executionTimePOC: 50.0}
+    requirements: {host: AWS.compute.m1.small, instancesPOC: 2}
+    QoSpropertiesPOC: {executionTimeMeasuredInPOC: AWS.compute.c1.medium, executionTimePOC: 100.0}
   webServer:
     type: seaClouds.nodes.WebServer
     capabilities: {host: seaclouds.nodes.WebApplication.PHP}
-    requirements: {host: AWS.compute.c1.medium, instances: 4}
-QoSrequirementsPOC: {availabilityPOC: 0.99, responseTimePOC: 2000.0, workloadPOC: 100.0,
+    requirements: {host: AWS.compute.m1.large, instancesPOC: 1}
+  ExpectedQualityPOC: {expectedAvailabilityPOC: 0.9994990005, fitnessPOC: 0.4662153378899568,
+    expectedCostPOC: 187.20000000000002, expectedExecutionTimePOC: .inf}
+QoSrequirementsPOC: {availabilityPOC: 0.99, responseTimePOC: 2000.0, workloadPOC: 1000.0,
   costPOC: 1500.0}
-Reconfigurations:
-  nuroDatabase: [510.0, 787.5, 1020.0, 1260.0, 1620.0, 1860.0, 2100.0, 2340.0, 2700.0]
 

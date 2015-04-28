@@ -28,7 +28,6 @@ public class Topology {
 
    static Logger                 log = LoggerFactory.getLogger(Topology.class);
 
-
    private List<TopologyElement> modules;
 
    public Topology() {
@@ -171,7 +170,7 @@ public class Topology {
 
    }
 
-   //Iterator that returns list of dependencies
+   // Iterator that returns list of dependencies
    class DependencyListsIterator extends
          AbstractIterator<List<TopologyElementCalled>> {
 
@@ -185,7 +184,7 @@ public class Topology {
       }
    }
 
-   //Iterator that returns module names
+   // Iterator that returns module names
    class ModuleNamesIterator extends AbstractIterator<String> {
       @Override
       public String next() {
