@@ -30,7 +30,6 @@ public class WebServiceLayer extends HttpServlet {
 	/* vars */
 	private JSONParser jsonParser;
 	private OptimizerExample optimizer;
-	private Matchmaker matchmaker;
 
 	/* stats */
 	private int numberOfPosts;
@@ -97,16 +96,15 @@ public class WebServiceLayer extends HttpServlet {
 	/* *********************************************************** */
 	
 	public void init() {
-		this.matchmaker = new Matchmaker(Tosca.newEnvironment());
 		this.jsonParser = new JSONParser();
 		this.optimizer = new OptimizerExample();
 		this.numberOfPosts = 0;
 		this.numberOfServedPosts = 0;
 		
-		/* startup time *
+		/* startup time */
 		this.rightNow = Calendar.getInstance();
 		this.startup = rightNow.getTime();
-		this.startupMillis = rightNow.getTimeInMillis(); */
+		this.startupMillis = rightNow.getTimeInMillis();
 	}
 	
 
@@ -114,16 +112,16 @@ public class WebServiceLayer extends HttpServlet {
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
-		/* some stats *
+		/* some stats */
 		int uptime = getUptime();
 		int nDays = getNumberOfDays(uptime);
 		
-		/* response *
+		/* response */
 		PrintWriter out = response.getWriter();
 		out.println("Hello.");
 		out.println("The planner has been running for about " + nDays + " days.");
 		out.println(numberOfPosts + " POST requests arrived.");
-		out.println(numberOfServedPosts + " POSTS have been served so far."); */
+		out.println(numberOfServedPosts + " POSTS have been served so far.");
 		return;
 	}
 	
@@ -132,7 +130,7 @@ public class WebServiceLayer extends HttpServlet {
 	
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {		
-				
+
 		// NOTE: check if explicit multithreading needed
 		
 		/* stats */
@@ -154,30 +152,25 @@ public class WebServiceLayer extends HttpServlet {
 			return;
 		}
 			
-				
 		/* putting on stream and parsing */
 		StringReader sr = new StringReader(strAam);
 		IToscaEnvironment aam = Tosca.newEnvironment();
 		aam.readFile(sr, true);
 		
-		/* invoking matchmaker and optimizer */
-		Map<String, List<INodeType>> cloudOfferings = matchmaker.Match(aam);
+		/* invoking the matchmaker */
+		Matchmaker mm = new Matchmaker( Tosca.newEnvironment() ); // TODO
+		Map<String, List<INodeType>> cloudOfferings = mm.Match(aam);
 		out.println(cloudOfferings);
 		
-		List<IToscaEnvironment> optOffers = null;
-		try {
-			optOffers = optimizer.optimizeFullSearchCartesian(aam, cloudOfferings);
-		} catch(Exception ex) {
-			ex.printStackTrace(out);
-		}
-
+		/* invoking the optimizer */
+		List<IToscaEnvironment> optOffers = optimizer.optimizeFullSearchCartesian(aam, cloudOfferings);
+		
 		/* wrapping the result in a json array */
 		JSONObject responseData = new JSONObject();
 		int offerIndex = 0;
-				
 		for(IToscaEnvironment currentOffer : optOffers) {
 			INamedEntity ee = (INamedEntity) currentOffer;
-			responseData.put("offer" + offerIndex, ee.name()); // iteToString(currentOffer));
+			responseData.put("offer_" + offerIndex, iteToString(currentOffer));
 			offerIndex++;
 		}
 		
