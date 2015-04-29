@@ -1,3 +1,20 @@
+/**
+ * Copyright 2014 SeaClouds
+ * Contact: Dionysis Athanasopoulos <dionysiscsuoi@gmail.com>
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package core.modaCloudsMonitoring.modaCloudsDataCollectors;
 
 import imperial.modaclouds.monitoring.datacollectors.monitors.ModacloudsMonitor;
@@ -10,11 +27,6 @@ import javax.swing.JOptionPane;
 
 import core.OperatingSystem;
 
-/**
- * 
- * @author Dionysis Athanasopoulos <dionysiscsuoi@gmail.com>
- *
- */
 public class MODACloudsDataCollectors {
 
 	public static File getDataCollectorsJar(String serverDataCollectorsPath, String dataCollectorsFileName ){
@@ -23,9 +35,6 @@ public class MODACloudsDataCollectors {
 	}
 
 	public static File getDataCollectorJar( String metricName, String serverDataCollectorsPath, String dataCollectorsFileName ){
-
-		//TODO: to select data collector based on metric name.
-
 
 		return new File( serverDataCollectorsPath + "/" + dataCollectorsFileName );
 	}
@@ -41,15 +50,15 @@ public class MODACloudsDataCollectors {
 			installationExecutionCommand += "\n" + "set \"MODACLOUDS_KNOWLEDGEBASE_DATASET_PATH \"/modaclouds/kb\"";
 			installationExecutionCommand += "\n" + "set \"MODACLOUDS_MONITORING_DDA_ENDPOINT_IP=" + IPofDA + "\"";
 			installationExecutionCommand += "\n" + "set \"MODACLOUDS_MONITORING_DDA_ENDPOINT_PORT=" + portOfDA + "\"";
-			installationExecutionCommand += "\n" + "set \"MODACLOUDS_KNOWLEDGEBASE_SYNC_PERIOD=10\"";//TODO: to parameterize this.
-			installationExecutionCommand += "\n" + "set \"MODACLOUDS_MONITORED_APP_ID=dathanas\"";//TODO: to parameterize this.
-			installationExecutionCommand += "\n" + "set \"MODACLOUDS_MONITORED_VM_ID=frontend1\"";//TODO: to parameterize this.
+			installationExecutionCommand += "\n" + "set \"MODACLOUDS_KNOWLEDGEBASE_SYNC_PERIOD=10\"";
+			installationExecutionCommand += "\n" + "set \"MODACLOUDS_MONITORED_APP_ID=dathanas\"";
+			installationExecutionCommand += "\n" + "set \"MODACLOUDS_MONITORED_VM_ID=frontend1\"";
 		}
 
 		else JOptionPane.showMessageDialog( null, "To initialize for the case of Unix", "Unix", JOptionPane.ERROR_MESSAGE );//TODO
 
 
-		installationExecutionCommand += "\n" + getExecutionCommand( metricName, dataCollectorsFileName ); //System.out.println( "installationExecutionCommand = " + installationExecutionCommand );
+		installationExecutionCommand += "\n" + getExecutionCommand( metricName, dataCollectorsFileName );
 
 
 		return installationExecutionCommand;
@@ -63,56 +72,6 @@ public class MODACloudsDataCollectors {
 		Map<String,String> collectorExecutionCommandMapping = new HashMap<String,String>();
 
 		collectorExecutionCommandMapping.put( "sigar", "lib/hyperic-sigar-1.6.4/sigar-bin/lib" );
-			/*metricCollectorMapping.put("cpustolen", "sigar");
-				metricCollectorMapping.put("memused", "sigar");
-				metricCollectorMapping.put("threads_running", "mysql");
-				metricCollectorMapping.put("threads_cached", "mysql");
-				metricCollectorMapping.put("threads_connected", "mysql");
-				metricCollectorMapping.put("threads_created", "mysql");
-				metricCollectorMapping.put("queries", "mysql");
-				metricCollectorMapping.put("bytes_received", "mysql");
-				metricCollectorMapping.put("bytes_sent", "mysql");
-				metricCollectorMapping.put("connections", "mysql");
-				metricCollectorMapping.put("aborted_connects", "mysql");
-				metricCollectorMapping.put("aborted_clients", "mysql");
-				metricCollectorMapping.put("table_locks_immediate", "mysql");
-				metricCollectorMapping.put("table_locks_waited", "mysql");
-				metricCollectorMapping.put("com_insert", "mysql");
-				metricCollectorMapping.put("com_delete", "mysql");
-				metricCollectorMapping.put("com_update", "mysql");
-				metricCollectorMapping.put("com_select", "mysql");
-				metricCollectorMapping.put("qcache_hits", "mysql");
-				metricCollectorMapping.put("diskreadopscloudwatch", "cloudwatch");
-				metricCollectorMapping.put("cpuutilizationcloudwatch", "cloudwatch");
-				metricCollectorMapping.put("diskreadopscloudwatch", "cloudwatch");
-				metricCollectorMapping.put("diskwriteopscloudwatch", "cloudwatch");
-				metricCollectorMapping.put("diskreadbytescloudwatch", "cloudwatch");
-				metricCollectorMapping.put("diskwritebytescloudwatch", "cloudwatch");
-				metricCollectorMapping.put("networkincloudwatch", "cloudwatch");
-				metricCollectorMapping.put("networkoutcloudwatch", "cloudwatch");
-				metricCollectorMapping.put("peakthreadcountjmx","jmx");
-				metricCollectorMapping.put("heapmemoryusedjmx", "jmx");
-				metricCollectorMapping.put("uptimejmx", "jmx");
-				metricCollectorMapping.put("cpuutilizationcollectl", "collectl");
-				metricCollectorMapping.put("contextswitchcollectl", "collectl");
-				metricCollectorMapping.put("cpuutilstolencollectl", "collectl");
-				metricCollectorMapping.put("interruptscollectl", "collectl");
-				metricCollectorMapping.put("maxprocscollectl", "collectl");
-				metricCollectorMapping.put("maxprocsqueuecollectl", "collectl");
-				metricCollectorMapping.put("memusedcollectl", "collectl");
-				metricCollectorMapping.put("memSwapspaceusedcollectl", "collectl");
-				metricCollectorMapping.put("networkinbytescollectl", "collectl");
-				metricCollectorMapping.put("networkoutbytescollectl", "collectl");
-				metricCollectorMapping.put("generalcost", "cost");
-				metricCollectorMapping.put("ec2-spotprice", "ec2-spotPrice");
-				metricCollectorMapping.put("responseinfo", "ofbiz");
-				metricCollectorMapping.put("startuptime", "startupTime");
-				metricCollectorMapping.put("logfile", "logFile");
-				metricCollectorMapping.put("detailedcost", "detailedCost");
-				metricCollectorMapping.put("vmavailable", "vmavailability");
-				metricCollectorMapping.put("appavailable", "appavailability");
-				metricCollectorMapping.put("flexi", "flexi");
-				metricCollectorMapping.put("haproxylog", "haproxy");*/
 
 
 		String executionCommand = collectorExecutionCommandMapping.get( collector );

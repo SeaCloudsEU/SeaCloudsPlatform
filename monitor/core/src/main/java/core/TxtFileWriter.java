@@ -1,3 +1,20 @@
+/**
+ * Copyright 2014 SeaClouds
+ * Contact: Dionysis Athanasopoulos <dionysiscsuoi@gmail.com>
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package core;
 
 import java.io.BufferedWriter;
@@ -9,14 +26,9 @@ import java.io.FileWriter;
 import java.io.Writer;
 import java.nio.channels.FileChannel;
 
-/**
- * 
- * @author Dionysis Athanasopoulos <dionysiscsuoi@gmail.com>
- *
- */
 public class TxtFileWriter {
 
-	static public String writeWithChangingLine( String text, String file ){//It takes as input a file whose lines are separated by "+" and replace them with "\n".
+	static public String writeWithChangingLine( String text, String file ){
 
 		text = text.replaceAll( "+", "\n" );
 
@@ -128,16 +140,5 @@ public class TxtFileWriter {
 	           ex.printStackTrace();
 	        }
 	    }
-	}
-
-
-	//Main.
-	public static void main( String[] args ){
-
-		String LOCAL_FUSEKI = "lib/jena-fuseki-1.1.1";
-		String SERVER_FUSEKI = "./jena-fuseki-1.1.1";
-
-
-		copyFolder( new File( LOCAL_FUSEKI ), new File( SERVER_FUSEKI ) );
 	}
 }

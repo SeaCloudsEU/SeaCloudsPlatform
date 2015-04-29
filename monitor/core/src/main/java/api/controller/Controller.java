@@ -1,15 +1,27 @@
+/**
+ * Copyright 2014 SeaClouds
+ * Contact: Dionysis Athanasopoulos <dionysiscsuoi@gmail.com>
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package api.controller;
 
 import java.io.File;
 
-/**
- * 
- * @author Dionysis Athanasopoulos <dionysiscsuoi@gmail.com>
- *
- */
 public interface Controller {
 
-	public String initializeMonitor( String SLAServiceURIRulesReady, String SLAServiceURIReplanning, String DashboardURIRulesReady, String DashboardURIReplanning, String PlannerURIRulesReady, String PlannerURIReplanning );//In case MODACLouds is installed in the localhost.
+	public String initializeMonitor( String SLAServiceURIRulesReady, String SLAServiceURIReplanning, String DashboardURIRulesReady, String DashboardURIReplanning, String PlannerURIRulesReady, String PlannerURIReplanning );
 
 	public String initializeMonitor( String IPofKB, String IPofDA, String IPofMM, String portOfKB, String portOfDA, String portOfMM, String privatePortOfMM, String SLAServiceURIRulesReady, String SLAServiceURIReplanning, String DashboardURIRulesReady, String DashboardURIReplanning, String PlannerURIRulesReady, String PlannerURIReplanning );
 
@@ -23,11 +35,11 @@ public interface Controller {
 
 	public String[] getAllMetrics();
 
-	public File getDataCollectors();//It returns a single execution file for all data collectors.
+	public File getDataCollectors();
 
 	public File getDataCollector( String metricName );
 
-	public String getDataCollectorInstallationFile( String metricName );//It returns the content of the installation file of a data collector as a String.
+	public String getDataCollectorInstallationFile( String metricName );
 
 	public String uninstallMonitoringRule( String id );
 

@@ -1,3 +1,20 @@
+/**
+ * Copyright 2014 SeaClouds
+ * Contact: Dionysis Athanasopoulos <dionysiscsuoi@gmail.com>
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package core.RESTCalls;
 
 import java.io.BufferedReader;
@@ -17,11 +34,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-/**
- * 
- * @author Dionysis Athanasopoulos <dionysiscsuoi@gmail.com>
- *
- */
 public class RESTPost {
 
 	public static String httpPost( String urlStr, String[] paramName, String[] paramVal ) throws Exception{
@@ -37,7 +49,6 @@ public class RESTPost {
 		conn.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded" );
 
 
-		//Create the form content.
 		OutputStream out = conn.getOutputStream();
 
 		Writer writer = new OutputStreamWriter( out, "UTF-8" );
@@ -56,7 +67,6 @@ public class RESTPost {
 		if( conn.getResponseCode() != 200 ) throw new IOException( conn.getResponseMessage() );
 
 
-		//Buffer the result into a string.
 		BufferedReader rd = new BufferedReader( new InputStreamReader( conn.getInputStream() ) );
 
 		StringBuilder sb = new StringBuilder();
@@ -88,18 +98,13 @@ public class RESTPost {
 
 		else{
 
-			//System.out.println( "\nURL = " + urlStr ); 
-
-			//System.out.println( "\ndata = " + data );
-
-
 			try{
 
-				HttpClient client = new DefaultHttpClient(); //System.out.println( "\nclient" );
+				HttpClient client = new DefaultHttpClient();
 
-				HttpPost post = new HttpPost( urlStr ); //System.out.println( "\npost" );
+				HttpPost post = new HttpPost( urlStr );
 
-				StringEntity input = new StringEntity( data ); //System.out.println( "\ninput" );
+				StringEntity input = new StringEntity( data );
 
 
 				if( type.equals( "text/plain" ) ) input.setContentType( "text/plain" );
@@ -107,9 +112,9 @@ public class RESTPost {
 				else input.setContentType( "application/" + type );
 
 
-				post.setEntity( input ); //System.out.println( "\npost" );
+				post.setEntity( input );
 
-				HttpResponse response = client.execute( post ); //System.out.println( "\nresponse" );
+				HttpResponse response = client.execute( post );
 
 
 				if( response != null && response.getEntity() != null ){
@@ -124,8 +129,6 @@ public class RESTPost {
 
 					result = total.toString();
 				}
-
-				//System.out.println( "\nEnd if" );
 			}
 
 			catch( Exception ex ){
@@ -139,11 +142,6 @@ public class RESTPost {
 	}
 
 	public static String httpPost( String urlStr, String data ) throws Exception{
-
-		//System.out.println( "\nURL = " + urlStr );
-
-		//System.out.println( "\ndata = " + data );
-
 
 		HttpClient client = new DefaultHttpClient();
 
@@ -170,9 +168,6 @@ public class RESTPost {
 
 	public static String httpPost( String urlStr ) throws Exception{
 
-		//System.out.println( "\nURL = " + urlStr );
-
-
 		HttpClient client = new DefaultHttpClient();
 
 		HttpPost post = new HttpPost( urlStr );
@@ -193,9 +188,6 @@ public class RESTPost {
 	}
 
 	public static InputStream httpPostResponse( String urlStr ) throws Exception{
-
-		//System.out.println( "\nURL = " + urlStr );
-
 
 		HttpClient client = new DefaultHttpClient();
 

@@ -1,3 +1,20 @@
+/**
+ * Copyright 2014 SeaClouds
+ * Contact: Dionysis Athanasopoulos <dionysiscsuoi@gmail.com>
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package core;
 
 import java.io.File;
@@ -13,14 +30,8 @@ import core.modaCloudsMonitoring.modaCloudsMetrics.MODACloudsObservers;
 import core.modaCloudsMonitoring.modaCloudsMonitoringInitiation.MODACloudsMonitoringInitiation;
 import core.modaCloudsMonitoring.modaCloudsMonitoringRules.MODACloudsMonitoringRules;
 
-/**
- * 
- * @author Dionysis Athanasopoulos <dionysiscsuoi@gmail.com>
- *
- */
 public class ControllerImpl implements Controller {
 
-	//Constants.
 	private static final String SEACLOUDS_FOLDER = "SeaClouds";
 	private static final String INITIALIZATION_CONFIGURATION_FILE_ON_SERVER = SEACLOUDS_FOLDER + "/storedInitialization.properties";
 
@@ -68,29 +79,6 @@ public class ControllerImpl implements Controller {
 		TxtFileWriter.write( fileContent, INITIALIZATION_CONFIGURATION_FILE_ON_SERVER );
 	}
 
-	/*private void storeInitializationData( InitializationData initializationData ) throws IOException{
-
-		Kryo kryo = new Kryo();
-
-		try{
-
-			RandomAccessFile raf = new RandomAccessFile( INITIALIZATION_DATA, "rw" );
-
-			Output output = new Output( new FileOutputStream( raf.getFD() ), 1024 );
-
-			kryo.writeObject( output, initializationData );
-
-			raf.close();
-
-			output.close();
-		}
-
-		catch( FileNotFoundException ex ){
-
-			ex.printStackTrace();
-		}
-	}*/
-
 	public String initiateMonitor(){
 
 		String msg = "[INFO] Monitor controller: MODACLouds monitoring platform has been initiated.";
@@ -131,7 +119,7 @@ public class ControllerImpl implements Controller {
 
 		File file = new File( initilizationFile );
 
-		if( file.exists() ){ //System.out.println( "\n\nExists\n\n" );
+		if( file.exists() ){
 
 			properties = new Properties();
 
@@ -152,37 +140,6 @@ public class ControllerImpl implements Controller {
 
  		return properties;
 	}
-
-	/*private InitializationData retrieveInitializationData() throws IOException{
-
-		InitializationData initializationData = null;
-
-		if( new File( INITIALIZATION_DATA ).exists() ){
-
-			Kryo kryo = new Kryo();
-
-			try{
-
-				RandomAccessFile raf = new RandomAccessFile( INITIALIZATION_DATA, "rw" );
-
-				Input input = new Input( new FileInputStream( raf.getFD() ), 1024 );
-
-				initializationData = kryo.readObject( input, InitializationData.class );
-
-				raf.close();
-
-				input.close();
-			}
-
-			catch( FileNotFoundException ex ){
-
-				ex.printStackTrace();
-			}
-		}
-
-
-		return initializationData;
-	}*/
 
 
 	public String installMonitoringRules( String monitoringRules ){
@@ -328,90 +285,5 @@ public class ControllerImpl implements Controller {
 
 
 		return msg;
-	}
-
-
-	//Main.
-	public static void main( String[] args ){
-
-		ControllerImpl controller = new ControllerImpl();
-
-		controller.initiateMonitor();
-
-
-		try{
-
-			System.out.println( "\nSeaClouds Monitoring Platform Menu:" );
-
-			while( true ){
-
-				System.out.println( "1: Install a deployment model (in json format)" );
-				System.out.println( "2: Install monitoring rules (in .xml format)" );
-				System.out.println( "3: Retrieve installation files of the data collector and instanll it" );
-				System.out.println( "4: Start observer" );
-				System.out.println( "5: Add observer" );
-				System.out.print( "\nChoice = " );
-				//System.out.println( "5: Get metrics" );
-
-
-				/*Integer answer = 0;
-
-				BufferedReader input = new BufferedReader( new InputStreamReader( System.in ) );
-
-				answer = Integer.parseInt( input.readLine() );
-	
-	
-				if( answer == 3 ){
-
-					File[] files = controller.getDataCollectorJars( metricName, IPofKB, IPofDA );
-
-
-					TxtFileWriter.copyFile( files[ 0 ], new File( files[ 0 ].getName() ) );
-
-					TxtFileWriter.copyFile( files[ 1 ], new File( files[ 1 ].getName() ) );
-
-					BatchFile.execute( files[ 0 ].getName() );
-				}
-
-				else if( answer == 1 ){
-	
-					File deploymentModel = new File( DEPLOYMENT_MODEL_FILE );
-	
-					String content = TxtFileReader.read( deploymentModel );
-	
-	
-					controller.installDeploymentModel( content );
-				}
-
-				else if( answer == 2 ){
-	
-					File monitoringRules = new File( MONITORING_RULES_FILE );
-	
-					String content = TxtFileReader.read( monitoringRules );
-	
-	
-					controller.installMonitoringRules( content );
-				}
-	
-				//else if( answer == 5 ){
-	
-					//String metrics = getMetrics();
-	
-					//System.out.println( metrics );
-				//}
-	
-				else if( answer == 4 ) controller.startObserver();*/
-	
-				//else if( answer == 5 ) controller.addObserver( "FrontendCPUUtilization", "http://" + controller.IPofObserver + ":" + controller.portOfObserver /*+ "/v1/results"*/ );
-			}
-		}
-
-		catch( Exception ex ){
-
-			ex.printStackTrace();
-
-
-			System.exit( -1 );
-		}
 	}
 }
