@@ -1,0 +1,3 @@
+[submodule "tosca-yaml-parser"]
+	path = planner/core/tosca-yaml-parser
+	url = git@github.com:pqnet/tosca-yaml-parser.git
