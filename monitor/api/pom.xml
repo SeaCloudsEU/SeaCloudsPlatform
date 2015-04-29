@@ -53,8 +53,8 @@
 
 	<dependencies>
 		<dependency>
-	      <groupId>org.apache.brooklyn</groupId>
-	      <artifactId>brooklyn-rest-client</artifactId>
+      		<groupId>org.apache.brooklyn</groupId>
+      		<artifactId>brooklyn-rest-client</artifactId>
     	</dependency>
     	
 
@@ -131,75 +131,6 @@
     				<webXml>WebContent\WEB-INF\web.xml</webXml>        
   				</configuration>
 			</plugin>
-
-			<plugin>
-        		<artifactId>maven-antrun-plugin</artifactId>
-        		<version>1.6</version>
-        		<executions>
-          			<execution>
-            			<phase>generate-resources</phase>
-            			<configuration>
-              			<tasks>
-              				<mkdir dir="${basedir}/lib/"/>
-                			<mkdir dir="${basedir}/WebContent/WEB-INF/lib/"/>
-              			</tasks>
-            			</configuration>
-            			<goals>
-              				<goal>run</goal>
-            			</goals>
-          			</execution>
-        		</executions>
-      		</plugin>
-
-			<plugin>
-    			<artifactId>maven-antrun-plugin</artifactId>
-    			<version>1.6</version>
-    			<executions>
-        			<execution>
-            			<id>download-files</id>
-            			<phase>process-resources</phase>
-            			<goals>
-                			<goal>run</goal>
-            			</goals>
-            			<configuration>
-                			<target>
-                    			<get src="http://www.java2s.com/Code/JarDownload/httpclient/httpclient-4.2.1.jar.zip"
-                         			dest="${project.build.directory}"
-                         			verbose="false"
-                         			usetimestamp="true"/>
-                         		<get src="http://www.java2s.com/Code/JarDownload/httpcore/httpcore-4.2.1.jar.zip"
-                         			dest="${project.build.directory}"
-                         			verbose="false"
-                         			usetimestamp="true"/>
-                         		<get src="http://jcenter.bintray.com/com/sun/jersey/jersey-core/1.19/jersey-core-1.19.jar"
-                         			dest="${project.build.directory}"
-                         			verbose="false"
-                         			usetimestamp="true"/>
-                         		<get src="http://jcenter.bintray.com/com/sun/jersey/jersey-server/1.19/jersey-server-1.19.jar"
-                         			dest="${project.build.directory}"
-                         			verbose="false"
-                         			usetimestamp="true"/>
-                         		<get src="http://jcenter.bintray.com/com/sun/jersey/jersey-servlet/1.19/jersey-servlet-1.19.jar"
-                         			dest="${project.build.directory}"
-                         			verbose="false"
-                         			usetimestamp="true"/>
-                         		<get src="https://github.com/deib-polimi/modaclouds-metrics-observer/releases/download/v3.0.1/metrics-observer-3.0.1.jar"
-                         			dest="${project.build.directory}"
-                         			verbose="false"
-                         			usetimestamp="true"/>
-                         		<get src="http://www.java2s.com/Code/JarDownload/commons-logging/commons-logging-api-1.1.1.jar.zip"
-                         			dest="${project.build.directory}"
-                         			verbose="false"
-                         			usetimestamp="true"/>
-                         		<get src="http://jcenter.bintray.com/com/sun/jersey/jersey-bundle/1.19/jersey-bundle-1.19.jar"
-                         			dest="${project.build.directory}"
-                         			verbose="false"
-                         			usetimestamp="true"/>
-                 			</target>
-             			</configuration>
-         			</execution>
-     			</executions>
- 			</plugin>
  
 			<plugin>
     			<artifactId>maven-antrun-plugin</artifactId>
@@ -213,64 +144,12 @@
             				<configuration>
                 				<tasks>
                     				<copy file="${basedir}\..\core\target\monitor-core-0.1.0-SNAPSHOT.jar" tofile="${basedir}\WebContent\WEB-INF\lib\monitor-core-0.1.0-SNAPSHOT.jar"/>
-                    				<copy file="${basedir}\..\core\lib\data-collector-1.3-SNAPSHOT.jar" tofile="${basedir}\WebContent\WEB-INF\lib\data-collector-1.3-SNAPSHOT.jar"/>
-                    				<move file="${project.build.directory}\jersey-core-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-core-1.19.jar"/>
-                    				<move file="${project.build.directory}\jersey-server-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-server-1.19.jar"/>
-                    				<move file="${project.build.directory}\jersey-servlet-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-servlet-1.19.jar"/>
-                    				<move file="${project.build.directory}\metrics-observer-3.0.1.jar" tofile="${basedir}\WebContent\WEB-INF\lib\metrics-observer-3.0.1.jar"/>
-                   					<move file="${project.build.directory}\jersey-bundle-1.19.jar" tofile="${basedir}\WebContent\WEB-INF\lib\jersey-bundle-1.19.jar"/>
                     			</tasks>
                 			</configuration>
             		</execution>
         		</executions>
     		</plugin>
 
-			<plugin>
-    			<artifactId>maven-antrun-plugin</artifactId>
-			    <version>1.6</version>
-    			<executions>
-        			<execution>
-            			<phase>install</phase>
-            			<configuration>
-                		<tasks>
-                    		<unzip src="${basedir}\..\core\target\hyperic-sigar-1.6.4.zip" dest="${basedir}\lib" />
-                    		<delete file="${basedir}\..\core\target\hyperic-sigar-1.6.4.zip"/>
-
-                    		<unzip src="${project.build.directory}/httpclient-4.2.1.jar.zip" dest="${basedir}/WebContent/WEB-INF/lib" />
-                    		<delete file="${project.build.directory}/httpclient-4.2.1.jar.zip"/>
-
-                    		<unzip src="${project.build.directory}/httpcore-4.2.1.jar.zip" dest="${basedir}/WebContent/WEB-INF/lib" />
-                    		<delete file="${project.build.directory}/httpcore-4.2.1.jar.zip"/>
-
-                    		<unzip src="${project.build.directory}/commons-logging-api-1.1.1.jar.zip" dest="${basedir}/WebContent/WEB-INF/lib" />
-                    		<delete file="${project.build.directory}/commons-logging-api-1.1.1.jar.zip"/>
-                		</tasks>
-            			</configuration>
-            			<goals>
-                			<goal>run</goal>
-            			</goals>
-        			</execution>
-    			</executions>
-			</plugin>
-
-			<plugin>
-            	<artifactId>maven-clean-plugin</artifactId>
-            	<version>2.4.1</version>
-            	<configuration>
-                	<filesets>
-                    	<fileset>
-                        	<directory>${basedir}</directory>
-                        	<includes>
-                            	<include>**/lib/**</include>
-                            	<include>**/WebContent/WEB-INF/lib/**</include>
-                            	<include>**/data-collector-1.3-SNAPSHOT.jar</include>
-                            	<include>**/dataCollectorsInstallation.bat</include>
-                        	</includes>
-                        	<followSymlinks>false</followSymlinks>
-                    	</fileset>
-                	</filesets>
-            	</configuration>
-        	</plugin>
 		</plugins>
 	</build>
 

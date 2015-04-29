@@ -36,9 +36,11 @@ public class MonitorCLI {
 
 	private static final String INITIALIZATION_CONFIGURATION_FILE = "./resources/initialization.properties";
 
-	private static final String MONITORING_RULES_FILE = "/core/resources/monitoringRules";
+	private static final String MONITORING_RULES_FILE = "/api/resources/monitoringRules";
 
-	private static final String DEPLOYMENT_MODEL_FILE = "/core/resources/deploymentModel.json";
+	private static final String DEPLOYMENT_MODEL_FILE = "/api/resources/deploymentModel.json";
+
+	private static final String LOCAL_SIGAR = "/api/lib/hyperic-sigar-1.6.4";
 
 	private static final String DATA_COLLECTORS_FILE_NAME = "data-collector-1.3-SNAPSHOT.jar";
 
@@ -115,11 +117,19 @@ public class MonitorCLI {
 
      					msg = RESTPost.httpPost( "http://localhost:8080/monitor-api/rest/monitor/initiate", parentDir, "text/plain" );
 
-     					Thread.sleep( 15000 );
+     					if( msg != null ){
 
-     					initiated = true;
+     						System.err.println( msg );
 
-     					System.out.println( msg );
+     						System.exit( -1 );
+     					}
+
+     					else{
+
+     						Thread.sleep( 15000 );
+
+     						initiated = true;
+     					}
      				}
      			}
 
@@ -276,15 +286,21 @@ public class MonitorCLI {
 
      				else if( answerInt == 8 ){
 
-             			String fileContent = RESTPost.httpPost( "http://localhost:8080/monitor-api/rest/monitor/getDataCollectorInstallationFile/" + metricName ); System.out.println( "\ninstallationFileOfDataCollector = " + fileContent + "\n" );
+             			String fileContent = RESTPost.httpPost( "http://localhost:8080/monitor-api/rest/monitor/getDataCollectorInstallationFile/" + metricName ); //System.out.println( "\ninstallationFileOfDataCollector = " + fileContent + "\n" );
 
              			TxtFileWriter.write( fileContent, DATA_COLLECTORS_INSTALLATION_FILE_NAME );
 
-             			WindowsBatchFileExecution.execute( DATA_COLLECTORS_INSTALLATION_FILE_NAME );
 
-    					Thread.sleep( 5000 );
+             			if( ! new File( parentDir + LOCAL_SIGAR ).exists() ) System.err.println( "\n\n[ERROR] Monitor REST Service: You should download, unzip, and copy the folder 'hyperic-sigar-1.6.4' inside the folder 'lib'\n(please download it from the URL: https://magelan.googlecode.com/files/hyperic-sigar-1.6.4.zip).\n\n" );
 
-    					System.out.println( "[INFO] Monitor REST Service Main: The installation file of data collector has been retrieved and executed.\n" );
+             			else{
+
+             				WindowsBatchFileExecution.execute( DATA_COLLECTORS_INSTALLATION_FILE_NAME );
+
+             				Thread.sleep( 5000 );
+
+             				System.out.println( "[INFO] Monitor REST Service Main: The installation file of data collector has been retrieved and executed.\n" );
+             			}
      				}
 
      				else if( answerInt == 9 ){

@@ -47,10 +47,9 @@
 
 	<dependencies>
 		<dependency>
-	      <groupId>org.apache.brooklyn</groupId>
-	      <artifactId>brooklyn-rest-client</artifactId>
-    	</dependency> 
-    	
+      		<groupId>org.apache.brooklyn</groupId>
+      		<artifactId>brooklyn-rest-client</artifactId>
+    	</dependency>
 
 		 <dependency>
 			<groupId>com.googlecode.json-simple</groupId>
@@ -99,86 +98,6 @@
 		</dependency>
 	</dependencies>
 
-
-	<build>
-		<plugins>
-			<plugin>
-    			<artifactId>maven-antrun-plugin</artifactId>
-    			<executions>
-        			<execution>
-            			<id>download-files</id>
-            			<phase>process-resources</phase>
-            			<goals>
-                			<goal>run</goal>
-            			</goals>
-            			<configuration>
-                			<target>
-                    			<!-- download files -->
-                    			<get src="http://archive.apache.org/dist/jena/binaries/jena-fuseki-1.1.1-distribution.zip"
-                         			dest="${project.build.directory}"
-                         			verbose="false"
-                         			usetimestamp="true"/>
-                    			<get src="https://magelan.googlecode.com/files/hyperic-sigar-1.6.4.zip"
-	        			            dest="${project.build.directory}"
-    	                		    verbose="false"
-        	                 		usetimestamp="true"/>
-                    			<get src="http://www.cs.uoi.gr/~dathanas/rsp-services-csparql-0.4.6.2-modaclouds-distribution.zip"
-                         			dest="${project.build.directory}"
-                         			verbose="false"
-                         			usetimestamp="true"/>
-                 			</target>
-             			</configuration>
-         			</execution>
-     			</executions>
- 			</plugin>
-
-			<plugin>
-    			<artifactId>maven-antrun-plugin</artifactId>
-			    <version>1.6</version>
-    			<executions>
-        			<execution>
-            			<id>install</id>
-            			<phase>install</phase>
-            			<configuration>
-                		<tasks>
-                    		<unzip src="${project.build.directory}\jena-fuseki-1.1.1-distribution.zip" dest="${basedir}\lib" />
-                    		<delete file="${project.build.directory}\jena-fuseki-1.1.1-distribution.zip"/>
-
-                    		<unzip src="${project.build.directory}\rsp-services-csparql-0.4.6.2-modaclouds-distribution.zip" dest="${basedir}\lib" />
-                    		<delete file="${project.build.directory}\rsp-services-csparql-0.4.6.2-modaclouds-distribution.zip"/>
-                		</tasks>
-            			</configuration>
-            			<goals>
-                			<goal>run</goal>
-            			</goals>
-        			</execution>
-    			</executions>
-			</plugin>
-
-			<plugin>
-		        <groupId>org.apache.rat</groupId>
-		        <artifactId>apache-rat-plugin</artifactId>
-		        <version>0.11</version>
-		        <executions>
-		          <execution>
-		            <phase>verify</phase>
-		            <goals>
-		              <goal>check</goal>
-		            </goals>
-		          </execution>
-		        </executions>
-		        <configuration>
-		          <excludes combine.children="append">
-		            <exclude>**/lib/**</exclude>
-		            <exclude>**/lib/**</exclude>
-		            <exclude>**/*.json</exclude>
-		          </excludes>
-		        </configuration>
-      		</plugin>
-
-		</plugins>
-
-	</build>
 
 	<groupId>eu.seaclouds-project.monitor.core</groupId>
 </project>

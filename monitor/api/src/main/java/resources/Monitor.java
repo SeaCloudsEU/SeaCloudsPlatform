@@ -43,11 +43,13 @@ public class Monitor {
 	private static final String SEACLOUDS_FOLDER = "SeaClouds";
 	private static final String INITIALIZATION_CONFIGURATION_FILE_ON_SERVER = SEACLOUDS_FOLDER + "/storedInitialization.properties";
 
-	private static final String LOCAL_FUSEKI = "/core/lib/jena-fuseki-1.1.1";
+	private static final String LOCAL_FUSEKI = "/lib/jena-fuseki-1.1.1";
 	private static final String SERVER_FUSEKI = "/jena-fuseki-1.1.1";
 
-	private static final String LOCAL_RESOURCES = "/core/resources";
-	private static final String SERVER_RESOURCES = "/resources";
+	private static final String LOCAL_CSPARQL = "/lib/rsp-services-csparql-0.4.6.2-modaclouds";
+	private static final String SERVER_CSPARQL = "/rsp-services-csparql-0.4.6.2-modaclouds";
+
+	private static final String LOCAL_RESOURCES = "/resources";
 
 	private static final String LOCAL_MONITORING_MANAGER = "/core/lib/";
 	private static final String SERVER_MONITORING_MANAGER = "/";
@@ -60,6 +62,8 @@ public class Monitor {
 	@Produces("text/plain")
 	@Path("/initialize")
 	public String initialize( String configurationFileContent ) {
+
+		delete( new File( SEACLOUDS_FOLDER ) );
 
 		new File( SEACLOUDS_FOLDER ).mkdirs();
 
@@ -88,7 +92,7 @@ public class Monitor {
 		String msg = controller.initializeMonitor( IPofKB, IPofDA, IPofMM, portOfKB, portOfDA, portOfMM, privatePortOfMM, SLAServiceURIRulesReady, SLAServiceURIReplanning, DashboardURIRulesReady, DashboardURIReplanning, PlannerURIRulesReady, PlannerURIReplanning );
 
 
-		return "[INFO] Monitor REST Service: Initializing monitor...\n\n" + configurationFileContent + "\n" + msg;
+		return "[INFO] Monitor REST Service: Initializing monitor...\n\n" + msg;
 	}
 
 	@GET
@@ -121,17 +125,18 @@ public class Monitor {
 	@Path("/initiate")
 	public String initiate( String serverSourcesPath ) {
 
-		delete( new File( SEACLOUDS_FOLDER ) );
-
-		copySourceFiles( serverSourcesPath );
+		String msg = copySourceFiles( serverSourcesPath );
 
 
-		Controller controller = new ControllerImpl();
+		if( msg == null ){
 
-		String msg = controller.initiateMonitor();
+			Controller controller = new ControllerImpl();
+
+			controller.initiateMonitor();
+		}
 
 
-		return "[INFO] Monitor REST Service: Initiating monitor...\n" + msg;
+		return msg; 
 	}
 
 
@@ -437,14 +442,29 @@ public class Monitor {
 	    }
 	}
 
-	private static void copySourceFiles( String serverSourcesPath ){
+	private static String copySourceFiles( String serverSourcesPath ){
 
-		TxtFileWriter.copyFolder( new File( serverSourcesPath + LOCAL_RESOURCES ), new File( SEACLOUDS_FOLDER + SERVER_RESOURCES ) );
+		String msg = null;
 
-		TxtFileWriter.copyFolder( new File( serverSourcesPath + LOCAL_FUSEKI ), new File( SEACLOUDS_FOLDER + SERVER_FUSEKI ) );
+
+		TxtFileWriter.copyFolder( new File( serverSourcesPath + "/api/" + LOCAL_RESOURCES ), new File( SEACLOUDS_FOLDER + LOCAL_RESOURCES ) );
+
+
+		if( ! new File( serverSourcesPath + "/api/" + LOCAL_FUSEKI ).exists() ) msg = "\n\n[ERROR] Monitor REST Service: You should download, unzip, and copy the folder 'jena-fuseki-1.1.1' inside the folder 'lib'\n(please download it from the URL: http://archive.apache.org/dist/jena/binaries/jena-fuseki-1.1.1-distribution.zip).\n\n";
+
+		else TxtFileWriter.copyFolder( new File( serverSourcesPath + "/api/" + LOCAL_FUSEKI ), new File( SEACLOUDS_FOLDER + SERVER_FUSEKI ) );
+
+
+		if( ! new File( serverSourcesPath + "/api/" + LOCAL_CSPARQL ).exists() ) msg = "\n\n[ERROR] Monitor REST Service: You should download, unzip, and copy the folder 'rsp-services-csparql-0.4.6.2-modaclouds' inside the folder 'lib'\n(please download it from the URL: http://www.cs.uoi.gr/~dathanas/rsp-services-csparql-0.4.6.2-modaclouds-distribution.zip).\n\n";
+
+		else TxtFileWriter.copyFolder( new File( serverSourcesPath + "/api/" + LOCAL_CSPARQL ), new File( SEACLOUDS_FOLDER + SERVER_CSPARQL ) );
+
 
 		TxtFileWriter.copyFolder( new File( serverSourcesPath + LOCAL_MONITORING_MANAGER ), new File( SEACLOUDS_FOLDER + SERVER_MONITORING_MANAGER ) );
 
 		TxtFileWriter.copyFolder( new File( serverSourcesPath + LOCAL_DATA_COLLECTORS ), new File( SEACLOUDS_FOLDER ) );
+
+
+		return msg;
 	}
 }
