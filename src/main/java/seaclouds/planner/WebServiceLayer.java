@@ -7,7 +7,6 @@ package seaclouds.planner;
 
 /*Leonardo's contribution */
 import seaclouds.utils.toscamodel.*;			// parser
-import seaclouds.utils.toscamodel.examples.*;	// dummy optimizer and matchmaker
 
 /* servlet */
 import java.io.*;
@@ -29,7 +28,6 @@ public class WebServiceLayer extends HttpServlet {
 	
 	/* vars */
 	private JSONParser jsonParser;
-	private OptimizerExample optimizer;
 
 	/* stats */
 	private int numberOfPosts;
@@ -97,7 +95,6 @@ public class WebServiceLayer extends HttpServlet {
 	
 	public void init() {
 		this.jsonParser = new JSONParser();
-		this.optimizer = new OptimizerExample();
 		this.numberOfPosts = 0;
 		this.numberOfServedPosts = 0;
 		
@@ -155,15 +152,11 @@ public class WebServiceLayer extends HttpServlet {
 		/* putting on stream and parsing */
 		StringReader sr = new StringReader(strAam);
 		IToscaEnvironment aam = Tosca.newEnvironment();
-		aam.readFile(sr, true);
-		
-		/* invoking the matchmaker */
-		Matchmaker mm = new Matchmaker( Tosca.newEnvironment() ); // TODO
-		Map<String, List<INodeType>> cloudOfferings = mm.Match(aam);
-		out.println(cloudOfferings);
-		
-		/* invoking the optimizer */
-		List<IToscaEnvironment> optOffers = optimizer.optimizeFullSearchCartesian(aam, cloudOfferings);
+		aam.readFile(sr);
+
+		Planner p = new Planner();
+
+		List<IToscaEnvironment> optOffers = p.plan(aam);
 		
 		/* wrapping the result in a json array */
 		JSONObject responseData = new JSONObject();
