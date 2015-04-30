@@ -25,87 +25,81 @@ import java.io.InputStreamReader;
 
 public class TxtFileReader {
 
-	public static String readPureContent( File file ){
+	public static String readPureContent(File file) {
 
-    	String contents = "", strLine = null;
+		String contents = "", strLine = null;
 
-        try{
+		try {
 
-        	FileInputStream fstream = new FileInputStream( file );
+			FileInputStream fstream = new FileInputStream(file);
 
-            DataInputStream in = new DataInputStream( fstream );
+			DataInputStream in = new DataInputStream(fstream);
 
-            BufferedReader br = new BufferedReader( new InputStreamReader( in ) );
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
+			while ((strLine = br.readLine()) != null)
+				contents += strLine;
 
-            while( ( strLine = br.readLine() ) != null ) contents += strLine;
+			in.close();
+		}
 
+		catch (Exception ex) {
 
-            in.close();
-        }
+			ex.printStackTrace();
+		}
 
-        catch( Exception ex ){
+		return contents;
+	}
 
-        	ex.printStackTrace();
-        }
+	public static String readWithoutChangingLine(File file) {
 
+		String contents = "", strLine = null;
 
-        return contents;
-    }
+		try {
 
-	public static String readWithoutChangingLine( File file ){
+			FileInputStream fstream = new FileInputStream(file);
 
-    	String contents = "", strLine = null;
+			DataInputStream in = new DataInputStream(fstream);
 
-        try{
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
-        	FileInputStream fstream = new FileInputStream( file );
+			while ((strLine = br.readLine()) != null)
+				contents += strLine + "+";
 
-            DataInputStream in = new DataInputStream( fstream );
+			in.close();
+		}
 
-            BufferedReader br = new BufferedReader( new InputStreamReader( in ) );
+		catch (Exception ex) {
 
+			ex.printStackTrace();
+		}
 
-            while( ( strLine = br.readLine() ) != null ) contents += strLine + "+";
+		return contents;
+	}
 
+	public static String read(File file) {
 
-            in.close();
-        }
+		String contents = "", strLine = null;
 
-        catch( Exception ex ){
+		try {
 
-        	ex.printStackTrace();
-        }
+			FileInputStream fstream = new FileInputStream(file);
 
+			DataInputStream in = new DataInputStream(fstream);
 
-        return contents;
-    }
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
-	public static String read( File file ){
+			while ((strLine = br.readLine()) != null)
+				contents += strLine + "\n";
 
-    	String contents = "", strLine = null;
+			in.close();
+		}
 
-        try{
+		catch (Exception ex) {
 
-        	FileInputStream fstream = new FileInputStream( file );
+			contents = null;
+		}
 
-            DataInputStream in = new DataInputStream( fstream );
-
-            BufferedReader br = new BufferedReader( new InputStreamReader( in ) );
-
-
-            while( ( strLine = br.readLine() ) != null ) contents += strLine + "\n";
-
-
-            in.close();
-        }
-
-        catch( Exception ex ){
-
-        	contents = null;
-        }
-
-
-        return contents;
-    }
+		return contents;
+	}
 }

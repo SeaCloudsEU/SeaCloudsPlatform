@@ -21,23 +21,23 @@ import java.io.File;
 
 public class WindowsBatchFileExecution {
 
-	public static void execute( String batchFile ){
+	public static void execute(String batchFile) {
 
-		try{
+		try {
 
-			File file = new File( batchFile  );
+			File file = new File(batchFile);
 
-			Process p = Runtime.getRuntime().exec( "cmd /C start /wait " + file.getAbsolutePath() );
+			Process p = Runtime.getRuntime().exec(
+					"cmd /C start /wait " + file.getAbsolutePath());
 
 			p.waitFor();
 		}
 
-		catch( Exception ex ){
+		catch (Exception ex) {
 
 			ex.printStackTrace();
 
-
-			System.exit( -1 );
+			System.exit(-1);
 		}
 	}
 }

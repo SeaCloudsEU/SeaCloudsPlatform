@@ -28,117 +28,133 @@ import java.nio.channels.FileChannel;
 
 public class TxtFileWriter {
 
-	static public String writeWithChangingLine( String text, String file ){
+	static public String writeWithChangingLine(String text, String file) {
 
-		text = text.replaceAll( "+", "\n" );
+		text = text.replaceAll("+", "\n");
 
+		Writer output = null;
 
-    	Writer output = null;
+		File f = new File(file);
 
-    	File f = new File( file );
+		try {
 
+			f.createNewFile();
 
-        try{
+			output = new BufferedWriter(new FileWriter(file));
 
-        	f.createNewFile();
+			output.write(text);
+		}
 
-        	output = new BufferedWriter( new FileWriter( file ) );
+		catch (IOException ex) {
+			System.err.println("[ERROR] TxtFileWriter: " + file
+					+ " does not exist!");
+		}
 
-            output.write( text );
-        }
+		finally {
 
-        catch ( IOException ex ){ System.err.println( "[ERROR] TxtFileWriter: " + file + " does not exist!" );  }
+			try {
+				if (output != null)
+					output.close();
+			}
 
-        finally{
+			catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
 
-        	try{ if ( output != null ) output.close(); }
-
-            catch( IOException ex ){ ex.printStackTrace(); }
-        }
-
-
-        return text;
+		return text;
 	}
 
-	static public void write( String text, String file ){
+	static public void write(String text, String file) {
 
-    	Writer output = null;
+		Writer output = null;
 
-    	File f = new File( file );
+		File f = new File(file);
 
+		try {
 
-        try{
+			f.createNewFile();
 
-        	f.createNewFile();
+			output = new BufferedWriter(new FileWriter(file));
 
-        	output = new BufferedWriter( new FileWriter( file ) );
+			output.write(text);
+		}
 
-            output.write( text );
-        }
+		catch (IOException ex) {
+			System.err.println("[ERROR] TxtFileWriter: " + file
+					+ " does not exist!");
+		}
 
-        catch ( IOException ex ){ System.err.println( "[ERROR] TxtFileWriter: " + file + " does not exist!" );  }
+		finally {
 
-        finally{
+			try {
+				if (output != null)
+					output.close();
+			}
 
-        	try{ if ( output != null ) output.close(); }
-
-            catch( IOException ex ){ ex.printStackTrace(); }
-        }
+			catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
 	}
 
-	public static void copyFile( File sourceFile, File destFile ) throws IOException{
+	public static void copyFile(File sourceFile, File destFile)
+			throws IOException {
 
-	    if( ! destFile.exists() ) destFile.createNewFile();
+		if (!destFile.exists())
+			destFile.createNewFile();
 
-	    FileChannel source = null, destination = null;
+		FileChannel source = null, destination = null;
 
-	    try{
+		try {
 
-	    	source = new FileInputStream( sourceFile ).getChannel();
+			source = new FileInputStream(sourceFile).getChannel();
 
-	        destination = new FileOutputStream( destFile ).getChannel();
+			destination = new FileOutputStream(destFile).getChannel();
 
-	        destination.transferFrom( source, 0, source.size() );
-	    }
+			destination.transferFrom(source, 0, source.size());
+		}
 
-	    finally{
+		finally {
 
-	        if( source != null ) source.close();
+			if (source != null)
+				source.close();
 
-	        if( destination != null ) destination.close();
-	    }
+			if (destination != null)
+				destination.close();
+		}
 	}
 
-	public static void copyFolder( File source, File destination ){
+	public static void copyFolder(File source, File destination) {
 
-	    if( source.isDirectory() ){
+		if (source.isDirectory()) {
 
-	        if( ! destination.exists() ) destination.mkdirs();
+			if (!destination.exists())
+				destination.mkdirs();
 
-	        String files[] = source.list();
+			String files[] = source.list();
 
-	        for( String file : files ){
+			for (String file : files) {
 
-	            File srcFile = new File( source, file );
+				File srcFile = new File(source, file);
 
-	            File destFile = new File( destination, file );
+				File destFile = new File(destination, file);
 
+				copyFolder(srcFile, destFile);
+			}
+		}
 
-	            copyFolder( srcFile, destFile );
-	        }
-	    }
+		else {
 
-	    else{
+			try {
 
-	        try{
+				copyFile(source, destination);
+			}
 
-	        	copyFile( source, destination );
-	        }
+			catch (Exception ex) {
 
-	        catch( Exception ex ){
-
-	           ex.printStackTrace();
-	        }
-	    }
+				ex.printStackTrace();
+			}
+		}
 	}
 }

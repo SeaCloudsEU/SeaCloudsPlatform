@@ -21,15 +21,23 @@ import java.io.File;
 
 public interface Controller {
 
-	public String initializeMonitor( String SLAServiceURIRulesReady, String SLAServiceURIReplanning, String DashboardURIRulesReady, String DashboardURIReplanning, String PlannerURIRulesReady, String PlannerURIReplanning );
+	public String initializeMonitor(String SLAServiceURIRulesReady,
+			String SLAServiceURIReplanning, String DashboardURIRulesReady,
+			String DashboardURIReplanning, String PlannerURIRulesReady,
+			String PlannerURIReplanning);
 
-	public String initializeMonitor( String IPofKB, String IPofDA, String IPofMM, String portOfKB, String portOfDA, String portOfMM, String privatePortOfMM, String SLAServiceURIRulesReady, String SLAServiceURIReplanning, String DashboardURIRulesReady, String DashboardURIReplanning, String PlannerURIRulesReady, String PlannerURIReplanning );
+	public String initializeMonitor(String IPofKB, String IPofDA,
+			String IPofMM, String portOfKB, String portOfDA, String portOfMM,
+			String privatePortOfMM, String SLAServiceURIRulesReady,
+			String SLAServiceURIReplanning, String DashboardURIRulesReady,
+			String DashboardURIReplanning, String PlannerURIRulesReady,
+			String PlannerURIReplanning);
 
 	public String initiateMonitor();
 
-	public String installMonitoringRules( String monitoringRules );
+	public String installMonitoringRules(String monitoringRules);
 
-	public String installDeploymentModel( String deploymentModel );
+	public String installDeploymentModel(String deploymentModel);
 
 	public String[] getRunningMetrics();
 
@@ -37,11 +45,12 @@ public interface Controller {
 
 	public File getDataCollectors();
 
-	public File getDataCollector( String metricName );
+	public File getDataCollector(String metricName);
 
-	public String getDataCollectorInstallationFile( String metricName );
+	public String getDataCollectorInstallationFile(String metricName);
 
-	public String uninstallMonitoringRule( String id );
+	public String uninstallMonitoringRule(String id);
 
-	public String addObserver( String metricName, String portOfObserver, String callbackURL );
+	public String addObserver(String metricName, String portOfObserver,
+			String callbackURL);
 }

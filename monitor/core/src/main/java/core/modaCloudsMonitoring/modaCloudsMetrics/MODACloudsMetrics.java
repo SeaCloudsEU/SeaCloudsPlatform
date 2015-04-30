@@ -31,71 +31,78 @@ import core.RESTCalls.RESTGet;
 
 public class MODACloudsMetrics {
 
-	public static String[] getRunningMetrics( String IPofMM, String portOfMM ){
+	public static String[] getRunningMetrics(String IPofMM, String portOfMM) {
 
 		try {
 
-			String metrics = RESTGet.httpGet( "http://" + IPofMM + ":" + portOfMM + "/v1/metrics" );
-
+			String metrics = RESTGet.httpGet("http://" + IPofMM + ":"
+					+ portOfMM + "/v1/metrics");
 
 			JSONParser jsonParser = new JSONParser();
 
-			Object object = jsonParser.parse( metrics );
+			Object object = jsonParser.parse(metrics);
 
 			JSONObject jsonObject = (JSONObject) object;
 
 			List<String> allArrayElements = new ArrayList<String>();
 
-			getAllArrayElements( jsonObject, allArrayElements );
+			getAllArrayElements(jsonObject, allArrayElements);
 
-			String[] result = allArrayElements != null ? allArrayElements.toArray( new String[ allArrayElements.size() ] ) : null;
-
+			String[] result = allArrayElements != null ? allArrayElements
+					.toArray(new String[allArrayElements.size()]) : null;
 
 			return result;
 		}
 
-		catch( Exception ex ){
+		catch (Exception ex) {
 
 			ex.printStackTrace();
-
 
 			return null;
 		}
 	}
 
-	private static void getArray( Object object, List<String> allArrayElements ) throws ParseException {
+	private static void getArray(Object object, List<String> allArrayElements)
+			throws ParseException {
 
 		JSONArray jsonArr = (JSONArray) object;
 
-		for( int k = 0; k < jsonArr.size(); k++ ){
+		for (int k = 0; k < jsonArr.size(); k++) {
 
-			if( jsonArr.get( k ) instanceof JSONObject ) getAllArrayElements( (JSONObject) jsonArr.get( k ), allArrayElements );
+			if (jsonArr.get(k) instanceof JSONObject)
+				getAllArrayElements((JSONObject) jsonArr.get(k),
+						allArrayElements);
 
-			else allArrayElements.add( jsonArr.get( k ).toString() );
+			else
+				allArrayElements.add(jsonArr.get(k).toString());
 		}
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static void getAllArrayElements( JSONObject jsonObject, List<String> allArrayElements ) throws ParseException {
+	public static void getAllArrayElements(JSONObject jsonObject,
+			List<String> allArrayElements) throws ParseException {
 
 		Set<Object> set = jsonObject.keySet();
 
 		Iterator iterator = set.iterator();
 
-		while( iterator.hasNext() ){
+		while (iterator.hasNext()) {
 
 			Object obj = iterator.next();
 
-			if( jsonObject.get( obj ) instanceof JSONArray ) getArray( jsonObject.get( obj ), allArrayElements );
+			if (jsonObject.get(obj) instanceof JSONArray)
+				getArray(jsonObject.get(obj), allArrayElements);
 
-			else 	if( jsonObject.get( obj ) instanceof JSONObject ) getAllArrayElements( (JSONObject) jsonObject.get( obj ), allArrayElements );
-        }
+			else if (jsonObject.get(obj) instanceof JSONObject)
+				getAllArrayElements((JSONObject) jsonObject.get(obj),
+						allArrayElements);
+		}
 	}
 
-	public static String[] getAllMetrics(){
+	public static String[] getAllMetrics() {
 
-		String[] metrics = { "ResponseTime", "CPUUtilization", "MemoryUtilization", "Queries", "Availability" };
-
+		String[] metrics = { "ResponseTime", "CPUUtilization",
+				"MemoryUtilization", "Queries", "Availability" };
 
 		return metrics;
 	}

@@ -26,17 +26,21 @@ import java.util.List;
 public class CVSResultHandler extends MonitoringDatumHandler {
 
 	@Override
-	public void getData( List<MonitoringDatum> monitoringData ){
+	public void getData(List<MonitoringDatum> monitoringData) {
 
-		if( monitoringData == null || ( monitoringData != null && monitoringData.isEmpty() ) ) System.out.println("ObserverTimestamp,ResourceId,Metric,Value,Timestamp");
+		if (monitoringData == null
+				|| (monitoringData != null && monitoringData.isEmpty()))
+			System.out
+					.println("ObserverTimestamp,ResourceId,Metric,Value,Timestamp");
 
-		else{
+		else {
 
-			System.out.println( "ObserverTimestamp, ResourceId, Metric, Value, Timestamp" );
+			System.out
+					.println("ObserverTimestamp, ResourceId, Metric, Value, Timestamp");
 
-			String observerTimestamp = Long.toString( new Date().getTime() );
+			String observerTimestamp = Long.toString(new Date().getTime());
 
-			for( MonitoringDatum monitoringDatum : monitoringData ){
+			for (MonitoringDatum monitoringDatum : monitoringData) {
 
 				System.out.println(observerTimestamp + ","
 						+ monitoringDatum.getResourceId() + ","

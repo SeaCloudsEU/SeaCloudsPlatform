@@ -21,14 +21,18 @@ import core.RESTCalls.RESTPost;
 
 public class MODACloudsDeploymentModel {
 
-	public static void installDeploymentModel( String monitoringManagerEndpointIP, String monitoringManagerEndpointPort, String deploymentModel ){
+	public static void installDeploymentModel(
+			String monitoringManagerEndpointIP,
+			String monitoringManagerEndpointPort, String deploymentModel) {
 
 		try {
 
-			RESTPost.httpPost( "http://" + monitoringManagerEndpointIP + ":" + monitoringManagerEndpointPort + "/v1/model/resources", deploymentModel, "json" );
+			RESTPost.httpPost("http://" + monitoringManagerEndpointIP + ":"
+					+ monitoringManagerEndpointPort + "/v1/model/resources",
+					deploymentModel, "json");
 		}
 
-		catch( Exception e ){
+		catch (Exception e) {
 
 			e.printStackTrace();
 		}

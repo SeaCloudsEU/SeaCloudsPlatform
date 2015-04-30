@@ -36,165 +36,168 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 public class RESTPost {
 
-	public static String httpPost( String urlStr, String[] paramName, String[] paramVal ) throws Exception{
+	public static String httpPost(String urlStr, String[] paramName,
+			String[] paramVal) throws Exception {
 
-		URL url = new URL( urlStr );
+		URL url = new URL(urlStr);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		conn.setRequestMethod( "POST" );
+		conn.setRequestMethod("POST");
 
-		conn.setDoOutput( true );
-		conn.setDoInput( true );
-		conn.setUseCaches( false );
-		conn.setAllowUserInteraction( false );
-		conn.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded" );
-
+		conn.setDoOutput(true);
+		conn.setDoInput(true);
+		conn.setUseCaches(false);
+		conn.setAllowUserInteraction(false);
+		conn.setRequestProperty("Content-Type",
+				"application/x-www-form-urlencoded");
 
 		OutputStream out = conn.getOutputStream();
 
-		Writer writer = new OutputStreamWriter( out, "UTF-8" );
+		Writer writer = new OutputStreamWriter(out, "UTF-8");
 
-		for( int i = 0; i < paramName.length; i++ ){
+		for (int i = 0; i < paramName.length; i++) {
 
-			writer.write( paramName[ i ] );
-			writer.write( "=" );
-			writer.write( URLEncoder.encode(paramVal[ i ], "UTF-8") );
-			writer.write( "&" );
+			writer.write(paramName[i]);
+			writer.write("=");
+			writer.write(URLEncoder.encode(paramVal[i], "UTF-8"));
+			writer.write("&");
 		}
 
 		writer.close();
 		out.close();
 
-		if( conn.getResponseCode() != 200 ) throw new IOException( conn.getResponseMessage() );
+		if (conn.getResponseCode() != 200)
+			throw new IOException(conn.getResponseMessage());
 
-
-		BufferedReader rd = new BufferedReader( new InputStreamReader( conn.getInputStream() ) );
+		BufferedReader rd = new BufferedReader(new InputStreamReader(
+				conn.getInputStream()));
 
 		StringBuilder sb = new StringBuilder();
 
 		String line;
 
-		while ((line = rd.readLine()) != null) sb.append( line + "\n" );
+		while ((line = rd.readLine()) != null)
+			sb.append(line + "\n");
 
 		rd.close();
 
 		conn.disconnect();
 
-
 		return sb.toString();
 	}
 
-	public static String httpPost( String urlStr, String data, String type ){
+	public static String httpPost(String urlStr, String data, String type) {
 
 		String result = null;
 
+		if (type == null
+				|| (type != null && !type.equals("text/plain")
+						&& !type.equals("xml") && !type.equals("json"))) {
 
-		if( type == null || ( type != null && ! type.equals( "text/plain" ) && ! type.equals( "xml" ) && ! type.equals( "json" ) ) ){
-
-			System.err.println( "\n[ERROR] RESTPost: Unknown input type (" + type + ") in the Http RESTful post request." );
-
+			System.err.println("\n[ERROR] RESTPost: Unknown input type ("
+					+ type + ") in the Http RESTful post request.");
 
 			return null;
 		}
 
-		else{
+		else {
 
-			try{
+			try {
 
 				HttpClient client = new DefaultHttpClient();
 
-				HttpPost post = new HttpPost( urlStr );
+				HttpPost post = new HttpPost(urlStr);
 
-				StringEntity input = new StringEntity( data );
+				StringEntity input = new StringEntity(data);
 
+				if (type.equals("text/plain"))
+					input.setContentType("text/plain");
 
-				if( type.equals( "text/plain" ) ) input.setContentType( "text/plain" );
+				else
+					input.setContentType("application/" + type);
 
-				else input.setContentType( "application/" + type );
+				post.setEntity(input);
 
+				HttpResponse response = client.execute(post);
 
-				post.setEntity( input );
+				if (response != null && response.getEntity() != null) {
 
-				HttpResponse response = client.execute( post );
-
-
-				if( response != null && response.getEntity() != null ){
-
-					BufferedReader r = new BufferedReader( new InputStreamReader( response.getEntity().getContent() ) );
+					BufferedReader r = new BufferedReader(
+							new InputStreamReader(response.getEntity()
+									.getContent()));
 
 					StringBuilder total = new StringBuilder();
 
 					String line = null;
 
-					while ( (line = r.readLine() ) != null ) total.append( line + "\n" );
+					while ((line = r.readLine()) != null)
+						total.append(line + "\n");
 
 					result = total.toString();
 				}
 			}
 
-			catch( Exception ex ){
+			catch (Exception ex) {
 
 				ex.printStackTrace();
 			}
 
-
-			return result; 
+			return result;
 		}
 	}
 
-	public static String httpPost( String urlStr, String data ) throws Exception{
+	public static String httpPost(String urlStr, String data) throws Exception {
 
 		HttpClient client = new DefaultHttpClient();
 
-		HttpPost post = new HttpPost( urlStr );
+		HttpPost post = new HttpPost(urlStr);
 
-		StringEntity input = new StringEntity( data );
+		StringEntity input = new StringEntity(data);
 
-		post.setEntity( input );
+		post.setEntity(input);
 
-		HttpResponse response = client.execute( post );
+		HttpResponse response = client.execute(post);
 
-
-		BufferedReader r = new BufferedReader( new InputStreamReader( response.getEntity().getContent() ) );
+		BufferedReader r = new BufferedReader(new InputStreamReader(response
+				.getEntity().getContent()));
 
 		StringBuilder total = new StringBuilder();
 
 		String line = null;
 
-		while ( (line = r.readLine() ) != null ) total.append( line + "\n" );
-
+		while ((line = r.readLine()) != null)
+			total.append(line + "\n");
 
 		return total.toString();
 	}
 
-	public static String httpPost( String urlStr ) throws Exception{
+	public static String httpPost(String urlStr) throws Exception {
 
 		HttpClient client = new DefaultHttpClient();
 
-		HttpPost post = new HttpPost( urlStr );
+		HttpPost post = new HttpPost(urlStr);
 
-		HttpResponse response = client.execute( post );
+		HttpResponse response = client.execute(post);
 
-
-		BufferedReader r = new BufferedReader( new InputStreamReader( response.getEntity().getContent() ) );
+		BufferedReader r = new BufferedReader(new InputStreamReader(response
+				.getEntity().getContent()));
 
 		StringBuilder total = new StringBuilder();
 
 		String line = null;
 
-		while ( (line = r.readLine() ) != null ) total.append( line + "\n" );
-
+		while ((line = r.readLine()) != null)
+			total.append(line + "\n");
 
 		return total.toString();
 	}
 
-	public static InputStream httpPostResponse( String urlStr ) throws Exception{
+	public static InputStream httpPostResponse(String urlStr) throws Exception {
 
 		HttpClient client = new DefaultHttpClient();
 
-		HttpPost post = new HttpPost( urlStr );
+		HttpPost post = new HttpPost(urlStr);
 
-		HttpResponse response = client.execute( post );
-
+		HttpResponse response = client.execute(post);
 
 		return response.getEntity().getContent();
 	}

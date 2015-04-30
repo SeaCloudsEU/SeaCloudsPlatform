@@ -26,47 +26,46 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-
 public class RESTGet {
 
-	public static String httpGet( String urlStr ) throws Exception{
+	public static String httpGet(String urlStr) throws Exception {
 
 		HttpClient client = new DefaultHttpClient();
 
-		HttpGet get = new HttpGet( urlStr );
+		HttpGet get = new HttpGet(urlStr);
 
-		HttpResponse response = client.execute( get );
+		HttpResponse response = client.execute(get);
 
-		BufferedReader rd = new BufferedReader(new InputStreamReader( response.getEntity().getContent() ) );
+		BufferedReader rd = new BufferedReader(new InputStreamReader(response
+				.getEntity().getContent()));
 
 		String content = "", line = null;
 
-		while ( (line = rd.readLine()) != null ) content += line + "\n";
-
+		while ((line = rd.readLine()) != null)
+			content += line + "\n";
 
 		return content;
 	}
 
-	public static InputStream httpGetResponse( String urlStr ){
+	public static InputStream httpGetResponse(String urlStr) {
 
 		InputStream inputStream = null;
 
-		try{
+		try {
 
 			HttpClient client = new DefaultHttpClient();
 
-			HttpGet get = new HttpGet( urlStr );
+			HttpGet get = new HttpGet(urlStr);
 
-			HttpResponse response = client.execute( get );
+			HttpResponse response = client.execute(get);
 
 			inputStream = response.getEntity().getContent();
 		}
 
-		catch( Exception ex ){
+		catch (Exception ex) {
 
 			ex.printStackTrace();
 		}
-
 
 		return inputStream;
 	}

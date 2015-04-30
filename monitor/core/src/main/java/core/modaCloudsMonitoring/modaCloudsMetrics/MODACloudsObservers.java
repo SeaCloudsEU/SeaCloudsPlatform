@@ -22,38 +22,39 @@ import core.RESTCalls.RESTPost;
 /**
  * 
  * @author Dionysis Athanasopoulos <dionysiscsuoi@gmail.com>
- *
+ * 
  */
 public class MODACloudsObservers {
 
-	public static void addObserver( String IPofMM, String portOfMM, String metricName, String callbackURL ){
+	public static void addObserver(String IPofMM, String portOfMM,
+			String metricName, String callbackURL) {
 
 		try {
 
-			String monitoringManagerURL = "http://" + IPofMM + ":" + portOfMM + "/v1/metrics/" + metricName + "/observers";
+			String monitoringManagerURL = "http://" + IPofMM + ":" + portOfMM
+					+ "/v1/metrics/" + metricName + "/observers";
 
 			callbackURL = callbackURL + "/v1/results";
 
-
-			RESTPost.httpPost( monitoringManagerURL, callbackURL );
+			RESTPost.httpPost(monitoringManagerURL, callbackURL);
 		}
 
-		catch( Exception ex ){
+		catch (Exception ex) {
 
 			ex.printStackTrace();
 		}
 	}
 
-	public static void startObserver( String portOfObserver ){
+	public static void startObserver(String portOfObserver) {
 
-		CVSObServer observer = new CVSObServer( Integer.parseInt( portOfObserver ) );
+		CVSObServer observer = new CVSObServer(Integer.parseInt(portOfObserver));
 
-		try{
+		try {
 
 			observer.start();
 		}
 
-		catch( Exception ex ){
+		catch (Exception ex) {
 
 			ex.printStackTrace();
 		}

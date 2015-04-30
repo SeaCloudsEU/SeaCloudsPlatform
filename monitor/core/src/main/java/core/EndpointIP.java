@@ -22,20 +22,19 @@ import java.net.UnknownHostException;
 
 public class EndpointIP {
 
-	public static String getIP(){
+	public static String getIP() {
 
 		String address = null;
 
-		try{
+		try {
 
 			InetAddress inetAddress = InetAddress.getLocalHost();
-
 
 			return address = inetAddress.getHostAddress();
 		}
 
-		catch( UnknownHostException ex ){}
-
+		catch (UnknownHostException ex) {
+		}
 
 		return address;
 	}

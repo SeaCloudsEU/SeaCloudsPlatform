@@ -56,7 +56,6 @@
       		<groupId>org.apache.brooklyn</groupId>
       		<artifactId>brooklyn-rest-client</artifactId>
     	</dependency>
-    	
 
 		<dependency>
     		<groupId>com.sun.jersey</groupId>
