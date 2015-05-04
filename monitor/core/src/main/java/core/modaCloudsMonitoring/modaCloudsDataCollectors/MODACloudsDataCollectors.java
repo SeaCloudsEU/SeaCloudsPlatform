@@ -66,14 +66,14 @@ public class MODACloudsDataCollectors {
 					+ "set \"MODACLOUDS_KNOWLEDGEBASE_SYNC_PERIOD=10\"";
 			installationExecutionCommand += "\n"
 					+ "set \"MODACLOUDS_MONITORED_APP_ID=dathanas\"";
-			installationExecutionCommand += "\n"
-					+ "set \"MODACLOUDS_MONITORED_VM_ID=frontend1\"";
+			// installationExecutionCommand += "\n"
+			// + "set \"MODACLOUDS_MONITORED_VM_ID=frontend1\"";
 		}
 
 		else
 			JOptionPane.showMessageDialog(null,
 					"To initialize for the case of Unix", "Unix",
-					JOptionPane.ERROR_MESSAGE);// TODO
+					JOptionPane.ERROR_MESSAGE);
 
 		installationExecutionCommand += "\n"
 				+ getExecutionCommand(metricName, dataCollectorsFileName);

@@ -49,7 +49,7 @@ public class ControllerImpl implements Controller {
 				DashboardURIRulesReady, DashboardURIReplanning,
 				PlannerURIRulesReady, PlannerURIReplanning);
 
-		return "[INFO] Monitor controller: MODACLouds monitoring platform has been initialized.";
+		return null;
 	}
 
 	public String initializeMonitor(String IPofKB, String IPofDA,
@@ -65,7 +65,7 @@ public class ControllerImpl implements Controller {
 				DashboardURIReplanning, PlannerURIRulesReady,
 				PlannerURIReplanning);
 
-		return "[INFO] Monitor controller: MODACLouds monitoring platform has been initialized.";
+		return null;
 	}
 
 	private void storeInitializationData(String IPofKB, String IPofDA,
@@ -114,20 +114,13 @@ public class ControllerImpl implements Controller {
 
 	public String initiateMonitor() {
 
-		String msg = "[INFO] Monitor controller: MODACLouds monitoring platform has been initiated.";
+		String msg = null;
 
 		Properties properties = readInitializationData(INITIALIZATION_CONFIGURATION_FILE_ON_SERVER);
 
 		String IPofKB = properties.getProperty("IPofKB");
 
-		if (IPofKB == null) {
-
-			msg = "[ERROR] Monitor controller: you should firstly initialize MODACLouds monitoring platform.";
-
-			System.err.println(msg);
-		}
-
-		else {
+		if (IPofKB != null) {
 
 			String IPofDA = properties.getProperty("IPofDA");
 			String IPofMM = properties.getProperty("IPofMM");
@@ -136,8 +129,8 @@ public class ControllerImpl implements Controller {
 			String portOfMM = properties.getProperty("portOfMM");
 			String privatePortOfMM = properties.getProperty("privatePortOfMM");
 
-			MODACloudsMonitoringInitiation.initiate(IPofKB, portOfKB, IPofDA,
-					portOfDA, IPofMM, portOfMM, privatePortOfMM,
+			msg = MODACloudsMonitoringInitiation.initiate(IPofKB, portOfKB,
+					IPofDA, portOfDA, IPofMM, portOfMM, privatePortOfMM,
 					SEACLOUDS_FOLDER);
 		}
 
@@ -170,48 +163,28 @@ public class ControllerImpl implements Controller {
 		return properties;
 	}
 
-	public String installMonitoringRules(String monitoringRules) {
-
-		String msg = "[INFO] Monitor controller: Monitoring rules have been installed.";
+	public void installMonitoringRules(String monitoringRules) {
 
 		Properties properties = readInitializationData(INITIALIZATION_CONFIGURATION_FILE_ON_SERVER);
 
 		String IPofMM = properties.getProperty("IPofMM");
 
-		if (IPofMM == null) {
-
-			msg = "[ERROR] Monitor controller: you should firstly initialize MODACLouds monitoring platform.";
-
-			System.err.println(msg);
-		}
-
-		else {
+		if (IPofMM != null) {
 
 			String portOfMM = properties.getProperty("portOfMM");
 
 			MODACloudsMonitoringRules.installMonitoringRules(IPofMM, portOfMM,
 					monitoringRules);
 		}
-
-		return msg;
 	}
 
-	public String installDeploymentModel(String deploymentModel) {
-
-		String msg = "[INFO] Monitor controller: Deployment model has been installed.";
+	public void installDeploymentModel(String deploymentModel) {
 
 		Properties properties = readInitializationData(INITIALIZATION_CONFIGURATION_FILE_ON_SERVER);
 
 		String IPofKB = properties.getProperty("IPofKB");
 
-		if (IPofKB == null) {
-
-			msg = "[ERROR] Monitor controller: you should firstly initialize MODACLouds monitoring platform.";
-
-			System.err.println(msg);
-		}
-
-		else {
+		if (IPofKB != null) {
 
 			String IPofMM = properties.getProperty("IPofMM");
 			String portOfMM = properties.getProperty("portOfMM");
@@ -219,8 +192,6 @@ public class ControllerImpl implements Controller {
 			MODACloudsDeploymentModel.installDeploymentModel(IPofMM, portOfMM,
 					deploymentModel);
 		}
-
-		return msg;
 	}
 
 	public String[] getRunningMetrics() {
@@ -253,19 +224,7 @@ public class ControllerImpl implements Controller {
 				SERVER_DATA_COLLECTORS_PATH, DATA_COLLECTORS_FILE_NAME);
 	}
 
-	public String getDataCollectorInstallationFile(String metricName) {// It
-																		// returns
-																		// the
-																		// content
-																		// of
-																		// the
-																		// installation
-																		// file
-																		// of a
-																		// data
-																		// collector
-																		// as a
-																		// String.
+	public String getDataCollectorInstallationFile(String metricName) {
 
 		Properties properties = readInitializationData(INITIALIZATION_CONFIGURATION_FILE_ON_SERVER);
 
@@ -283,9 +242,7 @@ public class ControllerImpl implements Controller {
 		return null;
 	}
 
-	public String uninstallMonitoringRule(String id) {
-
-		String msg = "[INFO] Monitor controller: The monitoring rule has been deleted.";
+	public void uninstallMonitoringRule(String id) {
 
 		Properties properties = readInitializationData(INITIALIZATION_CONFIGURATION_FILE_ON_SERVER);
 
@@ -295,17 +252,10 @@ public class ControllerImpl implements Controller {
 		if (IPofMM != null && portOfMM != null)
 			MODACloudsMonitoringRules.uninstallMonitoringRules(IPofMM,
 					portOfMM, id);
-
-		else
-			msg = "[ERROR] Monitor controller: you should firstly initialize MODACLouds monitoring platform.";
-
-		return msg;
 	}
 
-	public String addObserver(String metricName, String portOfObserver,
+	public void addObserver(String metricName, String portOfObserver,
 			String callbackURL) {
-
-		String msg = "[INFO] Monitor controller: The observer has been added.";
 
 		Properties properties = readInitializationData(INITIALIZATION_CONFIGURATION_FILE_ON_SERVER);
 
@@ -319,10 +269,5 @@ public class ControllerImpl implements Controller {
 
 			MODACloudsObservers.startObserver(portOfObserver);
 		}
-
-		else
-			msg = "[ERROR] Monitor controller: you should firstly initialize MODACLouds monitoring platform.";
-
-		return msg;
 	}
 }

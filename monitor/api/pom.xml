@@ -54,7 +54,7 @@
 	<dependencies>
 		<dependency>
       		<groupId>org.apache.brooklyn</groupId>
-      		<artifactId>brooklyn-rest-client</artifactId>
+     		<artifactId>brooklyn-rest-client</artifactId>
     	</dependency>
 
 		<dependency>
@@ -87,12 +87,20 @@
 			<version>1.19</version>
 		</dependency>
 
-        <dependency>
+		<dependency>
          	<groupId>eu.seaclouds-project</groupId>
          	<artifactId>monitor-core</artifactId>
          	<version>0.1.0-SNAPSHOT</version>
          	<scope>system</scope>
          	<systemPath>${basedir}/../core/target/monitor-core-0.1.0-SNAPSHOT.jar</systemPath>
+      	</dependency>
+
+        <dependency>
+         	<groupId>eu.seaclouds-project</groupId>
+         	<artifactId>data-collector</artifactId>
+         	<version>1.3-SNAPSHOT</version>
+         	<scope>system</scope>
+         	<systemPath>${basedir}/../core/lib/data-collector-1.3-SNAPSHOT.jar</systemPath>
       	</dependency>
 
 		<dependency>

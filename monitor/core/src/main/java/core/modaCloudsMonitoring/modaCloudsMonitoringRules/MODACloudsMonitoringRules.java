@@ -25,30 +25,14 @@ public class MODACloudsMonitoringRules {
 	public static void installMonitoringRules(String IPofMM, String portOfMM,
 			String monitoringRules) {
 
-		try {
-
-			RESTPost.httpPost("http://" + IPofMM + ":" + portOfMM
-					+ "/v1/monitoring-rules", monitoringRules, "xml");
-		}
-
-		catch (Exception ex) {
-
-			ex.printStackTrace();
-		}
+		RESTPost.httpPost("http://" + IPofMM + ":" + portOfMM
+				+ "/v1/monitoring-rules", monitoringRules, "xml");
 	}
 
 	public static void uninstallMonitoringRules(String IPofMM, String portOfMM,
 			String id) {
 
-		try {
-
-			RESTDelete.httpDelete("http://" + IPofMM + ":" + portOfMM
-					+ "/v1/monitoring-rules/" + id);
-		}
-
-		catch (Exception ex) {
-
-			ex.printStackTrace();
-		}
+		RESTDelete.httpDelete("http://" + IPofMM + ":" + portOfMM
+				+ "/v1/monitoring-rules/" + id);
 	}
 }

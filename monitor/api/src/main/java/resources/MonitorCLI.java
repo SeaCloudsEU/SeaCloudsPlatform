@@ -35,15 +35,10 @@ import core.RESTCalls.RESTPost;
 public class MonitorCLI {
 
 	private static final String INITIALIZATION_CONFIGURATION_FILE = "./resources/initialization.properties";
-
-	private static final String MONITORING_RULES_FILE = "/api/resources/monitoringRules";
-
+	private static final String MONITORING_RULES_FILE = "/api/resources/monitoringRules1";
 	private static final String DEPLOYMENT_MODEL_FILE = "/api/resources/deploymentModel.json";
-
 	private static final String LOCAL_SIGAR = "/api/lib/hyperic-sigar-1.6.4";
-
 	private static final String DATA_COLLECTORS_FILE_NAME = "data-collector-1.3-SNAPSHOT.jar";
-
 	private static final String DATA_COLLECTORS_INSTALLATION_FILE_NAME = "dataCollectorsInstallation.bat";
 
 	public static void main(String[] args) {
@@ -126,7 +121,13 @@ public class MonitorCLI {
 								.httpPost(
 										"http://localhost:8080/monitor-api/rest/monitor/initialize",
 										configurationFileContent, "text/plain");
-						System.out.println(msg);
+
+						if (msg != null) {
+
+							System.err.println(msg);
+
+							System.exit(-1);
+						}
 
 						msg = RESTPost
 								.httpPost(
@@ -185,27 +186,24 @@ public class MonitorCLI {
 
 					if (answerInt == 2) {
 
-						answerInt = 1;
+						File monitoringRules = new File(parentDir
+								+ MONITORING_RULES_FILE + ".xml");
 
-						if (answerInt >= 1 && answerInt <= 10) {
+						String monitoringRulesContent = TxtFileReader
+								.read(monitoringRules);
 
-							File monitoringRules = new File(parentDir
-									+ MONITORING_RULES_FILE + answerInt
-									+ ".xml");
-							System.out.println("\nmonitoringRules = "
-									+ monitoringRules + "\n");
+						msg = RESTPost
+								.httpPost(
+										"http://localhost:8080/monitor-api/rest/monitor/installMonitoringRules",
+										monitoringRulesContent, "xml");
 
-							String monitoringRulesContent = TxtFileReader
-									.read(monitoringRules);
+						Thread.sleep(4000);
 
-							msg = RESTPost
-									.httpPost(
-											"http://localhost:8080/monitor-api/rest/monitor/installMonitoringRules",
-											monitoringRulesContent, "xml");
+						if (msg != null) {
 
-							Thread.sleep(5000);
+							System.err.println(msg);
 
-							System.out.println(msg);
+							System.exit(-1);
 						}
 					}
 
@@ -226,7 +224,12 @@ public class MonitorCLI {
 
 						Thread.sleep(5000);
 
-						System.out.println(msg);
+						if (msg != null) {
+
+							System.err.println(msg);
+
+							System.exit(-1);
+						}
 					}
 
 					else if (answerInt == 4) {
@@ -436,7 +439,12 @@ public class MonitorCLI {
 
 						Thread.sleep(5000);
 
-						System.out.println(msg);
+						if (msg != null) {
+
+							System.err.println(msg);
+
+							System.exit(-1);
+						}
 					}
 
 					else if (answerInt == 11) {

@@ -85,6 +85,7 @@
                         	<includes>
                             	<include>**/core/lib/**</include>
                             	<include>**/api/lib/**</include>
+                            	<include>**/api/SeaClouds/**</include>
                             	<include>**/api/data-collector-1.3-SNAPSHOT.jar</include>
                             	<include>**/api/dataCollectorsInstallation.bat</include>
                         	</includes>
@@ -115,7 +116,7 @@
         		</executions>
       		</plugin>
 
-			 <plugin>
+			<plugin>
     			<artifactId>maven-antrun-plugin</artifactId>
     			<version>1.6</version>
     			<inherited>false</inherited>
@@ -141,16 +142,6 @@
          			</execution>
      			</executions>
  			</plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.17</version>
-        <configuration>
-          <groups>init,brooklyn</groups>
-        </configuration>
-      </plugin>
-
     </plugins>
   </build>
   <groupId>eu.seaclouds-project.monitor</groupId>

@@ -27,29 +27,35 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 public class RESTDelete {
 
-	public static String httpDelete(String urlStr) throws Exception {
+	public static String httpDelete(String urlStr) {
 
 		HttpClient client = new DefaultHttpClient();
 
 		HttpDelete delete = new HttpDelete(urlStr);
 
-		HttpResponse response = client.execute(delete);
-
 		String result = null;
 
-		if (response != null && response.getEntity() != null) {
+		try {
 
-			BufferedReader r = new BufferedReader(new InputStreamReader(
-					response.getEntity().getContent()));
+			HttpResponse response = client.execute(delete);
 
-			StringBuilder total = new StringBuilder();
+			if (response != null && response.getEntity() != null) {
 
-			String line = null;
+				BufferedReader r = new BufferedReader(new InputStreamReader(
+						response.getEntity().getContent()));
 
-			while ((line = r.readLine()) != null)
-				total.append(line + "\n");
+				StringBuilder total = new StringBuilder();
 
-			result = total.toString();
+				String line = null;
+
+				while ((line = r.readLine()) != null)
+					total.append(line + "\n");
+
+				result = total.toString();
+			}
+		} catch (Exception ex) {
+
+			ex.printStackTrace();
 		}
 
 		return result;

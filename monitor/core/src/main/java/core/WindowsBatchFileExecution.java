@@ -21,13 +21,15 @@ import java.io.File;
 
 public class WindowsBatchFileExecution {
 
-	public static void execute(String batchFile) {
+	public static Process execute(String batchFile) {
+
+		Process p = null;
 
 		try {
 
 			File file = new File(batchFile);
 
-			Process p = Runtime.getRuntime().exec(
+			p = Runtime.getRuntime().exec(
 					"cmd /C start /wait " + file.getAbsolutePath());
 
 			p.waitFor();
@@ -38,6 +40,10 @@ public class WindowsBatchFileExecution {
 			ex.printStackTrace();
 
 			System.exit(-1);
+
+			p = null;
 		}
+
+		return null;
 	}
 }

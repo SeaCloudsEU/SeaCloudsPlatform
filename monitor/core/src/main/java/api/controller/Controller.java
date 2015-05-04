@@ -35,9 +35,9 @@ public interface Controller {
 
 	public String initiateMonitor();
 
-	public String installMonitoringRules(String monitoringRules);
+	public void installMonitoringRules(String monitoringRules);
 
-	public String installDeploymentModel(String deploymentModel);
+	public void installDeploymentModel(String deploymentModel);
 
 	public String[] getRunningMetrics();
 
@@ -49,8 +49,8 @@ public interface Controller {
 
 	public String getDataCollectorInstallationFile(String metricName);
 
-	public String uninstallMonitoringRule(String id);
+	public void uninstallMonitoringRule(String id);
 
-	public String addObserver(String metricName, String portOfObserver,
+	public void addObserver(String metricName, String portOfObserver,
 			String callbackURL);
 }

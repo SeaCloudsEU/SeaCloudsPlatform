@@ -35,8 +35,8 @@ public class MODACloudsMonitoringInitiation {
 
 	private static final String SERVER_CSPARQL = "/rsp-services-csparql-0.4.6.2-modaclouds";
 
-	public static void initiate(String IPofKB, String portOfKB, String IPofDA,
-			String portOfDA, String IPofMM, String portOfMM,
+	public static String initiate(String IPofKB, String portOfKB,
+			String IPofDA, String portOfDA, String IPofMM, String portOfMM,
 			String privatePortOfMM, String seaCloudsFolder) {
 
 		if (OperatingSystem.isWindows()) {
@@ -53,6 +53,8 @@ public class MODACloudsMonitoringInitiation {
 			JOptionPane.showMessageDialog(null,
 					"To initialize for the case of Unix", "Unix",
 					JOptionPane.ERROR_MESSAGE);
+
+		return null;
 	}
 
 	private static void createBatchfile(String IPofKB, String portOfKB,

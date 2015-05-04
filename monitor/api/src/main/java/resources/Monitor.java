@@ -99,7 +99,7 @@ public class Monitor {
 				DashboardURIRulesReady, DashboardURIReplanning,
 				PlannerURIRulesReady, PlannerURIReplanning);
 
-		return "[INFO] Monitor REST Service: Initializing monitor...\n\n" + msg;
+		return msg;
 	}
 
 	@GET
@@ -121,7 +121,7 @@ public class Monitor {
 
 		String msg = controller.initiateMonitor();
 
-		return "[INFO] Monitor REST Service: Initiating monitor...\n" + msg;
+		return msg;
 	}
 
 	@POST
@@ -135,7 +135,7 @@ public class Monitor {
 
 			Controller controller = new ControllerImpl();
 
-			controller.initiateMonitor();
+			msg = controller.initiateMonitor();
 		}
 
 		return msg;
@@ -147,92 +147,54 @@ public class Monitor {
 	public String installMonitoringRules(String monitoringRules) {
 
 		Controller controller = new ControllerImpl();
-		String msg1 = controller.installMonitoringRules(monitoringRules);
-		if (msg1 == null)
-			msg1 = "";
 
-		String msg2 = notifyForMonitoringRules(monitoringRules);
-		if (msg2 == null)
-			msg2 = "";
+		controller.installMonitoringRules(monitoringRules);
 
-		return "[INFO] Monitor REST Service: Installing monitoring rules...\n\n"
-				+ monitoringRules + "\n" + msg1 + "\n" + msg2;
-	}
+		String msg = null;
 
-	private String notifyForMonitoringRules(String monitoringRules) {
-
-		String msg = "", msg1 = "", msg2 = "", msg3 = "";
-
-		Properties properties = read(INITIALIZATION_CONFIGURATION_FILE_ON_SERVER);
-
-		if (properties == null)
-			msg = "[ERROR] Monitor REST Service: there is no calling information about the external SeaClouds components.";
-
-		else {
-
-			try {
-
-				String SLAServiceURIRulesReady = properties
-						.getProperty("SLAServiceURIRulesReady");
-				String DashboardURIRulesReady = properties
-						.getProperty("DashboardURIRulesReady");
-				String PlannerURIRulesReady = properties
-						.getProperty("PlannerURIRulesReady");
-
-				if (SLAServiceURIRulesReady == null)
-					msg1 = "[ERROR] Monitor REST Service: there is no calling information about the SLA Service.";
-
-				else
-					msg1 = RESTPost.httpPost(SLAServiceURIRulesReady,
-							monitoringRules, "xml");
-
-				if (msg1 != null)
-					msg += msg1;
-
-				if (DashboardURIRulesReady == null)
-					msg2 = "[ERROR] Monitor REST Service: there is no calling information about the Dashboard.";
-
-				else
-					msg2 = RESTPost.httpPost(DashboardURIRulesReady,
-							monitoringRules, "xml");
-
-				if (msg2 != null)
-					msg += "\n" + msg2;
-
-				if (PlannerURIRulesReady == null)
-					msg3 = "[ERROR] Monitor REST Service: there is no calling information about the Planner.";
-
-				else
-					msg3 = RESTPost.httpPost(PlannerURIRulesReady,
-							monitoringRules, "xml");
-
-				if (msg3 != null)
-					msg += "\n" + msg3;
-			}
-
-			catch (Exception ex) {
-
-				ex.printStackTrace();
-			}
+		try {
+			notifyForMonitoringRules(monitoringRules);
+		} catch (Exception ex) {
+			msg = ex.getMessage();
 		}
 
 		return msg;
 	}
 
+	private void notifyForMonitoringRules(String monitoringRules)
+			throws Exception {
+
+		Properties properties = read(INITIALIZATION_CONFIGURATION_FILE_ON_SERVER);
+
+		if (properties != null) {
+
+			String SLAServiceURIRulesReady = properties
+					.getProperty("SLAServiceURIRulesReady");
+			String DashboardURIRulesReady = properties
+					.getProperty("DashboardURIRulesReady");
+			String PlannerURIRulesReady = properties
+					.getProperty("PlannerURIRulesReady");
+
+			if (SLAServiceURIRulesReady != null)
+				RESTPost.httpPost(SLAServiceURIRulesReady, monitoringRules,
+						"xml");
+
+			if (DashboardURIRulesReady != null)
+				RESTPost.httpPost(DashboardURIRulesReady, monitoringRules,
+						"xml");
+
+			if (PlannerURIRulesReady != null)
+				RESTPost.httpPost(PlannerURIRulesReady, monitoringRules, "xml");
+		}
+	}
+
 	@POST
-	@Produces("text/plain")
 	@Path("/installDeploymentModel")
-	public String installDeploymentModel(String deploymentModel) {
+	public void installDeploymentModel(String deploymentModel) {
 
 		Controller controller = new ControllerImpl();
 
-		String msg = controller.installDeploymentModel(deploymentModel);
-
-		if (msg == null)
-			msg = "";
-
-		return "[INFO] Monitor REST Service: Installing deployment model...\n\n"
-				+ deploymentModel + "\n" + msg;
+		controller.installDeploymentModel(deploymentModel);
 	}
 
 	@GET
@@ -315,31 +277,23 @@ public class Monitor {
 	}
 
 	@POST
-	@Produces("text/plain")
 	@Path("/uninstallMonitoringRule/{id}")
-	public String uninstallMonitoringRule(@PathParam("id") String id) {
+	public void uninstallMonitoringRule(@PathParam("id") String id) {
 
 		Controller controller = new ControllerImpl();
 
-		String msg = controller.uninstallMonitoringRule(id);
-
-		return "[INFO] Monitor REST Service: Uninstalling monitoring rule...\n\n"
-				+ msg;
+		controller.uninstallMonitoringRule(id);
 	}
 
 	@POST
-	@Produces("text/plain")
 	@Path("/addObserver/{metricName}/{portOfObserver}")
-	public String addObserver(@PathParam("metricName") String metricName,
+	public void addObserver(@PathParam("metricName") String metricName,
 			@PathParam("portOfObserver") String portOfObserver,
 			String callbackURL) {
 
 		Controller controller = new ControllerImpl();
 
-		String msg = controller.addObserver(metricName, portOfObserver,
-				callbackURL);
-
-		return "[INFO] Monitor REST Service: Adding observer...\n\n" + msg;
+		controller.addObserver(metricName, portOfObserver, callbackURL);
 	}
 
 	@POST

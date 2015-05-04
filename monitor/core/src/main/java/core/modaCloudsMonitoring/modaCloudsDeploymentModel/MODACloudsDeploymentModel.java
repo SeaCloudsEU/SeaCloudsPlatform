@@ -25,16 +25,8 @@ public class MODACloudsDeploymentModel {
 			String monitoringManagerEndpointIP,
 			String monitoringManagerEndpointPort, String deploymentModel) {
 
-		try {
-
-			RESTPost.httpPost("http://" + monitoringManagerEndpointIP + ":"
-					+ monitoringManagerEndpointPort + "/v1/model/resources",
-					deploymentModel, "json");
-		}
-
-		catch (Exception e) {
-
-			e.printStackTrace();
-		}
+		RESTPost.httpPost("http://" + monitoringManagerEndpointIP + ":"
+				+ monitoringManagerEndpointPort + "/v1/model/resources",
+				deploymentModel, "json");
 	}
 }

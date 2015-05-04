@@ -19,18 +19,20 @@ package core;
 
 public class OperatingSystem {
 
-	private static String getOsName() {
+	public static final String windows = "Windows", unix = "Unix";
+
+	public static String getOsName() {
 
 		return System.getProperty("os.name");
 	}
 
 	public static boolean isWindows() {
 
-		return getOsName().startsWith("Windows");
+		return getOsName().startsWith(windows);
 	}
 
 	public static boolean isUnix() {
 
-		return getOsName().startsWith("Unix");
+		return getOsName().startsWith(unix);
 	}
 }
