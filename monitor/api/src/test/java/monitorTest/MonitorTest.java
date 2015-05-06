@@ -46,8 +46,8 @@ import core.WindowsBatchFileExecution;
 public class MonitorTest {
 
 	private static final String INITIALIZATION_CONFIGURATION_FILE = "./resources/initializationForTesting.properties";
-	private static final String MONITORING_RULES_FILE = "/api/resources/monitoringRules1";
-	private static final String DEPLOYMENT_MODEL_FILE = "/api/resources/deploymentModel.json";
+	private static final String MONITORING_RULES_FILE = "/api/resources/chat-WebApplication-monitoringRules";
+	private static final String DEPLOYMENT_MODEL_FILE = "/api/resources/chat-WebApplication.json";
 	private static final String DATA_COLLECTORS_FILE_NAME = "data-collector-1.3-SNAPSHOT.jar";
 	private static final String DATA_COLLECTORS_INSTALLATION_FILE_NAME = "dataCollectorsInstallation.bat";
 
@@ -61,7 +61,9 @@ public class MonitorTest {
 					OperatingSystem.windows);
 		else {
 
-			String metricName = "CPUUtilization";
+			String metricName = "AppAvailable";
+			String appID = "chat-WebApplication_ID";
+			String vmID = "tomcat_server_VM_ID";
 
 			File currentDir = new File(System.getProperty("user.dir"));
 
@@ -151,8 +153,8 @@ public class MonitorTest {
 			log.info("5: Retrieve the installation file of the data collector(s) and install it");
 			String fileContent = null;
 			try {
-				fileContent = monitor
-						.getDataCollectorInstallationFile(metricName);
+				fileContent = monitor.getDataCollectorInstallationFile(
+						metricName, appID, vmID);
 				TxtFileWriter.write(fileContent,
 						DATA_COLLECTORS_INSTALLATION_FILE_NAME);
 

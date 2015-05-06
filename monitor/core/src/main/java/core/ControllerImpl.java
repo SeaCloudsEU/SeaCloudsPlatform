@@ -224,7 +224,8 @@ public class ControllerImpl implements Controller {
 				SERVER_DATA_COLLECTORS_PATH, DATA_COLLECTORS_FILE_NAME);
 	}
 
-	public String getDataCollectorInstallationFile(String metricName) {
+	public String getDataCollectorInstallationFile(String metricName,
+			String appID, String vmID) {
 
 		Properties properties = readInitializationData(INITIALIZATION_CONFIGURATION_FILE_ON_SERVER);
 
@@ -237,7 +238,7 @@ public class ControllerImpl implements Controller {
 				&& portOfDA != null)
 			return MODACloudsDataCollectors.formInstallationExecutionCommand(
 					metricName, IPofKB, portOfKB, IPofDA, portOfDA,
-					DATA_COLLECTORS_FILE_NAME);
+					DATA_COLLECTORS_FILE_NAME, appID, vmID);
 
 		return null;
 	}

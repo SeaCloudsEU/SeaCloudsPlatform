@@ -23,8 +23,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
-
 import core.OperatingSystem;
 
 public class MODACloudsDataCollectors {
@@ -43,37 +41,42 @@ public class MODACloudsDataCollectors {
 
 	public static String formInstallationExecutionCommand(String metricName,
 			String IPofKB, String portOfKB, String IPofDA, String portOfDA,
-			String dataCollectorsFileName) {
+			String dataCollectorsFileName, String appID, String vmID) {
 
-		String installationExecutionCommand = "";
+		String installationExecutionCommand = "";// clearEnvironmentVariables();
 
 		if (OperatingSystem.isWindows()) {
 
-			installationExecutionCommand = "set \"MODACLOUDS_KNOWLEDGEBASE_ENDPOINT_IP="
-					+ IPofKB + "\"";
+			installationExecutionCommand += "setx MODACLOUDS_KNOWLEDGEBASE_ENDPOINT_IP \""
+					+ IPofKB + "\" /M";
+
 			installationExecutionCommand += "\n"
-					+ "set \"MODACLOUDS_KNOWLEDGEBASE_ENDPOINT_PORT="
-					+ portOfKB + "\"";
+					+ "setx MODACLOUDS_KNOWLEDGEBASE_ENDPOINT_PORT \""
+					+ portOfKB + "\" /M";
+
 			installationExecutionCommand += "\n"
-					+ "set \"MODACLOUDS_KNOWLEDGEBASE_DATASET_PATH \"/modaclouds/kb\"";
+					+ "setx MODACLOUDS_KNOWLEDGEBASE_DATASET_PATH \"/modaclouds/kb\" /M";
+
 			installationExecutionCommand += "\n"
-					+ "set \"MODACLOUDS_MONITORING_DDA_ENDPOINT_IP=" + IPofDA
-					+ "\"";
+					+ "setx MODACLOUDS_MONITORING_DDA_ENDPOINT_IP \"" + IPofDA
+					+ "\" /M";
+
 			installationExecutionCommand += "\n"
-					+ "set \"MODACLOUDS_MONITORING_DDA_ENDPOINT_PORT="
-					+ portOfDA + "\"";
+					+ "setx MODACLOUDS_MONITORING_DDA_ENDPOINT_PORT \""
+					+ portOfDA + "\" /M";
+
 			installationExecutionCommand += "\n"
-					+ "set \"MODACLOUDS_KNOWLEDGEBASE_SYNC_PERIOD=10\"";
+					+ "setx MODACLOUDS_KNOWLEDGEBASE_SYNC_PERIOD \"10\" /M";
+
 			installationExecutionCommand += "\n"
-					+ "set \"MODACLOUDS_MONITORED_APP_ID=dathanas\"";
-			// installationExecutionCommand += "\n"
-			// + "set \"MODACLOUDS_MONITORED_VM_ID=frontend1\"";
+					+ "setx MODACLOUDS_MONITORED_APP_ID \"" + appID + "\" /M";
+
+			installationExecutionCommand += "\n"
+					+ "setx MODACLOUDS_MONITORED_VM_ID \"" + vmID + "\" /M";
 		}
 
 		else
-			JOptionPane.showMessageDialog(null,
-					"To initialize for the case of Unix", "Unix",
-					JOptionPane.ERROR_MESSAGE);
+			System.err.println("To initialize for the case of Unix");
 
 		installationExecutionCommand += "\n"
 				+ getExecutionCommand(metricName, dataCollectorsFileName);
@@ -95,14 +98,15 @@ public class MODACloudsDataCollectors {
 				.get(collector);
 
 		if (executionCommand == null)
-			System.err.println("Metric name = " + metricName
-					+ " was NOT found.");
+
+			executionCommand = "START CMD /C CALL java -jar "
+					+ dataCollectorsFileName + " kb\n" + "exit";
 
 		else
 			executionCommand = "START CMD /C CALL java -Djava.library.path="
-					+ executionCommand + " -jar ./" + dataCollectorsFileName
-					+ " kb" + "\nexit";
+					+ executionCommand + " -jar " + dataCollectorsFileName
+					+ " kb\n" + "exit";
 
-		return executionCommand;
+		return executionCommand != null ? executionCommand : "";
 	}
 }

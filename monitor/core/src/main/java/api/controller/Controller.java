@@ -47,7 +47,8 @@ public interface Controller {
 
 	public File getDataCollector(String metricName);
 
-	public String getDataCollectorInstallationFile(String metricName);
+	public String getDataCollectorInstallationFile(String metricName,
+			String appID, String vmID);
 
 	public void uninstallMonitoringRule(String id);
 

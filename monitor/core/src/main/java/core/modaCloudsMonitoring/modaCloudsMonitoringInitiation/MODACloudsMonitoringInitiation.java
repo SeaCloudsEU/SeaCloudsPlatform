@@ -63,50 +63,58 @@ public class MODACloudsMonitoringInitiation {
 
 		File file = new File(seaCloudsFolder + SERVER_FUSEKI + "/ds/tdb.lock");
 
-		String content = "set \"MODACLOUDS_KNOWLEDGEBASE_ENDPOINT_IP="
+		String content = "setx MODACLOUDS_KNOWLEDGEBASE_ENDPOINT_IP \""
 				+ IPofKB
-				+ "\""
+				+ "\" /M"
 				+ "\n"
-				+ "set \"MODACLOUDS_KNOWLEDGEBASE_ENDPOINT_PORT="
+
+				+ "setx MODACLOUDS_KNOWLEDGEBASE_ENDPOINT_PORT \""
 				+ portOfKB
-				+ "\""
+				+ "\" /M"
 				+ "\n"
-				+ "set \"MODACLOUDS_KNOWLEDGEBASE_DATASET_PATH \"/modaclouds/kb\""
+
+				+ "setx MODACLOUDS_KNOWLEDGEBASE_DATASET_PATH \"/modaclouds/kb\" /M"
 				+ "\n"
-				+ "set \"MODACLOUDS_MONITORING_DDA_ENDPOINT_IP="
+
+				+ "setx MODACLOUDS_MONITORING_DDA_ENDPOINT_IP \""
 				+ IPofDA
-				+ "\""
+				+ "\" /M"
 				+ "\n"
-				+ "set \"MODACLOUDS_MONITORING_DDA_ENDPOINT_PORT="
+
+				+ "setx MODACLOUDS_MONITORING_DDA_ENDPOINT_PORT \""
 				+ portOfDA
-				+ "\""
+				+ "\" /M"
 				+ "\n"
-				+ "set \"MODACLOUDS_MONITORING_MANAGER_PORT="
+
+				+ "setx MODACLOUDS_MONITORING_MANAGER_PORT \""
 				+ portOfMM
-				+ "\""
+				+ "\" /M"
 				+ "\n"
-				+ "set \"MODACLOUDS_MONITORING_MANAGER_PRIVATE_PORT="
+
+				+ "setx MODACLOUDS_MONITORING_MANAGER_PRIVATE_PORT \""
 				+ privatePortOfMM
-				+ "\""
+				+ "\" /M"
 				+ "\n"
-				+ "set \"MODACLOUDS_MONITORING_MANAGER_PRIVATE_IP="
+
+				+ "setx MODACLOUDS_MONITORING_MANAGER_PRIVATE_IP \""
 				+ IPofMM
-				+ "\""
+				+ "\" /M"
 				+ "\n"
-				+ "set \"MODACLOUDS_MONITORING_MONITORING_METRICS_FILE="
+
+				+ "setx MODACLOUDS_MONITORING_MONITORING_METRICS_FILE \""
 				+ new File(seaCloudsFolder + SERVER_MONITORING_METRICS)
-						.getAbsolutePath() + "\"\n" +
+						.getAbsolutePath() + "\" /M \n"
 
-				"cd " + seaCloudsFolder + SERVER_FUSEKI + "\n" +
+				+ "cd " + seaCloudsFolder + SERVER_FUSEKI + "\n"
 
-				"mkdir \"ds\"\n" +
+				+ "mkdir \"ds\"\n"
 
-				"del \"" + file.getAbsolutePath() + "\"\n" +
+				+ "del \"" + file.getAbsolutePath() + "\"\n"
 
-				"START CMD /C CALL fuseki-server.bat --update --port "
-				+ portOfKB + " --loc ./ds /modaclouds/kb\n" +
+				+ "START CMD /C CALL fuseki-server.bat --update --port "
+				+ portOfKB + " --loc ./ds /modaclouds/kb\n"
 
-				"cd .." + SERVER_CSPARQL + "\n"
+				+ "cd .." + SERVER_CSPARQL + "\n"
 				+ "START CMD /C CALL java -jar rsp-services-csparql.jar\n" +
 
 				"cd ..\n"

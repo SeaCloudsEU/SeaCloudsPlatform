@@ -17,12 +17,20 @@
 
 package resources;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.URL;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import com.google.common.io.ByteStreams;
 
@@ -35,15 +43,18 @@ import core.RESTCalls.RESTPost;
 public class MonitorCLI {
 
 	private static final String INITIALIZATION_CONFIGURATION_FILE = "./resources/initialization.properties";
-	private static final String MONITORING_RULES_FILE = "/api/resources/monitoringRules1";
-	private static final String DEPLOYMENT_MODEL_FILE = "/api/resources/deploymentModel.json";
+	private static final String MONITORING_RULES_FILE = "/api/resources/chat-WebApplication-monitoringRules";// "/api/resources/monitoringRules1";
+	private static final String DEPLOYMENT_MODEL_FILE = "/api/resources/chat-WebApplication.json";// "/api/resources/deploymentModel.json";
 	private static final String LOCAL_SIGAR = "/api/lib/hyperic-sigar-1.6.4";
 	private static final String DATA_COLLECTORS_FILE_NAME = "data-collector-1.3-SNAPSHOT.jar";
 	private static final String DATA_COLLECTORS_INSTALLATION_FILE_NAME = "dataCollectorsInstallation.bat";
 
 	public static void main(String[] args) {
 
-		String metricName = "CPUUtilization", metricNameForObserver = "FrontendCPUUtilization1";
+		String metricName = "AppAvailable";// "CPUUtilization";
+		String metricNameForObserver = "AppAvailabilityViolation";// "FrontendCPUUtilization1";
+		String appID = "chat-WebApplication_ID";
+		String vmID = "tomcat_server_VM_ID";// "frontend1";
 
 		boolean initiated = false, firstTime = true;
 
@@ -77,7 +88,9 @@ public class MonitorCLI {
 				System.out.println("9: Uninstall monitoring rule");
 				System.out.println("10: Add observer");
 				System.out.println("11: Send replanning event");
-				System.out.println("12: Exit");
+				System.out
+						.println("12: Execute existing installation file of data collector(s)");
+				System.out.println("13: Exit");
 				System.out.print("\nChoice = ");
 
 				BufferedReader input = new BufferedReader(
@@ -111,15 +124,14 @@ public class MonitorCLI {
 					else {
 
 						msg = RESTGet
-								.httpGet("http://localhost:8080/monitor-api/rest/monitor/clear");
-						System.out.println(msg);
+								.httpGet("http://localhost:8080/api/rest/monitor/clear");
 
 						String configurationFileContent = TxtFileReader
 								.read(initializationFile);
 
 						msg = RESTPost
 								.httpPost(
-										"http://localhost:8080/monitor-api/rest/monitor/initialize",
+										"http://localhost:8080/api/rest/monitor/initialize",
 										configurationFileContent, "text/plain");
 
 						if (msg != null) {
@@ -131,7 +143,7 @@ public class MonitorCLI {
 
 						msg = RESTPost
 								.httpPost(
-										"http://localhost:8080/monitor-api/rest/monitor/initiate",
+										"http://localhost:8080/api/rest/monitor/initiate",
 										parentDir, "text/plain");
 
 						if (msg != null) {
@@ -141,12 +153,8 @@ public class MonitorCLI {
 							System.exit(-1);
 						}
 
-						else {
-
-							Thread.sleep(15000);
-
+						else
 							initiated = true;
-						}
 					}
 				}
 
@@ -188,16 +196,16 @@ public class MonitorCLI {
 
 						File monitoringRules = new File(parentDir
 								+ MONITORING_RULES_FILE + ".xml");
+						System.out.println("\nmonitoringRules = "
+								+ monitoringRules + "\n");
 
 						String monitoringRulesContent = TxtFileReader
 								.read(monitoringRules);
 
 						msg = RESTPost
 								.httpPost(
-										"http://localhost:8080/monitor-api/rest/monitor/installMonitoringRules",
+										"http://localhost:8080/api/rest/monitor/installMonitoringRules",
 										monitoringRulesContent, "xml");
-
-						Thread.sleep(4000);
 
 						if (msg != null) {
 
@@ -219,10 +227,8 @@ public class MonitorCLI {
 
 						msg = RESTPost
 								.httpPost(
-										"http://localhost:8080/monitor-api/rest/monitor/installDeploymentModel",
+										"http://localhost:8080/api/rest/monitor/installDeploymentModel",
 										deploymentModelContent, "xml");
-
-						Thread.sleep(5000);
 
 						if (msg != null) {
 
@@ -235,7 +241,7 @@ public class MonitorCLI {
 					else if (answerInt == 4) {
 
 						String response = RESTGet
-								.httpGet("http://localhost:8080/monitor-api/rest/monitor/getAllMetrics");
+								.httpGet("http://localhost:8080/api/rest/monitor/getAllMetrics");
 
 						String[] metrics = response.split("\n");
 
@@ -255,7 +261,7 @@ public class MonitorCLI {
 					else if (answerInt == 5) {
 
 						String response = RESTGet
-								.httpGet("http://localhost:8080/monitor-api/rest/monitor/getRunningMetrics");
+								.httpGet("http://localhost:8080/api/rest/monitor/getRunningMetrics");
 
 						String[] metrics = response.split("\n");
 
@@ -275,14 +281,12 @@ public class MonitorCLI {
 					else if (answerInt == 6) {
 
 						InputStream data = RESTGet
-								.httpGetResponse("http://localhost:8080/monitor-api/rest/monitor/getDataCollectors");
+								.httpGetResponse("http://localhost:8080/api/rest/monitor/getDataCollectors");
 
 						OutputStream output = new FileOutputStream(
 								DATA_COLLECTORS_FILE_NAME);
 
 						ByteStreams.copy(data, output);
-
-						Thread.sleep(5000);
 
 						System.out
 								.println("[INFO] Monitor REST Service Main: The executation file of data collector has been retrieved.\n");
@@ -291,7 +295,7 @@ public class MonitorCLI {
 					else if (answerInt == 7) {
 
 						String response = RESTGet
-								.httpGet("http://localhost:8080/monitor-api/rest/monitor/getAllMetrics");
+								.httpGet("http://localhost:8080/api/rest/monitor/getAllMetrics");
 
 						String[] metrics = response.split("\n");
 
@@ -322,15 +326,13 @@ public class MonitorCLI {
 										+ metricName + "'...\n");
 
 						InputStream data = RESTPost
-								.httpPostResponse("http://localhost:8080/monitor-api/rest/monitor/getDataCollector/"
+								.httpPostResponse("http://localhost:8080/api/rest/monitor/getDataCollector/"
 										+ metricName);
 
 						OutputStream output = new FileOutputStream(
 								DATA_COLLECTORS_FILE_NAME);
 
 						ByteStreams.copy(data, output);
-
-						Thread.sleep(5000);
 
 						System.out
 								.println("[INFO] Monitor REST Service Main: The executation file of the data collector for the metric '"
@@ -341,26 +343,29 @@ public class MonitorCLI {
 					else if (answerInt == 8) {
 
 						String fileContent = RESTPost
-								.httpPost("http://localhost:8080/monitor-api/rest/monitor/getDataCollectorInstallationFile/"
-										+ metricName);
+								.httpPost("http://localhost:8080/api/rest/monitor/getDataCollectorInstallationFile/"
+										+ metricName + "/" + appID + "/" + vmID);
 
 						TxtFileWriter.write(fileContent,
 								DATA_COLLECTORS_INSTALLATION_FILE_NAME);
 
-						if (!new File(parentDir + LOCAL_SIGAR).exists())
-							System.err
-									.println("\n\n[ERROR] Monitor REST Service: You should download, unzip, and copy the folder 'hyperic-sigar-1.6.4' inside the folder 'lib'\n(please download it from the URL: https://magelan.googlecode.com/files/hyperic-sigar-1.6.4.zip).\n\n");
-
-						else {
-
-							WindowsBatchFileExecution
-									.execute(DATA_COLLECTORS_INSTALLATION_FILE_NAME);
-
-							Thread.sleep(5000);
+						if (!new File(parentDir + LOCAL_SIGAR).exists()
+								&& metricName.equals("CPUUtilization")) {
 
 							System.out
-									.println("[INFO] Monitor REST Service Main: The installation file of data collector has been retrieved and executed.\n");
+									.println("Downloading hyperic-sigar-1.6.4.zip...");
+
+							download("hyperic-sigar-1.6.4.zip",
+									"https://magelan.googlecode.com/files/hyperic-sigar-1.6.4.zip");
+
+							unzip("lib/hyperic-sigar-1.6.4.zip", "lib");
 						}
+
+						WindowsBatchFileExecution
+								.execute(DATA_COLLECTORS_INSTALLATION_FILE_NAME);
+
+						System.out
+								.println("[INFO] Monitor REST Service Main: The installation file of data collector has been retrieved and executed.\n");
 					}
 
 					else if (answerInt == 9) {
@@ -377,10 +382,8 @@ public class MonitorCLI {
 						System.out.println();
 
 						msg = RESTPost
-								.httpPost("http://localhost:8080/monitor-api/rest/monitor/uninstallMonitoringRule/"
+								.httpPost("http://localhost:8080/api/rest/monitor/uninstallMonitoringRule/"
 										+ answer);
-
-						Thread.sleep(5000);
 
 						System.out.println(msg);
 					}
@@ -433,11 +436,9 @@ public class MonitorCLI {
 						System.out.println();
 
 						msg = RESTPost.httpPost(
-								"http://localhost:8080/monitor-api/rest/monitor/addObserver/"
+								"http://localhost:8080/api/rest/monitor/addObserver/"
 										+ metricNameForObserver + "/" + port,
 								callbackURL);
-
-						Thread.sleep(5000);
 
 						if (msg != null) {
 
@@ -453,15 +454,36 @@ public class MonitorCLI {
 
 						msg = RESTPost
 								.httpPost(
-										"http://localhost:8080/monitor-api/rest/monitor/sendReplanningEvent",
+										"http://localhost:8080/api/rest/monitor/sendReplanningEvent",
 										replanningEvent, "xml");
-
-						Thread.sleep(5000);
 
 						System.out.println(msg);
 					}
 
 					else if (answerInt == 12) {
+
+						if (!new File(parentDir + LOCAL_SIGAR).exists()
+								&& metricName.equals("CPUUtilization")) {
+
+							System.out
+									.println("Downloading hyperic-sigar-1.6.4.zip...");
+
+							download("hyperic-sigar-1.6.4.zip",
+									"https://magelan.googlecode.com/files/hyperic-sigar-1.6.4.zip");
+
+							unzip("lib/hyperic-sigar-1.6.4.zip", "lib");
+						}
+
+						WindowsBatchFileExecution
+								.execute(DATA_COLLECTORS_INSTALLATION_FILE_NAME);
+
+						System.out
+								.println("[INFO] Monitor REST Service Main: The installation file of data collector has been executed.\n");
+					}
+
+					else if (answerInt == 13) {
+
+						Runtime.getRuntime().exec("taskkill /im cmd.exe");
 
 						System.out
 								.println("[INFO] Monitor REST Service Main: The client of the monitoring platform is terminated.\n");
@@ -476,5 +498,68 @@ public class MonitorCLI {
 
 			ex.printStackTrace();
 		}
+	}
+
+	private static void download(String fileName, String url) {
+
+		try {
+
+			URL link = new URL(url);
+
+			InputStream in = new BufferedInputStream(link.openStream());
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			byte[] buf = new byte[1024];
+			int n = 0;
+			while (-1 != (n = in.read(buf)))
+				out.write(buf, 0, n);
+
+			out.close();
+			in.close();
+			byte[] response = out.toByteArray();
+
+			FileOutputStream fos = new FileOutputStream("lib/" + fileName);
+			fos.write(response);
+			fos.close();
+		}
+
+		catch (Exception ex) {
+
+			ex.printStackTrace();
+		}
+	}
+
+	private static void unzip(String zipFilePath, String destDirectory)
+			throws IOException {
+		File destDir = new File(destDirectory);
+		if (!destDir.exists()) {
+			destDir.mkdir();
+		}
+		ZipInputStream zipIn = new ZipInputStream(new FileInputStream(
+				zipFilePath));
+		ZipEntry entry = zipIn.getNextEntry();
+		while (entry != null) {
+			String filePath = destDirectory + File.separator + entry.getName();
+			if (!entry.isDirectory()) {
+				extractFile(zipIn, filePath);
+			} else {
+				File dir = new File(filePath);
+				dir.mkdir();
+			}
+			zipIn.closeEntry();
+			entry = zipIn.getNextEntry();
+		}
+		zipIn.close();
+	}
+
+	private static void extractFile(ZipInputStream zipIn, String filePath)
+			throws IOException {
+		BufferedOutputStream bos = new BufferedOutputStream(
+				new FileOutputStream(filePath));
+		byte[] bytesIn = new byte[4096];
+		int read = 0;
+		while ((read = zipIn.read(bytesIn)) != -1) {
+			bos.write(bytesIn, 0, read);
+		}
+		bos.close();
 	}
 }

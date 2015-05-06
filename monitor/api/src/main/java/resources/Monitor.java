@@ -17,10 +17,18 @@
 
 package resources;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -30,6 +38,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import api.controller.Controller;
 import core.ControllerImpl;
@@ -57,12 +68,15 @@ public class Monitor {
 	private static final String LOCAL_DATA_COLLECTORS = "/core/lib/";
 	private static final String DATA_COLLECTORS_FILE_NAME = "data-collector-1.3-SNAPSHOT.jar";
 
+	static Logger log = LoggerFactory.getLogger(Monitor.class);
+
 	@POST
 	@Produces("text/plain")
 	@Path("/initialize")
 	public String initialize(String configurationFileContent) {
 
-		delete(new File(SEACLOUDS_FOLDER));
+		while (new File(SEACLOUDS_FOLDER).exists())
+			delete(new File(SEACLOUDS_FOLDER));
 
 		new File(SEACLOUDS_FOLDER).mkdirs();
 
@@ -176,8 +190,7 @@ public class Monitor {
 					.getProperty("PlannerURIRulesReady");
 
 			if (SLAServiceURIRulesReady != null)
-				RESTPost.httpPost(SLAServiceURIRulesReady, monitoringRules,
-						"xml");
+				RESTPost.httpPost(SLAServiceURIRulesReady);
 
 			if (DashboardURIRulesReady != null)
 				RESTPost.httpPost(DashboardURIRulesReady, monitoringRules,
@@ -267,13 +280,15 @@ public class Monitor {
 
 	@POST
 	@Produces("text/plain")
-	@Path("/getDataCollectorInstallationFile/{metricName}")
+	@Path("/getDataCollectorInstallationFile/{metricName}/{appID}/{vmID}")
 	public String getDataCollectorInstallationFile(
-			@PathParam("metricName") String metricName) {
+			@PathParam("metricName") String metricName,
+			@PathParam("appID") String appID, @PathParam("vmID") String vmID) {
 
 		Controller controller = new ControllerImpl();
 
-		return controller.getDataCollectorInstallationFile(metricName);
+		return controller.getDataCollectorInstallationFile(metricName, appID,
+				vmID);
 	}
 
 	@POST
@@ -423,8 +438,20 @@ public class Monitor {
 				+ LOCAL_RESOURCES),
 				new File(SEACLOUDS_FOLDER + LOCAL_RESOURCES));
 
-		if (!new File(serverSourcesPath + "/api/" + LOCAL_FUSEKI).exists())
-			msg = "\n\n[ERROR] Monitor REST Service: You should download, unzip, and copy the folder 'jena-fuseki-1.1.1' inside the folder 'lib'\n(please download it from the URL: http://archive.apache.org/dist/jena/binaries/jena-fuseki-1.1.1-distribution.zip).\n\n";
+		if (!new File(serverSourcesPath + "/api/" + LOCAL_FUSEKI).exists()) {
+
+			log.info("Downloading jena-fuseki-1.1.1.zip...");
+			download(
+					"jena-fuseki-1.1.1.zip",
+					"http://archive.apache.org/dist/jena/binaries/jena-fuseki-1.1.1-distribution.zip");
+
+			try {
+				log.info("Unzipping jena-fuseki-1.1.1.zip...");
+				unzip(SEACLOUDS_FOLDER + "/jena-fuseki-1.1.1.zip",
+						SEACLOUDS_FOLDER);
+			} catch (Exception ex) {
+			}
+		}
 
 		else
 			TxtFileWriter
@@ -432,8 +459,21 @@ public class Monitor {
 							+ LOCAL_FUSEKI), new File(SEACLOUDS_FOLDER
 							+ SERVER_FUSEKI));
 
-		if (!new File(serverSourcesPath + "/api/" + LOCAL_CSPARQL).exists())
-			msg = "\n\n[ERROR] Monitor REST Service: You should download, unzip, and copy the folder 'rsp-services-csparql-0.4.6.2-modaclouds' inside the folder 'lib'\n(please download it from the URL: http://www.cs.uoi.gr/~dathanas/rsp-services-csparql-0.4.6.2-modaclouds-distribution.zip).\n\n";
+		if (!new File(serverSourcesPath + "/api/" + LOCAL_CSPARQL).exists()) {
+
+			log.info("Downloading rsp-services-csparql-0.4.6.2-modaclouds.zip...");
+			download(
+					"rsp-services-csparql-0.4.6.2-modaclouds.zip",
+					"http://www.cs.uoi.gr/~dathanas/rsp-services-csparql-0.4.6.2-modaclouds-distribution.zip");
+
+			try {
+				log.info("Unzipping rsp-services-csparql-0.4.6.2-modaclouds.zip...");
+				unzip(SEACLOUDS_FOLDER
+						+ "/rsp-services-csparql-0.4.6.2-modaclouds.zip",
+						SEACLOUDS_FOLDER);
+			} catch (Exception ex) {
+			}
+		}
 
 		else
 			TxtFileWriter.copyFolder(new File(serverSourcesPath + "/api/"
@@ -448,5 +488,69 @@ public class Monitor {
 				+ LOCAL_DATA_COLLECTORS), new File(SEACLOUDS_FOLDER));
 
 		return msg;
+	}
+
+	private static void download(String fileName, String url) {
+
+		try {
+
+			URL link = new URL(url);
+
+			InputStream in = new BufferedInputStream(link.openStream());
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			byte[] buf = new byte[1024];
+			int n = 0;
+			while (-1 != (n = in.read(buf)))
+				out.write(buf, 0, n);
+
+			out.close();
+			in.close();
+			byte[] response = out.toByteArray();
+
+			FileOutputStream fos = new FileOutputStream(SEACLOUDS_FOLDER + "/"
+					+ fileName);
+			fos.write(response);
+			fos.close();
+		}
+
+		catch (Exception ex) {
+
+			ex.printStackTrace();
+		}
+	}
+
+	private static void unzip(String zipFilePath, String destDirectory)
+			throws IOException {
+		File destDir = new File(destDirectory);
+		if (!destDir.exists()) {
+			destDir.mkdir();
+		}
+		ZipInputStream zipIn = new ZipInputStream(new FileInputStream(
+				zipFilePath));
+		ZipEntry entry = zipIn.getNextEntry();
+		while (entry != null) {
+			String filePath = destDirectory + File.separator + entry.getName();
+			if (!entry.isDirectory()) {
+				extractFile(zipIn, filePath);
+			} else {
+				File dir = new File(filePath);
+				dir.mkdir();
+			}
+			zipIn.closeEntry();
+			entry = zipIn.getNextEntry();
+		}
+		zipIn.close();
+	}
+
+	private static void extractFile(ZipInputStream zipIn, String filePath)
+			throws IOException {
+		BufferedOutputStream bos = new BufferedOutputStream(
+				new FileOutputStream(filePath));
+		byte[] bytesIn = new byte[4096];
+		int read = 0;
+		while ((read = zipIn.read(bytesIn)) != -1) {
+			bos.write(bytesIn, 0, read);
+		}
+		bos.close();
 	}
 }
