@@ -1,4 +1,4 @@
-package seaclouds.planner;
+package seaclouds.discoverer;
 
 import seaclouds.utils.toscamodel.IToscaEnvironment;
 import seaclouds.utils.toscamodel.Tosca;

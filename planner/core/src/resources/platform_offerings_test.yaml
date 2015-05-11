@@ -12,7 +12,7 @@ node_types:
                 num_cpus: 6
                 disk_size: 1 TB
                 scaling_vertical: auto
-                availability: 99.8    
+                availability: 99.8
         java_ee_server_match2:
             derived_from: seaclouds.nodes.Platform
             attributes:
@@ -24,7 +24,7 @@ node_types:
                 num_cpus: 6
                 disk_size: 1 TB
                 scaling_vertical: auto
-                availability: 99.8    
+                availability: 99.8
         java_ee_server_match3:
             derived_from: seaclouds.nodes.Platform
             attributes:
@@ -36,4 +36,4 @@ node_types:
                 num_cpus: 6
                 disk_size: 1 TB
                 scaling_vertical: auto
-                availability: 99.8    
+                availability: 99.8
