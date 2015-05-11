@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * Created by pq on 26/04/2015.
  */
-public class Optimizer {
+public class OptimizerExample {
 
     //we provide an example of Optimizer that generates two simple solutions
     public final int wantedSolutions = 3;
