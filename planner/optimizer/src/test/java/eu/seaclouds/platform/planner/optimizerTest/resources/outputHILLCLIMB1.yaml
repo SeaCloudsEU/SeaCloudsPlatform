@@ -20,8 +20,8 @@ node_templates:
     type: seaClouds.nodes.WebServer
     capabilities: {host: seaclouds.nodes.WebApplication.PHP}
     requirements: {host: AWS.compute.c1.medium, instancesPOC: 2}
-  ExpectedQualityPOC: {expectedAvailabilityPOC: 0.99999975, fitnessPOC: 25.04687440185299,
-    expectedCostPOC: 813.6000000000001, expectedExecutionTimePOC: 0.6243723916532906}
+  ExpectedQualityPOC: {expectedExecutionTimePOC: 0.6243723916532906, fitnessPOC: 25.04687440185299,
+    expectedCostPOC: 813.6000000000001, expectedAvailabilityPOC: 0.99999975}
 QoSrequirementsPOC: {availabilityPOC: 0.99, responseTimePOC: 2000.0, workloadPOC: 1000.0,
   costPOC: 1500.0}
 ReconfigurationsPOC:

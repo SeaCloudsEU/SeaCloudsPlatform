@@ -1,0 +1,19 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0
+
+node_types:
+    seaclouds.nodes.Compute.Amazon:
+        derived_from: seaclouds.nodes.Compute
+        properties:
+            operating_system:
+                type: string
+
+
+    seaclouds.nodes.Compute.Amazon.c1.xlarge:
+        derived_from: seaclouds.nodes.Compute.Amazon
+        attributes:
+            location: 'seaclouds.types.Locations.AM.US.OR.Portland'
+            #operating_system: 'seaclouds.types.os.linux.ubuntu'
+            num_cpus: 8
+            mem_size: 7 GB
+            disk_type: 'sata'
+            local_storage: 2 TB
