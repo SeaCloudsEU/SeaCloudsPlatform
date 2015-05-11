@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import core.OperatingSystem;
+import core.UnixFileExecution;
 
 public class MODACloudsDataCollectors {
 
@@ -73,13 +74,44 @@ public class MODACloudsDataCollectors {
 
 			installationExecutionCommand += "\n"
 					+ "setx MODACLOUDS_MONITORED_VM_ID \"" + vmID + "\" /M";
+			
+			installationExecutionCommand += "\n"
+					+ getExecutionCommand(metricName, dataCollectorsFileName);
 		}
-
-		else
+		else if (OperatingSystem.isUnix()){
 			System.err.println("To initialize for the case of Unix");
+		}
+		else if (OperatingSystem.isLinux()){
+			installationExecutionCommand += "echo \"export MODACLOUDS_KNOWLEDGEBASE_ENDPOINT_IP="+ IPofKB+"\" ~/.bashrc";
 
-		installationExecutionCommand += "\n"
-				+ getExecutionCommand(metricName, dataCollectorsFileName);
+			installationExecutionCommand += "\n"
+					+ "echo \"export MODACLOUDS_KNOWLEDGEBASE_ENDPOINT_PORT="+ portOfKB+"\" >> ~/.bashrc";
+
+			installationExecutionCommand += "\n"
+					+ "echo \"export MODACLOUDS_KNOWLEDGEBASE_DATASET_PATH=modaclouds/kb\" >> ~/.bashrc";
+
+			installationExecutionCommand += "\n"
+					+ "echo \"export MODACLOUDS_MONITORING_DDA_ENDPOINT_IP=" + IPofDA+"\" >> ~/.bashrc";
+
+			installationExecutionCommand += "\n"
+					+ "echo \"export MODACLOUDS_MONITORING_DDA_ENDPOINT_PORT="+ portOfDA+"\" >> ~/.bashrc";
+
+			installationExecutionCommand += "\n"
+					+ "echo \"export MODACLOUDS_KNOWLEDGEBASE_SYNC_PERIOD=10\" >> ~/.bashrc";
+
+			installationExecutionCommand += "\n"
+					+ "echo \"export MODACLOUDS_MONITORED_APP_ID="+ appID+"\" >> ~/.bashrc";
+
+			installationExecutionCommand += "\n"
+					+ "echo \"export MODACLOUDS_MONITORED_VM_ID=" + vmID+"\" >> ~/.bashrc";
+			
+			installationExecutionCommand += "\n"
+					+ "source ~/.bashrc";
+			
+			installationExecutionCommand += "\n"
+					+ getExecutionLinuxCommand(metricName, dataCollectorsFileName);
+		}
+		
 
 		return installationExecutionCommand;
 	}
@@ -106,6 +138,32 @@ public class MODACloudsDataCollectors {
 			executionCommand = "START CMD /C CALL java -Djava.library.path="
 					+ executionCommand + " -jar " + dataCollectorsFileName
 					+ " kb\n" + "exit";
+
+		return executionCommand != null ? executionCommand : "";
+	}
+	
+	private static String getExecutionLinuxCommand(String metricName,
+			String dataCollectorsFileName) {
+
+		String collector = ModacloudsMonitor.findCollector(metricName);
+
+		Map<String, String> collectorExecutionCommandMapping = new HashMap<String, String>();
+
+		collectorExecutionCommandMapping.put("sigar",
+				"lib/hyperic-sigar-1.6.4/sigar-bin/lib");
+
+		String executionCommand = collectorExecutionCommandMapping
+				.get(collector);
+
+		if (executionCommand == null)
+
+			executionCommand = "nohup java -jar "
+					+ dataCollectorsFileName + " kb >dc.out &\n" + "exit";
+
+		else
+			executionCommand = "nohup java -Djava.library.path="
+					+ executionCommand + " -jar " + dataCollectorsFileName
+					+ " kb >dc.out &\n" + "exit";
 
 		return executionCommand != null ? executionCommand : "";
 	}

@@ -43,8 +43,8 @@
   
   <dependencies>
     <dependency>
-      		<groupId>org.apache.brooklyn</groupId>
-     		<artifactId>brooklyn-rest-client</artifactId>
+      <groupId>org.apache.brooklyn</groupId>
+      <artifactId>brooklyn-rest-client</artifactId>
     </dependency>
 
     <dependency>
@@ -133,7 +133,7 @@
                          			dest="${basedir}/core/lib"
                          			verbose="false"
                          			usetimestamp="true"/>
-                         		<get src="https://github.com/imperial-modaclouds/modaclouds-data-collectors/releases/download/1.3-Snapshot/data-collector-1.3-SNAPSHOT.jar"
+                         		<get src="http://www.cs.uoi.gr/~dathanas/data-collector-1.3-SNAPSHOT.jar"
                          			dest="${basedir}/core/lib"
                          			verbose="false"
                          			usetimestamp="true"/>

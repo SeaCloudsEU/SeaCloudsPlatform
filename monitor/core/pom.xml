@@ -46,10 +46,10 @@
 	</repositories>
 
 	<dependencies>
-		<dependency>
-      		<groupId>org.apache.brooklyn</groupId>
-     		<artifactId>brooklyn-rest-client</artifactId>
-    	</dependency>
+	<dependency>
+      <groupId>org.apache.brooklyn</groupId>
+      <artifactId>brooklyn-rest-client</artifactId>
+    </dependency>
 
 		 <dependency>
 			<groupId>com.googlecode.json-simple</groupId>

@@ -17,17 +17,24 @@
 
 package core.modaCloudsMonitoring.modaCloudsMonitoringInitiation;
 
+import java.io.BufferedWriter;
 import java.io.File;
-
-import javax.swing.JOptionPane;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 import core.OperatingSystem;
 import core.TxtFileWriter;
+import core.UnixFileExecution;
 import core.WindowsBatchFileExecution;
 
 public class MODACloudsMonitoringInitiation {
 
 	private static final String INIT_BATCH_FILE = "./init.bat";
+
+	private static final String EXPORT_UNIX_FILE = ".bashrc";
+
+	private static final String INIT_UNIX_FILE = "init.sh";
 
 	private static final String SERVER_FUSEKI = "/jena-fuseki-1.1.1";
 
@@ -49,10 +56,19 @@ public class MODACloudsMonitoringInitiation {
 			new File(INIT_BATCH_FILE).delete();
 		}
 
-		else if (OperatingSystem.isUnix())
-			JOptionPane.showMessageDialog(null,
-					"To initialize for the case of Unix", "Unix",
-					JOptionPane.ERROR_MESSAGE);
+		else if (OperatingSystem.isUnix()) {
+			createUnixfile(IPofKB, portOfKB, IPofDA, portOfDA, IPofMM,
+					portOfMM, privatePortOfMM, seaCloudsFolder);
+			new File(EXPORT_UNIX_FILE).delete();
+		} else if (OperatingSystem.isLinux()) {
+			createUnixfile(IPofKB, portOfKB, IPofDA, portOfDA, IPofMM,
+					portOfMM, privatePortOfMM, seaCloudsFolder);
+			UnixFileExecution.execute(new File(EXPORT_UNIX_FILE)
+					.getAbsolutePath(), new File(INIT_UNIX_FILE)
+					.getAbsolutePath());
+
+			// new File(INIT_UNIX_FILE).delete();
+		}
 
 		return null;
 	}
@@ -122,5 +138,89 @@ public class MODACloudsMonitoringInitiation {
 				+ "exit";
 
 		TxtFileWriter.write(content, INIT_BATCH_FILE);
+	}
+
+	private static void createUnixfile(String IPofKB, String portOfKB,
+			String IPofDA, String portOfDA, String IPofMM, String portOfMM,
+			String privatePortOfMM, String seaCloudsFolder) {
+
+		File file = new File(seaCloudsFolder + SERVER_FUSEKI + "/ds/tdb.lock");
+
+		String toExport = "export MODACLOUDS_KNOWLEDGEBASE_ENDPOINT_IP="
+				+ IPofKB
+				+ "\n"
+
+				+ "export MODACLOUDS_KNOWLEDGEBASE_ENDPOINT_PORT="
+				+ portOfKB
+				+ "\n"
+
+				+ "export MODACLOUDS_KNOWLEDGEBASE_DATASET_PATH=/modaclouds/kb "
+				+ "\n"
+
+				+ "export MODACLOUDS_MONITORING_DDA_ENDPOINT_IP="
+				+ IPofDA
+				+ "\n"
+
+				+ "export MODACLOUDS_MONITORING_DDA_ENDPOINT_PORT="
+				+ portOfDA
+				+ "\n"
+
+				+ "export MODACLOUDS_MONITORING_MANAGER_PORT="
+				+ portOfMM
+				+ "\n"
+
+				+ "export MODACLOUDS_MONITORING_MANAGER_PRIVATE_PORT="
+				+ privatePortOfMM
+				+ "\n"
+
+				+ "export MODACLOUDS_MONITORING_MANAGER_PRIVATE_IP="
+				+ IPofMM
+				+ "\n"
+
+				+ "export MODACLOUDS_MONITORING_MONITORING_METRICS_FILE="
+				+ new File(seaCloudsFolder + SERVER_MONITORING_METRICS)
+						.getAbsolutePath() + "\n";
+
+		String initContent = ""
+				+ "cd "
+				+ seaCloudsFolder
+				+ SERVER_FUSEKI
+				+ "\n"
+
+				+ "mkdir \"ds\"\n"
+
+				+ "rm -f \""
+				+ file.getAbsolutePath()
+				+ "\"\n"
+
+				+ "chmod +x fuseki-server\n"
+
+				+ "nohup ./fuseki-server --update --port "
+				+ portOfKB
+				+ " --loc ./ds /modaclouds/kb >> ~/logs/fuseki.log 2>&1 &\n"
+
+				+ "cd .."
+				+ SERVER_CSPARQL
+				+ "\n"
+				+ "nohup java -jar rsp-services-csparql.jar >> ~/logs/dda.log 2>&1 &\n"
+				+
+
+				"cd ..\n"
+				+ "nohup java -jar monitoring-manager-1.4.jar >> ~/logs/mm.log 2>&1 &\n"
+				+ "exit";
+
+		try (PrintWriter out = new PrintWriter(new BufferedWriter(
+				new FileWriter(new File(EXPORT_UNIX_FILE).getAbsolutePath(),
+						true)))) {
+			out.println(toExport);
+		} catch (IOException e) {
+		}
+
+		try (PrintWriter out = new PrintWriter(
+				new BufferedWriter(new FileWriter(
+						new File(INIT_UNIX_FILE).getAbsolutePath(), true)))) {
+			out.println(initContent);
+		} catch (IOException e) {
+		}
 	}
 }

@@ -17,28 +17,46 @@
 
 package core;
 
-public class OperatingSystem {
+import java.io.File;
 
-	public static final String windows = "Windows", unix = "Unix", linux = "Linux";
-
-	public static String getOsName() {
-
-		return System.getProperty("os.name");
-	}
-
-	public static boolean isWindows() {
-
-		return getOsName().startsWith(windows);
-	}
-
-	public static boolean isUnix() {
-
-		return getOsName().startsWith(unix);
-	}
+public class UnixFileExecution {
 	
-	public static boolean isLinux() {
+	public static Process execute(String exportUnixFile, String initUnixFile) {
 
-		return getOsName().startsWith(linux);
+		Process p = null;
+
+		try {
+
+			File file = new File(exportUnixFile);
+
+
+			if(!exportUnixFile.equals(""))
+				p = Runtime.getRuntime().exec(
+						"/bin/bash -c 'source "+exportUnixFile+"'");
+					
+			
+			file = new File(initUnixFile);
+
+
+			p = Runtime.getRuntime().exec(
+					"/bin/bash "+initUnixFile+"");
+					
+
+			
+
+			p.waitFor();
+		}
+
+		catch (Exception ex) {
+
+			ex.printStackTrace();
+
+			System.exit(-1);
+
+			p = null;
+		}
+
+		return null;
 	}
-	
+
 }
