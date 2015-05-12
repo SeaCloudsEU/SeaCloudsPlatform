@@ -134,6 +134,34 @@ public class OptimizerTest {
 
    }
 
+   
+   @Test
+   public void testPresenceSolutionAnneal() {
+
+      log.info("=== TEST for SOLUTION GENERATION of ANNEAL optimizer STARTED ===");
+
+      optimizer = new Optimizer(NUM_PLANS_TO_GENERATE,
+            SearchMethodName.ANNEAL);
+
+      String[] arrayDam = optimizer.optimize(appModel, suitableCloudOffer);
+      for (int damnum = 0; damnum < arrayDam.length; damnum++) {
+
+         try {
+            checkCorrectness(arrayDam[damnum]);
+         } catch (Exception e) {
+            log.error("There was an error in the check of correctness. Solution was: "
+                  + arrayDam[damnum]);
+            throw e;
+         }
+         saveFile(OUTPUT_FILENAME + SearchMethodName.ANNEAL + damnum
+               + ".yaml", arrayDam[damnum]);
+
+      }
+
+      log.info("=== TEST for SOLUTION GENERATION of ANNEAL optimizer FINISEHD ===");
+
+   }
+   
    private void checkCorrectness(String dam) {
 
       Assert.assertFalse("Dam was not created, optimize method returns null",
