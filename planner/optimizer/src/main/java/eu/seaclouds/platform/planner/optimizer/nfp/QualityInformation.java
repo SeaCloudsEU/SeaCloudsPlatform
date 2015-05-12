@@ -93,6 +93,7 @@ public class QualityInformation {
       setWorkload(wkl / 60.0);
    }
 
+   @Override
    public String toString() {
       String info = "";
       info += "RespTime=" + this.respTime + " Availability="
