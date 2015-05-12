@@ -30,23 +30,27 @@ import java.io.IOException;
  * @author Adrian Nieto
  */
 public class GetMetricValueServlet extends HttpServlet {
-    static BrooklynApi BROOKLYN_API = DeployerConnector.getConnection();
-
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String application = request.getParameter("application");
         String entity = request.getParameter("entity");
         String sensor = request.getParameter("sensor");
 
-        Object sensorValue = BROOKLYN_API.getSensorApi().get(application, entity, sensor, true);
+        BrooklynApi BROOKLYN_API = new DeployerConnector().getConnection();
+        if (BROOKLYN_API != null){
 
-        if (sensorValue == null){
-            response.sendError(500, "Connection error: couldn't reach SeaClouds endpoint");
-        }else{
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(new Gson().toJson(sensorValue));
+            Object sensorValue = BROOKLYN_API.getSensorApi().get(application, entity, sensor, true);
 
+            if (sensorValue == null){
+                response.sendError(500, "Connection error: couldn't reach Deployer endpoint");
+            }else{
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(new Gson().toJson(sensorValue));
+
+            }
+        } else {
+            response.sendError(500, "Connection error: couldn't reach Deployer endpoint");
         }
 
     }

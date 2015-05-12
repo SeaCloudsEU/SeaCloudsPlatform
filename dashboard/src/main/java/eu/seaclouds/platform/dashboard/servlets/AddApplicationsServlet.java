@@ -31,22 +31,26 @@ import java.io.IOException;
  * @author Adrian Nieto
  */
 public class AddApplicationsServlet extends HttpServlet {
-    static BrooklynApi BROOKLYN_API = DeployerConnector.getConnection();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String yaml = request.getParameter("yaml");
         if (yaml != null) {
-            Response res = BROOKLYN_API.getApplicationApi().createFromYaml(yaml);
+            BrooklynApi BROOKLYN_API = new DeployerConnector().getConnection();
+            if(BROOKLYN_API != null) {
+                Response res = BROOKLYN_API.getApplicationApi().createFromYaml(yaml);
 
-            if (res.getStatus() >=  400) {
-                response.sendError(500, "Connection error: couldn't reach SeaClouds endpoint");
+                if (res.getStatus() >= 400) {
+                    response.sendError(500, "Connection error: couldn't reach Deployer endpoint");
+                } else {
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write(new Gson().toJson(res.getStatus()));
+                }
             } else {
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(new Gson().toJson(res.getStatus()));
+                response.sendError(500, "Connection error: couldn't reach Deployer endpoint");
             }
-        }else{
+        } else {
             response.sendError(400, "Missing yaml file");
         }
     }

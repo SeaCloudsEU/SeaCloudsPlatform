@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import eu.seaclouds.platform.planner.optimizer.CloudOffer;
@@ -437,7 +438,11 @@ public class YAMLoptimizerParser {
    }
 
    public static String FromMAPtoYAMLstring(Map<String, Object> appMap) {
-      Yaml yamlApp = new Yaml();
+      DumperOptions options = new DumperOptions();
+      options.setLineBreak(DumperOptions.LineBreak.getPlatformLineBreak());
+
+      Yaml yamlApp = new Yaml(options);
+
       return yamlApp.dump(appMap);
    }
 
