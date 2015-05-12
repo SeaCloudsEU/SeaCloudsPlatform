@@ -41,7 +41,7 @@ public abstract class AbstractHeuristic {
    private int                    MAX_ITER_NO_IMPROVE           = 200;                                    // 200;
    private double                 MAX_TIMES_IMPROVE_REQUIREMENT = 20;
    private static final int       DEFAULT_MAX_NUM_INSTANCES     = 10;
-   protected static final boolean IS_DEBUG                      = true;
+   protected static final boolean IS_DEBUG                      = false;
 
    public AbstractHeuristic(int maxIter) {
       MAX_ITER_NO_IMPROVE = maxIter;

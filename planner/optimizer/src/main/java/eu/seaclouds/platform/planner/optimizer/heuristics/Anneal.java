@@ -15,6 +15,9 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
    private static final int MAX_ITERATIONS_NOT_CHANGE_STATE = 20;
    private static final double INITIAL_TEMPERATURE = 60.0; //MaxFitness... by convenience
    private static final double GEOM_TEMP_DECREMENT = 0.95;
+   
+   private static final boolean IS_DEBUG = AbstractHeuristic.IS_DEBUG || true;
+   
    static Logger logAnneal = LoggerFactory.getLogger(Anneal.class);
    
    public Anneal(int maxIter) {
@@ -34,7 +37,7 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
       Solution[] bestSols = super.findInitialRandomSolutions(cloudOffers, numPlansToGenerate);
       super.setFitnessOfSolutions(bestSols, applicationMap, topology,
             cloudOffers);
-      if (AbstractHeuristic.IS_DEBUG) {
+      if (IS_DEBUG) {
          logAnneal
                .debug("Start checking the presence of quality attached to solutions after the first generation HILLCLIMB");
          super.checkQualityAttachedToSolutions(bestSols);
@@ -77,12 +80,12 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
             temperature = getTemperature(currentIterNum, INITIAL_TEMPERATURE, temperature);
          }
          
-         if (AbstractHeuristic.IS_DEBUG) {
+         if (IS_DEBUG) {
          
               logAnneal
                   .debug("Solution do not find suitable neighbors for a while. Solution found is: " + bestSolSoFar.toString() 
                         + " with fitness " + bestSolSoFar.getSolutionFitness() + ". It took " + currentIterNum + 
-                        " iterations to find it");
+                        " iterations to find it and finished with temperature="+temperature);
          
          }
          
@@ -92,7 +95,7 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
             super.insertOrdered(bestSols, bestSolSoFar);
             numItersNoImprovement = 0;
 
-            if (AbstractHeuristic.IS_DEBUG) {
+            if (IS_DEBUG) {
                logAnneal
                .debug("Found that solution " + bestSolSoFar.toString() + " is to be included in the current list of solutions to return");
          
