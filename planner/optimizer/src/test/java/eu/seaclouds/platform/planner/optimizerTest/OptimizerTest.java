@@ -17,23 +17,22 @@
 
 package eu.seaclouds.platform.planner.optimizerTest;
 
-import java.io.FileNotFoundException;
+import eu.seaclouds.platform.planner.optimizer.Optimizer;
+import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
+import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import eu.seaclouds.platform.planner.optimizer.Optimizer;
-import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
-import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
 
 public class OptimizerTest {
 
@@ -42,7 +41,7 @@ public class OptimizerTest {
    private static String       suitableCloudOffer;
    private static final String APP_MODEL_FILENAME    = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/MatchmakeroutputWithQoSAutomatic.yaml";
    private static final String CLOUD_OFFER_FILENAME  = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/cloudOfferWithQoS.yaml";
-   private static final String OUTPUT_FILENAME       = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/output";
+   private static final String OUTPUT_FILENAME       = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/target/output";
    private static final String OPEN_SQUARE_BRACKET   = "[";
    private static final String CLOSE_SQUARE_BRACKET  = "]";
    private static final double MAX_MILLIS_EXECUTING  = 20000;
@@ -175,10 +174,15 @@ public class OptimizerTest {
    private void saveFile(String outputFilename, String dam) {
       PrintWriter out = null;
       try {
-         out = new PrintWriter(outputFilename);
+         File file = new File(outputFilename);
+         if (!file.exists()){
+             file.getParentFile().mkdirs();
+             file.createNewFile();
+         }
+         out = new PrintWriter(new FileWriter(file));
          out.println(dam);
-      } catch (FileNotFoundException e) {
-         e.printStackTrace();
+      } catch (IOException e) {
+          e.printStackTrace();
       } finally {
          if (out != null) {
             out.close();

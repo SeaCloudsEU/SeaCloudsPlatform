@@ -5,4 +5,3 @@ target/
 .project
 .metadata
 .settings/
-src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/output*
