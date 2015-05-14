@@ -132,28 +132,46 @@ public abstract class AbstractHeuristic {
          // between 0 and 1/numExistingRequirements
          double partialFitness = 0.0;
          double numExistingRequirements = 0.0;
+         double numSatisfiedRequirements=0.0;
          if (requirements.existResponseTimeRequirement()) {
-            partialFitness += Math.min(MAX_TIMES_IMPROVE_REQUIREMENT,
-                  perfGoodness);
             numExistingRequirements++;
+            if(perfGoodness >= 1){
+               numSatisfiedRequirements++;
+            }
+            else{
+               partialFitness += perfGoodness;
+            }
          }
          if (requirements.existAvailabilityRequirement()) {
-            partialFitness += Math.min(MAX_TIMES_IMPROVE_REQUIREMENT,
-                  availGoodness);
+            
             numExistingRequirements++;
+            if(availGoodness>=1){
+               numSatisfiedRequirements++;
+            }
+            else{
+               partialFitness +=  availGoodness;
+            }
          }
          if (requirements.existCostRequirement()) {
-            partialFitness += Math.min(MAX_TIMES_IMPROVE_REQUIREMENT,
-                  costGoodness);
+            
             numExistingRequirements++;
+            if(costGoodness>=1){
+               numSatisfiedRequirements++;
+            }
+            else{
+               partialFitness += costGoodness;
+            }
          }
 
          if (qualityAnalyzer.getAllComputedQualities() == null) {
             log.warn("something werid is happening because quality values are null");
          }
 
-         fitness = partialFitness
-               / (MAX_TIMES_IMPROVE_REQUIREMENT * numExistingRequirements++);
+         //satisfied reqs fill at maximum their slot. 
+         //The rest of slots are filled by the proportion of global closeness to the solution
+         fitness = numSatisfiedRequirements/numExistingRequirements + 
+               (partialFitness*(1.0-numSatisfiedRequirements/numExistingRequirements))/(numExistingRequirements-numSatisfiedRequirements);
+               
       }
 
       bestSol.setSolutionQuality(qualityAnalyzer.getAllComputedQualities());
