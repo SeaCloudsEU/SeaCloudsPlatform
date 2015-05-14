@@ -33,6 +33,7 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
    private static final double INITIAL_TEMPERATURE = 60.0; //MaxFitness... by convenience
    private static final double GEOM_TEMP_DECREMENT = 0.95;
    
+   @SuppressWarnings("hiding")
    private static final boolean IS_DEBUG = AbstractHeuristic.IS_DEBUG || false;
    
    static Logger logAnneal = LoggerFactory.getLogger(Anneal.class);
