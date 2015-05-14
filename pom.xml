@@ -158,7 +158,7 @@
             <exclude>**/.settings/**</exclude>
             <exclude>**/*.log</exclude>
             <exclude>**/target/**</exclude>
-
+            <exclude>**/.gitmodules</exclude>
             <!-- files not requiring licence -->
             <exclude>ignored/**</exclude>
             <exclude>**/*.md</exclude>
