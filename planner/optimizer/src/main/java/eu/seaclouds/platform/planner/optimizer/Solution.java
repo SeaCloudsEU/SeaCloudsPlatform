@@ -80,7 +80,13 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
    }
 
    public int getCloudInstancesForModule(String key) {
-      return modName_NumInstances.get(key);
+      try{
+        return modName_NumInstances.get(key);
+      }
+      catch(Exception E){
+         log.debug("Looking for ModuleName " + key + " returned -1. Modules to optimize their allocation are: " + modName_NumInstances.toString());
+      }
+      return -1;
    }
 
    public double getSolutionFitness() {

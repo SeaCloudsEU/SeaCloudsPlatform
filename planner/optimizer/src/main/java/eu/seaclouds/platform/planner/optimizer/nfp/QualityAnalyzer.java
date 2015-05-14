@@ -462,6 +462,9 @@ public class QualityAnalyzer {
                      cloudCharacteristics);
       }
 
+      if(IS_DEBUG){
+         log.debug("Finished calculation of availability of solution: " + bestSol.toString());
+      }
       // after computing, save the availability info in properties.availability
       properties.setAvailability(systemAvailability);
 
@@ -472,10 +475,10 @@ public class QualityAnalyzer {
          Solution bestSol, Topology topology,
          SuitableOptions cloudCharacteristics) {
 
-      if (visited.contains(c.getElement().getName())) {
-         log.warn("Availability evaluation: Revisting the availability of a module which was already visited. Expect weird behaviors or infinite loops");
-         return 1;
-      }
+      //if (visited.contains(c.getElement().getName())) {
+      //   log.warn("Availability evaluation: Revisting the availability of a module which was already visited. Expect weird behaviors or infinite loops");
+      //   return 1;
+      //}
 
       visited.add(c.getElement().getName());
 
