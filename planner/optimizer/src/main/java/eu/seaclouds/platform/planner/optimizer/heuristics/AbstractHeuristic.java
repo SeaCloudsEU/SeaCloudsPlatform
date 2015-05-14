@@ -453,5 +453,18 @@ public abstract class AbstractHeuristic {
       }
 
    }
+   
+   protected Solution[] findInitialRandomSolutions(SuitableOptions cloudOffers, int numPlansToGenerate) {
+
+      Solution[] newSolutions = new Solution[numPlansToGenerate];
+
+      for (int newSolIndex = 0; newSolIndex < newSolutions.length; newSolIndex++) {
+
+         newSolutions[newSolIndex] = findRandomSolution(cloudOffers);
+      }
+
+      return newSolutions;
+
+   }
 
 }

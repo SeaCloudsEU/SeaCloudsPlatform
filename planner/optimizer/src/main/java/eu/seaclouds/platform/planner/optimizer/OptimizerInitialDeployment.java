@@ -22,6 +22,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.seaclouds.platform.planner.optimizer.heuristics.Anneal;
 import eu.seaclouds.platform.planner.optimizer.heuristics.HillClimb;
 import eu.seaclouds.platform.planner.optimizer.heuristics.BlindSearch;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethod;
@@ -47,6 +48,9 @@ public class OptimizerInitialDeployment {
          break;
       case HILLCLIMB:
          engine = new HillClimb();
+         break;
+      case ANNEAL:
+         engine = new Anneal();
          break;
       default:
          engine = new BlindSearch();

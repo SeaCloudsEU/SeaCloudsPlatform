@@ -18,5 +18,5 @@
 package eu.seaclouds.platform.planner.optimizer.heuristics;
 
 public enum SearchMethodName {
-   BLINDSEARCH, HILLCLIMB, SIMANNEALING
+   BLINDSEARCH, HILLCLIMB, SIMANNEALING, ANNEAL
 }

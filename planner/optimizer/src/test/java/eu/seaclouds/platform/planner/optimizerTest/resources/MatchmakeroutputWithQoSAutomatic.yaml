@@ -37,6 +37,6 @@ node_templates:
         memory: {greater_or_equal: 0.4}
         operatingSystem: linux.ubuntu
         suitableServices: [AWS.compute.c1.medium, AWS.compute.m1.large, Rackspace.compute.compute1-15]
-QoSrequirementsPOC: {availabilityPOC: 0.99, responseTimePOC: 2000.0, workloadPOC: 1000.0,
+QoSrequirementsPOC: {availabilityPOC: 0.99, responseTimePOC: 2000.0, workloadPOC: 100.0,
   costPOC: 1500.0}
 
