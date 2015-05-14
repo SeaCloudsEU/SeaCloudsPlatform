@@ -74,7 +74,9 @@ public class BlindSearch extends AbstractHeuristic implements SearchMethod {
                .getMinimumFitnessOfSolutions(bestSols)) {
             if (!currentSol[0].isContainedIn(bestSols)) {
                super.insertOrdered(bestSols, currentSol[0]);
-               log.debug("Better solution found after " + numItersNoImprovement + " iterations");
+               if (AbstractHeuristic.IS_DEBUG) {
+                  log.debug("Better solution found after " + numItersNoImprovement + " iterations");
+               }
                numItersNoImprovement = 0;
             }
          }

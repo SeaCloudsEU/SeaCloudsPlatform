@@ -39,7 +39,7 @@ public class OptimizerTest {
    private static Optimizer    optimizer;
    private static String       appModel;
    private static String       suitableCloudOffer;
-   private static final String APP_MODEL_FILENAME    = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/MatchmakeroutputWithQoSAutomatic2.yaml";
+   private static final String APP_MODEL_FILENAME    = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/MatchmakeroutputWithQoSAutomatic.yaml";
    private static final String CLOUD_OFFER_FILENAME  = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/cloudOfferWithQoS.yaml";
    private static final String OUTPUT_FILENAME       = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/target/output";
    private static final String OPEN_SQUARE_BRACKET   = "[";

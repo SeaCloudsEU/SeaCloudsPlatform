@@ -57,7 +57,7 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
             cloudOffers);
       if (IS_DEBUG) {
          logAnneal
-               .debug("Start checking the presence of quality attached to solutions after the first generation HILLCLIMB");
+               .debug("Start checking the presence of quality attached to solutions after the first generation ANNEAL");
          super.checkQualityAttachedToSolutions(bestSols);
       }
       super.sortSolutionsByFitness(bestSols);
