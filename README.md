@@ -20,6 +20,21 @@ Getting Started
 * Installation guide: TODO
 * Quickstart: TODO
 
+Monitor Service Component
+-------------------
+* What is it: This component is a RESTful Web service that allows the initiation of MODAClouds monitoring platform and offers some basic functionalities over this platform.
+These functionalities concern the installation of monitoring rules and deployment plans to the monitoring platform.
+They are also related to the retrieval of proper data collector execution and installation files.
+Through the provided API, monitoring rules can also be un-installed.
+Finally, a list of monitoring metrics, used by data collectors, can be retrieved.
+
+* Compiling, deploying, and running it: Through using the Maven command: "mvn clean install tomcat6:run-war", you can compile the project, deploy the generated .war to a tomcat6 server and start the server, running at localhost.
+Also, basic unit tests are provided in 'monitorTest/MonitorTest.java', executed at compile time.
+
+* Using it: Through executing the main method, which exists in resources/MonitorCLI.java, you can use all the aforementioned functionalities.
+In particular, a command line menu of these functionalities is offered.
+Each menu choice performs suitable RESTFul invocations to the corresponding operations of the Monitor RESTFul Web service.
+
 
 ##License##
 Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).

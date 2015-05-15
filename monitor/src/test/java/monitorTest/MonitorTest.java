@@ -45,9 +45,10 @@ import core.WindowsBatchFileExecution;
 
 public class MonitorTest {
 
-	private static final String INITIALIZATION_CONFIGURATION_FILE = "./resources/initializationForTesting.properties";
-	private static final String MONITORING_RULES_FILE = "/api/resources/chat-WebApplication-monitoringRules";
-	private static final String DEPLOYMENT_MODEL_FILE = "/api/resources/chat-WebApplication.json";
+	private static final String SEACLOUDS_FOLDER = "SeaClouds";
+	private static final String INITIALIZATION_CONFIGURATION_FILE = "resources/initializationForTesting.properties";
+	private static final String MONITORING_RULES_FILE = "resources/chat-WebApplication-monitoringRules.xml";
+	private static final String DEPLOYMENT_MODEL_FILE = "resources/chat-WebApplication.json";
 	private static final String DATA_COLLECTORS_FILE_NAME = "data-collector-1.3-SNAPSHOT.jar";
 	private static final String DATA_COLLECTORS_INSTALLATION_FILE_NAME = "dataCollectorsInstallation.bat";
 
@@ -65,34 +66,10 @@ public class MonitorTest {
 			String appID = "chat-WebApplication_ID";
 			String vmID = "tomcat_server_VM_ID";
 
-			File currentDir = new File(System.getProperty("user.dir"));
+			new File(SEACLOUDS_FOLDER).mkdirs();
 
-			String parentDir = currentDir.getParent();
-
-			log.info("Downloading jena-fuseki-1.1.1.zip...");
-			download(
-					"jena-fuseki-1.1.1.zip",
-					"http://archive.apache.org/dist/jena/binaries/jena-fuseki-1.1.1-distribution.zip");
-
-			log.info("Unzipping jena-fuseki-1.1.1.zip...");
-			try {
-				unzip("lib/jena-fuseki-1.1.1.zip", "lib");
-			} catch (Exception ex) {
-				log.error(ex.getMessage());
-			}
-
-			log.info("Downloading rsp-services-csparql-0.4.6.2-modaclouds.zip...");
-			download(
-					"rsp-services-csparql-0.4.6.2-modaclouds.zip",
-					"http://www.cs.uoi.gr/~dathanas/rsp-services-csparql-0.4.6.2-modaclouds-distribution.zip");
-
-			log.info("Unzipping rsp-services-csparql-0.4.6.2-modaclouds.zip...");
-			try {
-				unzip("lib/rsp-services-csparql-0.4.6.2-modaclouds.zip", "lib");
-			} catch (Exception ex) {
-				log.error(ex.getMessage());
-			}
-
+			System.out
+					.println("1. Initialize and initiate the monitoring platform...");
 			log.info("1. Initialize and initiate the monitoring platform...");
 
 			File initializationFile = new File(
@@ -106,36 +83,46 @@ public class MonitorTest {
 			String msg = monitor.initialize(configurationFileContent);
 			Assert.assertEquals(msg, null);
 
-			msg = monitor.initiate(parentDir);
+			monitor.initiate();
 			try {
 				Thread.sleep(20000);
 			} catch (InterruptedException ex) {
 				log.error(ex.getMessage());
+				System.out.println(ex.getMessage());
+				System.exit(-1);
 			}
-			Assert.assertEquals(msg, null);
 
+			System.out
+					.println("2: Install monitoring rules (in XML format)...");
 			log.info("2: Install monitoring rules (in XML format)...");
-			File monitoringRules = new File(parentDir + MONITORING_RULES_FILE
-					+ ".xml");
+			File monitoringRules = new File(MONITORING_RULES_FILE);
 			String monitoringRulesContent = TxtFileReader.read(monitoringRules);
 			msg = monitor.installMonitoringRules(monitoringRulesContent);
 			try {
 				Thread.sleep(4000);
 			} catch (InterruptedException ex) {
 				log.error(ex.getMessage());
+				System.out.println(ex.getMessage());
+				System.exit(-1);
 			}
 			Assert.assertEquals(msg, null);
 
+			System.out
+					.println("3: Install a deployment model (in JSON format)...");
 			log.info("3: Install a deployment model (in JSON format)...");
-			File deploymentModel = new File(parentDir + DEPLOYMENT_MODEL_FILE);
+			File deploymentModel = new File(DEPLOYMENT_MODEL_FILE);
 			String deploymentModelContent = TxtFileReader.read(deploymentModel);
 			monitor.installDeploymentModel(deploymentModelContent);
 			try {
 				Thread.sleep(4000);
 			} catch (InterruptedException ex) {
 				log.error(ex.getMessage());
+				System.out.println(ex.getMessage());
+				System.exit(-1);
 			}
 
+			System.out
+					.println("4: Retrieve the executation file of all data collectors...");
 			log.info("4: Retrieve the executation file of all data collectors...");
 			File file = null;
 			try {
@@ -145,11 +132,16 @@ public class MonitorTest {
 				Thread.sleep(4000);
 			} catch (InterruptedException ex) {
 				log.error(ex.getMessage());
+				System.exit(-1);
 			} catch (IOException ex) {
 				log.error(ex.getMessage());
+				System.out.println(ex.getMessage());
+				System.exit(-1);
 			}
 			Assert.assertNotEquals(file, null);
 
+			System.out
+					.println("5: Retrieve the installation file of the data collector(s) and install it");
 			log.info("5: Retrieve the installation file of the data collector(s) and install it");
 			String fileContent = null;
 			try {
@@ -159,11 +151,14 @@ public class MonitorTest {
 						DATA_COLLECTORS_INSTALLATION_FILE_NAME);
 
 				log.info("Downloading hyperic-sigar-1.6.4.zip...");
-				download("hyperic-sigar-1.6.4.zip",
+				System.out.println("Downloading hyperic-sigar-1.6.4.zip...");
+				download(SEACLOUDS_FOLDER + "/hyperic-sigar-1.6.4.zip",
 						"https://magelan.googlecode.com/files/hyperic-sigar-1.6.4.zip");
 
 				log.info("Unzipping hyperic-sigar-1.6.4.zip...");
-				unzip("lib/hyperic-sigar-1.6.4.zip", "lib");
+				System.out.println("Unzipping hyperic-sigar-1.6.4.zip...");
+				unzip(SEACLOUDS_FOLDER + "/hyperic-sigar-1.6.4.zip",
+						SEACLOUDS_FOLDER);
 
 				WindowsBatchFileExecution
 						.execute(DATA_COLLECTORS_INSTALLATION_FILE_NAME);
@@ -173,17 +168,23 @@ public class MonitorTest {
 				Runtime.getRuntime().exec("taskkill /im cmd.exe");
 			} catch (InterruptedException ex) {
 				log.error(ex.getMessage());
+				System.out.println(ex.getMessage());
+				System.exit(-1);
 			} catch (IOException ex) {
 				log.error(ex.getMessage());
+				System.out.println(ex.getMessage());
+				System.exit(-1);
 			}
 			Assert.assertNotEquals(fileContent, null);
 
 			log.info("Delete resources...");
+			System.out.println("Delete resources...");
 
 			try {
 				Thread.sleep(15000);
 			} catch (Exception ex) {
 				log.error(ex.getMessage());
+				System.exit(-1);
 			}
 
 			File folder = new File("lib");
@@ -209,7 +210,7 @@ public class MonitorTest {
 		}
 	}
 
-	private void download(String fileName, String url) {
+	private static void download(String file, String url) {
 
 		try {
 
@@ -226,7 +227,7 @@ public class MonitorTest {
 			in.close();
 			byte[] response = out.toByteArray();
 
-			FileOutputStream fos = new FileOutputStream("lib/" + fileName);
+			FileOutputStream fos = new FileOutputStream(file);
 			fos.write(response);
 			fos.close();
 		}

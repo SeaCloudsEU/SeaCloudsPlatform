@@ -47,25 +47,15 @@ import core.ControllerImpl;
 import core.TxtFileWriter;
 import core.RESTCalls.RESTPost;
 
-@Path("/monitor")
+@Path("/api")
 public class Monitor {
 
 	private static final String SEACLOUDS_FOLDER = "SeaClouds";
 	private static final String INITIALIZATION_CONFIGURATION_FILE_ON_SERVER = SEACLOUDS_FOLDER
 			+ "/storedInitialization.properties";
 
-	private static final String LOCAL_FUSEKI = "/lib/jena-fuseki-1.1.1";
-	private static final String SERVER_FUSEKI = "/jena-fuseki-1.1.1";
+	private static final String SERVER_RESOURCES = "/resources";
 
-	private static final String LOCAL_CSPARQL = "/lib/rsp-services-csparql-0.4.6.2-modaclouds";
-	private static final String SERVER_CSPARQL = "/rsp-services-csparql-0.4.6.2-modaclouds";
-
-	private static final String LOCAL_RESOURCES = "/resources";
-
-	private static final String LOCAL_MONITORING_MANAGER = "/core/lib/";
-	private static final String SERVER_MONITORING_MANAGER = "/";
-
-	private static final String LOCAL_DATA_COLLECTORS = "/core/lib/";
 	private static final String DATA_COLLECTORS_FILE_NAME = "data-collector-1.3-SNAPSHOT.jar";
 
 	static Logger log = LoggerFactory.getLogger(Monitor.class);
@@ -75,8 +65,7 @@ public class Monitor {
 	@Path("/initialize")
 	public String initialize(String configurationFileContent) {
 
-		while (new File(SEACLOUDS_FOLDER).exists())
-			delete(new File(SEACLOUDS_FOLDER));
+		delete(new File(SEACLOUDS_FOLDER));
 
 		new File(SEACLOUDS_FOLDER).mkdirs();
 
@@ -126,33 +115,15 @@ public class Monitor {
 		return "[INFO] Monitor controller: The initialization data have been cleared.";
 	}
 
-	@GET
-	@Produces("text/plain")
+	@POST
 	@Path("/initiate")
-	public String initiate() {
+	public void initiate() {
+
+		downloadFiles();
 
 		Controller controller = new ControllerImpl();
 
-		String msg = controller.initiateMonitor();
-
-		return msg;
-	}
-
-	@POST
-	@Produces("text/plain")
-	@Path("/initiate")
-	public String initiate(String serverSourcesPath) {
-
-		String msg = copySourceFiles(serverSourcesPath);
-
-		if (msg == null) {
-
-			Controller controller = new ControllerImpl();
-
-			msg = controller.initiateMonitor();
-		}
-
-		return msg;
+		controller.initiateMonitor();
 	}
 
 	@POST
@@ -430,67 +401,59 @@ public class Monitor {
 		}
 	}
 
-	private static String copySourceFiles(String serverSourcesPath) {
+	private static void downloadFiles() {
 
-		String msg = null;
+		new File(SEACLOUDS_FOLDER + SERVER_RESOURCES).mkdirs();
 
-		TxtFileWriter.copyFolder(new File(serverSourcesPath + "/api/"
-				+ LOCAL_RESOURCES),
-				new File(SEACLOUDS_FOLDER + LOCAL_RESOURCES));
+		log.info("Downloading monitoring_metrics.xml...");
+		System.out.println("Downloading monitoring_metrics.xml...");
+		download(SEACLOUDS_FOLDER + SERVER_RESOURCES
+				+ "/monitoring_metrics.xml",
+				"http://www.cs.uoi.gr/~dathanas/monitoring_metrics.xml");
 
-		if (!new File(serverSourcesPath + "/api/" + LOCAL_FUSEKI).exists()) {
+		log.info("Downloading jena-fuseki-1.1.1.zip...");
+		System.out.println("Downloading jena-fuseki-1.1.1.zip...");
+		download(
+				SEACLOUDS_FOLDER + "/jena-fuseki-1.1.1.zip",
+				"http://archive.apache.org/dist/jena/binaries/jena-fuseki-1.1.1-distribution.zip");
 
-			log.info("Downloading jena-fuseki-1.1.1.zip...");
-			download(
-					"jena-fuseki-1.1.1.zip",
-					"http://archive.apache.org/dist/jena/binaries/jena-fuseki-1.1.1-distribution.zip");
-
-			try {
-				log.info("Unzipping jena-fuseki-1.1.1.zip...");
-				unzip(SEACLOUDS_FOLDER + "/jena-fuseki-1.1.1.zip",
-						SEACLOUDS_FOLDER);
-			} catch (Exception ex) {
-			}
+		try {
+			log.info("Unzipping jena-fuseki-1.1.1.zip...");
+			System.out.println("Unzipping jena-fuseki-1.1.1.zip...");
+			unzip(SEACLOUDS_FOLDER + "/jena-fuseki-1.1.1.zip", SEACLOUDS_FOLDER);
+		} catch (Exception ex) {
 		}
 
-		else
-			TxtFileWriter
-					.copyFolder(new File(serverSourcesPath + "/api/"
-							+ LOCAL_FUSEKI), new File(SEACLOUDS_FOLDER
-							+ SERVER_FUSEKI));
+		log.info("Downloading rsp-services-csparql-0.4.6.2-modaclouds.zip...");
+		System.out
+				.println("Downloading rsp-services-csparql-0.4.6.2-modaclouds.zip...");
+		download(
+				SEACLOUDS_FOLDER + "/"
+						+ "rsp-services-csparql-0.4.6.2-modaclouds.zip",
+				"http://www.cs.uoi.gr/~dathanas/rsp-services-csparql-0.4.6.2-modaclouds-distribution.zip");
 
-		if (!new File(serverSourcesPath + "/api/" + LOCAL_CSPARQL).exists()) {
-
-			log.info("Downloading rsp-services-csparql-0.4.6.2-modaclouds.zip...");
-			download(
-					"rsp-services-csparql-0.4.6.2-modaclouds.zip",
-					"http://www.cs.uoi.gr/~dathanas/rsp-services-csparql-0.4.6.2-modaclouds-distribution.zip");
-
-			try {
-				log.info("Unzipping rsp-services-csparql-0.4.6.2-modaclouds.zip...");
-				unzip(SEACLOUDS_FOLDER
-						+ "/rsp-services-csparql-0.4.6.2-modaclouds.zip",
-						SEACLOUDS_FOLDER);
-			} catch (Exception ex) {
-			}
+		try {
+			log.info("Unzipping rsp-services-csparql-0.4.6.2-modaclouds.zip...");
+			System.out
+					.println("Unzipping rsp-services-csparql-0.4.6.2-modaclouds.zip...");
+			unzip(SEACLOUDS_FOLDER
+					+ "/rsp-services-csparql-0.4.6.2-modaclouds.zip",
+					SEACLOUDS_FOLDER);
+		} catch (Exception ex) {
 		}
 
-		else
-			TxtFileWriter.copyFolder(new File(serverSourcesPath + "/api/"
-					+ LOCAL_CSPARQL), new File(SEACLOUDS_FOLDER
-					+ SERVER_CSPARQL));
+		log.info("Downloading monitoring-manager-1.4.jar...");
+		System.out.println("Downloading monitoring-manager-1.4.jar...");
+		download(SEACLOUDS_FOLDER + "/" + "monitoring-manager-1.4.jar",
+				"http://www.cs.uoi.gr/~dathanas/monitoring-manager-1.4.jar");
 
-		TxtFileWriter.copyFolder(new File(serverSourcesPath
-				+ LOCAL_MONITORING_MANAGER), new File(SEACLOUDS_FOLDER
-				+ SERVER_MONITORING_MANAGER));
-
-		TxtFileWriter.copyFolder(new File(serverSourcesPath
-				+ LOCAL_DATA_COLLECTORS), new File(SEACLOUDS_FOLDER));
-
-		return msg;
+		log.info("Downloading data-collector-1.3-SNAPSHOT.jar...");
+		System.out.println("Downloading data-collector-1.3-SNAPSHOT.jar...");
+		download(SEACLOUDS_FOLDER + "/" + "data-collector-1.3-SNAPSHOT.jar",
+				"http://www.cs.uoi.gr/~dathanas/data-collector-1.3-SNAPSHOT.jar");
 	}
 
-	private static void download(String fileName, String url) {
+	private static void download(String file, String url) {
 
 		try {
 
@@ -507,8 +470,7 @@ public class Monitor {
 			in.close();
 			byte[] response = out.toByteArray();
 
-			FileOutputStream fos = new FileOutputStream(SEACLOUDS_FOLDER + "/"
-					+ fileName);
+			FileOutputStream fos = new FileOutputStream(file);
 			fos.write(response);
 			fos.close();
 		}

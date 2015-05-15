@@ -106,8 +106,6 @@ public class ControllerImpl implements Controller {
 		if (PlannerURIReplanning != null)
 			fileContent += "\nPlannerURIReplanning=" + PlannerURIReplanning;
 
-		new File(SEACLOUDS_FOLDER).mkdirs();
-
 		TxtFileWriter.write(fileContent,
 				INITIALIZATION_CONFIGURATION_FILE_ON_SERVER);
 	}

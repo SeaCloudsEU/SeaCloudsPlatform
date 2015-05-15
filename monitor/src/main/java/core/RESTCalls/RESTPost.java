@@ -171,7 +171,7 @@ public class RESTPost {
 			while ((line = r.readLine()) != null)
 				total.append(line + "\n");
 
-			total.toString();
+			result = total.toString();
 		}
 
 		return result;
@@ -179,23 +179,30 @@ public class RESTPost {
 
 	public static String httpPost(String urlStr) throws Exception {
 
+		String result = null;
+
 		HttpClient client = new DefaultHttpClient();
 
 		HttpPost post = new HttpPost(urlStr);
 
 		HttpResponse response = client.execute(post);
 
-		BufferedReader r = new BufferedReader(new InputStreamReader(response
-				.getEntity().getContent()));
+		if (response != null && response.getEntity() != null) {
 
-		StringBuilder total = new StringBuilder();
+			BufferedReader r = new BufferedReader(new InputStreamReader(
+					response.getEntity().getContent()));
 
-		String line = null;
+			StringBuilder total = new StringBuilder();
 
-		while ((line = r.readLine()) != null)
-			total.append(line + "\n");
+			String line = null;
 
-		return total.toString();
+			while ((line = r.readLine()) != null)
+				total.append(line + "\n");
+
+			result = total.toString();
+		}
+
+		return result;
 	}
 
 	public static InputStream httpPostResponse(String urlStr) throws Exception {
