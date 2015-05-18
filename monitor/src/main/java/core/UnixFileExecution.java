@@ -17,32 +17,20 @@
 
 package core;
 
-import java.io.File;
 
 public class UnixFileExecution {
-	
+
 	public static Process execute(String exportUnixFile, String initUnixFile) {
 
 		Process p = null;
 
 		try {
 
-			File file = new File(exportUnixFile);
-
-
-			if(!exportUnixFile.equals(""))
+			if (!exportUnixFile.equals(""))
 				p = Runtime.getRuntime().exec(
-						"/bin/bash -c 'source "+exportUnixFile+"'");
-					
-			
-			file = new File(initUnixFile);
+						"/bin/bash -c 'source " + exportUnixFile + "'");
 
-
-			p = Runtime.getRuntime().exec(
-					"/bin/bash "+initUnixFile+"");
-					
-
-			
+			p = Runtime.getRuntime().exec("/bin/bash " + initUnixFile + "");
 
 			p.waitFor();
 		}
@@ -50,8 +38,6 @@ public class UnixFileExecution {
 		catch (Exception ex) {
 
 			ex.printStackTrace();
-
-			System.exit(-1);
 
 			p = null;
 		}

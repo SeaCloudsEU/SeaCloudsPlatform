@@ -39,8 +39,6 @@ public class WindowsBatchFileExecution {
 
 			ex.printStackTrace();
 
-			System.exit(-1);
-
 			p = null;
 		}
 

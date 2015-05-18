@@ -89,7 +89,6 @@ public class MonitorTest {
 			} catch (InterruptedException ex) {
 				log.error(ex.getMessage());
 				System.out.println(ex.getMessage());
-				System.exit(-1);
 			}
 
 			System.out
@@ -103,7 +102,6 @@ public class MonitorTest {
 			} catch (InterruptedException ex) {
 				log.error(ex.getMessage());
 				System.out.println(ex.getMessage());
-				System.exit(-1);
 			}
 			Assert.assertEquals(msg, null);
 
@@ -118,7 +116,6 @@ public class MonitorTest {
 			} catch (InterruptedException ex) {
 				log.error(ex.getMessage());
 				System.out.println(ex.getMessage());
-				System.exit(-1);
 			}
 
 			System.out
@@ -132,11 +129,9 @@ public class MonitorTest {
 				Thread.sleep(4000);
 			} catch (InterruptedException ex) {
 				log.error(ex.getMessage());
-				System.exit(-1);
 			} catch (IOException ex) {
 				log.error(ex.getMessage());
 				System.out.println(ex.getMessage());
-				System.exit(-1);
 			}
 			Assert.assertNotEquals(file, null);
 
@@ -169,11 +164,9 @@ public class MonitorTest {
 			} catch (InterruptedException ex) {
 				log.error(ex.getMessage());
 				System.out.println(ex.getMessage());
-				System.exit(-1);
 			} catch (IOException ex) {
 				log.error(ex.getMessage());
 				System.out.println(ex.getMessage());
-				System.exit(-1);
 			}
 			Assert.assertNotEquals(fileContent, null);
 
@@ -184,7 +177,6 @@ public class MonitorTest {
 				Thread.sleep(15000);
 			} catch (Exception ex) {
 				log.error(ex.getMessage());
-				System.exit(-1);
 			}
 
 			File folder = new File("lib");

@@ -29,7 +29,7 @@
    <monitoredTarget class="Method"/>
  </monitoredTargets>
  <metricAggregation aggregateFunction="Average" groupingClass="Method"/>
- <condition> METRIC &gt; 2 </condition>
+ <condition> METRIC &lt; 2 </condition>
  <actions>
    <action name="OutputMetric">
      <parameter name="metric">ResponseTimeViolation</parameter>
@@ -50,7 +50,7 @@
  <monitoredTargets>
    <monitoredTarget class="InternalComponent"/>
  </monitoredTargets>
- <condition> METRIC &lt; 0.998 </condition>
+ <condition> METRIC &gt; 0.998 </condition>
  <actions>
    <action name="OutputMetric">
      <parameter name="metric">AppAvailabilityViolation</parameter>
