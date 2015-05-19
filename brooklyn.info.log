@@ -1,0 +1,482 @@
+2015-05-19 22:46:51,439 INFO  b.l.geo.UtraceHostGeoLookup [Thread-3]: Geo info lookup unavailable (for bigmac.station/127.0.0.1; cause brooklyn.util.exceptions.RuntimeInterruptedException: java.lang.InterruptedException)
+2015-05-19 22:46:51,498 INFO  e.s.c.c.a.AbstractSeaCloudsAppTest [main]: Test class eu.seaclouds.common.compose.apps.SeaCloudsAppIntegrationTest persisting to /tmp/SeaCloudsAppIntegrationTest-vsrd
+2015-05-19 22:46:52,749 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8085/, running classpath://brooklyn.war
+2015-05-19 22:46:52,761 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:46:52,761 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:46:53,145 INFO  io.brooklyn.camp.CampServer [main]: CAMP REST server started (CAMP server) on
+2015-05-19 22:46:53,145 INFO  io.brooklyn.camp.CampServer [main]:   http://localhost:8086/
+2015-05-19 22:46:53,505 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8087/, running classpath://brooklyn.war
+2015-05-19 22:46:53,505 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:46:53,505 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:46:53,565 INFO  b.r.s.p.DelegatingSecurityProvider [brooklyn-jetty-server-8087-qtp1217634294-48]: REST using security provider brooklyn.rest.security.provider.AnyoneSecurityProvider
+2015-05-19 22:46:53,570 WARN  brooklyn.REST [brooklyn-jetty-server-8087-qtp1217634294-48]: REST API request arVzjv failed: java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+	at javax.ws.rs.core.UriBuilder.fromUri(UriBuilder.java:119) ~[jaxrs-api-3.0.8.Final.jar:na]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:893) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:857) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:811) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.HaMasterCheckFilter.doFilter(HaMasterCheckFilter.java:102) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.LoggingFilter.doFilter(LoggingFilter.java:88) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.BrooklynPropertiesSecurityFilter.doFilter(BrooklynPropertiesSecurityFilter.java:123) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.RequestTaggingFilter.doFilter(RequestTaggingFilter.java:48) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:484) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:119) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:524) [jetty-security-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:231) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1065) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:413) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:192) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:999) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:117) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:250) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:111) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.Server.handle(Server.java:350) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.handleRequest(AbstractHttpConnection.java:454) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.content(AbstractHttpConnection.java:900) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection$RequestHandler.content(AbstractHttpConnection.java:954) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseNext(HttpParser.java:851) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseAvailable(HttpParser.java:235) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AsyncHttpConnection.handle(AsyncHttpConnection.java:77) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint.handle(SelectChannelEndPoint.java:620) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint$1.run(SelectChannelEndPoint.java:46) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:603) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:538) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at java.lang.Thread.run(Thread.java:745) [na:1.7.0_71]
+2015-05-19 22:46:54,667 INFO  e.s.c.c.a.AbstractSeaCloudsAppTest [main]: Test class eu.seaclouds.common.compose.apps.SeaCloudsAppIntegrationTest persisting to /tmp/SeaCloudsAppIntegrationTest-MIOf
+2015-05-19 22:46:54,952 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8085/, running classpath://brooklyn.war
+2015-05-19 22:46:54,952 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:46:54,952 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:46:55,091 INFO  io.brooklyn.camp.CampServer [main]: CAMP REST server started (CAMP server) on
+2015-05-19 22:46:55,092 INFO  io.brooklyn.camp.CampServer [main]:   http://localhost:8086/
+2015-05-19 22:46:55,356 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8087/, running classpath://brooklyn.war
+2015-05-19 22:46:55,356 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:46:55,356 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:46:55,377 INFO  b.r.s.p.DelegatingSecurityProvider [brooklyn-jetty-server-8087-qtp1221581747-84]: REST using security provider brooklyn.rest.security.provider.AnyoneSecurityProvider
+2015-05-19 22:46:55,377 WARN  brooklyn.REST [brooklyn-jetty-server-8087-qtp1221581747-84]: REST API request vnsylh failed: java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+	at javax.ws.rs.core.UriBuilder.fromUri(UriBuilder.java:119) ~[jaxrs-api-3.0.8.Final.jar:na]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:893) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:857) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:811) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.HaMasterCheckFilter.doFilter(HaMasterCheckFilter.java:102) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.LoggingFilter.doFilter(LoggingFilter.java:88) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.BrooklynPropertiesSecurityFilter.doFilter(BrooklynPropertiesSecurityFilter.java:123) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.RequestTaggingFilter.doFilter(RequestTaggingFilter.java:48) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:484) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:119) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:524) [jetty-security-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:231) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1065) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:413) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:192) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:999) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:117) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:250) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:111) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.Server.handle(Server.java:350) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.handleRequest(AbstractHttpConnection.java:454) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.content(AbstractHttpConnection.java:900) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection$RequestHandler.content(AbstractHttpConnection.java:954) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseNext(HttpParser.java:851) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseAvailable(HttpParser.java:235) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AsyncHttpConnection.handle(AsyncHttpConnection.java:77) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint.handle(SelectChannelEndPoint.java:620) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint$1.run(SelectChannelEndPoint.java:46) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:603) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:538) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at java.lang.Thread.run(Thread.java:745) [na:1.7.0_71]
+2015-05-19 22:46:56,371 INFO  e.s.c.c.a.AbstractSeaCloudsAppTest [main]: Test class eu.seaclouds.common.compose.apps.SeaCloudsAppIntegrationTest persisting to /tmp/SeaCloudsAppIntegrationTest-Xcnk
+2015-05-19 22:46:56,609 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8085/, running classpath://brooklyn.war
+2015-05-19 22:46:56,609 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:46:56,609 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:46:56,756 INFO  io.brooklyn.camp.CampServer [main]: CAMP REST server started (CAMP server) on
+2015-05-19 22:46:56,756 INFO  io.brooklyn.camp.CampServer [main]:   http://localhost:8086/
+2015-05-19 22:46:56,961 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8087/, running classpath://brooklyn.war
+2015-05-19 22:46:56,961 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:46:56,961 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:46:56,970 INFO  b.r.s.p.DelegatingSecurityProvider [brooklyn-jetty-server-8087-qtp2131992436-121]: REST using security provider brooklyn.rest.security.provider.AnyoneSecurityProvider
+2015-05-19 22:46:56,971 WARN  brooklyn.REST [brooklyn-jetty-server-8087-qtp2131992436-121]: REST API request ULMYsy failed: java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+	at javax.ws.rs.core.UriBuilder.fromUri(UriBuilder.java:119) ~[jaxrs-api-3.0.8.Final.jar:na]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:893) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:857) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:811) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.HaMasterCheckFilter.doFilter(HaMasterCheckFilter.java:102) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.LoggingFilter.doFilter(LoggingFilter.java:88) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.BrooklynPropertiesSecurityFilter.doFilter(BrooklynPropertiesSecurityFilter.java:123) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.RequestTaggingFilter.doFilter(RequestTaggingFilter.java:48) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:484) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:119) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:524) [jetty-security-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:231) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1065) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:413) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:192) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:999) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:117) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:250) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:111) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.Server.handle(Server.java:350) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.handleRequest(AbstractHttpConnection.java:454) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.content(AbstractHttpConnection.java:900) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection$RequestHandler.content(AbstractHttpConnection.java:954) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseNext(HttpParser.java:851) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseAvailable(HttpParser.java:235) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AsyncHttpConnection.handle(AsyncHttpConnection.java:77) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint.handle(SelectChannelEndPoint.java:620) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint$1.run(SelectChannelEndPoint.java:46) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:603) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:538) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at java.lang.Thread.run(Thread.java:745) [na:1.7.0_71]
+2015-05-19 22:46:57,865 INFO  e.s.c.c.a.AbstractSeaCloudsAppTest [main]: Test class eu.seaclouds.common.compose.apps.SeaCloudsAppIntegrationTest persisting to /tmp/SeaCloudsAppIntegrationTest-eY1K
+2015-05-19 22:46:58,100 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8085/, running classpath://brooklyn.war
+2015-05-19 22:46:58,100 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:46:58,100 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:46:58,223 INFO  io.brooklyn.camp.CampServer [main]: CAMP REST server started (CAMP server) on
+2015-05-19 22:46:58,223 INFO  io.brooklyn.camp.CampServer [main]:   http://localhost:8086/
+2015-05-19 22:46:58,468 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8087/, running classpath://brooklyn.war
+2015-05-19 22:46:58,468 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:46:58,468 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:46:58,482 INFO  b.r.s.p.DelegatingSecurityProvider [brooklyn-jetty-server-8087-qtp1003831323-157]: REST using security provider brooklyn.rest.security.provider.AnyoneSecurityProvider
+2015-05-19 22:46:58,482 WARN  brooklyn.REST [brooklyn-jetty-server-8087-qtp1003831323-157]: REST API request HmHLIF failed: java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+	at javax.ws.rs.core.UriBuilder.fromUri(UriBuilder.java:119) ~[jaxrs-api-3.0.8.Final.jar:na]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:893) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:857) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:811) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.HaMasterCheckFilter.doFilter(HaMasterCheckFilter.java:102) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.LoggingFilter.doFilter(LoggingFilter.java:88) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.BrooklynPropertiesSecurityFilter.doFilter(BrooklynPropertiesSecurityFilter.java:123) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.RequestTaggingFilter.doFilter(RequestTaggingFilter.java:48) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:484) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:119) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:524) [jetty-security-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:231) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1065) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:413) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:192) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:999) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:117) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:250) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:111) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.Server.handle(Server.java:350) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.handleRequest(AbstractHttpConnection.java:454) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.content(AbstractHttpConnection.java:900) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection$RequestHandler.content(AbstractHttpConnection.java:954) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseNext(HttpParser.java:851) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseAvailable(HttpParser.java:235) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AsyncHttpConnection.handle(AsyncHttpConnection.java:77) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint.handle(SelectChannelEndPoint.java:620) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint$1.run(SelectChannelEndPoint.java:46) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:603) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:538) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at java.lang.Thread.run(Thread.java:745) [na:1.7.0_71]
+2015-05-19 22:46:59,563 INFO  e.s.c.c.a.AbstractSeaCloudsAppTest [main]: Test class eu.seaclouds.common.compose.apps.SeaCloudsAppIntegrationTest persisting to /tmp/SeaCloudsAppIntegrationTest-uvWg
+2015-05-19 22:46:59,789 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8085/, running classpath://brooklyn.war
+2015-05-19 22:46:59,789 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:46:59,789 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:46:59,905 INFO  io.brooklyn.camp.CampServer [main]: CAMP REST server started (CAMP server) on
+2015-05-19 22:46:59,906 INFO  io.brooklyn.camp.CampServer [main]:   http://localhost:8086/
+2015-05-19 22:47:00,085 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8087/, running classpath://brooklyn.war
+2015-05-19 22:47:00,086 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:47:00,086 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:47:00,094 INFO  b.r.s.p.DelegatingSecurityProvider [brooklyn-jetty-server-8087-qtp1920706749-193]: REST using security provider brooklyn.rest.security.provider.AnyoneSecurityProvider
+2015-05-19 22:47:00,094 WARN  brooklyn.REST [brooklyn-jetty-server-8087-qtp1920706749-193]: REST API request Ja5LpN failed: java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+	at javax.ws.rs.core.UriBuilder.fromUri(UriBuilder.java:119) ~[jaxrs-api-3.0.8.Final.jar:na]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:893) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:857) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:811) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.HaMasterCheckFilter.doFilter(HaMasterCheckFilter.java:102) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.LoggingFilter.doFilter(LoggingFilter.java:88) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.BrooklynPropertiesSecurityFilter.doFilter(BrooklynPropertiesSecurityFilter.java:123) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.RequestTaggingFilter.doFilter(RequestTaggingFilter.java:48) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:484) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:119) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:524) [jetty-security-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:231) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1065) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:413) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:192) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:999) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:117) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:250) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:111) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.Server.handle(Server.java:350) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.handleRequest(AbstractHttpConnection.java:454) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.content(AbstractHttpConnection.java:900) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection$RequestHandler.content(AbstractHttpConnection.java:954) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseNext(HttpParser.java:851) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseAvailable(HttpParser.java:235) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AsyncHttpConnection.handle(AsyncHttpConnection.java:77) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint.handle(SelectChannelEndPoint.java:620) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint$1.run(SelectChannelEndPoint.java:46) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:603) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:538) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at java.lang.Thread.run(Thread.java:745) [na:1.7.0_71]
+2015-05-19 22:55:28,524 INFO  b.l.geo.UtraceHostGeoLookup [Thread-3]: Geo info lookup for bigmac.station/127.0.0.1 returned: HostGeoInfo[Vodafone Italia DSL (IT): bigmac.station at (42.833301544189,12.833299636841)]
+2015-05-19 22:55:28,590 INFO  e.s.c.c.a.AbstractSeaCloudsAppTest [main]: Test class eu.seaclouds.common.compose.apps.SeaCloudsAppIntegrationTest persisting to /tmp/SeaCloudsAppIntegrationTest-LA7K
+2015-05-19 22:55:29,856 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8085/, running classpath://brooklyn.war
+2015-05-19 22:55:29,865 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:55:29,865 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:55:30,246 INFO  io.brooklyn.camp.CampServer [main]: CAMP REST server started (CAMP server) on
+2015-05-19 22:55:30,246 INFO  io.brooklyn.camp.CampServer [main]:   http://localhost:8086/
+2015-05-19 22:55:30,604 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8087/, running classpath://brooklyn.war
+2015-05-19 22:55:30,604 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:55:30,605 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:55:30,663 INFO  b.r.s.p.DelegatingSecurityProvider [brooklyn-jetty-server-8087-qtp178460430-49]: REST using security provider brooklyn.rest.security.provider.AnyoneSecurityProvider
+2015-05-19 22:55:30,669 WARN  brooklyn.REST [brooklyn-jetty-server-8087-qtp178460430-49]: REST API request AxKcoM failed: java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+	at javax.ws.rs.core.UriBuilder.fromUri(UriBuilder.java:119) ~[jaxrs-api-3.0.8.Final.jar:na]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:893) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:857) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:811) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.HaMasterCheckFilter.doFilter(HaMasterCheckFilter.java:102) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.LoggingFilter.doFilter(LoggingFilter.java:88) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.BrooklynPropertiesSecurityFilter.doFilter(BrooklynPropertiesSecurityFilter.java:123) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.RequestTaggingFilter.doFilter(RequestTaggingFilter.java:48) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:484) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:119) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:524) [jetty-security-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:231) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1065) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:413) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:192) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:999) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:117) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:250) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:111) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.Server.handle(Server.java:350) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.handleRequest(AbstractHttpConnection.java:454) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.content(AbstractHttpConnection.java:900) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection$RequestHandler.content(AbstractHttpConnection.java:954) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseNext(HttpParser.java:851) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseAvailable(HttpParser.java:235) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AsyncHttpConnection.handle(AsyncHttpConnection.java:77) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint.handle(SelectChannelEndPoint.java:620) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint$1.run(SelectChannelEndPoint.java:46) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:603) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:538) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at java.lang.Thread.run(Thread.java:745) [na:1.7.0_71]
+2015-05-19 22:55:31,809 INFO  e.s.c.c.a.AbstractSeaCloudsAppTest [main]: Test class eu.seaclouds.common.compose.apps.SeaCloudsAppIntegrationTest persisting to /tmp/SeaCloudsAppIntegrationTest-q3Qu
+2015-05-19 22:55:32,109 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8085/, running classpath://brooklyn.war
+2015-05-19 22:55:32,110 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:55:32,110 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:55:32,256 INFO  io.brooklyn.camp.CampServer [main]: CAMP REST server started (CAMP server) on
+2015-05-19 22:55:32,257 INFO  io.brooklyn.camp.CampServer [main]:   http://localhost:8086/
+2015-05-19 22:55:32,536 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8087/, running classpath://brooklyn.war
+2015-05-19 22:55:32,536 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:55:32,536 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:55:32,556 INFO  b.r.s.p.DelegatingSecurityProvider [brooklyn-jetty-server-8087-qtp1751077553-85]: REST using security provider brooklyn.rest.security.provider.AnyoneSecurityProvider
+2015-05-19 22:55:32,557 WARN  brooklyn.REST [brooklyn-jetty-server-8087-qtp1751077553-85]: REST API request JmZDgP failed: java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+	at javax.ws.rs.core.UriBuilder.fromUri(UriBuilder.java:119) ~[jaxrs-api-3.0.8.Final.jar:na]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:893) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:857) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:811) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.HaMasterCheckFilter.doFilter(HaMasterCheckFilter.java:102) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.LoggingFilter.doFilter(LoggingFilter.java:88) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.BrooklynPropertiesSecurityFilter.doFilter(BrooklynPropertiesSecurityFilter.java:123) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.RequestTaggingFilter.doFilter(RequestTaggingFilter.java:48) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:484) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:119) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:524) [jetty-security-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:231) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1065) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:413) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:192) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:999) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:117) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:250) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:111) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.Server.handle(Server.java:350) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.handleRequest(AbstractHttpConnection.java:454) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.content(AbstractHttpConnection.java:900) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection$RequestHandler.content(AbstractHttpConnection.java:954) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseNext(HttpParser.java:851) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseAvailable(HttpParser.java:235) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AsyncHttpConnection.handle(AsyncHttpConnection.java:77) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint.handle(SelectChannelEndPoint.java:620) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint$1.run(SelectChannelEndPoint.java:46) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:603) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:538) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at java.lang.Thread.run(Thread.java:745) [na:1.7.0_71]
+2015-05-19 22:55:33,592 INFO  e.s.c.c.a.AbstractSeaCloudsAppTest [main]: Test class eu.seaclouds.common.compose.apps.SeaCloudsAppIntegrationTest persisting to /tmp/SeaCloudsAppIntegrationTest-QdX2
+2015-05-19 22:55:33,839 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8085/, running classpath://brooklyn.war
+2015-05-19 22:55:33,839 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:55:33,840 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:55:33,971 INFO  io.brooklyn.camp.CampServer [main]: CAMP REST server started (CAMP server) on
+2015-05-19 22:55:33,972 INFO  io.brooklyn.camp.CampServer [main]:   http://localhost:8086/
+2015-05-19 22:55:34,160 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8087/, running classpath://brooklyn.war
+2015-05-19 22:55:34,161 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:55:34,162 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:55:34,171 INFO  b.r.s.p.DelegatingSecurityProvider [brooklyn-jetty-server-8087-qtp1874861199-121]: REST using security provider brooklyn.rest.security.provider.AnyoneSecurityProvider
+2015-05-19 22:55:34,171 WARN  brooklyn.REST [brooklyn-jetty-server-8087-qtp1874861199-121]: REST API request c1BavC failed: java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+	at javax.ws.rs.core.UriBuilder.fromUri(UriBuilder.java:119) ~[jaxrs-api-3.0.8.Final.jar:na]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:893) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:857) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:811) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.HaMasterCheckFilter.doFilter(HaMasterCheckFilter.java:102) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.LoggingFilter.doFilter(LoggingFilter.java:88) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.BrooklynPropertiesSecurityFilter.doFilter(BrooklynPropertiesSecurityFilter.java:123) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.RequestTaggingFilter.doFilter(RequestTaggingFilter.java:48) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:484) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:119) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:524) [jetty-security-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:231) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1065) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:413) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:192) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:999) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:117) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:250) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:111) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.Server.handle(Server.java:350) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.handleRequest(AbstractHttpConnection.java:454) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.content(AbstractHttpConnection.java:900) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection$RequestHandler.content(AbstractHttpConnection.java:954) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseNext(HttpParser.java:851) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseAvailable(HttpParser.java:235) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AsyncHttpConnection.handle(AsyncHttpConnection.java:77) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint.handle(SelectChannelEndPoint.java:620) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint$1.run(SelectChannelEndPoint.java:46) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:603) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:538) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at java.lang.Thread.run(Thread.java:745) [na:1.7.0_71]
+2015-05-19 22:55:35,061 INFO  e.s.c.c.a.AbstractSeaCloudsAppTest [main]: Test class eu.seaclouds.common.compose.apps.SeaCloudsAppIntegrationTest persisting to /tmp/SeaCloudsAppIntegrationTest-zzy5
+2015-05-19 22:55:35,305 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8085/, running classpath://brooklyn.war
+2015-05-19 22:55:35,306 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:55:35,306 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:55:35,434 INFO  io.brooklyn.camp.CampServer [main]: CAMP REST server started (CAMP server) on
+2015-05-19 22:55:35,434 INFO  io.brooklyn.camp.CampServer [main]:   http://localhost:8086/
+2015-05-19 22:55:35,613 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8087/, running classpath://brooklyn.war
+2015-05-19 22:55:35,613 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:55:35,613 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:55:35,627 INFO  b.r.s.p.DelegatingSecurityProvider [brooklyn-jetty-server-8087-qtp580253452-158]: REST using security provider brooklyn.rest.security.provider.AnyoneSecurityProvider
+2015-05-19 22:55:35,627 WARN  brooklyn.REST [brooklyn-jetty-server-8087-qtp580253452-158]: REST API request fHzolL failed: java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+	at javax.ws.rs.core.UriBuilder.fromUri(UriBuilder.java:119) ~[jaxrs-api-3.0.8.Final.jar:na]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:893) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:857) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:811) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.HaMasterCheckFilter.doFilter(HaMasterCheckFilter.java:102) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.LoggingFilter.doFilter(LoggingFilter.java:88) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.BrooklynPropertiesSecurityFilter.doFilter(BrooklynPropertiesSecurityFilter.java:123) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.RequestTaggingFilter.doFilter(RequestTaggingFilter.java:48) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:484) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:119) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:524) [jetty-security-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:231) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1065) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:413) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:192) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:999) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:117) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:250) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:111) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.Server.handle(Server.java:350) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.handleRequest(AbstractHttpConnection.java:454) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.content(AbstractHttpConnection.java:900) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection$RequestHandler.content(AbstractHttpConnection.java:954) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseNext(HttpParser.java:851) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseAvailable(HttpParser.java:235) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AsyncHttpConnection.handle(AsyncHttpConnection.java:77) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint.handle(SelectChannelEndPoint.java:620) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint$1.run(SelectChannelEndPoint.java:46) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:603) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:538) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at java.lang.Thread.run(Thread.java:745) [na:1.7.0_71]
+2015-05-19 22:55:36,706 INFO  e.s.c.c.a.AbstractSeaCloudsAppTest [main]: Test class eu.seaclouds.common.compose.apps.SeaCloudsAppIntegrationTest persisting to /tmp/SeaCloudsAppIntegrationTest-evjP
+2015-05-19 22:55:36,929 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8085/, running classpath://brooklyn.war
+2015-05-19 22:55:36,930 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:55:36,930 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:55:37,053 INFO  io.brooklyn.camp.CampServer [main]: CAMP REST server started (CAMP server) on
+2015-05-19 22:55:37,054 INFO  io.brooklyn.camp.CampServer [main]:   http://localhost:8086/
+2015-05-19 22:55:37,299 INFO  b.launcher.BrooklynWebServer [main]: Started Brooklyn console at http://bigmac.station:8087/, running classpath://brooklyn.war
+2015-05-19 22:55:37,299 INFO  b.launcher.BrooklynLauncher [main]: Persistence disabled
+2015-05-19 22:55:37,299 INFO  b.launcher.BrooklynLauncher [main]: High availability disabled
+2015-05-19 22:55:37,307 INFO  b.r.s.p.DelegatingSecurityProvider [brooklyn-jetty-server-8087-qtp1304724069-193]: REST using security provider brooklyn.rest.security.provider.AnyoneSecurityProvider
+2015-05-19 22:55:37,308 WARN  brooklyn.REST [brooklyn-jetty-server-8087-qtp1304724069-193]: REST API request hvslMr failed: java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+java.lang.AbstractMethodError: javax.ws.rs.core.UriBuilder.uri(Ljava/lang/String;)Ljavax/ws/rs/core/UriBuilder;
+	at javax.ws.rs.core.UriBuilder.fromUri(UriBuilder.java:119) ~[jaxrs-api-3.0.8.Final.jar:na]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:893) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:857) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:811) ~[jersey-servlet-1.18.1.jar:1.18.1]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.HaMasterCheckFilter.doFilter(HaMasterCheckFilter.java:102) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.LoggingFilter.doFilter(LoggingFilter.java:88) ~[brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.BrooklynPropertiesSecurityFilter.doFilter(BrooklynPropertiesSecurityFilter.java:123) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at brooklyn.rest.filter.RequestTaggingFilter.doFilter(RequestTaggingFilter.java:48) [brooklyn-rest-server-0.7.0-SNAPSHOT.jar:0.7.0-SNAPSHOT]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1338) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:484) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:119) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:524) [jetty-security-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:231) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1065) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:413) [jetty-servlet-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:192) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:999) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:117) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:250) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:111) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.Server.handle(Server.java:350) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.handleRequest(AbstractHttpConnection.java:454) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection.content(AbstractHttpConnection.java:900) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AbstractHttpConnection$RequestHandler.content(AbstractHttpConnection.java:954) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseNext(HttpParser.java:851) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.http.HttpParser.parseAvailable(HttpParser.java:235) [jetty-http-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.server.AsyncHttpConnection.handle(AsyncHttpConnection.java:77) [jetty-server-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint.handle(SelectChannelEndPoint.java:620) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.io.nio.SelectChannelEndPoint$1.run(SelectChannelEndPoint.java:46) [jetty-io-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:603) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:538) [jetty-util-8.1.4.v20120524.jar:8.1.4.v20120524]
+	at java.lang.Thread.run(Thread.java:745) [na:1.7.0_71]

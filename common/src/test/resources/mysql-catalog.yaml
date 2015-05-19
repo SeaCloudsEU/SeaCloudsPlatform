@@ -1,0 +1,18 @@
+brooklyn.catalog:
+  id: eu.seaclouds-project.mysql
+  version: 1.0
+  description: A Tomcat app-server
+  displayName: Tomcat
+  iconUrl: classpath:///tomcat-logo.png
+  itemType: template
+
+  item:
+    services:
+    - type: io.cloudsoft.amp.canopy.compose.apps.CanopyComposeApp
+      defaultDisplayName: MySql app
+      brooklyn.config:
+        childSpec:
+          $brooklyn:entitySpec:
+            type: brooklyn.entity.database.mysql.MySqlNode
+            id: childid
+            name: MySql Server

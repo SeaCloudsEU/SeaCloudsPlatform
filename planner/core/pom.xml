@@ -33,7 +33,6 @@ limitations under the License.
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
-
     <dependency>
       <groupId>eu.seaclouds-project</groupId>
       <artifactId>matchmaker</artifactId>
