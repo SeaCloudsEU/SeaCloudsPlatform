@@ -6,3 +6,5 @@ target/
 .metadata
 .settings/
 /bin/
+*.zip
+*.log

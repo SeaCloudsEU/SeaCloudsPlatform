@@ -23,7 +23,8 @@
   <artifactId>platform</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <modules>
-    <module>monitor</module>
+    <module>common</module>
+    <!--module>monitor</module-->
     <module>deployer</module>
     <module>planner</module>
     <module>dashboard</module>
@@ -32,6 +33,7 @@
   <name>SeaClouds Platform</name>
   <url>http://www.seaclouds-project.eu</url>
   <properties>
+    <excludedTestGroups>Integration,Live</excludedTestGroups>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <guava.version>18.0</guava.version>
     <javatuples.version>1.2</javatuples.version>
@@ -39,6 +41,7 @@
     <brooklyn.version>0.7.0-SNAPSHOT</brooklyn.version>
     <jetty.version>9.2.4.v20141103</jetty.version>
     <junit.version>4.11</junit.version>
+    <slf4j.version>1.6.6</slf4j.version>  <!-- used for java.util.logging jul-to-slf4j interception -->
   </properties>
 
   <repositories>
@@ -70,13 +73,13 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.brooklyn</groupId>
-      <artifactId>brooklyn-rest-client</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>org.javatuples</groupId>
@@ -86,6 +89,7 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
+      <version>${testng.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -105,27 +109,11 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <excludes>
-            <exclude>**/*IntegrationTest.java</exclude>
-          </excludes>
+          <enableAssertions>true</enableAssertions>
+          <groups>${includedTestGroups}</groups>
+          <excludedGroups>${excludedTestGroups}</excludedGroups>
+          <testFailureIgnore>false</testFailureIgnore>
         </configuration>
-        <executions>
-          <execution>
-            <id>integration-test</id>
-            <goals>
-              <goal>test</goal>
-            </goals>
-            <phase>integration-test</phase>
-            <configuration>
-              <excludes>
-                <exclude>none</exclude>
-              </excludes>
-              <includes>
-                <include>**/*IntegrationTest.java</include>
-              </includes>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -198,6 +186,7 @@
           </configuration>
       </plugin>
     </plugins>
+
   </build>
   <dependencyManagement>
     <dependencies>
@@ -223,4 +212,50 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <profiles>
+    <profile>
+      <id>Live</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>integration</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>test</goal>
+                </goals>
+                <configuration>
+                  <!-- note that the groups/excluded groups don't work due to some problem
+                       in surefire or testng. instead, we have to exclude via file path
+                       <groups>live,integration</groups>
+                       <excludedGroups>unit,performance</excludedGroups> -->
+                  <excludes>
+                    <exclude>none</exclude>
+                  </excludes>
+                  <includes>
+                    <include>**/*IntegrationTest.java</include>
+                    <include>**/*LiveTest.java</include>
+                  </includes>
+                  <systemPropertyVariables>
+                    <!--
+                        If you're behind a proxy, set this here
+                        http://java.sun.com/javase/6/docs/technotes/guides/net/proxies.html
+
+<https.proxyHost>proxy</https.proxyHost>
+<https.proxyPort>port</https.proxyPort>
+<https.noProxyHosts>localhost|10.150.4.49</https.noProxyHosts>
+                    -->
+                    <file.encoding>${project.build.sourceEncoding}</file.encoding>
+                  </systemPropertyVariables>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
