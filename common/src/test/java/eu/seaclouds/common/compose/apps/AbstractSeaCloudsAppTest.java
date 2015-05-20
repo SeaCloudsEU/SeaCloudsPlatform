@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.net.HostAndPort;
 
 import brooklyn.catalog.CatalogLoadMode;
 import brooklyn.config.BrooklynProperties;
@@ -78,7 +76,6 @@ import brooklyn.util.ResourceUtils;
 import brooklyn.util.exceptions.Exceptions;
 import brooklyn.util.http.HttpTool;
 import brooklyn.util.http.HttpToolResponse;
-import brooklyn.util.net.Networking;
 import brooklyn.util.net.Urls;
 import brooklyn.util.os.Os;
 import brooklyn.util.yaml.Yamls;
@@ -204,9 +201,6 @@ public abstract class AbstractSeaCloudsAppTest {
 
       // Confirm healthy, and operations work
       assertNoFires(app);
-      if (endpoint != null) {
-         assertReachable(app, endpoint);
-      }
       for (Entity softwareProcess : Entities.descendants(entity, Predicates.instanceOf(SoftwareProcess.class), true)) {
          assertCanRestartProcess((SoftwareProcess) softwareProcess);
       }
@@ -365,28 +359,6 @@ public abstract class AbstractSeaCloudsAppTest {
             }
          }
       });
-   }
-
-   protected void assertReachable(final Entity app, AttributeSensor<String> endpointAttribute) throws Exception {
-      String endpoint = EntityTestUtils.assertAttributeEventuallyNonNull(app, endpointAttribute);
-      HostAndPort hostAndPort;
-      try {
-         URI uri = new URI(endpoint);
-         String host = uri.getHost();
-         int port = uri.getPort();
-         hostAndPort = HostAndPort.fromParts(host, port);
-      } catch (IllegalArgumentException e) {
-         throw new Exception("Endpoint URI " + endpoint + " has no port for " + app + "->" + endpointAttribute);
-      } catch (URISyntaxException e) {
-         // was not a URI; we'll try other formats
-         try {
-            hostAndPort = HostAndPort.fromString(endpoint);
-         } catch (IllegalArgumentException e2) {
-            throw new Exception("Endpoint " + endpoint + " is not a URI or hostAndPort, for " + app + "->" + endpointAttribute);
-         }
-      }
-
-      assertTrue(Networking.isReachable(hostAndPort));
    }
 
    protected void assertCanRestartProcess(final SoftwareProcess entity) throws Exception {

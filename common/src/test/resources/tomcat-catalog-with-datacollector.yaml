@@ -17,4 +17,7 @@ brooklyn.catalog:
             id: childid
             name: Tomcat Server
             brooklyn.policies:
-            - type: eu.seaclouds.common.policies.DataCollectorInstallationPolicy
+            - policyType: eu.seaclouds.common.policies.DataCollectorInstallationPolicy
+              brooklyn.config:
+                modacloudsDdaIp: 192.168.0.1
+                modacloudsKbIp: 192.168.0.2

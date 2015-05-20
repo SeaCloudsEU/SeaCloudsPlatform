@@ -16,22 +16,32 @@
  */
 package eu.seaclouds.common.policies;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
+import brooklyn.config.ConfigKey;
 import brooklyn.entity.basic.AbstractEntity;
+import brooklyn.entity.basic.ConfigKeys;
 import brooklyn.entity.basic.EntityLocal;
 import brooklyn.event.SensorEvent;
 import brooklyn.event.SensorEventListener;
 import brooklyn.location.Location;
+import brooklyn.location.OsDetails;
+import brooklyn.location.basic.Locations;
 import brooklyn.location.basic.SshMachineLocation;
 import brooklyn.policy.basic.AbstractPolicy;
+import brooklyn.util.collections.MutableMap;
+import brooklyn.util.config.ConfigBag;
 import brooklyn.util.flags.SetFromFlag;
+import brooklyn.util.internal.ssh.SshTool;
 import brooklyn.util.ssh.BashCommands;
 import eu.seaclouds.common.apps.SeaCloudsApp;
 
@@ -41,15 +51,24 @@ import eu.seaclouds.common.apps.SeaCloudsApp;
  * MODAClouds data collector on targeted VM.
  */
 public class DataCollectorInstallationPolicy extends AbstractPolicy {
-   /**
-    * Logger object.
-    */
-   private static final Logger LOG = LoggerFactory.getLogger(DataCollectorInstallationPolicy.class);
 
-   /**
-    * Flag.
-    */
-   @SetFromFlag private final AtomicBoolean dataCollectorInstalled = new AtomicBoolean(false);
+   private static final Logger LOG = LoggerFactory.getLogger(DataCollectorInstallationPolicy.class);
+   public static final String INSTALL_DIR = "~/datacollectors";
+   public static final String PID_FILENAME = "pid.txt";
+
+   @SetFromFlag("modacloudsDdaIp")
+   public static final ConfigKey<String> MODACLOUDS_DDA_IP = ConfigKeys.newStringConfigKey("modaclouds.dda.ip", "", "127.0.0.1");
+
+   @SetFromFlag("modacloudsDdaPort")
+   public static final ConfigKey<String> MODACLOUDS_DDA_PORT = ConfigKeys.newStringConfigKey("modaclouds.dda.port", "", "8175");
+
+   @SetFromFlag("modacloudsKbIp")
+   public static final ConfigKey<String> MODACLOUDS_KB_IP = ConfigKeys.newStringConfigKey("modaclouds.kb.ip", "", "127.0.0.1");
+
+   @SetFromFlag("modacloudsKbPort")
+   public static final ConfigKey<String> MODACLOUDS_KB_PORT = ConfigKeys.newStringConfigKey("modaclouds.kb.port", "", "3030");
+
+   private final AtomicBoolean dataCollectorInstalled = new AtomicBoolean(false);
 
    /**
     * Get dataCollectorInstalled flag.
@@ -75,16 +94,15 @@ public class DataCollectorInstallationPolicy extends AbstractPolicy {
          @Override public void onEvent(SensorEvent<Location> sensorEvent) {
             final Object sensorEventValue = sensorEvent.getValue();
             if (sensorEventValue instanceof SshMachineLocation) {
-               final Boolean configkey = entity.getConfig(SeaCloudsApp.INSTALL_DATA_COLLECTOR);
-               String hostName = sensorEvent.getSource().getParent().getApplication().getDisplayName()
-                       + "-"
-                       + ((SshMachineLocation) sensorEventValue).getPublicAddresses();
-               hostName = hostName.replaceAll(" ", "_");
-               final DataCollectorInstallationPolicy thisNRInstallationPolicy = DataCollectorInstallationPolicy.this;
-               thisNRInstallationPolicy
-                       .installDataCollector((SshMachineLocation) sensorEventValue, hostName);
-               if (configkey) {
-                  thisNRInstallationPolicy.startDataCollectorMonitoring();
+               final Boolean installDataCollector = entity.getConfig(SeaCloudsApp.INSTALL_DATA_COLLECTOR);
+               if (installDataCollector) {
+                  DataCollectorInstallationPolicy.this.installDataCollector((SshMachineLocation) sensorEventValue);
+                  getManagementContext().getConfig().getConfig(MODACLOUDS_DDA_IP);
+                  String ddaHostname = DataCollectorInstallationPolicy.this.getConfig(MODACLOUDS_DDA_IP);
+                  String ddaPort = DataCollectorInstallationPolicy.this.getConfig(MODACLOUDS_DDA_PORT);
+                  String kbHostname = DataCollectorInstallationPolicy.this.getConfig(MODACLOUDS_KB_IP);
+                  String kbPort = DataCollectorInstallationPolicy.this.getConfig(MODACLOUDS_KB_PORT);
+                  DataCollectorInstallationPolicy.this.startDataCollectorMonitoring(ddaHostname, ddaPort, kbHostname, kbPort);
                }
             }
          }
@@ -108,36 +126,35 @@ public class DataCollectorInstallationPolicy extends AbstractPolicy {
    /**
     * Install Data collector Monitoring.
     *
-    * @param location   newrelic blueprint machine location.
-    * @param hostName   blueprint machine hostname.
     */
-   private void installDataCollector(SshMachineLocation location, String hostName) {
+   private void installDataCollector(SshMachineLocation location) {
       if (!this.getDataCollectorInstalled().getAndSet(true)) {
 
-         /**
-          * Persist the changes to dataCollectorInstalled.
-          */
+         // Persist the changes to dataCollectorInstalled.
          requestPersist();
-         final List<String> cmds = Lists.newArrayList();
-         cmds.add("cd /tmp");
-         cmds.add(BashCommands.sudo("rpm -Uvh newrelic.rpm"));
-         cmds.add(BashCommands.sudo("yum install newrelic-sysmond -y"));
-         int returnvalue = location.execScript("Download and run the NEWRELIC rpm", cmds);
-         this.checkReturnValue(returnvalue, "Install RMP");
-         cmds.clear();
+         ImmutableList.Builder<String> commandsBuilder = ImmutableList.builder();
 
-         cmds.add(BashCommands.sudo(String
-                 .format("sed -i.bk s/license_key=.*/license_key=%s/g /etc/newrelic/" + "nrsysmond.cfg")));
-         returnvalue = location.execScript("Install Data collector licence key", cmds);
-         this.checkReturnValue(returnvalue, "Install Licence key in config file");
-         cmds.clear();
+         commandsBuilder.add("mkdir -p " + INSTALL_DIR)
+                 .add("cd " + INSTALL_DIR);
+         OsDetails os = location.getOsDetails();
+         if (!os.isMac()) {
+            commandsBuilder.add(BashCommands.sudo(BashCommands.installJava(7)))
+                    .add(BashCommands.INSTALL_WGET)
+                    .add(BashCommands.INSTALL_UNZIP);
+         }
+         commandsBuilder.add("wget -O data-collector-1.3-SNAPSHOT.jar \"https://github.com/imperial-modaclouds/modaclouds-data-collectors/releases/download/1.3-Snapshot/data-collector-1.3-SNAPSHOT.jar\"")
+                 .add("wget -O hyperic-sigar-1.6.4.zip \"http://sourceforge.net/projects/sigar/files/sigar/1.6/hyperic-sigar-1.6.4.zip/download?use_mirror=switch\"")
+                 .add("unzip hyperic-sigar-1.6.4.zip");
+         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+         ByteArrayOutputStream stderr = new ByteArrayOutputStream();
 
-         cmds.add(BashCommands.sudo("chmod 646 /etc/newrelic/nrsysmond.cfg"));
-         cmds.add(BashCommands.sudo(String.format("echo \"hostname=%s\" >> /etc/newrelic/nrsysmond.cfg", hostName)));
-         cmds.add(BashCommands.sudo("chmod 640 /etc/newrelic/nrsysmond.cfg"));
-         returnvalue = location.execScript("put hostname and license key in config file", cmds);
-         this.checkReturnValue(returnvalue, "place license key and hostname in nrsysmond.cfg file");
-         cmds.clear();
+         ConfigBag flags = ConfigBag.newInstance()
+                 .configure(SshTool.PROP_OUT_STREAM, stdout)
+                 .configure(SshTool.PROP_ERR_STREAM, stderr);
+         int exitStatus = location.execScript(flags.getAllConfig(), "test PATH", ImmutableList.of("echo $PATH"));
+
+         exitStatus = location.execScript(flags.getAllConfig(), "Download and run the data collector", commandsBuilder.build());
+         checkReturnValue(exitStatus, "Install Data Collector");
       }
    }
 
@@ -163,11 +180,10 @@ public class DataCollectorInstallationPolicy extends AbstractPolicy {
     */
    private void uninstallDataCollector(SshMachineLocation location) {
       if (this.getDataCollectorInstalled().getAndSet(false)) {
-         final List<String> cmds = Lists.newArrayList();
-         cmds.add(BashCommands.sudo("/etc/init.d/newrelic-sysmond stop"));
-         cmds.add(BashCommands.sudo("yum remove newrelic-sysmond -y"));
-         final int retval = location.execScript("uninstall the newrelic", cmds);
-         this.checkReturnValue(retval, "uninstall newrelic");
+         final List<String> commands = Lists.newArrayList();
+         commands.add("rm -rf " + INSTALL_DIR);
+         final int retval = location.execScript("uninstall the data collector", commands);
+         this.checkReturnValue(retval, "uninstall data collector");
       }
    }
 
@@ -176,25 +192,40 @@ public class DataCollectorInstallationPolicy extends AbstractPolicy {
     */
    public final void stopDataCollectorMonitoring() {
       requestPersist();
-      final SshMachineLocation location = (SshMachineLocation) entity.getLocations().iterator().next();
-      final List<String> cmds = Lists.newArrayList();
-      cmds.add(BashCommands.sudo("/etc/init.d/newrelic-sysmond stop"));
-      cmds.add(BashCommands.sudo("chkconfig newrelic-sysmond off"));
-      final int retV = location.execScript("Stop New Relic Process", cmds);
-      this.checkReturnValue(retV, "stop newrelic process");
+      SshMachineLocation location = Locations.findUniqueSshMachineLocation(entity.getLocations()).get();
+      final List<String> commands = Lists.newArrayList();
+      commands.add("cd " + INSTALL_DIR);
+      commands.add(String.format("test -f %s && { kill -9 `cat %s`; rm %s;", PID_FILENAME, PID_FILENAME, PID_FILENAME));
+      final int retV = location.execScript("Stop data collector Process", commands);
+      this.checkReturnValue(retV, "stop data collector process");
    }
 
    /**
     * Start Data collector Monitoring.
     */
-   public final void startDataCollectorMonitoring() {
+   public final void startDataCollectorMonitoring(String ddaHostname, String ddaPort, String kbHostname, String kbPort) {
       requestPersist();
       final SshMachineLocation location = (SshMachineLocation) entity.getLocations().iterator().next();
-      final List<String> cmds = Lists.newArrayList();
-      cmds.add(BashCommands.sudo("/etc/init.d/newrelic-sysmond start"));
-      cmds.add(BashCommands.sudo("chkconfig newrelic-sysmond on"));
-      final int ret = location.execScript("start New Relic process", cmds);
-      this.checkReturnValue(ret, "start newrelic process");
+      final List<String> commands = Lists.newArrayList();
+      commands.add("cd " + INSTALL_DIR);
+      commands.add("nohup java -Djava.library.path=./hyperic-sigar-1.6.4/sigar-bin/lib/ -jar data-collector-1.3-SNAPSHOT.jar kb &");
+      commands.add(String.format("echo $! > %s", PID_FILENAME));
+      ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+      ByteArrayOutputStream stderr = new ByteArrayOutputStream();
+
+      ConfigBag flags = ConfigBag.newInstance()
+              .configure(SshTool.PROP_NO_EXTRA_OUTPUT, true)
+              .configure(SshTool.PROP_OUT_STREAM, stdout)
+              .configure(SshTool.PROP_ERR_STREAM, stderr);
+      Map<String, String> env = MutableMap.of(
+              "MODACLOUDS_MONITORING_DDA_ENDPOINT_IP", ddaHostname,
+              "MODACLOUDS_MONITORING_DDA_ENDPOINT_PORT", ddaPort,
+              "MODACLOUDS_KNOWLEDGEBASE_ENDPOINT_IP", kbHostname,
+              "MODACLOUDS_KNOWLEDGEBASE_ENDPOINT_PORT", kbPort,
+              "MODACLOUDS_KNOWLEDGEBASE_DATASET_PATH", "/modaclouds/kb",
+              "MODACLOUDS_KNOWLEDGEBASE_SYNC_PERIOD", "10");
+      int ret = location.execScript(flags.getAllConfig(), "start data collector process", commands, env);
+      this.checkReturnValue(ret, "start data collector process");
    }
 
 }

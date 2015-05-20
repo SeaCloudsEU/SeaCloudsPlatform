@@ -70,7 +70,7 @@ public class SeaCloudsApp extends AbstractApplication {
    public static final ConfigKey<Boolean> INSTALL_DATA_COLLECTOR = ConfigKeys
            .newBooleanConfigKey("seaclouds.installDataCollector",
                    "Determines whether the Data Collector agent is installed",
-                   Boolean.FALSE);
+                   Boolean.TRUE);
 
    private static final Logger LOG = LoggerFactory.getLogger(SeaCloudsApp.class);
 
@@ -95,10 +95,10 @@ public class SeaCloudsApp extends AbstractApplication {
    /**
     * startDataCollectorMonitoring method.
     */
-   public final void startDataCollectorMonitoring() {
+   public final void startDataCollectorMonitoring(String ddaHostname, String ddaPort, String kbHostname, String kbPort) {
 
       for (final DataCollectorInstallationPolicy policy : this.getDescedentPolicies(DataCollectorInstallationPolicy.class)) {
-         policy.startDataCollectorMonitoring();
+         policy.startDataCollectorMonitoring(ddaHostname, ddaPort, kbHostname, kbPort);
       }
    }
 
@@ -131,11 +131,7 @@ public class SeaCloudsApp extends AbstractApplication {
 
       ((ManagementContextInternal) getManagementContext())
               .addEntitySetListener(new CollectionChangeListener<Entity>() {
-                 /**
-                  * Entity add method.
-                  *
-                  * @param entity blueprint entity.
-                  */
+
                  @Override
                  public void onItemAdded(Entity entity) {
                     if (SeaCloudsApp.this.checkEntity(entity)) {
@@ -144,10 +140,6 @@ public class SeaCloudsApp extends AbstractApplication {
                     }
                  }
 
-                 /**
-                  * Entity remove method.
-                  * @param entity entity.
-                  */
                  @Override
                  public void onItemRemoved(Entity entity) {
                     // no action required

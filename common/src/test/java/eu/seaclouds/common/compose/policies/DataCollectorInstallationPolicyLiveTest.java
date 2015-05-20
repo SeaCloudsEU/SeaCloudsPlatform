@@ -35,7 +35,7 @@ import eu.seaclouds.common.compose.apps.AbstractSeaCloudsAppTest;
 @Test(groups = { "Live" })
 public class DataCollectorInstallationPolicyLiveTest extends AbstractSeaCloudsAppTest {
 
-   public static final String LOCATION_SPEC = "gce-europe-west1-b";
+   public static final String LOCATION_SPEC = "softlayer-london-2";
 
    @Override
    protected String getLocationSpec() {

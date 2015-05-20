@@ -78,16 +78,4 @@ public class SeaCloudsAppIntegrationTest extends AbstractSeaCloudsAppTest {
    public void testMySql() throws Exception {
       runTest("mysql-catalog.yaml", MySqlNode.class, MySqlNode.DATASTORE_URL, false);
    }
-
-   @Test(groups="Integration")
-   public void testConcurrentDeploys() throws Exception {
-      final int NUM_CYCLES = 2;
-      final int NUM_PER_TYPE = 1;
-      runTestConcurrentDeploys(NUM_CYCLES, ImmutableMap.<String, Integer>builder()
-              .put("tomcat-catalog.yaml", NUM_PER_TYPE)
-                      //.put("jboss7-catalog.yaml", NUM_PER_TYPE)
-                      //.put("jboss6-catalog.yaml", NUM_PER_TYPE)
-                      //.put("mysql-catalog.yaml", NUM_PER_TYPE)
-              .build());
-   }
 }
