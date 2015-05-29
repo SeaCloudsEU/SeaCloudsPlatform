@@ -73,6 +73,7 @@
       <groupId>org.apache.brooklyn</groupId>
       <artifactId>brooklyn-rest-client</artifactId>
     </dependency>
+    
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
@@ -158,8 +159,6 @@
             <exclude>**/.settings/**</exclude>
             <exclude>**/*.log</exclude>
             <exclude>**/target/**</exclude>
-            <exclude>**/.gitmodules</exclude>
-            <!-- files not requiring licence -->
             <exclude>ignored/**</exclude>
             <exclude>**/*.md</exclude>
             <exclude>**/*.svg</exclude>
