@@ -158,7 +158,6 @@
             <exclude>**/.settings/**</exclude>
             <exclude>**/*.log</exclude>
             <exclude>**/target/**</exclude>
-
             <exclude>ignored/**</exclude>
             <exclude>**/*.md</exclude>
             <exclude>**/*.svg</exclude>

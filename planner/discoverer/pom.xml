@@ -16,27 +16,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>eu.seaclouds-project</groupId>
-    <artifactId>planner</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
-
     <parent>
         <groupId>eu.seaclouds-project</groupId>
-        <artifactId>platform</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <artifactId>planner</artifactId>
+        <version>0.1.1-SNAPSHOT</version>
     </parent>
-
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>matchmaker</module>
-        <!--module>optimizer</module-->
-        <module>discoverer</module>
-        <module>core</module>
-    </modules>
+    <groupId>eu.seaclouds-project</groupId>
+    <artifactId>discoverer</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
     <dependencies>
         <dependency>
             <groupId>eu.seaclouds-project</groupId>
@@ -90,17 +81,17 @@ limitations under the License.
             <name>Mattia Buccarella</name>
             <url>https://github.com/buccarel</url>
         </developer>
-        <developer>
-            <name>Leonardo Bartoloni</name>
-            <url>https://github.com/pqnet</url>
-        </developer>
-        <developer>
-            <name>Simone Zenzaro</name>
-            <url>https://github.com/szenzaro</url>
-        </developer>
     </developers>
 
     <contributors>
+        <contributor>
+            <name>Leonardo Bartoloni</name>
+            <url>https://github.com/pqnet</url>
+        </contributor>
+        <contributor>
+            <name>Simone Zenzaro</name>
+            <url>https://github.com/szenzaro</url>
+        </contributor>
         <contributor>
             <name>Marc Oriol Hilari</name>
             <url>https://github.com/marcoriol</url>

@@ -1,0 +1,51 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0
+topology_template:
+    node_templates:
+        java_ee_server:
+            type: seaclouds.nodes.Platform
+            attributes:
+                java_support: true
+                java_version: 1.7
+        db:
+            type: seaclouds.nodes.Compute
+            attributes:
+                num_cpus: 6
+                disk_size: 1 TB
+                scaling_vertical: auto
+                availability: 99.8
+        mysql_server:
+            type: seaclouds.nodes.deploy.MySQL
+            attributes:
+                port: some_port
+                db_name: some_name
+                db_user: some_user
+                db_password: some_password
+                version: 5.0
+            artifacts:
+                - db_create: files/db_create.sql
+                  type: tosca.artifacts.File
+
+            requirements:
+                - host: db
+
+
+        db.query:
+            type: seaclouds.nodes.Logic
+            attributes:
+                qos_requirements:
+                    response_time: 2.0 sec
+            requirements:
+                - host: mysql_server
+
+        java_ee_server.operation:
+            type: seaclouds.nodes.Logic
+            requirements:
+                - host: java_ee_server
+                - dbquery:
+                    node: db.query
+                    relationship: java_ee_server.query.db
+
+
+    relationship_templates:
+        java_ee_server.query.db:
+            type: seaclouds.relationships.Uses
