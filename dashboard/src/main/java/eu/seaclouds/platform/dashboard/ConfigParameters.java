@@ -33,29 +33,26 @@ public class ConfigParameters {
 
     // Deployer connection
     public static String DEPLOYER_ENDPOINT;
-    // Credentials
     public static String DEPLOYER_USERNAME;
     public static String DEPLOYER_PASSWORD;
 
     // SLA connection
     public static String SLA_ENDPOINT;
 
+
     static {
-        PLANNER_ENDPOINT = System.getProperty("planner.endpoint");
-        MONITOR_ENDPOINT = System.getProperty("monitor.endpoint");
+        /*
+            Loading config keys from Java system properties
+         */
+        PLANNER_ENDPOINT = System.getenv("PLANNER_ENDPOINT");
+        MONITOR_ENDPOINT = System.getenv("MONITOR_ENDPOINT");
+        SLA_ENDPOINT = System.getenv("SLA_ENDPOINT");
+        DEPLOYER_ENDPOINT = System.getenv("DEPLOYER_ENDPOINT");
+        DEPLOYER_USERNAME = System.getenv("DEPLOYER_USERNAME");
+        DEPLOYER_PASSWORD = System.getenv("DEPLOYER_PASSWORD");
 
-        String deployerAddress = System.getProperty("deployer.host");
-        String deployerHttpPort = System.getProperty("deployer.httpPort");
-        if (deployerAddress != null) {
-            DEPLOYER_ENDPOINT = "http://" + deployerAddress
-                    + ":" + (deployerHttpPort == null ? "8081" : deployerHttpPort);
-
-            DEPLOYER_USERNAME = System.getProperty("deployer.username");
-            DEPLOYER_PASSWORD = System.getProperty("deployer.password");
-        } else {
-            log.error("Property 'deployer.host' not defined");
-        }
-
-        SLA_ENDPOINT = System.getProperty("sla.endpoint");
     }
+
+    // SLA connection
+
 }
