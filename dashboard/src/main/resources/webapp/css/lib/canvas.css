@@ -1,0 +1,51 @@
+
+rect {
+    fill: none;
+    pointer-events: all;
+}
+
+.node {
+    cursor: pointer;
+    fill: #ccc;
+    stroke: black;
+}
+
+.cursor {
+    fill: none;
+    stroke: none;
+    pointer-events: none;
+}
+
+path.link {
+    stroke: #999;
+    stroke-width: 3px;
+}
+
+text {
+    font: 12px sans-serif;
+    pointer-events: none;
+    text-anchor: middle;
+}
+
+path.link.dragline {
+    pointer-events: none;
+}
+
+path.link.hidden {
+    stroke-width: 0;
+}
+
+.type-icon {
+    fill: #777777;
+    font-family: FontAwesome;
+    font-size: 2em;
+}
+
+.type {
+    text-shadow: 0px 0px 1px white;
+    font-weight: bold;
+}
+
+.popover-edit {
+    float: right;
+}
