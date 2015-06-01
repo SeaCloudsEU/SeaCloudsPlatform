@@ -40,8 +40,9 @@
     <testng.version>6.1.1</testng.version>
     <brooklyn.version>0.7.0-SNAPSHOT</brooklyn.version>
     <jetty.version>9.2.4.v20141103</jetty.version>
+    <dropwizard.version>0.8.1</dropwizard.version>
     <junit.version>4.11</junit.version>
-    <slf4j.version>1.6.6</slf4j.version>  <!-- used for java.util.logging jul-to-slf4j interception -->
+    <slf4j.version>1.7.12</slf4j.version>
   </properties>
 
   <repositories>
@@ -219,6 +220,11 @@
         <groupId>org.javatuples</groupId>
         <artifactId>javatuples</artifactId>
         <version>${javatuples.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
