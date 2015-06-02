@@ -3,8 +3,9 @@ jdk:
   - oraclejdk8
 before_install: "git clone -b travis `git config --get remote.origin.url` target/travis"
 after_success:
-  - mvn clean cobertura:cobertura coveralls:report
   - .buildscript/deploy_snapshot.sh
+  - mvn clean cobertura:cobertura coveralls:report
+
 sudo: false
 
 branches:
