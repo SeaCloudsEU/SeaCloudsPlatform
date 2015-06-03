@@ -1,0 +1,15 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0
+
+node_types:
+    seaclouds.nodes.Compute.hp_cloud_services.2xl:
+        derived_from: seaclouds.nodes.Compute
+        attributes:
+            location: 'seaclouds.types.Locations.NV.US.LasVegas'
+            load_balancing: false
+            scaling_horizontal: 'no'
+            storage_file_system: 'ext4'
+            disk_type: 'sata'
+            local_storage: 470 GB
+            mem_size: 30 GB
+            num_cpus: 8
+            availability: 99.5

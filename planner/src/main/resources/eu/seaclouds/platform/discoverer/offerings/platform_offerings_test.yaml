@@ -1,0 +1,39 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0
+
+node_types:
+        java_ee_server_match:
+            derived_from: seaclouds.nodes.Platform
+            attributes:
+                java_support: true
+                java_version: 1.7
+        db_match:
+            derived_from: seaclouds.nodes.Compute
+            attributes:
+                num_cpus: 6
+                disk_size: 1 TB
+                scaling_vertical: auto
+                availability: 99.8    
+        java_ee_server_match2:
+            derived_from: seaclouds.nodes.Platform
+            attributes:
+                java_support: true
+                java_version: 1.7
+        db_match2:
+            derived_from: seaclouds.nodes.Compute
+            attributes:
+                num_cpus: 6
+                disk_size: 1 TB
+                scaling_vertical: auto
+                availability: 99.8    
+        java_ee_server_match3:
+            derived_from: seaclouds.nodes.Platform
+            attributes:
+                java_support: true
+                java_version: 1.7
+        db_match3:
+            derived_from: seaclouds.nodes.Compute
+            attributes:
+                num_cpus: 6
+                disk_size: 1 TB
+                scaling_vertical: auto
+                availability: 99.8    
