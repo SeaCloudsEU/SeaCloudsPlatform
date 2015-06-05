@@ -109,6 +109,11 @@ public class DeployerResource {
                             .path("/seaclouds/agreements")
                             .build();
 
+                    slaResponse = new HttpPostRequestBuilder()
+                            .host(ConfigParameters.SLA_ENDPOINT)
+                            .path("/seaclouds/commands/rulesready")
+                            .build();
+
                 }else{
                     Response.status(Response.Status.NOT_ACCEPTABLE).build();
                 }
