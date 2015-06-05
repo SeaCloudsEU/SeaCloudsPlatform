@@ -16,9 +16,7 @@ If you want to help us with the development of this project please read carefull
 
 Getting Started
 -------------------
-* Installation guide: TODO
-* Quickstart: TODO
-
+* Installation guide: please follow the instruction to know [how to deploy SeaClouds](usage/installer/README.md)
 
 ##License##
 Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).

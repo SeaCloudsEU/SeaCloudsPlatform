@@ -1,0 +1,28 @@
+name: MODAClouds server localhost
+location: localhost
+
+services:
+- serviceType: brooklyn.entity.basic.SameServerEntity
+  name: server
+  brooklyn.children:
+  - serviceType: eu.seaclouds.modaclouds.kb.MODACloudsKnowledgeBase
+    name: MODAclouds Knowledge Base
+    id: kb
+
+  - serviceType: eu.seaclouds.modaclouds.dda.MODACloudsDeterministicDataAnalyzer
+    name: MODAclouds Deterministic Data Analyzer
+    id: dda
+    launch.latch: $brooklyn:component("kb").attributeWhenReady("service.isUp")
+
+  - serviceType: eu.seaclouds.modaclouds.manager.MODACloudsMonitoringManager
+    name: MODAclouds Monitoring Manager
+    id: manager
+
+    brooklyn.config:
+      modaclouds.dda.ip: $brooklyn:component("dda").attributeWhenReady("host.address")
+      modaclouds.dda.port: $brooklyn:component("dda").attributeWhenReady("modaclouds.dda.port")
+      modaclouds.kb.ip: $brooklyn:component("kb").attributeWhenReady("host.address")
+      modaclouds.kb.port: $brooklyn:component("kb").attributeWhenReady("modaclouds.kb.port")
+      modaclouds.kb.dataset.path: $brooklyn:component("kb").attributeWhenReady("modaclouds.kb.path")
+
+    launch.latch: $brooklyn:component("dda").attributeWhenReady("service.isUp")
