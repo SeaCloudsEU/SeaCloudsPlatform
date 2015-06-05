@@ -19,6 +19,20 @@ Getting Started
 * Installation guide: TODO
 * Quickstart: TODO
 
+How to release it!
+-------------------
+In order to release a new version:
+
+1. create a new `release` branch out of `master` branch
+2. update the maven version inside `release/new-branch` pom.xml:
+
+    $ find . -iname pom.xml | xargs sed -i '' "s;<version>0.1.0-SNAPSHOT</version>;<version>0.1.0-M19</version>;g"
+
+3. mvn clean install
+
+If everything is ok, finally push it to Sonatype OSSRH:
+
+4. mvn deploy -Prelease -DskipTests
 
 ##License##
 Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
