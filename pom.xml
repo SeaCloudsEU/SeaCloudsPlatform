@@ -28,6 +28,7 @@
         <module>deployer</module>
         <module>planner</module>
         <module>dashboard</module>
+        <module>usage/installer</module>
     </modules>
     <packaging>pom</packaging>
     <name>SeaClouds Platform</name>
@@ -43,6 +44,7 @@
         <dropwizard.version>0.8.1</dropwizard.version>
         <junit.version>4.11</junit.version>
         <slf4j.version>1.7.12</slf4j.version>
+        <snakeyaml.version>1.11</snakeyaml.version>
     </properties>
 
     <repositories>
@@ -112,7 +114,7 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.6</version>
+            <version>${snakeyaml.version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -174,6 +176,10 @@
                         <exclude>**/*.json</exclude>
                         <exclude>**/*.yml</exclude>
                         <exclude>**/*.yaml</exclude>
+                        <exclude>**/*.sh</exclude>
+                        <exclude>**/Vagrantfile</exclude>
+                        <exclude>**/seaclouds_id_rsa</exclude>
+                        <exclude>**/seaclouds_id_rsa.pub</exclude>
                     </excludes>
                 </configuration>
             </plugin>

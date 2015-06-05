@@ -7,5 +7,7 @@ target/
 .settings/
 /bin/
 *.zip
-*.log
+**/*.log
 .java-version
+.vagrant
+**/nohup.out
