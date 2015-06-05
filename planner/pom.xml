@@ -63,6 +63,7 @@ limitations under the License.
 				<version>2.6</version>
 			</plugin>
 			
+			<!-- PLUGIN REMOVED: we now inherit the configuration from the parent
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -72,6 +73,8 @@ limitations under the License.
                     <target>1.8</target>
                 </configuration>
             </plugin>
+			-->
+			
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
