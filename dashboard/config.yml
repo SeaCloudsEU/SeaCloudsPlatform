@@ -5,3 +5,14 @@ server:
   adminConnectors:
   - type: http
     port: 8001
+deployer:
+  host: ${DEPLOYER_HOST}
+  port: ${DEPLOYER_PORT}
+  user: ${DEPLOYER_USER}
+  password: ${DEPLOYER_PASSWORD}
+monitor:
+  host: ${MONITOR_HOST}
+  port: ${MONITOR_PORT}
+sla:
+  host: ${SLA_HOST}
+  port: ${SLA_PORT}

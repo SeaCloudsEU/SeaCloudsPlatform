@@ -23,6 +23,8 @@ import eu.seaclouds.platform.dashboard.resources.PlannerResource;
 import eu.seaclouds.platform.dashboard.resources.SlaResource;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
+import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.server.DefaultServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -34,16 +36,25 @@ public class DashboardApplication extends Application<DashboardConfiguration> {
 
     @Override
     public void initialize(Bootstrap<DashboardConfiguration> bootstrap) {
+        // Setting configuration from env variables
+        bootstrap.setConfigurationSourceProvider(
+                new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(),
+                        new EnvironmentVariableSubstitutor(false)
+                )
+        );
+
+        // Routing static assets files
         bootstrap.addBundle(new AssetsBundle("/webapp", "/", "index.html"));
+        
     }
 
     @Override
-    public void run(DashboardConfiguration dashboardConfiguration, Environment environment) throws Exception {
-        ((DefaultServerFactory) dashboardConfiguration.getServerFactory()).setJerseyRootPath("/api/*");
+    public void run(DashboardConfiguration configuration, Environment environment) throws Exception {
+        ((DefaultServerFactory) configuration.getServerFactory()).setJerseyRootPath("/api/*");
 
-        environment.jersey().register(new DeployerResource());
-        environment.jersey().register(new MonitorResource());
+        environment.jersey().register(new DeployerResource(configuration.getDeployerFactory(), configuration.getMonitorFactory(), configuration.getSlaFactory()));
+        environment.jersey().register(new MonitorResource(configuration.getMonitorFactory(), configuration.getDeployerFactory()));
         environment.jersey().register(new PlannerResource());
-        environment.jersey().register(new SlaResource());
+        environment.jersey().register(new SlaResource(configuration.getSlaFactory()));
     }
 }

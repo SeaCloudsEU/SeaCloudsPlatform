@@ -22,23 +22,45 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import eu.seaclouds.platform.dashboard.ConfigParameters;
+import eu.seaclouds.platform.dashboard.config.DeployerFactory;
+import eu.seaclouds.platform.dashboard.config.MonitorFactory;
+import eu.seaclouds.platform.dashboard.config.SlaFactory;
 import eu.seaclouds.platform.dashboard.http.HttpDeleteRequestBuilder;
 import eu.seaclouds.platform.dashboard.http.HttpGetRequestBuilder;
 import eu.seaclouds.platform.dashboard.http.HttpPostRequestBuilder;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/deployer")
 public class DeployerResource {
+    static Logger log = LoggerFactory.getLogger(DeployerResource.class);
 
-
+    private final DeployerFactory deployer;
+    private final MonitorFactory monitor;
+    private final SlaFactory sla;
+    
+    public DeployerResource(){
+        this(new DeployerFactory(), new MonitorFactory(), new SlaFactory());
+        log.warn("Using default configuration for DeployerResource");
+    }
+    
+    public DeployerResource(DeployerFactory deployerFactory, MonitorFactory monitorFactory, SlaFactory slaFactory) {
+        this.deployer = deployerFactory;
+        this.monitor = monitorFactory;
+        this.sla = slaFactory;
+    }
 
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
@@ -50,8 +72,8 @@ public class DeployerResource {
         }
         try {
             String deployerResponse = new HttpDeleteRequestBuilder()
-                    .host(ConfigParameters.DEPLOYER_ENDPOINT)
-                    .setCredentials(ConfigParameters.DEPLOYER_USERNAME, ConfigParameters.DEPLOYER_PASSWORD)
+                    .host(deployer.getEndpoint())
+                    .setCredentials(deployer.getUser(), deployer.getPassword())
                     .path("/v1/applications/" + id)
                     .build();
 
@@ -84,20 +106,20 @@ public class DeployerResource {
                 if(dam != null && monitorDam != null && monitoringRules != null && agreements != null) {
                     deployerResponse = new HttpPostRequestBuilder()
                             .entity(new StringEntity(dam))
-                            .host(ConfigParameters.DEPLOYER_ENDPOINT)
-                            .setCredentials(ConfigParameters.DEPLOYER_USERNAME, ConfigParameters.DEPLOYER_PASSWORD)
+                            .host(deployer.getEndpoint())
+                            .setCredentials(deployer.getUser(), deployer.getPassword())
                             .path("/v1/applications")
                             .build();
 
                     monitorResponseDam = new HttpPostRequestBuilder()
                             .entity(new StringEntity(monitorDam, ContentType.APPLICATION_JSON))
-                            .host(ConfigParameters.MONITOR_ENDPOINT)
+                            .host(monitor.getEndpoint())
                             .path("/v1/model/resources")
                             .build();
 
                     monitorResponseRules = new HttpPostRequestBuilder()
                             .entity(new StringEntity(monitoringRules, ContentType.APPLICATION_XML))
-                            .host(ConfigParameters.MONITOR_ENDPOINT)
+                            .host(monitor.getEndpoint())
                             .path("/v1/monitoring-rules")
                             .build();
 
@@ -105,12 +127,12 @@ public class DeployerResource {
                             .multipartPostRequest(true)
                             .addParam("sla", agreements)
                             .addParam("rules", monitoringRules)
-                            .host(ConfigParameters.SLA_ENDPOINT)
+                            .host(sla.getEndpoint())
                             .path("/seaclouds/agreements")
                             .build();
 
                     slaResponse = new HttpPostRequestBuilder()
-                            .host(ConfigParameters.SLA_ENDPOINT)
+                            .host(sla.getEndpoint())
                             .path("/seaclouds/commands/rulesready")
                             .build();
 
@@ -146,8 +168,8 @@ public class DeployerResource {
     public Response listApplications() {
         try {
             String deployerResponse = new HttpGetRequestBuilder()
-                    .host(ConfigParameters.DEPLOYER_ENDPOINT)
-                    .setCredentials(ConfigParameters.DEPLOYER_USERNAME, ConfigParameters.DEPLOYER_PASSWORD)
+                    .host(deployer.getEndpoint())
+                    .setCredentials(deployer.getUser(), deployer.getPassword())
                     .path("/v1/applications/tree")
                     .build();
 
@@ -157,10 +179,10 @@ public class DeployerResource {
             for(JsonElement application  : applicationList){
                 for(JsonElement entity : application.getAsJsonObject().getAsJsonArray("children")){
                     deployerResponse = new HttpGetRequestBuilder()
-                            .host(ConfigParameters.DEPLOYER_ENDPOINT)
+                            .host(deployer.getEndpoint())
                             .path("/v1/applications/" + application.getAsJsonObject().get("id").getAsString() +
                                     "/entities/" + entity.getAsJsonObject().get("id").getAsString() + "/locations")
-                            .setCredentials(ConfigParameters.DEPLOYER_USERNAME, ConfigParameters.DEPLOYER_PASSWORD)
+                            .setCredentials(deployer.getUser(), deployer.getPassword())
                             .build();
                     entity.getAsJsonObject().add("locations", new JsonParser().parse(deployerResponse));
                 }

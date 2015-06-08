@@ -22,20 +22,40 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import eu.seaclouds.platform.dashboard.ConfigParameters;
+import eu.seaclouds.platform.dashboard.config.DeployerFactory;
+import eu.seaclouds.platform.dashboard.config.MonitorFactory;
 import eu.seaclouds.platform.dashboard.http.HttpDeleteRequestBuilder;
 import eu.seaclouds.platform.dashboard.http.HttpGetRequestBuilder;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Iterator;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/monitor")
 @Produces(MediaType.APPLICATION_JSON)
 public class MonitorResource {
+    static Logger log = LoggerFactory.getLogger(MonitorResource.class);
+
+    private final MonitorFactory monitor;
+    private final DeployerFactory deployer;
+    
+    public MonitorResource(){
+        this(new MonitorFactory(), new DeployerFactory());
+        log.warn("Using default configuration for MonitorResource");
+    }
+    
+    public MonitorResource(MonitorFactory monitorFactory, DeployerFactory deployerFactory){
+        this.monitor = monitorFactory;
+        this.deployer = deployerFactory;
+    }
 
     @GET
     @Path("metrics/value")
@@ -47,8 +67,8 @@ public class MonitorResource {
 
             try {
                 String monitorResponse = new HttpGetRequestBuilder()
-                        .host(ConfigParameters.DEPLOYER_ENDPOINT)
-                        .setCredentials(ConfigParameters.DEPLOYER_USERNAME, ConfigParameters.DEPLOYER_PASSWORD)
+                        .host(deployer.getEndpoint())
+                        .setCredentials(deployer.getUser(), deployer.getPassword())
                         .path("/v1/applications/" + applicationId + "/entities/" + entityId + "/sensors/" + metricId)
                         .addParam("raw", "true")
                         .build();
@@ -77,8 +97,8 @@ public class MonitorResource {
 
     private JsonArray retrieveMetrics(String applicationId) throws IOException, URISyntaxException {
         String rawEntityList = new HttpGetRequestBuilder()
-                .host(ConfigParameters.DEPLOYER_ENDPOINT)
-                .setCredentials(ConfigParameters.DEPLOYER_USERNAME, ConfigParameters.DEPLOYER_PASSWORD)
+                .host(deployer.getEndpoint())
+                .setCredentials(deployer.getUser(), deployer.getPassword())
                 .path("/v1/applications/" + applicationId + "/entities")
                 .build();
         
@@ -103,8 +123,8 @@ public class MonitorResource {
     
     private JsonArray retrieveMetrics(String applicationId, String entityId) throws IOException, URISyntaxException {
         String monitorResponse = new HttpGetRequestBuilder()
-                .host(ConfigParameters.DEPLOYER_ENDPOINT)
-                .setCredentials(ConfigParameters.DEPLOYER_USERNAME, ConfigParameters.DEPLOYER_PASSWORD)
+                .host(deployer.getEndpoint())
+                .setCredentials(deployer.getUser(), deployer.getPassword())
                 .path("/v1/applications/" + applicationId + "/entities/" + entityId + "/sensors")
                 .build();
 
@@ -147,7 +167,7 @@ public class MonitorResource {
 
         try {
             String monitorResponse = new HttpGetRequestBuilder()
-                    .host(ConfigParameters.MONITOR_ENDPOINT)
+                    .host(monitor.getEndpoint())
                     .path("/v1/monitoring-rules")
                     .build();
             //TODO: Dirty hack in order to output JSON
@@ -166,7 +186,7 @@ public class MonitorResource {
         if (id != null) {
             try {
                 String monitorResponse = new HttpDeleteRequestBuilder()
-                        .host(ConfigParameters.MONITOR_ENDPOINT)
+                        .host(monitor.getEndpoint())
                         .path("/v1/monitoring-rules/"+id)
                         .build();
                 return Response.ok().build();
@@ -188,7 +208,7 @@ public class MonitorResource {
         if (id != null) {
             try {
                 String monitorResponse = new HttpDeleteRequestBuilder()
-                        .host(ConfigParameters.MONITOR_ENDPOINT)
+                        .host(monitor.getEndpoint())
                         .path("/v1/model/resources/"+id)
                         .build();
                 return Response.ok().build();

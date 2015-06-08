@@ -17,8 +17,55 @@
 
 package eu.seaclouds.platform.dashboard;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import eu.seaclouds.platform.dashboard.config.DeployerFactory;
+import eu.seaclouds.platform.dashboard.config.MonitorFactory;
+import eu.seaclouds.platform.dashboard.config.SlaFactory;
 import io.dropwizard.Configuration;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 public class DashboardConfiguration extends Configuration {
     
+    @Valid
+    @NotNull
+    private DeployerFactory deployer = new DeployerFactory();
+    
+    @Valid
+    @NotNull
+    private MonitorFactory monitor = new MonitorFactory();
+    
+    @Valid
+    @NotNull
+    private SlaFactory sla = new SlaFactory();
+
+    @JsonProperty("deployer")
+    public DeployerFactory getDeployerFactory() {
+        return deployer;
+    }
+
+    @JsonProperty("deployer")
+    public void setDeployerFactory(DeployerFactory factory) {
+        this.deployer = factory;
+    }
+
+    @JsonProperty("monitor")
+    public MonitorFactory getMonitorFactory() {
+        return monitor;
+    }
+
+    @JsonProperty("monitor")
+    public void setMonitorConfigFactory(MonitorFactory factory) {
+        this.monitor = factory;
+    }
+
+    @JsonProperty("sla")
+    public SlaFactory getSlaFactory() {
+        return sla;
+    }
+
+    @JsonProperty("sla")
+    public void setSlaFactory(SlaFactory factory) {
+        this.sla = factory;
+    }
 }
