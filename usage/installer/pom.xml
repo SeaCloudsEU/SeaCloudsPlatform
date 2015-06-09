@@ -24,6 +24,7 @@ limitations under the License.
         <groupId>eu.seaclouds-project</groupId>
         <artifactId>platform</artifactId>
         <version>0.1.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>installer</artifactId>
     <packaging>jar</packaging>
@@ -53,14 +54,12 @@ limitations under the License.
                  you can cherry pick selected ones instead (for a smaller build) -->
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-all</artifactId>
-            <version>${brooklyn.version}</version>
         </dependency>
 
         <dependency>
             <!-- includes testng and useful logging for tests -->
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-test-support</artifactId>
-            <version>${brooklyn.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -68,7 +67,6 @@ limitations under the License.
             <!-- this gives us flexible and easy-to-use logging; just edit logback-custom.xml! -->
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-logback-xml</artifactId>
-            <version>${brooklyn.version}</version>
             <!-- optional so that this project has logging; dependencies may redeclare or supply their own;
                  provided so that it isn't put into the assembly (as it supplies its own explicit logback.xml);
                  see Logging in the Brooklyn website/userguide for more info -->
@@ -79,7 +77,6 @@ limitations under the License.
         <dependency>
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-core</artifactId>
-            <version>${brooklyn.version}</version>
             <scope>test</scope>
             <classifier>tests</classifier>
         </dependency>
@@ -87,7 +84,6 @@ limitations under the License.
         <dependency>
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-software-base</artifactId>
-            <version>${brooklyn.version}</version>
             <scope>test</scope>
             <classifier>tests</classifier>
         </dependency>
@@ -95,7 +91,6 @@ limitations under the License.
         <dependency>
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-launcher</artifactId>
-            <version>${brooklyn.version}</version>
             <scope>test</scope>
             <classifier>tests</classifier>
         </dependency>
