@@ -1,0 +1,16 @@
+name: SeaClouds Platform
+location: localhost
+services:
+- type: eu.seaclouds.common.entities.dashboard.SeaCloudsDashboard
+  name: Dashboard
+  brooklyn.config: 
+    port: 8000
+    adminPort: 8001
+    deployerHost: localhost
+    deployerPort: 8081
+    deployerUser: admin
+    deployerPassword: p4ssw0rd
+    monitorHost: localhost
+    monitorPort: 8170
+    slaHost: localhost
+    slaPort: 8080
