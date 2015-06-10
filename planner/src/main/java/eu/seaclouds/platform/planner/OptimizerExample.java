@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package seaclouds.planner;
+package eu.seaclouds.platform.planner;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;

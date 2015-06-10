@@ -1,20 +1,20 @@
-/**
- * Copyright 2014 SeaClouds
- * Contact: SeaClouds
+/*
+ * Copyright 2015 Universita' di Pisa
  *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-package seaclouds.discoverer;
+
+package eu.seaclouds.platform.discoverer;
 
 import seaclouds.utils.toscamodel.IToscaEnvironment;
 import seaclouds.utils.toscamodel.Tosca;
@@ -30,13 +30,20 @@ import java.util.zip.ZipInputStream;
 public class Discoverer {
     private final IToscaEnvironment offerings;
     private static final Discoverer instance = new Discoverer();
-    public static Discoverer instance() {
+	
+	
+ 
+	/* singleton */
+	public static Discoverer instance() {
         return instance;
     }
 
+	
+	
+	/* c.tor */
     private Discoverer() {
         offerings = Tosca.newEnvironment();
-        try {
+        /* try {
             //configure discoverer
             InputStream stream;
             CodeSource src = this.getClass().getProtectionDomain().getCodeSource();
@@ -53,17 +60,27 @@ public class Discoverer {
                 }
 
             }
-            //stream = this.getClass().getResourceAsStream("offerings/amazon_c1_xlarge.yaml");
-            //offerings.readFile(new InputStreamReader(stream));
-            //stream = this.getClass().getResourceAsStream("offerings/platform_offerings_test.yaml");
-            //offerings.readFile(new InputStreamReader(stream));
-            //stream = this.getClass().getResourceAsStream("input/hp_cloud_serv.yaml");
-            //offerings.readFile(new InputStreamReader(stream), true);
         } catch (IOException e) {
 
-        }
+        } */
+
+		InputStream stream;
+		String offer1 = "offerings/amazon_c1_xlarge.yaml";
+		String offer2 = "offerings/platform_offerings_test.yaml";
+		
+		stream = this.getClass().getResourceAsStream(offer1);
+		if(stream == null)
+			throw new NullPointerException("Cannot find resource file " + offer1);
+        offerings.readFile(new InputStreamReader(stream));
+		
+		stream = this.getClass().getResourceAsStream(offer2);
+		if(stream == null)
+			throw new NullPointerException("Cannot find resource file " + offer2);
+        offerings.readFile(new InputStreamReader(stream));
     }
 
+	
+	
     public IToscaEnvironment getOfferings(){
         return  offerings;
     }

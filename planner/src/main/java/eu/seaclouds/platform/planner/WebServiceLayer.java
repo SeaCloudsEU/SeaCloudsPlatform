@@ -14,9 +14,11 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package seaclouds.planner;
 
-import seaclouds.utils.toscamodel.*;			// parser
+package eu.seaclouds.platform.planner;
+
+/* old leo's parser */
+import seaclouds.utils.toscamodel.*;
 
 /* servlet */
 import java.io.*;
@@ -30,6 +32,12 @@ import org.json.simple.*;
 /* Map */
 import java.util.*;
 
+
+
+/*
+ * Created by Mattia Buccarella (UPI).
+ *
+ */
 
 public class WebServiceLayer extends HttpServlet {
     /* constants */
@@ -83,10 +91,15 @@ public class WebServiceLayer extends HttpServlet {
      **/
 
     private static String iteToString(IToscaEnvironment ite) {
-        StringWriter sw = new StringWriter();
-        ite.writeFile(sw);
-        sw.flush();
-        return sw.toString();
+		try {
+			StringWriter sw = new StringWriter();
+			ite.writeFile(sw);
+			sw.flush();
+			return sw.toString();
+		} catch(NoSuchMethodError eee) {
+			eee.printStackTrace();
+			return eee.getMessage();
+		}
     }
 
 
@@ -137,9 +150,6 @@ public class WebServiceLayer extends HttpServlet {
 
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-
-        // NOTE: check if explicit multithreading needed
-
 		/* stats */
         numberOfPosts = numberOfPosts + 1;
 
@@ -164,15 +174,14 @@ public class WebServiceLayer extends HttpServlet {
         IToscaEnvironment aam = Tosca.newEnvironment();
         aam.readFile(sr);
 
+		/* moving up to the core layer */
         Planner p = new Planner();
-
         List<IToscaEnvironment> optOffers = p.plan(aam);
 
 		/* wrapping the result in a json array */
         JSONObject responseData = new JSONObject();
         int offerIndex = 0;
         for(IToscaEnvironment currentOffer : optOffers) {
-            INamedEntity ee = (INamedEntity) currentOffer;
             responseData.put("offer_" + offerIndex, iteToString(currentOffer));
             offerIndex++;
         }

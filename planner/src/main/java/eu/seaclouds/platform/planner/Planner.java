@@ -14,28 +14,29 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package seaclouds.planner;
+package eu.seaclouds.platform.planner;
 
-import seaclouds.utils.toscamodel.*;
+import seaclouds.utils.toscamodel.*; // old leo's parser
+import eu.seaclouds.platform.matchmaker.*;
+import eu.seaclouds.platform.discoverer.*;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 public class Planner {
     final private OptimizerExample optimizer = new OptimizerExample();
-    final private IToscaEnvironment discoverer = Tosca.newEnvironment();
+	final private Discoverer discoverer = Discoverer.instance();
     final private Matchmaker matchmaker = new Matchmaker(discoverer);
-
+	
+	
+	
+	/* c.tor */
     public Planner() {
-
     }
-
+	
+	
+	
     List<IToscaEnvironment> plan(IToscaEnvironment aam) {
-        InputStream stream = this.getClass().getResourceAsStream("../../../../aam.yaml");
-        aam.readFile(new InputStreamReader(stream));
-
         Map<String, List<INodeType>> matches = matchmaker.Match(aam);
         return optimizer.optimize(aam, matches);
     }
