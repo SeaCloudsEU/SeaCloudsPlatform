@@ -6,6 +6,8 @@ Own Nodes (BYON) and to all the IaaS provider supported by [Apache jclouds](http
 
 # Deploy SeaClouds platform
 
+Make sure you have [Apache Maven](https://maven.apache.org/) v.3.5.5+
+
 First of all you need to build the SeaCloudsPlatform project with:
 
 ```bash
