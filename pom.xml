@@ -180,6 +180,7 @@
                         <exclude>**/Vagrantfile</exclude>
                         <exclude>**/seaclouds_id_rsa</exclude>
                         <exclude>**/seaclouds_id_rsa.pub</exclude>
+                        <exclude>**/*.yml.template</exclude>
                     </excludes>
                 </configuration>
             </plugin>
