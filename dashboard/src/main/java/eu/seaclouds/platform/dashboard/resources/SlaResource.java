@@ -18,22 +18,37 @@
 package eu.seaclouds.platform.dashboard.resources;
 
 
-import eu.seaclouds.platform.dashboard.ConfigParameters;
+import eu.seaclouds.platform.dashboard.config.SlaFactory;
 import eu.seaclouds.platform.dashboard.http.HttpGetRequestBuilder;
 import eu.seaclouds.platform.dashboard.http.HttpPostRequestBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/sla")
 @Produces(MediaType.APPLICATION_JSON)
 public class SlaResource {
     static Logger log = LoggerFactory.getLogger(SlaResource.class);
+    
+    private final SlaFactory sla;
+    
+    public SlaResource(){
+        this(new SlaFactory());
+        log.warn("Using default configuration for SlaResource");
+    }
+
+    public SlaResource(SlaFactory slaFactory){
+        this.sla = slaFactory;
+    }
 
     @POST
     @Path("agreements")
@@ -47,7 +62,7 @@ public class SlaResource {
                         .multipartPostRequest(true)
                         .addParam("sla", agreements)
                         .addParam("rules", rules)
-                        .host(ConfigParameters.SLA_ENDPOINT)
+                        .host(sla.getEndpoint())
                         .path("/seaclouds/agreements")
                         .build();
 
@@ -67,7 +82,7 @@ public class SlaResource {
         try {
             //TODO: FILTER BY PARAMS
             String slaResponse = new HttpGetRequestBuilder()
-                    .host(ConfigParameters.SLA_ENDPOINT)
+                    .host(sla.getEndpoint())
                     .path("/agreements")
                     .addHeader("Content-Type", "application/json")
                     .addHeader("Accept", "application/json")

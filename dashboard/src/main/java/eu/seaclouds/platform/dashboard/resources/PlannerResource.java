@@ -28,8 +28,7 @@ import javax.ws.rs.core.Response;
 @Path("/planner")
 @Produces(MediaType.APPLICATION_JSON)
 public class PlannerResource {
-
-
+    
     @POST
     @Path("matchmake")
     public Response matchmake(@QueryParam("yaml") String yaml) {
