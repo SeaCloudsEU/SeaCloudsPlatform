@@ -17,18 +17,21 @@ services:
     brooklyn.webconsole.security.users=admin
     brooklyn.webconsole.security.user.admin.password=p4ssw0rd
 
-- serviceType: brooklyn.entity.webapp.jetty.Jetty6Server
+- serviceType: eu.seaclouds.dashboard.SeacloudsDashboard
   name: SeaClouds Dashboard
   id: dashboard
-  httpPort: 8000
-  war: https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=dashboard&v=LATEST&e=war
-  launch.latch: $brooklyn:component("deployer").attributeWhenReady("service.isUp")
-  brooklyn.config:
-    java.sysprops:
-      deployer.host: $brooklyn:component("deployer").attributeWhenReady("host.address")
-      deployer.httpPort: $brooklyn:component("deployer").attributeWhenReady("brooklynnode.webconsole.httpPort")
-      deployer.username: $brooklyn:component("deployer").config("brooklynnode.managementUser")
-      deployer.password: $brooklyn:component("deployer").config("brooklynnode.managementPassword")
+  brooklyn.config: 
+    port: 8000
+    adminPort: 8001
+    deployerHost: $brooklyn:component("deployer").attributeWhenReady("host.address")
+    deployerPort: $brooklyn:component("deployer").attributeWhenReady("brooklynnode.webconsole.httpPort")
+    deployerUser: $brooklyn:component("deployer").config("brooklynnode.managementUser")
+    deployerPassword: $brooklyn:component("deployer").config("brooklynnode.managementPassword")
+    monitorHost: $brooklyn:component("monitoring").component("child","manager").attributeWhenReady("host.address")
+    monitorPort: $brooklyn:component("monitoring").component("child","manager").attributeWhenReady("modaclouds.mm.port")
+    slaHost: $brooklyn:component("sla-core").attributeWhenReady("host.address")
+    slaPort: $brooklyn:component("sla-core").attributeWhenReady("http.port")
+    
 - serviceType: brooklyn.entity.basic.SameServerEntity
   name: SeaClouds SLA
   brooklyn.children:
