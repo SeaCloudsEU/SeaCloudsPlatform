@@ -14,22 +14,31 @@
  * limitations under the License.
  */
 
-package seaclouds.matchmaker;
+package eu.seaclouds.platform.matchmaker;
 
-import seaclouds.utils.toscamodel.*;
-import seaclouds.utils.toscamodel.impl.NodeTemplate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import java.util.*;
+import seaclouds.utils.toscamodel.INamedEntity;
+import seaclouds.utils.toscamodel.INodeTemplate;
+import seaclouds.utils.toscamodel.INodeType;
+import seaclouds.utils.toscamodel.IProperty;
+import seaclouds.utils.toscamodel.IToscaEnvironment;
+import seaclouds.utils.toscamodel.IValue;
 
 /**
  * Created by pq on 17/04/2015.
  */
 public class Matchmaker {
 	final IToscaEnvironment offeringEnvironment; //would initialize with a connection to the discoverer database
-	Matchmaker(IToscaEnvironment offerings){
+
+    public Matchmaker(IToscaEnvironment offerings){
 		offeringEnvironment = offerings;
 	}
-	public Map<String, List<INodeType>> Match(IToscaEnvironment aam) {
+
+    public Map<String, List<INodeType>> Match(IToscaEnvironment aam) {
 		//workflow to read a Tosca file with AAM and compare them with cloud offerings from discoverer
 		INodeType snc = (INodeType) aam.getNamedEntity("seaclouds.nodes.Compute");
 		INodeType snp = (INodeType) aam.getNamedEntity("seaclouds.nodes.Platform");
