@@ -14,10 +14,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package seaclouds.discoverer;
-
-import seaclouds.utils.toscamodel.IToscaEnvironment;
-import seaclouds.utils.toscamodel.Tosca;
+package eu.seaclouds.platform.planner.discoverer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +23,9 @@ import java.net.URL;
 import java.security.CodeSource;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import seaclouds.utils.toscamodel.IToscaEnvironment;
+import seaclouds.utils.toscamodel.Tosca;
 
 public class Discoverer {
     private final IToscaEnvironment offerings;
@@ -48,7 +48,7 @@ public class Discoverer {
                     String name = e.getName();
                     if (name.startsWith("seaclouds/planner/offerings/") && name.endsWith(".yaml")){
                         stream = this.getClass().getResourceAsStream(name);
-                        offerings.readFile(new InputStreamReader(stream));
+                        offerings.readFile(new InputStreamReader(stream), true);
                     }
                 }
 

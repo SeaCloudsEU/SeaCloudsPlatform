@@ -14,21 +14,31 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package seaclouds.planner;
+package eu.seaclouds.platform.planner.core;
 
-import seaclouds.utils.toscamodel.*;			// parser
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import seaclouds.utils.toscamodel.INamedEntity;
+import seaclouds.utils.toscamodel.IToscaEnvironment;
+import seaclouds.utils.toscamodel.Tosca;
 
 /* servlet */
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
 /* json parser */
-import org.json.simple.parser.*;
-import org.json.simple.*;
-
 /* Map */
-import java.util.*;
 
 
 public class WebServiceLayer extends HttpServlet {
@@ -49,38 +59,32 @@ public class WebServiceLayer extends HttpServlet {
     private long startupMillis;
 
 
-	/* *********************************************************** */
-	/* *****                  utilities                      ***** */
-	/* *********************************************************** */
-
-
     /**
      * Returns the number of seconds since the web service started.
-     **/
+     */
     private int getUptime() {
         Calendar currentTime = Calendar.getInstance();
         long currentTimeInMillis = currentTime.getTimeInMillis();
-        return (int)((currentTimeInMillis - startupMillis)/1000);
+        return (int) ((currentTimeInMillis - startupMillis) / 1000);
     }
-
 
 
     /**
      * Converts seconds in days
-     **/
+     */
     private static int getNumberOfDays(int seconds) {
-        return (((seconds/60)/60)/24);
+        return (((seconds / 60) / 60) / 24);
     }
 
 
     /**
      * Returns one IToscaEnvironment as String.
      * NOTE: It is useful to have a string rather than a file because
-     *       we are returning some IToscaEnvironment to the dashboard
-     *       as a string wrapped into a json array.
-     *       This methos is invoked at the very end of the execution
-     *       of the web service.
-     **/
+     * we are returning some IToscaEnvironment to the dashboard
+     * as a string wrapped into a json array.
+     * This methos is invoked at the very end of the execution
+     * of the web service.
+     */
 
     private static String iteToString(IToscaEnvironment ite) {
         StringWriter sw = new StringWriter();
@@ -90,40 +94,38 @@ public class WebServiceLayer extends HttpServlet {
     }
 
 
-	/* *********************************************************** */
-	/* *****                    c.tor                        ***** */
-	/* *********************************************************** */
+    /* *********************************************************** */
+    /* *****                    c.tor                        ***** */
+    /* *********************************************************** */
 
     public WebServiceLayer() throws ServletException {
     }
 
 
 
-	/* *********************************************************** */
-	/* *****                    servlet                      ***** */
-	/* *********************************************************** */
+    /* *********************************************************** */
+    /* *****                    servlet                      ***** */
+    /* *********************************************************** */
 
     public void init() {
         this.jsonParser = new JSONParser();
         this.numberOfPosts = 0;
         this.numberOfServedPosts = 0;
 
-		/* startup time */
+        /* startup time */
         this.rightNow = Calendar.getInstance();
         this.startup = rightNow.getTime();
         this.startupMillis = rightNow.getTimeInMillis();
     }
 
 
-
-
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-		/* some stats */
+        /* some stats */
         int uptime = getUptime();
         int nDays = getNumberOfDays(uptime);
 
-		/* response */
+        /* response */
         PrintWriter out = response.getWriter();
         out.println("Hello.");
         out.println("The planner has been running for about " + nDays + " days.");
@@ -133,54 +135,52 @@ public class WebServiceLayer extends HttpServlet {
     }
 
 
-
-
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
 
         // NOTE: check if explicit multithreading needed
 
-		/* stats */
+        /* stats */
         numberOfPosts = numberOfPosts + 1;
 
-		/* the output stream */
+        /* the output stream */
         PrintWriter out = response.getWriter();
 
-		/* getting the AAM data */
+        /* getting the AAM data */
         String strAam = null;
         try {
             String postContent = request.getParameter(POST_PAR);
             JSONObject jsonData = (JSONObject) jsonParser.parse(postContent);
             strAam = (String) jsonData.get(JSON_INPUT_ID);
-        } catch(Exception pe) {
-			/* error */
+        } catch (Exception pe) {
+            /* error */
             out.println("");
             pe.printStackTrace(out);
             return;
         }
 
-		/* putting on stream and parsing */
+        /* putting on stream and parsing */
         StringReader sr = new StringReader(strAam);
         IToscaEnvironment aam = Tosca.newEnvironment();
-        aam.readFile(sr);
+        aam.readFile(sr, true);
 
         Planner p = new Planner();
 
         List<IToscaEnvironment> optOffers = p.plan(aam);
 
-		/* wrapping the result in a json array */
+        /* wrapping the result in a json array */
         JSONObject responseData = new JSONObject();
         int offerIndex = 0;
-        for(IToscaEnvironment currentOffer : optOffers) {
+        for (IToscaEnvironment currentOffer : optOffers) {
             INamedEntity ee = (INamedEntity) currentOffer;
             responseData.put("offer_" + offerIndex, iteToString(currentOffer));
             offerIndex++;
         }
 
-		/* response to the caller */
+        /* response to the caller */
         out.print(responseData);
 
-		/* stats */
+        /* stats */
         numberOfServedPosts = numberOfServedPosts + 1;
         return;
     }

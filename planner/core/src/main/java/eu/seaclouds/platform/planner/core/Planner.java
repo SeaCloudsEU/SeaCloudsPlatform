@@ -14,14 +14,17 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package seaclouds.planner;
-
-import seaclouds.utils.toscamodel.*;
+package eu.seaclouds.platform.planner.core;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
+
+import eu.seaclouds.platform.matchmaker.Matchmaker;
+import seaclouds.utils.toscamodel.INodeType;
+import seaclouds.utils.toscamodel.IToscaEnvironment;
+import seaclouds.utils.toscamodel.Tosca;
 
 public class Planner {
     final private OptimizerExample optimizer = new OptimizerExample();
@@ -34,7 +37,7 @@ public class Planner {
 
     List<IToscaEnvironment> plan(IToscaEnvironment aam) {
         InputStream stream = this.getClass().getResourceAsStream("../../../../aam.yaml");
-        aam.readFile(new InputStreamReader(stream));
+        aam.readFile(new InputStreamReader(stream), false);
 
         Map<String, List<INodeType>> matches = matchmaker.Match(aam);
         return optimizer.optimize(aam, matches);

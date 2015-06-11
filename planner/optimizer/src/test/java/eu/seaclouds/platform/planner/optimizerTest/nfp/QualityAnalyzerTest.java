@@ -116,7 +116,7 @@ public class QualityAnalyzerTest {
       double cost = analyzer.computeCost(bestSol, cloudCharacteristics);
 
       Assert.assertTrue("Compute cost returned an impossible value",
-            cost >= 0.0);
+              cost >= 0.0);
 
       log.info("Testing cost. Returned application cost is " + cost);
 

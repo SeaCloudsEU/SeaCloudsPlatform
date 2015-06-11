@@ -20,28 +20,21 @@ limitations under the License.
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-    <groupId>eu.seaclouds-project</groupId>
-    <artifactId>planner</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>planner-core</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
-  <name>planner-core</name>
-  <url>http://maven.apache.org</url>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>eu.seaclouds-project</groupId>
-      <artifactId>matchmaker</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>eu.seaclouds-project</groupId>
-      <artifactId>planner-utils</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
-    </dependency>
-  </dependencies>
+        <groupId>eu.seaclouds-project</groupId>
+        <artifactId>planner</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>planner-core</artifactId>
+    <name>planner-core</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>eu.seaclouds-project</groupId>
+            <artifactId>matchmaker</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>
