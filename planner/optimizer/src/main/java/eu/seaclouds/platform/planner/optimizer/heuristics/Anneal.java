@@ -18,7 +18,6 @@
 package eu.seaclouds.platform.planner.optimizer.heuristics;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.Topology;
+import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 
 public class Anneal extends AbstractHeuristic implements SearchMethod {
 
@@ -45,8 +45,96 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
    public Anneal() {
    }
    
-
    @Override
+   public Solution[] computeOptimizationProblem(
+         SuitableOptions cloudOffers, QualityInformation requirements,
+         Topology topology, int numPlansToGenerate) {
+
+      cloudOffers.sortDescendingPerformance();
+      Solution[] bestSols = super.findInitialRandomSolutions(cloudOffers, numPlansToGenerate);
+      super.setFitnessOfSolutions(bestSols, requirements, topology,
+            cloudOffers);
+      if (IS_DEBUG) {
+         logAnneal
+               .debug("Start checking the presence of quality attached to solutions after the first generation ANNEAL");
+         super.checkQualityAttachedToSolutions(bestSols);
+      }
+      super.sortSolutionsByFitness(bestSols);
+
+      
+      int numItersNoImprovement = 0;
+      int currentIterNum=1;
+      while (numItersNoImprovement < super.getMaxIterNoImprove()) {
+      //Maybe this value of MaxIterNoImprove is too high for theh Anneal method
+      
+         Solution currentSol = super.findRandomSolution(cloudOffers);
+         currentSol.setSolutionFitness(super.fitness(currentSol, requirements, topology, cloudOffers));
+         //This method can decrease the fitness, so we will return the best solution found along the way
+         Solution bestSolSoFar = currentSol;
+         
+         int iterationsWithoutChangeState = 0;
+         
+         double temperature = INITIAL_TEMPERATURE;
+         while(iterationsWithoutChangeState<MAX_ITERATIONS_NOT_CHANGE_STATE){
+         
+            
+            
+            Solution neighbor = getRandomNeighbour(currentSol, cloudOffers, topology);
+            neighbor.setSolutionFitness(super.fitness(neighbor, requirements, topology, cloudOffers));
+            
+            if(neighbourShouldBeSelected(currentSol.getSolutionFitness(), neighbor.getSolutionFitness(), temperature)){
+               currentSol=neighbor;
+               if(currentSol.getSolutionFitness()>bestSolSoFar.getSolutionFitness()){
+                  bestSolSoFar=currentSol;
+               }
+               iterationsWithoutChangeState=0;
+            }
+            else{
+               iterationsWithoutChangeState++;
+            }
+                       
+            currentIterNum++;
+            temperature = getTemperature(currentIterNum, INITIAL_TEMPERATURE, temperature);
+         }
+         
+         if (IS_DEBUG) {
+         
+              logAnneal
+                  .debug("Solution do not find suitable neighbors for a while. Solution found is: " + bestSolSoFar.toString() 
+                        + " with fitness " + bestSolSoFar.getSolutionFitness() + ". It took " + currentIterNum + 
+                        " iterations to find it and finished with temperature="+temperature);
+         
+         }
+         
+         // Too many iterations without changing state. Try to include the the best one found so far. 
+         // 
+         if (super.solutionShouldBeIncluded(bestSolSoFar, bestSols)) {
+            super.insertOrdered(bestSols, bestSolSoFar);
+            numItersNoImprovement = 0;
+
+            if (IS_DEBUG) {
+               logAnneal
+               .debug("Found that solution " + bestSolSoFar.toString() + " is to be included in the current list of solutions to return");
+         
+               logAnneal
+                     .debug("Start checking the presence of quality attached to solutions after adding a solution in ANNEAL");
+               super.checkQualityAttachedToSolutions(bestSols);
+            }
+
+         } else {
+            numItersNoImprovement++;
+         }
+         
+         currentIterNum=0;
+      }
+ 
+      return bestSols; 
+      
+   }
+   
+   
+
+ /*  @Override
    public Map<String, Object>[] computeOptimizationProblem(
          SuitableOptions cloudOffers, Map<String, Object> applicationMap,
          Topology topology, int numPlansToGenerate) {
@@ -133,7 +221,7 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
             applicationMap, topology, cloudOffers, numPlansToGenerate);
       
    }
-   
+   */
    
    
    private double getTemperature(int currentIterNum, double initialTemperature,
@@ -162,15 +250,14 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
    private Solution exploredSol;
    private Solution[] neighborsOfExplored;
    private Solution getRandomNeighbour(Solution currentSol,
-         SuitableOptions cloudOffers, Map<String, Object> applicationMap,
-         Topology topology) {
+         SuitableOptions cloudOffers, Topology topology) {
      
       if(exploredSol==null){
-         neighborsOfExplored=findNeighbors(currentSol,cloudOffers,applicationMap,topology);
+         neighborsOfExplored=findNeighbors(currentSol,cloudOffers,topology);
          exploredSol=currentSol;
       }
       if(!currentSol.equals(exploredSol)){
-         neighborsOfExplored=findNeighbors(currentSol,cloudOffers,applicationMap,topology);
+         neighborsOfExplored=findNeighbors(currentSol,cloudOffers,topology);
          exploredSol=currentSol;
       }
       //at this point in neighbors is the useful list of neighbours. 
@@ -187,13 +274,11 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
     * @param currentSol
     * @param cloudOffers
     *           - Sorted by performance
-    * @param applicationMap
     * @param topology
     * @return an array of solutuions that are neighbors of currentSol
     */
    private Solution[] findNeighbors(Solution currentSol,
-         SuitableOptions cloudOffers, Map<String, Object> applicationMap,
-         Topology topology) {
+         SuitableOptions cloudOffers, Topology topology) {
 
       ArrayList<Solution> neighbors = new ArrayList<Solution>();
       // neighbors are:
