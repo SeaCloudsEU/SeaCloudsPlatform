@@ -26,6 +26,7 @@ import org.testng.annotations.Test;
 
 import com.google.common.collect.ImmutableList;
 
+import eu.seaclouds.modaclouds.hdb.MODACloudsHistoryDB;
 import brooklyn.entity.basic.Entities;
 import brooklyn.entity.proxying.EntitySpec;
 import brooklyn.entity.trait.Startable;
@@ -33,7 +34,7 @@ import brooklyn.location.basic.LocalhostMachineProvisioningLocation;
 import brooklyn.test.EntityTestUtils;
 import brooklyn.test.entity.TestApplication;
 
-public class MODACloudsKnowledgeBaseIntegrationTest {
+public class MODACloudsHistoryDBntegrationTest {
 
     private TestApplication app;
     private LocalhostMachineProvisioningLocation localhostProvisioningLocation;
@@ -51,7 +52,7 @@ public class MODACloudsKnowledgeBaseIntegrationTest {
 
     @Test(groups = "Integration")
     public void testCanStartAndStop() throws Exception {
-        MODACloudsKnowledgeBase entity = app.createAndManageChild(EntitySpec.create(MODACloudsKnowledgeBase.class));
+        MODACloudsHistoryDB entity = app.createAndManageChild(EntitySpec.create(MODACloudsHistoryDB.class));
         app.start(ImmutableList.of(localhostProvisioningLocation));
 
         EntityTestUtils.assertAttributeEqualsEventually(entity, Startable.SERVICE_UP, true);
