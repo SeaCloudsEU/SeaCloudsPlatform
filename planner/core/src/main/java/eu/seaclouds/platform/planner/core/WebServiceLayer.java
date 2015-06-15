@@ -14,21 +14,31 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package seaclouds.planner;
+package eu.seaclouds.platform.planner.core;
 
-import seaclouds.utils.toscamodel.*;			// parser
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import seaclouds.utils.toscamodel.INamedEntity;
+import seaclouds.utils.toscamodel.IToscaEnvironment;
+import seaclouds.utils.toscamodel.Tosca;
 
 /* servlet */
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
 /* json parser */
-import org.json.simple.parser.*;
-import org.json.simple.*;
-
 /* Map */
-import java.util.*;
 
 
 public class WebServiceLayer extends HttpServlet {
@@ -162,7 +172,7 @@ public class WebServiceLayer extends HttpServlet {
 		/* putting on stream and parsing */
         StringReader sr = new StringReader(strAam);
         IToscaEnvironment aam = Tosca.newEnvironment();
-        aam.readFile(sr);
+        aam.readFile(sr, true);
 
         Planner p = new Planner();
 

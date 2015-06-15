@@ -14,14 +14,28 @@
  * limitations under the License.
  */
 
-package seaclouds.planner;
+package eu.seaclouds.platform.planner.core;
 
-import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Random;
+import java.util.Set;
+
 import com.google.common.collect.Sets;
-import seaclouds.utils.toscamodel.*;
-import seaclouds.utils.toscamodel.basictypes.IValueInteger;
 
-import java.util.*;
+import seaclouds.utils.toscamodel.INamedEntity;
+import seaclouds.utils.toscamodel.INodeTemplate;
+import seaclouds.utils.toscamodel.INodeType;
+import seaclouds.utils.toscamodel.IProperty;
+import seaclouds.utils.toscamodel.IToscaEnvironment;
+import seaclouds.utils.toscamodel.IValue;
+import seaclouds.utils.toscamodel.Tosca;
+import seaclouds.utils.toscamodel.basictypes.IValueInteger;
 
 /**
  * Created by pq on 26/04/2015.
