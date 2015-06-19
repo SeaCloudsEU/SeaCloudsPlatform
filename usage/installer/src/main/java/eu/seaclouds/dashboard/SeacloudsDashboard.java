@@ -18,8 +18,10 @@ package eu.seaclouds.dashboard;
 
 import brooklyn.catalog.Catalog;
 import brooklyn.config.ConfigKey;
+import brooklyn.entity.basic.Attributes;
 import brooklyn.entity.basic.ConfigKeys;
 import brooklyn.entity.basic.SoftwareProcess;
+import brooklyn.entity.java.UsesJava;
 import brooklyn.entity.proxying.ImplementedBy;
 import brooklyn.entity.trait.HasShortName;
 import brooklyn.event.basic.BasicAttributeSensorAndConfigKey;
@@ -30,7 +32,7 @@ import brooklyn.util.flags.SetFromFlag;
 @Catalog(name = "SeaClouds Dashboard", description = "SeaClouds Dashboard", iconUrl =
         "classpath:///seaclouds.png")
 @ImplementedBy(SeacloudsDashboardImpl.class)
-public interface SeacloudsDashboard extends SoftwareProcess, HasShortName {
+public interface SeacloudsDashboard extends SoftwareProcess, UsesJava, HasShortName {
 
     @SetFromFlag("version")
     ConfigKey<String> SUGGESTED_VERSION =
@@ -44,10 +46,10 @@ public interface SeacloudsDashboard extends SoftwareProcess, HasShortName {
     @SetFromFlag("finalConfigName")
     ConfigKey<String> FINAL_CONFIG_NAME = ConfigKeys.newStringConfigKey("seaclouds.dashboard.config.final.name","Final name for configuration file", "config.yml");
 
+
     @SetFromFlag("downloadUrl")
     BasicAttributeSensorAndConfigKey<String> DOWNLOAD_URL = new BasicAttributeSensorAndConfigKey.StringAttributeSensorAndConfigKey(
-            SoftwareProcess.DOWNLOAD_URL, 
-            "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=dashboard&v=0.1.0-SNAPSHOT&e=jar");
+            Attributes.DOWNLOAD_URL, "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=dashboard&v=0.1.0-SNAPSHOT&e=jar");
 
     @SetFromFlag("port")
     PortAttributeSensorAndConfigKey DASHBOARD_PORT = new PortAttributeSensorAndConfigKey(

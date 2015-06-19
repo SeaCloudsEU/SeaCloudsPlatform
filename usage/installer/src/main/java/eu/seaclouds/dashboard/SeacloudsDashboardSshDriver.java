@@ -16,6 +16,14 @@
  */
 package eu.seaclouds.dashboard;
 
+import static java.lang.String.format;
+
+import java.net.URI;
+import java.util.List;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+
 import brooklyn.entity.basic.Attributes;
 import brooklyn.entity.basic.Entities;
 import brooklyn.entity.basic.EntityLocal;
@@ -26,12 +34,6 @@ import brooklyn.util.net.Networking;
 import brooklyn.util.net.Urls;
 import brooklyn.util.os.Os;
 import brooklyn.util.ssh.BashCommands;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import java.net.URI;
-import java.util.List;
-
-import static java.lang.String.format;
 
 public class SeacloudsDashboardSshDriver extends JavaSoftwareProcessSshDriver implements SeacloudsDashboardDriver {
     
@@ -46,7 +48,8 @@ public class SeacloudsDashboardSshDriver extends JavaSoftwareProcessSshDriver im
 
     @Override
     public void preInstall() {
-        resolver = Entities.newDownloader(this);
+        resolver = Entities.newDownloader(this, ImmutableMap.<String, Object>builder()
+                .put("filename", "dashboard.jar").build());
         setExpandedInstallDir(Os.mergePaths(
                 getInstallDir(), 
                 resolver.getUnpackedDirectoryName(format("dashboard-%s", getVersion()))));
