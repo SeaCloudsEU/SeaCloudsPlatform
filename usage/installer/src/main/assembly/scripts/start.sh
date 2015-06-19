@@ -34,7 +34,9 @@ if [[ ! `ls ${project.artifactId}-*.jar 2> /dev/null` ]] ; then
   exit 4
 fi
 
-$JAVA -Xms256m -Xmx1024m -XX:MaxPermSize=1024m \
+JAVA_OPTS="-Dbrooklyn.location.localhost.address=127.0.0.1 ${JAVA_OPTS}"
+
+$JAVA ${JAVA_OPTS} -Xms256m -Xmx1024m -XX:MaxPermSize=1024m \
     -classpath "conf/:patch/*:*:lib/*" \
     ${project.entry} \
     launch "$@"

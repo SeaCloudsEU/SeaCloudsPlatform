@@ -19,7 +19,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Configure passwordless sudo
   config.vm.provision "shell", privileged: true,
-    :inline => "echo 'vagrant ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers"
+    :inline => "echo 'vagrant ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers && apt-get update && apt-get install -y openjdk-7-jre"
 
   # Create nodes using private network
   NODE_COUNT.times do |i|

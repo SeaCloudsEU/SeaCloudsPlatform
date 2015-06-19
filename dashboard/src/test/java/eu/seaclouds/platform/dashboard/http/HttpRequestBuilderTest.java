@@ -17,24 +17,25 @@
 
 package eu.seaclouds.platform.dashboard.http;
 
-import com.beust.jcommander.internal.Maps;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import com.beust.jcommander.internal.Maps;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class HttpRequestBuilderTest {
-    
+
     static final String ECHO_JSON_HOST = "echo.jsontest.com";
     static final String ECHO_JSON_RESPONSE = "{\n" +
             "   \"one\": \"two\",\n" +
             "   \"key\": \"value\"\n" +
             "}\n";
-    
+
     static final String HTTP_TEST_HOST = "httpbin.org";
 
     @Test(enabled = false)
@@ -71,7 +72,7 @@ public class HttpRequestBuilderTest {
             Assert.assertEquals(jsonArgs.get("key1").getAsString(), "value1");
             Assert.assertEquals(jsonArgs.get("key2").getAsString(), "value2");
 
-            Assert.assertEquals(root.get("url").getAsString(), 
+            Assert.assertEquals(root.get("url").getAsString(),
                     "http://" + HTTP_TEST_HOST + "/get?key1=value1&key2=value2");
 
         } catch (IOException | URISyntaxException e) {
@@ -79,7 +80,7 @@ public class HttpRequestBuilderTest {
             Assert.fail();
         }
     }
-    
+
     @Test
     public void testDeleteRequest() {
         try {
@@ -99,9 +100,9 @@ public class HttpRequestBuilderTest {
             JsonObject jsonArgs = root.get("args").getAsJsonObject();
             Assert.assertEquals(jsonArgs.get("key1").getAsString(), "value1");
             Assert.assertEquals(jsonArgs.get("key2").getAsString(), "value2");
-            
+
             Assert.assertEquals(root.get("url").getAsString(), "http://" + HTTP_TEST_HOST + "/delete?key1=value1&key2=value2") ;
-            
+
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             Assert.fail();
@@ -135,6 +136,5 @@ public class HttpRequestBuilderTest {
             Assert.fail();
         }
     }
-    
-    
+
 }
