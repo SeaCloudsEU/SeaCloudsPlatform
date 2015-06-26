@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.seaclouds-project</groupId>
     <artifactId>platform</artifactId>
-    <version>0.7.0-M19</version>
+    <version>0.8.0-SNAPSHOT</version>
     <modules>
         <module>common</module>
         <!--module>monitor</module-->
@@ -115,7 +115,7 @@
         <url>https://github.com/SeaCloudsEU/SeaCloudsPlatform/</url>
         <connection>scm:git:https://github.com/SeaCloudsEU/SeaCloudsPlatform.git</connection>
         <developerConnection>scm:git:git@github.com:SeaCloudsEU/SeaCloudsPlatform.git</developerConnection>
-        <tag>0.7.0-M19</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <repositories>
