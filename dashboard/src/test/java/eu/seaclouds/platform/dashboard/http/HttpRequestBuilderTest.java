@@ -37,7 +37,7 @@ public class HttpRequestBuilderTest {
     
     static final String HTTP_TEST_HOST = "httpbin.org";
 
-    @Test
+    @Test(enabled = false)
     public void testGetRequestWithEcho() {
         try {
             String response = new HttpGetRequestBuilder()
