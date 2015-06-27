@@ -52,7 +52,7 @@ limitations under the License.
     <repositories>
         <repository>
             <id>tosca-object-model-mvn-repo</id>
-            <url>https://raw.github.com/SeaCloudsEU/tosca-object-model/mvn-repo/</url>
+            <url>https://raw.github.com/SeaCloudsEU/tosca-yaml-object-model/mvn-repo/</url>
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
