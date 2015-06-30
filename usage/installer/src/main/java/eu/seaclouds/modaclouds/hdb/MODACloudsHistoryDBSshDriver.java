@@ -88,20 +88,19 @@ public class MODACloudsHistoryDBSshDriver extends JavaSoftwareProcessSshDriver i
       newScript(MutableMap.of(USE_PID_FILE, getPidFile()), LAUNCHING)
               .failOnNonZeroResultCode()
               .body.append(
-		      format("nohup java -Xmx1200M -jar tower4clouds-rdf-history-db.jar " +
-		              "-queueip %s " +
-		              "-queueport %s " +
-		              "-dbpath %s " +
-		              "-dbport %s " +
-		              "-listenerport %s " +
-		              "> %s 2>&1 &",
-		      entity.getConfig(MODACloudsHistoryDB.MODACLOUDS_HDBQUEUE_IP),
-		      entity.getConfig(MODACloudsHistoryDB.MODACLOUDS_HDBQUEUE_PORT),
-		      entity.getConfig(MODACloudsHistoryDB.MODACLOUDS_HDB_PATH),
-		      entity.getConfig(MODACloudsHistoryDB.MODACLOUDS_HDBLISTENER_PORT),
-		      entity.getAttribute(MODACloudsHistoryDB.MODACLOUDS_HDB_PORT),
-		      getLogFileLocation()))
-		.execute();
+      format("nohup java -Xmx1200M -jar tower4clouds-rdf-history-db.jar " +
+              "-queueip %s " +
+              "-queueport %s " +
+              "-dbpath %s " +
+              "-dbport %s " +
+              "-listenerport %s " +
+              "> %s 2>&1 &",
+      entity.getConfig(MODACloudsHistoryDB.MODACLOUDS_HDBQUEUE_IP),
+      entity.getConfig(MODACloudsHistoryDB.MODACLOUDS_HDBQUEUE_PORT),
+      entity.getConfig(MODACloudsHistoryDB.MODACLOUDS_HDB_PATH),
+      entity.getConfig(MODACloudsHistoryDB.MODACLOUDS_HDBLISTENER_PORT),
+      entity.getAttribute(MODACloudsHistoryDB.MODACLOUDS_HDB_PORT),
+      getLogFileLocation())).execute();
       
       String mainUri = String.format("http://%s:%d",
               entity.getAttribute(Attributes.HOSTNAME),

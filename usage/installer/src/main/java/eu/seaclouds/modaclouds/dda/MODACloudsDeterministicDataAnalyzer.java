@@ -50,7 +50,6 @@ public interface MODACloudsDeterministicDataAnalyzer extends SoftwareProcess, Ha
    @SetFromFlag("modacloudsDeterministicDataAnalyzerPort")
    PortAttributeSensorAndConfigKey MODACLOUDS_DDA_PORT = new PortAttributeSensorAndConfigKey("modaclouds.dda.port",
            "MODAClouds Deterministic Data Analyzer port", "8175+");
-	
 
    AttributeSensor<URI> DDA_CONSOLE_URI = Attributes.MAIN_URI;
 }
