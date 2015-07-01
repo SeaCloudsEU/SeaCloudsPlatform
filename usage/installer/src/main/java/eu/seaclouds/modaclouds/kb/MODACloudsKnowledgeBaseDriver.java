@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package eu.seaclouds.modaclouds.hdb;
+package eu.seaclouds.modaclouds.kb;
 
 import brooklyn.entity.java.JavaSoftwareProcessDriver;
 
-public interface MODACloudsHistoryDBDriver extends JavaSoftwareProcessDriver {
+public interface MODACloudsKnowledgeBaseDriver extends JavaSoftwareProcessDriver {
 
    Integer getPort();
 
-   String getHistoryDBPath();
+   String getKnowledgeBasePath();
 
 
 }

@@ -16,10 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package eu.seaclouds.modaclouds.hdb;
+package eu.seaclouds.modaclouds.kb;
 
 import static java.lang.String.format;
-
 import java.net.URI;
 import java.util.List;
 
@@ -35,9 +34,9 @@ import brooklyn.util.net.Networking;
 import brooklyn.util.os.Os;
 import brooklyn.util.ssh.BashCommands;
 
-public class MODACloudsHistoryDBSshDriver extends JavaSoftwareProcessSshDriver implements MODACloudsHistoryDBDriver {
+public class MODACloudsKnowledgeBaseSshDriver extends JavaSoftwareProcessSshDriver implements MODACloudsKnowledgeBaseDriver {
 
-   public MODACloudsHistoryDBSshDriver(MODACloudsHistoryDBImpl entity, SshMachineLocation machine) {
+   public MODACloudsKnowledgeBaseSshDriver(MODACloudsKnowledgeBaseImpl entity, SshMachineLocation machine) {
       super(entity, machine);
    }
 
@@ -49,7 +48,7 @@ public class MODACloudsHistoryDBSshDriver extends JavaSoftwareProcessSshDriver i
    @Override
    public void preInstall() {
       resolver = Entities.newDownloader(this);
-      setExpandedInstallDir(Os.mergePaths(getInstallDir(), resolver.getUnpackedDirectoryName(format("rdf-history-db-main-%s", getVersion()))));
+      setExpandedInstallDir(Os.mergePaths(getInstallDir(), resolver.getUnpackedDirectoryName(format("jena-fuseki-%s", getVersion()))));
    }
 
    @Override
@@ -71,16 +70,16 @@ public class MODACloudsHistoryDBSshDriver extends JavaSoftwareProcessSshDriver i
    @Override
    public void customize() {
       log.debug("Customizing {}", entity);
-      Networking.checkPortsValid(MutableMap.of("modacloudsHistoryDBPort", getPort()));
+      Networking.checkPortsValid(MutableMap.of("modacloudsKbPort", getPort()));
       newScript(CUSTOMIZING)
               .body.append(
               format("cp -R %s/* .", getExpandedInstallDir()),
-              format("mkdir %s/modaclouds-hdb", getRunDir())
+              format("mkdir %s/modaclouds-kb", getRunDir())
               ).execute();
    }
 
    public String getPidFile() {
-      return Os.mergePathsUnix(getRunDir(), "modaclouds-hdb.pid");
+      return Os.mergePathsUnix(getRunDir(), "modaclouds-kb.pid");
    }
 
    @Override
@@ -88,24 +87,17 @@ public class MODACloudsHistoryDBSshDriver extends JavaSoftwareProcessSshDriver i
       newScript(MutableMap.of(USE_PID_FILE, getPidFile()), LAUNCHING)
               .failOnNonZeroResultCode()
               .body.append(
-		      format("nohup java -Xmx1200M -jar tower4clouds-rdf-history-db.jar " +
-		              "-queueip %s " +
-		              "-queueport %s " +
-		              "-dbpath %s " +
-		              "-dbport %s " +
-		              "-listenerport %s " +
-		              "> %s 2>&1 &",
-		      entity.getConfig(MODACloudsHistoryDB.MODACLOUDS_HDBQUEUE_IP),
-		      entity.getConfig(MODACloudsHistoryDB.MODACLOUDS_HDBQUEUE_PORT),
-		      entity.getConfig(MODACloudsHistoryDB.MODACLOUDS_HDB_PATH),
-		      entity.getConfig(MODACloudsHistoryDB.MODACLOUDS_HDBLISTENER_PORT),
-		      entity.getAttribute(MODACloudsHistoryDB.MODACLOUDS_HDB_PORT),
-		      getLogFileLocation()))
-		.execute();
-      
+
+
+               format("nohup java -jar fuseki-server.jar --update --port %s --loc %s %s > %s 2>&1 &",
+               entity.getAttribute(MODACloudsKnowledgeBase.MODACLOUDS_KB_PORT),
+               entity.getConfig(MODACloudsKnowledgeBase.MODACLOUDS_KB_DATASTORE_FOLDER),
+                       entity.getAttribute(MODACloudsKnowledgeBase.MODACLOUDS_KB_PATH),
+               getLogFileLocation()))
+              .execute();
       String mainUri = String.format("http://%s:%d",
               entity.getAttribute(Attributes.HOSTNAME),
-              entity.getAttribute(MODACloudsHistoryDB.MODACLOUDS_HDB_PORT));
+              entity.getAttribute(MODACloudsKnowledgeBase.MODACLOUDS_KB_PORT));
       entity.setAttribute(Attributes.MAIN_URI, URI.create(mainUri));
    }
 
@@ -121,12 +113,12 @@ public class MODACloudsHistoryDBSshDriver extends JavaSoftwareProcessSshDriver i
 
    @Override
    public Integer getPort() {
-      return entity.getAttribute(MODACloudsHistoryDB.MODACLOUDS_HDB_PORT);
+      return entity.getAttribute(MODACloudsKnowledgeBase.MODACLOUDS_KB_PORT);
    }
 
    @Override
-   public String getHistoryDBPath() {
-      return entity.getConfig(MODACloudsHistoryDB.MODACLOUDS_HDB_PATH);
+   public String getKnowledgeBasePath() {
+      return entity.getConfig(MODACloudsKnowledgeBase.MODACLOUDS_KB_PATH);
    }
 
 }
