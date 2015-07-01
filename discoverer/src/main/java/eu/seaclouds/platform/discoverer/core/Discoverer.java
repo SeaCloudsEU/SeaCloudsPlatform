@@ -17,9 +17,6 @@
 
 package eu.seaclouds.platform.discoverer.core;
 
-/* Simone's SeaClouds Object Model (SOM) */
-
-
 /* std imports */
 import java.util.Iterator;
 import java.io.File;
@@ -29,10 +26,8 @@ import java.lang.Exception;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-/**
- * @author Mattia Buccarella
- *
- **/
+/* a4c */
+import alien4cloud.tosca.parser.ParsingException;
 
 
 public class Discoverer {
@@ -42,7 +37,6 @@ public class Discoverer {
 	
 	/* vars */
 	private UniqueFileGen ufg; // offerings ID generator
-	
 	
 	
 	
@@ -64,33 +58,8 @@ public class Discoverer {
 	/* **                      PRIVATE UTILS                        ** */
 	/* *************************************************************** */
 	
-	
-	
-	
-	/* *************************************************************** */
-	/* **             INTERFACE IMPLEMENTATION (FROM D4.5)          ** */
-	/* *************************************************************** */
-	
-	
-	/**
-	 * Reads an offering from the local repository.
-	 * @param cloudOfferingId The ID of the offering to read.
-	 * @return The <code>Offering</code> object instance for the fetch'ed ID.
-	 */
-	public Offering fetch(String cloudOfferingId) {
-		Offering ret;
-		try { ret = fetch_helper(cloudOfferingId); }
-		catch(Exception ex) {
-			ex.printStackTrace();
-			ret = null;
-		}
-		return ret;
-	}
-	
-
-	
 	private Offering fetch_helper(String cloudOfferingId)
-			throws FileNotFoundException, IOException {
+			throws FileNotFoundException, IOException, ParsingException {
 		/* input check */
 		if(cloudOfferingId == null)
 			throw new NullPointerException("The parameter \"cloudOfferingId\" cannot be null.");
@@ -102,23 +71,6 @@ public class Discoverer {
 		/* parsing tosca file */
 		Offering ret = Offering.fromToscaFile(offeringFileName);
 		ret.assignId(cloudOfferingId);
-		return ret;
-	}
-	
-	
-	
-	/**
-	 * Inserts a new offering in the local repository.
-	 * @param o The <code>Offering</code> object instance representing the new offering to insert.
-	 * @return the ID assigned to the newly-inserted offering.
-	 */
-	public String addOffer(Offering o) {
-		String ret;
-		try { ret = addOffer_helper(o); }
-		catch(Exception ex) {
-			ex.printStackTrace();
-			ret = null;
-		}
 		return ret;
 	}
 	
@@ -144,6 +96,46 @@ public class Discoverer {
 		/* returning the ID of the added offer */
 		return offeringId;
 	}
+	
+	
+	
+	/* *************************************************************** */
+	/* **                   INTERFACE IMPLEMENTATION                ** */
+	/* *************************************************************** */
+	
+	
+	/**
+	 * Reads an offering from the local repository.
+	 * @param cloudOfferingId The ID of the offering to read.
+	 * @return The <code>Offering</code> object instance for the fetch'ed ID.
+	 */
+	public Offering fetch(String cloudOfferingId) {
+		Offering ret;
+		try { ret = fetch_helper(cloudOfferingId); }
+		catch(Exception ex) {
+			ex.printStackTrace();
+			ret = null;
+		}
+		return ret;
+	}
+	
+	
+	
+	/**
+	 * Inserts a new offering in the local repository.
+	 * @param o The <code>Offering</code> object instance representing the new offering to insert.
+	 * @return the ID assigned to the newly-inserted offering.
+	 */
+	public String addOffer(Offering o) {
+		String ret;
+		try { ret = addOffer_helper(o); }
+		catch(Exception ex) {
+			ex.printStackTrace();
+			ret = null;
+		}
+		return ret;
+	}
+
 	
 	
 	/**
@@ -189,9 +181,9 @@ public class Discoverer {
 	
 	/* implementation of the iterator */
 	private class OfferingRepoIterator implements Iterator<String> {
-		File[] files;
-		int count;
-		int current;
+		private File[] files;
+		private int count;
+		private int current;
 		
 	
 		/* c.tor */

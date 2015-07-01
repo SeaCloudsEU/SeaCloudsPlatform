@@ -26,21 +26,21 @@ import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.util.Iterator;
 
+
 /* a4c tosca parser */
 import eu.seaclouds.common.tosca.ToscaParserSupplier;
 import alien4cloud.model.topology.NodeTemplate;
 import alien4cloud.tosca.model.ArchiveRoot;
+import alien4cloud.tosca.parser.ParsingException;
 import alien4cloud.tosca.parser.ParsingResult;
 import alien4cloud.tosca.parser.ToscaParser;
 
 
 
 public class Offering { 
-	
-	/* ****************************************************** */
-	/* **         methods required by the discoverer       ** */
-	/* **           [ by Mattia Buccarella (UPI) ]         ** */
-	/* ****************************************************** */
+	/* NOTE: ex-SOM. In order not to modify the implementation of the discoverer,
+	 *       this class has been kept as wrapper for the A4C offering object.
+	 */
 	
 	/* vars */
 	private String offeringId;
@@ -104,7 +104,7 @@ public class Offering {
 	 * @return An <code>Offering</code> instance corresponding to the TOSCA
 	 * representation within the input file.
 	 */
-	public static Offering fromToscaFile(String fileName) {
+	public static Offering fromToscaFile(String fileName) throws IOException, ParsingException {
 		/* input check */
 		if(fileName == null)
 			throw new NullPointerException("The file name cannot be null.");
@@ -117,13 +117,8 @@ public class Offering {
 
 		/* creating offering object (SOM) */
 		Offering newOffering = new Offering();
-		try {
-			Path filePath = Paths.get(fileName);
-			newOffering.a4cOfferingObject = parser.parseFile(filePath);
-		} catch(Exception ex) {
-			ex.printStackTrace();
-			System.exit(1);
-		}
+		Path filePath = Paths.get(fileName);
+		newOffering.a4cOfferingObject = parser.parseFile(filePath);
 		
 		/* returning result (missing ID) */
 		return newOffering;
@@ -136,7 +131,7 @@ public class Offering {
 	 * @param toscaPayload The TOSCA input String.
 	 * @return Instance of <code>Offering</code>
 	 */
-	public static Offering fromTosca(String toscaPayload) {
+	public static Offering fromTosca(String toscaPayload) throws IOException, ParsingException {
 		/* input check */
 		if( toscaPayload == null )
 			throw new NullPointerException("Parameter toscaPayload cannot be null.");
@@ -145,23 +140,14 @@ public class Offering {
 			throw new IllegalArgumentException("Empty TOSCA is not a valid TOSCA.");
 		
 		/* creating temporary file for the parser */
-		File tempFile = null;
-		try { 
-			tempFile = File.createTempFile("offeringTmp", null);
-			BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile));
-			bw.write(toscaPayload);
-			bw.close();
-		} catch(IOException ex) {
-			ex.printStackTrace();
-			System.exit(1);
-		}
+		File tempFile = File.createTempFile("offeringTmp", null);
+		BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile));
+		bw.write(toscaPayload);
+		bw.close();
 		
 		/* moving to fromToscaFile */
-		Offering ret = null;
-		if( tempFile != null ) {
-			ret = fromToscaFile(tempFile.getAbsolutePath());
-			tempFile.delete();
-		}
+		Offering ret = fromToscaFile(tempFile.getAbsolutePath());
+		tempFile.delete();
 		
 		/* return value, might be null in case of errors */
 		return ret;
