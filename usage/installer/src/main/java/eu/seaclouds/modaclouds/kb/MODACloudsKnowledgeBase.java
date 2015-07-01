@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package eu.seaclouds.modaclouds.hdb;
+package eu.seaclouds.modaclouds.kb;
 
 import java.net.URI;
 
@@ -33,36 +33,29 @@ import brooklyn.event.basic.BasicAttributeSensorAndConfigKey.StringAttributeSens
 import brooklyn.event.basic.PortAttributeSensorAndConfigKey;
 import brooklyn.util.flags.SetFromFlag;
 
-@Catalog(name = "MODAClouds History DB", description = "MODAClouds History DB", iconUrl = "classpath:///modaclouds.png")
-@ImplementedBy(MODACloudsHistoryDBImpl.class)
-public interface MODACloudsHistoryDB extends SoftwareProcess, HasShortName {
+@Catalog(name = "MODAClouds Knowledge Base", description = "MODAClouds Knowledge Base", iconUrl = "classpath:///modaclouds.png")
+@ImplementedBy(MODACloudsKnowledgeBaseImpl.class)
+public interface MODACloudsKnowledgeBase extends SoftwareProcess, HasShortName {
 
    @SetFromFlag("version")
    ConfigKey<String> SUGGESTED_VERSION =
-           ConfigKeys.newConfigKeyWithDefault(SoftwareProcess.SUGGESTED_VERSION, "0.2");
+           ConfigKeys.newConfigKeyWithDefault(SoftwareProcess.SUGGESTED_VERSION, "1.1.1");
 
    @SetFromFlag("downloadUrl")
    BasicAttributeSensorAndConfigKey<String> DOWNLOAD_URL = new StringAttributeSensorAndConfigKey(
-           SoftwareProcess.DOWNLOAD_URL, "https://github.com/deib-polimi/tower4clouds/releases/download/v${version}/rdf-history-db-main-${version}.tar.gz");
+           SoftwareProcess.DOWNLOAD_URL, "http://archive.apache.org/dist/jena/binaries/jena-fuseki-${version}-distribution.tar.gz");
 
-   @SetFromFlag("modacloudsHistoryDBPort")
-   PortAttributeSensorAndConfigKey MODACLOUDS_HDB_PORT = new PortAttributeSensorAndConfigKey("modaclouds.hdb.port",
-           "MODAClouds History DB port", "31337");
-   
-   @SetFromFlag("modacloudsHistoryDBPath")
-   ConfigKey<String> MODACLOUDS_HDB_PATH = ConfigKeys.newStringConfigKey("modaclouds.hdb.path",
-           "DB URL path", "/ds");
+   @SetFromFlag("modacloudsKnowledgeBasePort")
+   PortAttributeSensorAndConfigKey MODACLOUDS_KB_PORT = new PortAttributeSensorAndConfigKey("modaclouds.kb.port",
+           "MODAClouds Knowledge Base port", "3030+");
 
-   @SetFromFlag("modacloudsHDBQueueIp")
-   ConfigKey<String> MODACLOUDS_HDBQUEUE_IP = ConfigKeys.newStringConfigKey("modaclouds.hdbqueue.ip",
-           "Queue endpoint IP address", "127.0.0.1");
-   
-   @SetFromFlag("modacloudsHDBQueuePort")
-   ConfigKey<String> MODACLOUDS_HDBQUEUE_PORT = ConfigKeys.newStringConfigKey("modaclouds.hdbqueue.port",
-           "Queue endpoint IP address", "5672");
-   
-   @SetFromFlag("modacloudsHDBListenerPath")
-   ConfigKey<String> MODACLOUDS_HDBLISTENER_PORT = ConfigKeys.newStringConfigKey("modaclouds.hdblistener.port",
-           "DB URL path", "/ds");
+   @SetFromFlag("modacloudsKnowledgeBasePath")
+   BasicAttributeSensorAndConfigKey<String> MODACLOUDS_KB_PATH = new StringAttributeSensorAndConfigKey("modaclouds.kb.path", "MODAClouds Knowledge Base", "/modaclouds/kb");
+
+   @SetFromFlag("modacloudsKnowledgeBaseDatastore")
+   ConfigKey<String> MODACLOUDS_KB_DATASTORE_FOLDER = ConfigKeys.newStringConfigKey("modaclouds.kb.datastore",
+           "MODAClouds Knowledge Base Datastore", "/tmp");
+
+   AttributeSensor<URI> KB_CONSOLE_URI = Attributes.MAIN_URI;
 
 }

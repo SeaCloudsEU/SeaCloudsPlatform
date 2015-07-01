@@ -40,13 +40,13 @@ public interface MODACloudsMonitoringManager extends SoftwareProcess, HasShortNa
 
     @SetFromFlag("version")
     ConfigKey<String> SUGGESTED_VERSION =
-            ConfigKeys.newConfigKeyWithDefault(SoftwareProcess.SUGGESTED_VERSION, "0.2");
+            ConfigKeys.newConfigKeyWithDefault(SoftwareProcess.SUGGESTED_VERSION, "1.7");
 
     @SetFromFlag("downloadUrl")
     BasicAttributeSensorAndConfigKey<String> DOWNLOAD_URL = new StringAttributeSensorAndConfigKey(
             SoftwareProcess.DOWNLOAD_URL,
-            "https://github.com/deib-polimi/tower4clouds/releases/download/v${version}/manager-server-${version}.tar.gz");
-    
+            "https://github.com/deib-polimi/modaclouds-monitoring-manager/releases/download/v${version}/monitoring-manager-${version}-distribution.tar.gz");
+
     @SetFromFlag("modacloudsMonitoringManagerPort")
     PortAttributeSensorAndConfigKey MODACLOUDS_MM_PORT = new PortAttributeSensorAndConfigKey("modaclouds.mm.port",
             "MODAClouds Monitoring Manager port", "8170+");
@@ -56,11 +56,17 @@ public interface MODACloudsMonitoringManager extends SoftwareProcess, HasShortNa
 
     @SetFromFlag("modacloudsDdaPort")
     ConfigKey<Integer> MODACLOUDS_DDA_PORT = ConfigKeys.newIntegerConfigKey("modaclouds.dda.port", "", 8175);
-    
-    @SetFromFlag("modacloudsHistoryDBIp")
-    ConfigKey<String> MODACLOUDS_HISTORYDB_IP = ConfigKeys.newStringConfigKey("modaclouds.historydb.ip", "127.0.0.1");
 
-    @SetFromFlag("modacloudsHistoryDBPort")
-    ConfigKey<Integer> MODACLOUDS_HISTORYDB_PORT = ConfigKeys.newIntegerConfigKey("modaclouds.historydb.port", "", 31337);
+    @SetFromFlag("modacloudsKbIp")
+    ConfigKey<String> MODACLOUDS_KB_IP = ConfigKeys.newStringConfigKey("modaclouds.kb.ip", "127.0.0.1");
+
+    @SetFromFlag("modacloudsKbPort")
+    ConfigKey<Integer> MODACLOUDS_KB_PORT = ConfigKeys.newIntegerConfigKey("modaclouds.kb.port", "", 3030);
+
+    @SetFromFlag("modacloudsKbDatasetPath")
+    ConfigKey<String> MODACLOUDS_KB_DATASET_PATH = ConfigKeys.newStringConfigKey("modaclouds.kb.dataset.path",
+            "/modaclouds/kb");
+
+   AttributeSensor<URI> KB_CONSOLE_URI = Attributes.MAIN_URI;
 
 }
