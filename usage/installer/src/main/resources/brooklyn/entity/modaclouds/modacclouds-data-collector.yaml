@@ -9,20 +9,20 @@ services:
     stopIptables: true
 
   launch.command: |
-    ( sudo apt-get install -y --allow-unauthenticated openjdk-7-jdk || sudo yum -y --nogpgcheck install java-1.7.0-openjdk-devel )
-    ( sudo apt-get install -y --allow-unauthenticated unzip || sudo yum -y --nogpgcheck install unzip )
-    wget -O data-collector-1.3-SNAPSHOT.jar "https://github.com/imperial-modaclouds/modaclouds-data-collectors/releases/download/1.3-Snapshot/data-collector-1.3-SNAPSHOT.jar"
+    wget -O data-collector-2.0-SNAPSHOT.jar "https://www.dropbox.com/s/v56qizmikj8q5t2/data-collector-2.0-SNAPSHOT.jar"
     wget -O hyperic-sigar-1.6.4.zip "http://sourceforge.net/projects/sigar/files/sigar/1.6/hyperic-sigar-1.6.4.zip/download?use_mirror=switch"
     unzip hyperic-sigar-1.6.4.zip
-    nohup java -Djava.library.path=./hyperic-sigar-1.6.4/sigar-bin/lib/ -jar data-collector-1.3-SNAPSHOT.jar kb &
+    nohup java -Djava.library.path=./hyperic-sigar-1.6.4/sigar-bin/lib/ -jar data-collector-2.0-SNAPSHOT.jar tower4clouds > dc.out 2>&1 &
     echo $! > $PID_FILE
 
-  env:
-    MODACLOUDS_MONITORING_DDA_ENDPOINT_IP: 10.105.2.62
-    MODACLOUDS_MONITORING_DDA_ENDPOINT_PORT: 8175
-    MODACLOUDS_KNOWLEDGEBASE_ENDPOINT_IP: 159.8.55.227
-    MODACLOUDS_KNOWLEDGEBASE_ENDPOINT_PORT: 3030
-    MODACLOUDS_KNOWLEDGEBASE_DATASET_PATH: /modaclouds/kb
-    MODACLOUDS_KNOWLEDGEBASE_SYNC_PERIOD: 10
-    MODACLOUDS_MONITORED_APP_ID: mic1
-    MODACLOUDS_MONITORED_VM_ID: frontend1 
+    env:
+      MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 54.154.50.167
+      MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT: 8170
+      MODACLOUDS_TOWER4CLOUDS_DC_SYNC_PERIOD: 10
+      MODACLOUDS_TOWER4CLOUDS_RESOURCES_KEEP_ALIVE_PERIOD: 25
+      MODACLOUDS_TOWER4CLOUDS_CLOUD_PROVIDER_ID: amazon
+      MODACLOUDS_TOWER4CLOUDS_CLOUD_PROVIDER_TYPE: IaaS
+      MODACLOUDS_TOWER4CLOUDS_VM_ID: machine
+      MODACLOUDS_TOWER4CLOUDS_VM_TYPE: Frontend
+      MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID: test-app
+      MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE: chat-webApplication
