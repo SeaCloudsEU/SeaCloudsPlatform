@@ -16,19 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package eu.seaclouds.modaclouds.kb;
+package eu.seaclouds.modaclouds.hdb;
 
 import brooklyn.entity.basic.SoftwareProcessImpl;
 
-public class MODACloudsKnowledgeBaseImpl extends SoftwareProcessImpl implements MODACloudsKnowledgeBase {
+public class MODACloudsHistoryDBImpl extends SoftwareProcessImpl implements MODACloudsHistoryDB {
    @Override
    public Class getDriverInterface() {
-      return eu.seaclouds.modaclouds.kb.MODACloudsKnowledgeBaseDriver.class;
+      return eu.seaclouds.modaclouds.hdb.MODACloudsHistoryDBDriver.class;
    }
 
    @Override
    public String getShortName() {
-      return "MODAClouds KB";
+      return "MODAClouds HDB";
    }
 
    @Override
