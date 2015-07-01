@@ -17,7 +17,7 @@ services:
     brooklyn.webconsole.security.users=admin
     brooklyn.webconsole.security.user.admin.password=p4ssw0rd
 
-- serviceType: eu.seaclouds.dashboard.SeacloudsDashboard
+- serviceType: eu.seaclouds.common.entities.dashboard.SeacloudsDashboard
   name: SeaClouds Dashboard
   id: dashboard
   brooklyn.config: 

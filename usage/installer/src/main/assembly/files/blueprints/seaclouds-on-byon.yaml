@@ -28,7 +28,7 @@ services:
 - serviceType: brooklyn.entity.basic.SameServerEntity
   name: SeaClouds Dashboard + Planner + SLA
   brooklyn.children:
-  - serviceType: eu.seaclouds.dashboard.SeacloudsDashboard
+  - serviceType: eu.seaclouds.common.entities.dashboard.SeacloudsDashboard
     name: SeaClouds Dashboard
     id: dashboard
     brooklyn.config: 
