@@ -23,11 +23,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.simple.JSONObject;
+
+
+
 /* core */
 import eu.seaclouds.platform.discoverer.core.Discoverer;
 
+
+
+
 /* io */
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * 
@@ -51,20 +59,36 @@ public class DelOffer extends HttpServlet {
 	
 	
 	
+	@SuppressWarnings("unchecked")
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
-		/* input */
+		/* response for the caller */
+		response.setContentType("application/json");
+		PrintWriter out = response.getWriter();
+		JSONObject resData = new JSONObject();
+		
+		/* input check */
 		String cloudOfferingId = request.getParameter("offer_id");
-		if(cloudOfferingId == null)
+		if(cloudOfferingId == null) {
+			resData.put("errorcode", "Meh.");
+			resData.put("errormessage", "The offering ID to delete cannot be null.");
+			out.write(resData.toString());
+			out.close();
 			return;
+		}
 		
 		/* removal */
-		String ret;
-		if( this.core.removeOffer(cloudOfferingId) ) ret = "Ok.";
-		else ret = "Fail.";
+		if( this.core.removeOffer(cloudOfferingId) ) {
+			resData.put("errorcode", "WOOT!");
+		} else {
+			resData.put("errorcode", "Meh.");
+			resData.put("errormessage", "Unable to remove the specified offer. Unknown error.");
+		}
 		
-		/* response */
-		response.getWriter().println(ret);
+		/* response to the caller */
+		resData.put("offerid", cloudOfferingId);
+		out.write(resData.toString());
+		out.close();
 	}
 
 }

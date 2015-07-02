@@ -165,9 +165,9 @@ public class UniqueFileGen {
 	
 	
 	public String extractUniqueCode(String cleanFileName) {
-		return cleanFileName.substring(this.prefix.length() - 1,
-				cleanFileName.length() - this.prefix.length()
-				- this.suffix.length());
+		int startIndex = this.prefix.length();
+		int endIndex = cleanFileName.indexOf(this.suffix);
+		return cleanFileName.substring(startIndex, endIndex);
 	}
 }
 

@@ -18,7 +18,11 @@
 package eu.seaclouds.platform.discoverer.ws;
 
 /* servlet */
+import java.io.File;
+import java.io.IOException;
+
 import javax.servlet.http.HttpServlet;
+import javax.swing.JOptionPane;
 
 
 /**
@@ -28,7 +32,33 @@ import javax.servlet.http.HttpServlet;
  */
 
 @SuppressWarnings("serial")
-public class CrawlerManager extends HttpServlet {
+public class CrawlerManager extends HttpServlet implements Runnable {
+	/* vars */
+	private static Thread backThread;
+	
+	/* *********************************************************** */
+	/* *****                  back thread                    ***** */
+	/* *********************************************************** */
+	
+	private void run_helper() {
+		
+		/* endless main loop */
+		while(true)
+		{
+			// crawl
+			// TODO
+		}
+		
+	}
+	
+	
+	@Override
+	public void run() {
+		
+		try { run_helper(); }
+		catch(Exception ex) { ex.printStackTrace();	}
+		
+	}
 	
 	
 	/* *********************************************************** */
@@ -36,6 +66,8 @@ public class CrawlerManager extends HttpServlet {
 	/* *********************************************************** */
 	
 	public void init() {
+		backThread = new Thread(this);
+		backThread.start();
 	}	
 	
 	

@@ -21,6 +21,8 @@
   <display-name>SeaClouds Discoverer WS Layer</display-name>
   <description>trololo</description>
 
+
+  <!-- ADD OFFERING -->
   <servlet>
 	<servlet-name>discoverer_add_offering</servlet-name>
 	<servlet-class>eu.seaclouds.platform.discoverer.ws.AddOffer</servlet-class>
@@ -29,6 +31,19 @@
   <servlet-mapping>
 	<servlet-name>discoverer_add_offering</servlet-name>
 	<url-pattern>/addoffer</url-pattern>
+  </servlet-mapping>
+  
+  
+  <!-- CRAWLER MANAGER -->
+  <servlet>
+  	<servlet-name>discoverer_crawler_manager</servlet-name>
+  	<servlet-class>eu.seaclouds.platform.discoverer.ws.CrawlerManager</servlet-class>
+  	<load-on-startup>1</load-on-startup>
+  </servlet>
+  
+  <servlet-mapping>
+	<servlet-name>discoverer_crawler_manager</servlet-name>
+	<url-pattern>/crman</url-pattern>
   </servlet-mapping>
 
 </web-app>

@@ -26,12 +26,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.AbstractHttpConnection.OutputWriter;
-
+import org.json.simple.JSONObject;
 
 import alien4cloud.tosca.parser.ParsingException;
 /* core */
 import eu.seaclouds.platform.discoverer.core.Discoverer;
 import eu.seaclouds.platform.discoverer.core.Offering;
+
+
 
 
 /* io */
@@ -65,6 +67,7 @@ public class AddOffer extends HttpServlet {
 	
 	
 	
+	@SuppressWarnings("unchecked")
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 		/* extracting input and checking */
@@ -72,22 +75,30 @@ public class AddOffer extends HttpServlet {
 		if(postPayload == null)
 			return;
 
+		/* preparing the response for the caller */
+		JSONObject resData = new JSONObject();
+		
 		try {
 			/* insertion */
 			Offering newOffer = Offering.fromTosca(postPayload);
 			String offerId = this.core.addOffer(newOffer);
 		
-			/* GOOD: wrapping in json */
-			// TODO
-		
-			/* sending good response to the caller */
-			// TODO
+			/* good news */
+			resData.put("errorcode", "WOOT!");
+			resData.put("offerid", offerId);
 		} catch(ParsingException pex) {
-			/* BAD: something went wrong */
-			/* sending bad news to the client */
+			/* printing exception */
 			pex.printStackTrace();
-			// TODO
+			
+			/* bad news */
+			resData.put("errorcode", "Meh.");
+			resData.put("errormessage", pex.getMessage());
 		}
+		
+		/* sending response to the caller */
+		PrintWriter out = response.getWriter();
+		out.write(resData.toString());
+		out.close();
 	}
 	
 	
