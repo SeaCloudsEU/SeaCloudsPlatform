@@ -20,12 +20,17 @@ package eu.seaclouds.platform.dashboard;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.seaclouds.platform.dashboard.config.DeployerFactory;
 import eu.seaclouds.platform.dashboard.config.MonitorFactory;
+import eu.seaclouds.platform.dashboard.config.PlannerFactory;
 import eu.seaclouds.platform.dashboard.config.SlaFactory;
 import io.dropwizard.Configuration;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 public class DashboardConfiguration extends Configuration {
+
+    @Valid
+    @NotNull
+    private PlannerFactory planner = new PlannerFactory();
     
     @Valid
     @NotNull
@@ -39,6 +44,16 @@ public class DashboardConfiguration extends Configuration {
     @NotNull
     private SlaFactory sla = new SlaFactory();
 
+    @JsonProperty("planner")
+    public PlannerFactory getPlannerFactory() {
+        return planner;
+    }
+
+    @JsonProperty("planner")
+    public void setPlannerFactory(PlannerFactory factory) {
+        this.planner = factory;
+    }
+    
     @JsonProperty("deployer")
     public DeployerFactory getDeployerFactory() {
         return deployer;

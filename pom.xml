@@ -266,6 +266,7 @@
                             <exclude>**/seaclouds_id_rsa</exclude>
                             <exclude>**/seaclouds_id_rsa.pub</exclude>
                             <exclude>**/*.yml.template</exclude>
+                        <exclude>**/*.out</exclude>
                         </excludes>
                     </configuration>
                 </plugin>
