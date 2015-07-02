@@ -1,0 +1,48 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: test description
+template_name: test name
+template_version: 1.0.0-SNAPSHOT
+template_author: test author
+
+imports:
+  - tosca-normative-types:1.0.0.wd03-SNAPSHOT
+
+topology_template:
+  node_templates:
+    java_ee_server:
+      type: seaclouds.Nodes.Platform.Pivotal
+      properties:
+        go_support: false
+        node_support: false
+        postgresql_support: false
+        riak_support: false
+        pivotalHD_support: false
+        mongoDB_support: false
+        redis_support: false
+        neo4j_support: false
+        java_support: false
+        python_support: false
+        ruby_support: false
+        dataStax_support: false
+        mysql_support: false
+        php_support: false
+    db:
+      type: seaclouds.nodes.Compute.Amazon
+      properties:
+        location: "aws-ec2:us-west-2"
+        mySQL_support: true
+    mysql_server:
+      type: seaclouds.nodes.deploy.MySQL
+      properties:
+        name: some_name
+        user: some_user
+        password: some_password
+        version: 5.5.37
+    tomcat_server:
+      type: seaclouds.nodes.deploy.tomcatServer
+      properties:
+        version: 7.0.53
+    db.query:
+      type: seaclouds.nodes.Logic
+    java_ee_server.operation:
+      type: seaclouds.nodes.Logic

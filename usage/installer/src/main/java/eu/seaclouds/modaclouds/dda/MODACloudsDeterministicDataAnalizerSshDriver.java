@@ -48,7 +48,7 @@ public class MODACloudsDeterministicDataAnalizerSshDriver extends JavaSoftwarePr
    @Override
    public void preInstall() {
       resolver = Entities.newDownloader(this);
-      setExpandedInstallDir(Os.mergePaths(getInstallDir(), resolver.getUnpackedDirectoryName(format("rsp-services-csparql-%s-modaclouds", getVersion()))));
+      setExpandedInstallDir(Os.mergePaths(getInstallDir(), resolver.getUnpackedDirectoryName(format("data-analyzer-%s", getVersion()))));
    }
 
    @Override
@@ -87,7 +87,7 @@ public class MODACloudsDeterministicDataAnalizerSshDriver extends JavaSoftwarePr
       newScript(MutableMap.of(USE_PID_FILE, getPidFile()), LAUNCHING)
               .failOnNonZeroResultCode()
               .body.append(
-               format("nohup java -jar rsp-services-csparql.jar > %s 2>&1 &", getLogFileLocation()))
+               format("nohup java -Xmx1200M -jar tower4clouds-data-analyzer.jar > %s 2>&1 &", getLogFileLocation()))
               .execute();
 
       String mainUri = String.format("http://%s:%d", entity.getAttribute(Attributes.HOSTNAME), entity.getAttribute(MODACloudsDeterministicDataAnalyzer.MODACLOUDS_DDA_PORT));

@@ -16,18 +16,45 @@
  */
 package eu.seaclouds.common.compose.objectmodel;
 
-import eu.seaclouds.common.objectmodel.*;
-import eu.seaclouds.common.objectmodel.apptypes.MySQL;
-import eu.seaclouds.common.objectmodel.apptypes.Tomcat;
-import eu.seaclouds.common.objectmodel.constraints.*;
-import eu.seaclouds.common.objectmodel.hosttypes.Compute;
-import eu.seaclouds.common.objectmodel.hosttypes.Platform;
-import org.junit.Test;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+import static org.testng.AssertJUnit.assertFalse;
 
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import static org.junit.Assert.*;
+import org.testng.annotations.Test;
+
+import eu.seaclouds.common.objectmodel.AppModule;
+import eu.seaclouds.common.objectmodel.AppState;
+import eu.seaclouds.common.objectmodel.Application;
+import eu.seaclouds.common.objectmodel.Artifact;
+import eu.seaclouds.common.objectmodel.ArtifactTypes;
+import eu.seaclouds.common.objectmodel.Dependency;
+import eu.seaclouds.common.objectmodel.DesignState;
+import eu.seaclouds.common.objectmodel.Effector;
+import eu.seaclouds.common.objectmodel.Feature;
+import eu.seaclouds.common.objectmodel.Location;
+import eu.seaclouds.common.objectmodel.Offering;
+import eu.seaclouds.common.objectmodel.Scalar;
+import eu.seaclouds.common.objectmodel.ScalarUnits;
+import eu.seaclouds.common.objectmodel.apptypes.MySQL;
+import eu.seaclouds.common.objectmodel.apptypes.Tomcat;
+import eu.seaclouds.common.objectmodel.constraints.Constraint;
+import eu.seaclouds.common.objectmodel.constraints.ConstraintEqual;
+import eu.seaclouds.common.objectmodel.constraints.ConstraintGreaterOrEqual;
+import eu.seaclouds.common.objectmodel.constraints.ConstraintGreaterThan;
+import eu.seaclouds.common.objectmodel.constraints.ConstraintLength;
+import eu.seaclouds.common.objectmodel.constraints.ConstraintLessOrEqual;
+import eu.seaclouds.common.objectmodel.constraints.ConstraintLessThan;
+import eu.seaclouds.common.objectmodel.constraints.ConstraintTypes;
+import eu.seaclouds.common.objectmodel.hosttypes.Compute;
+import eu.seaclouds.common.objectmodel.hosttypes.Platform;
 
 public class ObjectModelTests{
 

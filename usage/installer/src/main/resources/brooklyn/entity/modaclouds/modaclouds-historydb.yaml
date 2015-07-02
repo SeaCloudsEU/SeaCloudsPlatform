@@ -6,9 +6,14 @@ services:
   name: server
   brooklyn.children:
 
+  - serviceType: eu.seaclouds.modaclouds.hdb.MODACloudsHistoryDB
+    name: MODAclouds History DB
+    id: hdb
+
   - serviceType: eu.seaclouds.modaclouds.dda.MODACloudsDeterministicDataAnalyzer
     name: MODAclouds Deterministic Data Analyzer
     id: dda
+    launch.latch: $brooklyn:component("hdb").attributeWhenReady("service.isUp")
 
   - serviceType: eu.seaclouds.modaclouds.manager.MODACloudsMonitoringManager
     name: MODAclouds Monitoring Manager
@@ -17,5 +22,7 @@ services:
     brooklyn.config:
       modaclouds.dda.ip: $brooklyn:component("dda").attributeWhenReady("host.address")
       modaclouds.dda.port: $brooklyn:component("dda").attributeWhenReady("modaclouds.dda.port")
+      modaclouds.hdb.ip: $brooklyn:component("hdb").attributeWhenReady("host.address")
+      modaclouds.hdb.port: $brooklyn:component("hdb").attributeWhenReady("modaclouds.hdb.port")
 
     launch.latch: $brooklyn:component("dda").attributeWhenReady("service.isUp")

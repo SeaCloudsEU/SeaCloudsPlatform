@@ -18,5 +18,19 @@ Getting Started
 -------------------
 * Installation guide: please follow the instruction to know [how to deploy SeaClouds](usage/installer/README.md)
 
+How to release it!
+-------------------
+In order to release a new version:
+
+- `mvn clean install` If everything is ok:
+- `mvn -DdryRun=true release:prepare -DreleaseVersion=0.7.0-M19 -Dtag=0.7.0-M19 -DdevelopmentVersion=0.8.0-SNAPSHOT` and wait for a message like `Release preparation simulation complete.`
+
+Then:
+- `mvn release:clean`
+- `mvn release:prepare -DreleaseVersion=0.7.0-M19 -Dtag=0.7.0-M19 -DdevelopmentVersion=0.8.0-SNAPSHOT`
+- `mvn release:perform`
+
+- test the staging repository, and finally promote release it!
+
 ##License##
 Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).

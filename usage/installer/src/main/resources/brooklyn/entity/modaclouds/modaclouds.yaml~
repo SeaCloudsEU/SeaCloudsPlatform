@@ -9,6 +9,7 @@ services:
   - serviceType: eu.seaclouds.modaclouds.dda.MODACloudsDeterministicDataAnalyzer
     name: MODAclouds Deterministic Data Analyzer
     id: dda
+    launch.latch: $brooklyn:component("hdb").attributeWhenReady("service.isUp")
 
   - serviceType: eu.seaclouds.modaclouds.manager.MODACloudsMonitoringManager
     name: MODAclouds Monitoring Manager

@@ -11,3 +11,5 @@ target/
 .java-version
 .vagrant
 **/nohup.out
+release.properties
+pom.xml.*

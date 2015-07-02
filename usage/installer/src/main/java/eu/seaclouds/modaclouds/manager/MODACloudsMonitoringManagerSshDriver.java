@@ -49,7 +49,7 @@ public class MODACloudsMonitoringManagerSshDriver extends JavaSoftwareProcessSsh
     @Override
     public void preInstall() {
         resolver = Entities.newDownloader(this);
-        setExpandedInstallDir(Os.mergePaths(getInstallDir(), resolver.getUnpackedDirectoryName(format("monitoring-manager-%s", getVersion()))));
+        setExpandedInstallDir(Os.mergePaths(getInstallDir(), resolver.getUnpackedDirectoryName(format("manager-server-%s", getVersion()))));
     }
 
     @Override
@@ -88,19 +88,17 @@ public class MODACloudsMonitoringManagerSshDriver extends JavaSoftwareProcessSsh
         newScript(MutableMap.of(USE_PID_FILE, getPidFile()), LAUNCHING)
                 .failOnNonZeroResultCode()
                 .body.append(
-                format("nohup java -jar monitoring-manager.jar " +
-                                "-ddaip %s " +
-                                "-ddaport %s " +
-                                "-kbip %s " +
-                                "-kbport %s " +
-                                "-kbpath %s " +
+                format("nohup java -Xmx1200M -jar tower4clouds-manager.jar " +
+                                "-daip %s " +
+                                "-daport %s " +
+                                "-rdf-history-db-ip %s " +
+                                "-rdf-history-db-port %s " +
                                 "-mmport %s " +
                                 "> %s 2>&1 &",
                         entity.getConfig(MODACloudsMonitoringManager.MODACLOUDS_DDA_IP),
                         entity.getConfig(MODACloudsMonitoringManager.MODACLOUDS_DDA_PORT),
-                        entity.getConfig(MODACloudsMonitoringManager.MODACLOUDS_KB_IP),
-                        entity.getConfig(MODACloudsMonitoringManager.MODACLOUDS_KB_PORT),
-                        entity.getConfig(MODACloudsMonitoringManager.MODACLOUDS_KB_DATASET_PATH),
+                        entity.getConfig(MODACloudsMonitoringManager.MODACLOUDS_HISTORYDB_IP),
+                        entity.getConfig(MODACloudsMonitoringManager.MODACLOUDS_HISTORYDB_PORT),
                         entity.getAttribute(MODACloudsMonitoringManager.MODACLOUDS_MM_PORT),
                         getLogFileLocation()))
                 .execute();
