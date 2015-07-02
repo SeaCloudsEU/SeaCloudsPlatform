@@ -26,7 +26,6 @@ import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.util.Iterator;
 
-
 /* a4c tosca parser */
 import eu.seaclouds.common.tosca.ToscaParserSupplier;
 import alien4cloud.model.topology.NodeTemplate;
@@ -35,7 +34,8 @@ import alien4cloud.tosca.parser.ParsingException;
 import alien4cloud.tosca.parser.ParsingResult;
 import alien4cloud.tosca.parser.ToscaParser;
 
-
+/* tosca serializer */
+import eu.seaclouds.common.tosca.ToscaSerializer;
 
 public class Offering { 
 	/* NOTE: ex-SOM. In order not to modify the implementation of the discoverer,
@@ -156,10 +156,12 @@ public class Offering {
 	
 	
 	public String toTosca() {
-		// 1. create topology
-		// 2. serialize it
-		
-		return null; // TODO
+		String ret = ToscaSerializer.toTOSCA(
+				this.a4cOfferingObject.getResult().getTopology(), // topology
+				"", // author
+				"", // name
+				""); // description
+		return ret;
 	}
 	
 
@@ -194,6 +196,7 @@ public class Offering {
 		this.offeringId = uniqueId;
 		return true;
 	}
+	
 	
 	
 	/**

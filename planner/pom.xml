@@ -16,8 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.seaclouds-project</groupId>
     <artifactId>planner</artifactId>
@@ -25,7 +24,7 @@ limitations under the License.
     <parent>
         <groupId>eu.seaclouds-project</groupId>
         <artifactId>platform</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.8.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -37,11 +36,6 @@ limitations under the License.
         <module>core</module>
     </modules>
     <dependencies>
-        <dependency>
-            <groupId>eu.seaclouds-project</groupId>
-            <artifactId>toscamodel</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
@@ -57,7 +51,7 @@ limitations under the License.
     <repositories>
         <repository>
             <id>tosca-object-model-mvn-repo</id>
-            <url>https://raw.github.com/szenzaro/tosca-object-model/mvn-repo/</url>
+            <url>https://raw.github.com/SeaCloudsEU/tosca-yaml-object-model/mvn-repo/</url>
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>

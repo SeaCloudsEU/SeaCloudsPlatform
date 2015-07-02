@@ -40,13 +40,13 @@ public interface MODACloudsDeterministicDataAnalyzer extends SoftwareProcess, Ha
 
    @SetFromFlag("version")
    ConfigKey<String> SUGGESTED_VERSION =
-           ConfigKeys.newConfigKeyWithDefault(SoftwareProcess.SUGGESTED_VERSION, "0.4.6.2");
+           ConfigKeys.newConfigKeyWithDefault(SoftwareProcess.SUGGESTED_VERSION, "0.2");
 
    @SetFromFlag("downloadUrl")
    BasicAttributeSensorAndConfigKey<String> DOWNLOAD_URL = new StringAttributeSensorAndConfigKey(
            SoftwareProcess.DOWNLOAD_URL, "https://github" +
-           ".com/deib-polimi/rsp-services-csparql/releases/download/${version}-modaclouds/rsp-services-csparql-${version}-modaclouds-distribution.tar.gz");
-
+           ".com/deib-polimi/tower4clouds/releases/download/v${version}/data-analyzer-${version}.tar.gz");
+   
    @SetFromFlag("modacloudsDeterministicDataAnalyzerPort")
    PortAttributeSensorAndConfigKey MODACLOUDS_DDA_PORT = new PortAttributeSensorAndConfigKey("modaclouds.dda.port",
            "MODAClouds Deterministic Data Analyzer port", "8175+");
