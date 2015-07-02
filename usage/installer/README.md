@@ -4,6 +4,7 @@
 A deployment of SeaClouds can be launched using Apache Brooklyn. We currently support deployments against Bring Your 
 Own Nodes (BYON) and to all the IaaS provider supported by [Apache jclouds](http://jclouds.org).
 
+
 # Deploy SeaClouds platform
 
 Make sure you have [Apache Maven](https://maven.apache.org/) v.3.5.5+
@@ -44,6 +45,15 @@ If you prefer you can also launch the platform deployment from CLI
 nohup ./start.sh --app blueprints/seaclouds-on-byon.yaml &
 tail -f nohup.out
 ```
+
+### SeaClouds release 0.7.0-M19
+
+A detailed description of [0.7.0-M19](https://github.com/SeaCloudsEU/SeaCloudsPlatform/releases/tag/0.7.0-M19) SeaClouds release including: 
+- SeaClouds components and their interactions
+- A guide to get an install SeaClouds Platform 
+- An example of how to use SeaClouds Platform and exploit its capabilities and the capabilies of each of its components
+
+can be found in the [Integrated Platform deliverable](https://drive.google.com/file/d/0B3naRHlVBGTEdmYySFVWSGdIYzA/view?usp=sharing).
 
 ### Troubleshooting
 
