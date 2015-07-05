@@ -83,7 +83,7 @@ public class Offering {
 	
 	
 	/* c.tor */
-	public Offering() {
+	private Offering() {
 		this.offeringId = null;
 		this.a4cOfferingObject = null;
 	}
@@ -205,7 +205,7 @@ public class Offering {
 	}
 
 
-	
+
 	/**
 	 * Retrieves information about the date when the offering has been added to the local
 	 * repository. Note that this method queries the local repository to retrieve the
@@ -231,5 +231,17 @@ public class Offering {
 			ex.printStackTrace();
 			throw new RuntimeException(ex.getMessage());
 		}
+	}
+
+
+
+	/**
+	 * Retrieves the name of the offering.
+	 * @return The name of the offering.
+	 */
+	public String getName() {
+		NodeTemplate nt = this.getNodeTemplate();
+		String offeringName = nt.getName();
+		return offeringName;
 	}
 }

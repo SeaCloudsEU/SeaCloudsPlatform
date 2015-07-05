@@ -180,7 +180,7 @@ public class Discoverer {
 		/* return the status */
 		return ret;
 	}
-	
+
 	
 	
 	/**
