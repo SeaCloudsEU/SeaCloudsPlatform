@@ -18,13 +18,10 @@
 package eu.seaclouds.platform.discoverer.core;
 
 /* std imports */
+import java.io.*;
+import java.util.Calendar;
 import java.util.Iterator;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.lang.Exception;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /* a4c */
 import alien4cloud.tosca.parser.ParsingException;
@@ -52,15 +49,24 @@ public class Discoverer {
 		this.ufg = new UniqueFileGen(prefix, suffix, dir);
 	}
 	
-	
-	
+
+
+	/* *************************************************************** */
+	/* **                       PUBLIC UTILS                        ** */
+	/* *************************************************************** */
+
+	public String getWorkingDirectory() {
+		return ufg.getWorkingDirectory();
+	}
+
+
 	
 	/* *************************************************************** */
 	/* **                      PRIVATE UTILS                        ** */
 	/* *************************************************************** */
 	
 	private Offering fetch_helper(String cloudOfferingId)
-			throws FileNotFoundException, IOException, ParsingException {
+			throws IOException, ParsingException {
 		/* input check */
 		if(cloudOfferingId == null)
 			throw new NullPointerException("The parameter \"cloudOfferingId\" cannot be null.");
@@ -77,8 +83,7 @@ public class Discoverer {
 	
 	
 	
-	private String addOffer_helper(Offering o)
-			throws IOException, FileNotFoundException {
+	private String addOffer_helper(Offering o) throws IOException {
 		/* creating the new unique file to store the offering */
 		File offeringFile = ufg.getUniqueFile();
 		
@@ -93,6 +98,13 @@ public class Discoverer {
 		FileOutputStream fos = new FileOutputStream(offeringFile);
 		fos.write(toscaContent.getBytes());
 		fos.close();
+
+		/* creating the date file */
+		String dateFileName = ufg.getWorkingDirectory() + offeringId + ".date";
+		fos = new FileOutputStream(dateFileName);
+		ObjectOutputStream oos = new ObjectOutputStream(fos);
+		oos.writeObject(Calendar.getInstance().getTime());
+		oos.close();
 		
 		/* returning the ID of the added offer */
 		return offeringId;
@@ -150,11 +162,23 @@ public class Discoverer {
 		if( !Offering.validateOfferingId(cloudOfferingId) )
 			return false;
 		
-		/* elimination */
+		/* elimination of the offering*/
 		String offeringFileName = ufg.getWorkingDirectory() + ufg.getPrefix()
 				+ cloudOfferingId + ufg.getSuffix();
 		File offeringFile = new File(offeringFileName);
-		return offeringFile.delete();
+		boolean ret = offeringFile.delete();
+
+		/* elimination of the date */
+		String dateFileName = ufg.getWorkingDirectory() + cloudOfferingId + ".date";
+		File dateFile = new File(dateFileName);
+		if(dateFile.exists())
+			dateFile.delete();
+		else
+			System.err.println("WARNING: The offering " + cloudOfferingId
+					+ " did not have a date file.");
+
+		/* return the status */
+		return ret;
 	}
 	
 	
@@ -185,22 +209,19 @@ public class Discoverer {
 		private File[] files;
 		private int count;
 		private int current;
-		
-	
+
 		/* c.tor */
 		OfferingRepoIterator(File[] files) {
 			this.files = files;
 			this.count = this.files.length;
 			this.current = 0;
 		}
-	
-		
+
 		@Override
 		public boolean hasNext() {
 			return (current < count);
 		}
 
-		
 		@Override
 		public String next() {
 			/* getting File */

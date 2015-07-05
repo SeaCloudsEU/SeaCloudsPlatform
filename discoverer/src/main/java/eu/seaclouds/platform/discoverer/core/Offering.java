@@ -18,30 +18,24 @@
 package eu.seaclouds.platform.discoverer.core;
 
 /* std imports */
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Paths;
 import java.nio.file.Path;
+import java.util.Date;
 import java.util.Iterator;
 
 /* a4c tosca parser */
-import eu.seaclouds.common.tosca.ToscaParserSupplier;
 import alien4cloud.model.topology.NodeTemplate;
 import alien4cloud.tosca.model.ArchiveRoot;
-import alien4cloud.tosca.parser.ParsingException;
 import alien4cloud.tosca.parser.ParsingResult;
 import alien4cloud.tosca.parser.ToscaParser;
+import eu.seaclouds.common.tosca.ToscaParserSupplier;
+import alien4cloud.tosca.parser.ParsingException;
 
 /* tosca serializer */
 import eu.seaclouds.common.tosca.ToscaSerializer;
 
-public class Offering { 
-	/* NOTE: ex-SOM. In order not to modify the implementation of the discoverer,
-	 *       this class has been kept as wrapper for the A4C offering object.
-	 */
-	
+public class Offering {
 	/* vars */
 	private String offeringId;
 	private ParsingResult<ArchiveRoot> a4cOfferingObject; // wrapping
@@ -178,8 +172,8 @@ public class Offering {
 		return it.next();
 	}
 	
-	
-	
+
+
 	/**
 	 * Assigns a unique ID to the Offering.
 	 * @param uniqueId The ID to assign.
@@ -208,5 +202,34 @@ public class Offering {
 			throw new NullPointerException("The offering has not been assigned any ID. " 
 					+ "See Offering.assignId(String).");
 		return this.offeringId;
+	}
+
+
+	
+	/**
+	 * Retrieves information about the date when the offering has been added to the local
+	 * repository. Note that this method queries the local repository to retrieve the
+	 * <code>Date</code> object: invoking the same method, on the same offering, but on
+	 * different machine will produce different results.
+	 * @return The <code>Date</code> instance representing the time when the offering has
+	 * been added to the Discoverer's repository.
+	 */
+	public Date getDate() {
+		if( this.offeringId == null )
+			throw new NullPointerException("The offering has not been added to the repository.");
+
+		/* loading insertion date */
+		try {
+			Discoverer d = Discoverer.instance();
+			String dateFileName = d.getWorkingDirectory() + this.offeringId + ".date";
+			FileInputStream fis = new FileInputStream(dateFileName);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			Date ret = (Date) ois.readObject();
+			return ret;
+		} catch(IOException | ClassNotFoundException ex) {
+			/* something is wrong */
+			ex.printStackTrace();
+			throw new RuntimeException(ex.getMessage());
+		}
 	}
 }
