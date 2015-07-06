@@ -44,8 +44,7 @@ public class Discoverer {
 	private Discoverer() {
 		String prefix = "offer_";
 		String suffix = ".yaml";
-		// String dir = System.getProperty("user.home") + "/offerings_repo";
-		String dir = "/Users/mat/offerings_repo";
+		String dir = System.getProperty("user.home") + "/offerings_repo";
 		this.ufg = new UniqueFileGen(prefix, suffix, dir);
 	}
 	

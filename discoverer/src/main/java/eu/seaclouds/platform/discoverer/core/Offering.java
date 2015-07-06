@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 
 /* a4c tosca parser */
 import alien4cloud.model.topology.NodeTemplate;
@@ -44,8 +45,7 @@ public class Offering {
 	private static ToscaParser parser = null;
 	private static ToscaParserSupplier tps = null;
 	
-	
-	
+
 	private static void initToscaParser() {
 		if( tps == null ) tps = new ToscaParserSupplier();
 		if(parser == null) parser = tps.get();
@@ -240,8 +240,9 @@ public class Offering {
 	 * @return The name of the offering.
 	 */
 	public String getName() {
-		NodeTemplate nt = this.getNodeTemplate();
-		String offeringName = nt.getName();
-		return offeringName;
+		Map<String, NodeTemplate> nts = this.a4cOfferingObject.getResult()
+				.getTopology().getNodeTemplates();
+		String nodeTemplateName = nts.keySet().iterator().next();
+		return nodeTemplateName;
 	}
 }
