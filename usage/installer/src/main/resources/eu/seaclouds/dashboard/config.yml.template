@@ -16,3 +16,6 @@ monitor:
 sla:
   host: ${entity.slaHost}
   port: ${entity.slaPort?c}
+planner:
+  host: ${entity.plannerHost}
+  port: ${entity.plannerPort?c}

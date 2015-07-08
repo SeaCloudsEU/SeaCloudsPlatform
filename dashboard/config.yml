@@ -5,6 +5,9 @@ server:
   adminConnectors:
   - type: http
     port: 8001
+planner:
+  host: ${PLANNER_HOST}
+  port: ${PLANNER_PORT}
 deployer:
   host: ${DEPLOYER_HOST}
   port: ${DEPLOYER_PORT}
