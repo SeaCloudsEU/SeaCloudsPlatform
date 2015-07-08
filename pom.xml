@@ -26,6 +26,7 @@
         <!--module>monitor</module-->
         <module>deployer</module>
         <module>planner</module>
+		<module>discoverer</module>
         <module>dashboard</module>
         <module>usage/installer</module>
     </modules>
