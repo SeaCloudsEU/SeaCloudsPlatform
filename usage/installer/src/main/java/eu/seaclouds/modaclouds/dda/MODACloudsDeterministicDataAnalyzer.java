@@ -25,6 +25,7 @@ import brooklyn.config.ConfigKey;
 import brooklyn.entity.basic.Attributes;
 import brooklyn.entity.basic.ConfigKeys;
 import brooklyn.entity.basic.SoftwareProcess;
+import brooklyn.entity.java.UsesJava;
 import brooklyn.entity.proxying.ImplementedBy;
 import brooklyn.entity.trait.HasShortName;
 import brooklyn.event.AttributeSensor;
@@ -36,7 +37,7 @@ import brooklyn.util.flags.SetFromFlag;
 @Catalog(name = "MODAClouds Deterministic Data Analyzer", description = "MODAClouds Deterministic Data Analyzer", iconUrl =
         "classpath:///modaclouds.png")
 @ImplementedBy(MODACloudsDeterministicDataAnalyzerImpl.class)
-public interface MODACloudsDeterministicDataAnalyzer extends SoftwareProcess, HasShortName {
+public interface MODACloudsDeterministicDataAnalyzer extends SoftwareProcess, UsesJava, HasShortName {
 
    @SetFromFlag("version")
    ConfigKey<String> SUGGESTED_VERSION =

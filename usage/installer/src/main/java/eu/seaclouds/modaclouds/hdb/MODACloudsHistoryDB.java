@@ -18,16 +18,13 @@
  */
 package eu.seaclouds.modaclouds.hdb;
 
-import java.net.URI;
-
 import brooklyn.catalog.Catalog;
 import brooklyn.config.ConfigKey;
-import brooklyn.entity.basic.Attributes;
 import brooklyn.entity.basic.ConfigKeys;
 import brooklyn.entity.basic.SoftwareProcess;
+import brooklyn.entity.java.UsesJava;
 import brooklyn.entity.proxying.ImplementedBy;
 import brooklyn.entity.trait.HasShortName;
-import brooklyn.event.AttributeSensor;
 import brooklyn.event.basic.BasicAttributeSensorAndConfigKey;
 import brooklyn.event.basic.BasicAttributeSensorAndConfigKey.StringAttributeSensorAndConfigKey;
 import brooklyn.event.basic.PortAttributeSensorAndConfigKey;
@@ -35,7 +32,7 @@ import brooklyn.util.flags.SetFromFlag;
 
 @Catalog(name = "MODAClouds History DB", description = "MODAClouds History DB", iconUrl = "classpath:///modaclouds.png")
 @ImplementedBy(MODACloudsHistoryDBImpl.class)
-public interface MODACloudsHistoryDB extends SoftwareProcess, HasShortName {
+public interface MODACloudsHistoryDB extends SoftwareProcess, UsesJava, HasShortName {
 
    @SetFromFlag("version")
    ConfigKey<String> SUGGESTED_VERSION =
