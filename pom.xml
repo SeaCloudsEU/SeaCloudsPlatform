@@ -30,6 +30,8 @@
         <module>dashboard</module>
         <module>sla</module>
         <module>usage/installer</module>
+        <module>usage/rest-api</module>
+        <module>usage/server</module>
     </modules>
     <packaging>pom</packaging>
 

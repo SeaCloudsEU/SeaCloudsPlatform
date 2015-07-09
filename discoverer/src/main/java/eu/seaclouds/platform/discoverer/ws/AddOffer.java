@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.server.AbstractHttpConnection.OutputWriter;
 import org.json.simple.JSONObject;
 
 import alien4cloud.tosca.parser.ParsingException;
@@ -40,7 +39,6 @@ import eu.seaclouds.platform.discoverer.core.Offering;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.Scanner;
 
 @SuppressWarnings("serial")
 public class AddOffer extends HttpServlet {
