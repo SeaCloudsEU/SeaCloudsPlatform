@@ -27,7 +27,6 @@
         <module>deployer</module>
         <module>planner</module>
 		<module>discoverer</module>
-        <module>dashboard</module>
         <module>sla</module>
         <module>usage/installer</module>
         <module>usage/rest-api</module>
@@ -100,6 +99,16 @@
         <brooklyn.version>0.7.0-20150614.2158</brooklyn.version>
         <jetty.version>9.2.4.v20141103</jetty.version>
         <dropwizard.version>0.8.1</dropwizard.version>
+        <httpcomponents.version>4.3.6</httpcomponents.version>
+        <gson.version>2.3</gson.version>
+        <json.version>20140107</json.version>
+        <tomcat-servlet.version>8.0.21</tomcat-servlet.version>
+        <json-simple.version>1.1.1</json-simple.version>
+        <alien4cloud.version>1.0.0-SM26</alien4cloud.version>
+        <commons-io.version>2.4</commons-io.version>
+        <spring.version>4.1.4.RELEASE</spring.version>
+        <commons-lang.version>3.3.2</commons-lang.version>
+        <validation-api.version>1.1.0.Final</validation-api.version>
         <junit.version>4.11</junit.version>
         <testng.version>6.8.8</testng.version>
         <slf4j.version>1.7.12</slf4j.version>
@@ -165,33 +174,6 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.javatuples</groupId>
-            <artifactId>javatuples</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>${snakeyaml.version}</version>
-        </dependency>
-    </dependencies>
 
     <build>
         <pluginManagement>
@@ -351,6 +333,26 @@
         <dependencies>
             <dependency>
                 <groupId>org.apache.brooklyn</groupId>
+                <artifactId>brooklyn-launcher</artifactId>
+                <version>${brooklyn.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.brooklyn</groupId>
+                <artifactId>brooklyn-software-base</artifactId>
+                <version>${brooklyn.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.brooklyn</groupId>
+                <artifactId>brooklyn-software-database</artifactId>
+                <version>${brooklyn.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.brooklyn</groupId>
+                <artifactId>brooklyn-software-webapp</artifactId>
+                <version>${brooklyn.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.brooklyn</groupId>
                 <artifactId>brooklyn-rest-client</artifactId>
                 <version>${brooklyn.version}</version>
             </dependency>
@@ -368,6 +370,189 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+                <version>${json.version}</version>            <!-- This version doesn't require Java 8 -->
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-servlet-api</artifactId>
+                <version>${tomcat-servlet.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>com.googlecode.json-simple</groupId>
+                <artifactId>json-simple</artifactId>
+                <version>${json-simple.version}</version>
+            </dependency>
+            
+
+            <dependency>
+                <groupId>io.dropwizard</groupId>
+                <artifactId>dropwizard-core</artifactId>
+                <version>${dropwizard.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard</groupId>
+                <artifactId>dropwizard-assets</artifactId>
+                <version>${dropwizard.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>alien4cloud</groupId>
+                <artifactId>alien4cloud-core</artifactId>
+                <version>${alien4cloud.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.elasticsearch</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${validation-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context-support</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpcomponents.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpmime</artifactId>
+                <version>${httpcomponents.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+
+            <!-- Test dependencies -->
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${testng.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.brooklyn</groupId>
+                <artifactId>brooklyn-test-support</artifactId>
+                <version>${brooklyn.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.brooklyn</groupId>
+                <artifactId>brooklyn-core</artifactId>
+                <version>${brooklyn.version}</version>
+                <classifier>tests</classifier>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.brooklyn</groupId>
+                <artifactId>brooklyn-launcher</artifactId>
+                <version>${brooklyn.version}</version>
+                <classifier>tests</classifier>
+                <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.jclouds.provider</groupId>
+                        <artifactId>softlayer</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.jclouds.labs</groupId>
+                        <artifactId>docker</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.jclouds.labs</groupId>
+                        <artifactId>vcloud-director</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.jclouds.labs</groupId>
+                        <artifactId>dmtf</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+
+            <dependency>
+                <!-- this pulls in all brooklyn entities and clouds;
+                     you can cherry pick selected ones instead (for a smaller build) -->
+                <groupId>org.apache.brooklyn</groupId>
+                <artifactId>brooklyn-all</artifactId>
+                <version>${brooklyn.version}</version>
+            </dependency>
+
+            <dependency>
+                <!-- this gives us flexible and easy-to-use logging; just edit logback-custom.xml! -->
+                <groupId>org.apache.brooklyn</groupId>
+                <artifactId>brooklyn-logback-xml</artifactId>
+                <version>${brooklyn.version}</version>
+                <!-- optional so that this project has logging; dependencies may redeclare or supply their own;
+                     provided so that it isn't put into the assembly (as it supplies its own explicit logback.xml);
+                     see Logging in the Brooklyn website/userguide for more info -->
+                <optional>true</optional>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.brooklyn</groupId>
+                <artifactId>brooklyn-software-base</artifactId>
+                <version>${brooklyn.version}</version>
+                <scope>test</scope>
+                <classifier>tests</classifier>
+            </dependency>
+            
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

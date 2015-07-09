@@ -48,6 +48,12 @@ limitations under the License.
 
     <dependencies>
         <dependency>
+            <groupId>eu.seaclouds-project</groupId>
+            <artifactId>common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
             <!-- this pulls in all brooklyn entities and clouds;
                  you can cherry pick selected ones instead (for a smaller build) -->
             <groupId>org.apache.brooklyn</groupId>
