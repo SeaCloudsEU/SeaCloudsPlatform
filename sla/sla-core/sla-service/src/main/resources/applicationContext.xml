@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+			http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+	<context:component-scan base-package="eu.atos.sla"/>
+	<context:annotation-config/>
+	<import resource="classpath*:tools-context.xml"/>
+	<import resource="classpath*:repository-context.xml"/>
+	<import resource="classpath*:enforcement-context.xml"/>
+	<import resource="classpath*:personalization-context.xml"/>
+	<import resource="classpath*:security-context.xml"/>
+	
+	<bean id="modelConverter" class="eu.atos.sla.util.ModelConversion">
+		<property name="businessValueListParser">
+			<bean class="${converter.businessparser.class}"/>
+		</property>
+	</bean>
+
+	<!-- to review bean id="converterBean" class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="marshallingHttpMessageConverter"/>
+				<ref bean="jsonMessageConverter"/>
+			</list>
+		</property>
+	</bean-->
+
+	<!--to convert xml -->
+	<!--bean id="marshallingHttpMessageConverter" class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
+		<property name="marshaller"   ref="castorMarshaller"/>
+		<property name="unmarshaller" ref="castorMarshaller"/>
+	</bean>
+	<bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller"/-->	
+
+	<!--to convert json -->
+	<!--bean id="jsonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/-->
+
+	<bean class="eu.atos.sla.monitoring.simple.SimpleMetricsTranslator">
+		<constructor-arg ref="constraintEvaluator" />
+	</bean>
+</beans> 

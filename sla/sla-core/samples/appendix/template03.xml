@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2014 Atos
+    Contact: Atos <roman.sosa@atos.net>
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+           http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+<wsag:Template xmlns:wsag="http://www.ggf.org/namespaces/ws-agreement" xmlns:sla="http://sla.atos.eu" wsag:TemplateId="template03">
+	<wsag:Name>ExampleTemplate03</wsag:Name>
+	<wsag:Context>
+	    <wsag:AgreementResponder>provider03</wsag:AgreementResponder>
+		<wsag:ServiceProvider>AgreementResponder</wsag:ServiceProvider>
+		<wsag:ExpirationTime>2014-03-07T12:00:00+0100</wsag:ExpirationTime>
+		<sla:Service xmlns:sla="http://sla.atos.eu">service03</sla:Service>	  
+	</wsag:Context>
+	<wsag:Terms>
+		<wsag:All>
+			<wsag:ServiceDescriptionTerm wsag:Name="SDTName1" wsag:ServiceName="ServiceName">
+				DSL expression
+			</wsag:ServiceDescriptionTerm>
+			<wsag:ServiceDescriptionTerm wsag:Name="SDTName2" wsag:ServiceName="ServiceName">
+				DSL expression
+			</wsag:ServiceDescriptionTerm>
+			
+			<wsag:ServiceProperties wsag:Name="NonFunctional" wsag:ServiceName="ServiceName">
+				<wsag:Variables>
+					<wsag:Variable wsag:Name="ResponseTime" wsag:Metric="xs:double">
+						<wsag:Location>qos:ResponseTime</wsag:Location>
+					</wsag:Variable>
+					<wsag:Variable wsag:Name="Performance" wsag:Metric="xs:double">
+						<wsag:Location>qos:Performance</wsag:Location>
+					</wsag:Variable>
+				</wsag:Variables>
+			</wsag:ServiceProperties>
+			<wsag:GuaranteeTerm wsag:Name="GT_ResponseTime">
+				<wsag:ServiceScope>ServiceName</wsag:ServiceScope>
+				<wsag:ServiceLevelObjective>
+					<wsag:KPITarget>
+						<wsag:KPIName>ResponseTime</wsag:KPIName>
+						<wsag:CustomServiceLevel>{"constraint" : "ResponseTime LT qos:ResponseTime"}</wsag:CustomServiceLevel>
+					</wsag:KPITarget>
+				</wsag:ServiceLevelObjective>
+			</wsag:GuaranteeTerm>
+			<wsag:GuaranteeTerm wsag:Name="GT_Performance">
+				<wsag:ServiceScope>ServiceName</wsag:ServiceScope>
+				<wsag:ServiceLevelObjective>
+					<wsag:KPITarget>
+						<wsag:KPIName>Performance</wsag:KPIName>
+						<wsag:CustomServiceLevel>{"constraint" : "Performance GT qos:Performance"}</wsag:CustomServiceLevel>
+					</wsag:KPITarget>
+				</wsag:ServiceLevelObjective>
+				<wsag:BusinessValueList>
+					<wsag:Importance>3</wsag:Importance>
+					<wsag:Penalty>
+						<wsag:AssessmentInterval>
+							<wsag:Count>10</wsag:Count>
+						</wsag:AssessmentInterval>
+						<wsag:ValueUnit>EUR</wsag:ValueUnit>
+						<wsag:ValueExpression>99</wsag:ValueExpression>
+					</wsag:Penalty>
+					
+					<wsag:Reward></wsag:Reward>
+					<wsag:Preference></wsag:Preference>
+					<wsag:CustomBusinessValue></wsag:CustomBusinessValue>
+				</wsag:BusinessValueList>
+			</wsag:GuaranteeTerm>
+		</wsag:All>
+	</wsag:Terms>
+</wsag:Template>
+

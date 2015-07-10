@@ -28,6 +28,7 @@
         <module>planner</module>
 		<module>discoverer</module>
         <module>dashboard</module>
+        <module>sla</module>
         <module>usage/installer</module>
     </modules>
     <packaging>pom</packaging>
@@ -74,7 +75,7 @@
             <url>https://github.com/MicheleGuerriero</url>
         </developer>
         <developer>
-            <name>Roman Sosa Gonzales</name>
+            <name>Roman Sosa Gonzalez</name>
             <url>https://github.com/rosogon</url>
         </developer>
         <developer>
