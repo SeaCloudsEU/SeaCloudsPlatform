@@ -1,0 +1,58 @@
+<!--
+
+    Copyright 2014 Atos
+    Contact: Atos <roman.sosa@atos.net>
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+           http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+<wsag:Agreement xmlns:wsag="http://www.ggf.org/namespaces/ws-agreement" xmlns:sla="http://sla.atos.eu">
+	<wsag:Name>DukeCaseStudy</wsag:Name>
+	<wsag:Context>
+		<wsag:AgreementInitiator>client</wsag:AgreementInitiator>
+		<wsag:AgreementResponder>seaclouds</wsag:AgreementResponder>
+		<wsag:ServiceProvider>AgreementResponder</wsag:ServiceProvider>
+		<sla:Service xmlns:sla="http://sla.atos.eu">duke</sla:Service>
+	</wsag:Context>
+	<wsag:Terms>
+		<wsag:All>
+			<wsag:ServiceProperties wsag:Name="NonFunctional" wsag:ServiceName="default">
+				<wsag:VariableSet>
+					<wsag:Variable wsag:Name="ResponseTime" wsag:Metric="xs:double">
+						<wsag:Location></wsag:Location>
+					</wsag:Variable>
+					<wsag:Variable wsag:Name="AppAvailable" wsag:Metric="xs:double">
+						<wsag:Location></wsag:Location>
+					</wsag:Variable>
+				</wsag:VariableSet>
+			</wsag:ServiceProperties>
+			<wsag:GuaranteeTerm wsag:Name="ResponseTimeGT">
+				<wsag:ServiceLevelObjective>
+					<wsag:KPITarget>
+						<wsag:KPIName>ResponseTime</wsag:KPIName>
+						<wsag:CustomServiceLevel>{"constraint": "ResponseTimeViolated NOT_EXISTS", "qos" : "ResponseTime LT 1.5"}</wsag:CustomServiceLevel>
+					</wsag:KPITarget>
+				</wsag:ServiceLevelObjective>
+			</wsag:GuaranteeTerm>
+			<wsag:GuaranteeTerm wsag:Name="AppAvailableGT">
+				<wsag:ServiceLevelObjective>
+					<wsag:KPITarget>
+						<wsag:KPIName>AppAvailable</wsag:KPIName>
+						<wsag:CustomServiceLevel>{"constraint": "AppAvailableViolated NOT_EXISTS", "qos" : "AppAvailable GT 0.99"}</wsag:CustomServiceLevel>
+					</wsag:KPITarget>
+				</wsag:ServiceLevelObjective>
+			</wsag:GuaranteeTerm>
+		</wsag:All>
+	</wsag:Terms>
+</wsag:Agreement>
+

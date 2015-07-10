@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!--
+
+    Copyright 2014 Atos
+    Contact: Atos <roman.sosa@atos.net>
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+           http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+<monitoringRules xmlns="http://www.modaclouds.eu/xsd/1.0/monitoring_rules_schema">
+  <monitoringRule id="avgRespTimeViolation" label="avgRespTime" timeWindow="30" timeStep="30">
+    <collectedMetric metricName="ResponseTime">
+      <parameter name="samplingProbability">1</parameter>
+    </collectedMetric>
+    <monitoredTargets>
+      <monitoredTarget class="Method"/>
+    </monitoredTargets>
+    <metricAggregation aggregateFunction="Average" groupingClass="Method"/>
+    <condition> METRIC &gt; 2000 </condition>
+    <actions>
+      <action name="OutputMetric">
+        <parameter name="metric">ResponseTimeViolated</parameter>
+        <parameter name="value">METRIC</parameter>
+        <parameter name="resourceId">ID</parameter>
+      </action>
+    </actions>
+  </monitoringRule>
+  <monitoringRule id="availabilityRuleViolation" label="availabilityRule" timeWindow="30" timeStep="30">
+    <collectedMetric metricName="AppAvailable">
+      <parameter name="samplingTime">60</parameter>
+      <parameter name="retryPeriod">5</parameter>
+      <parameter name="retryTimes">0</parameter>
+      <parameter name="port">8080</parameter>
+      <parameter name="path">/index.html</parameter>
+    </collectedMetric>
+    <monitoredTargets>
+      <monitoredTarget class="InternalComponent" type="dukes-webapp"/>
+    </monitoredTargets>
+    <condition> METRIC &lt; 0.99 </condition>
+    <actions>
+      <action name="OutputMetric">
+        <parameter name="metric">AppAvailableViolated</parameter>
+        <parameter name="value">METRIC</parameter>
+        <parameter name="resourceId">ID</parameter>
+      </action>
+    </actions>
+  </monitoringRule>
+</monitoringRules>
