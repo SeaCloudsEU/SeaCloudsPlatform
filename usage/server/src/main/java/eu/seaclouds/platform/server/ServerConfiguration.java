@@ -26,7 +26,7 @@ import io.dropwizard.Configuration;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-public class DashboardConfiguration extends Configuration {
+public class ServerConfiguration extends Configuration {
 
     @Valid
     @NotNull

@@ -29,13 +29,13 @@ import io.dropwizard.server.DefaultServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
-public class DashboardApplication extends Application<DashboardConfiguration> {
+public class ServerApplication extends Application<ServerConfiguration> {
     public static void main(String[] args) throws Exception {
-        new DashboardApplication().run(args);
+        new ServerApplication().run(args);
     }
 
     @Override
-    public void initialize(Bootstrap<DashboardConfiguration> bootstrap) {
+    public void initialize(Bootstrap<ServerConfiguration> bootstrap) {
         // Setting configuration from env variables
         bootstrap.setConfigurationSourceProvider(
                 new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(),
@@ -49,7 +49,7 @@ public class DashboardApplication extends Application<DashboardConfiguration> {
     }
 
     @Override
-    public void run(DashboardConfiguration configuration, Environment environment) throws Exception {
+    public void run(ServerConfiguration configuration, Environment environment) throws Exception {
         ((DefaultServerFactory) configuration.getServerFactory()).setJerseyRootPath("/api/*");
 
         environment.jersey().register(new DeployerResource(configuration.getDeployerFactory()));

@@ -95,7 +95,7 @@
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>eu.seaclouds.platform.server.DashboardApplication</mainClass>
+                                    <mainClass>eu.seaclouds.platform.server.ServerApplication</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
@@ -114,16 +114,10 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <excludes combine.children="append">
-                        <!-- TODO:  Include propietary files -->
-                        <exclude>**/static/**/*</exclude>
-                    </excludes>
-                </configuration>
             </plugin>
 
         </plugins>
-        <finalName>dashboard</finalName>
+        <finalName>server</finalName>
     </build>
 
 </project>
