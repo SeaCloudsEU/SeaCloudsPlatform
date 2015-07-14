@@ -39,6 +39,10 @@
     <fileSets>
         <fileSet>
             <directory>${project.build.directory}/target-grunt/app</directory>
+            <excludes>
+                <exclude>**/bower_components/**</exclude>
+            </excludes>
+
             <outputDirectory></outputDirectory>
             <fileMode>0755</fileMode>
         </fileSet>
