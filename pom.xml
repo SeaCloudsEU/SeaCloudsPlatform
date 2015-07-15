@@ -94,7 +94,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <guava.version>18.0</guava.version>
         <javatuples.version>1.2</javatuples.version>
-        <brooklyn.version>0.7.0-20150614.2158</brooklyn.version>
+        <brooklyn.version>0.8.0-SNAPSHOT</brooklyn.version>
         <jetty.version>9.2.4.v20141103</jetty.version>
         <dropwizard.version>0.8.1</dropwizard.version>
         <junit.version>4.11</junit.version>
