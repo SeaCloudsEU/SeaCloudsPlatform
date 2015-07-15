@@ -15,17 +15,38 @@
  * limitations under the License.
  */
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
     grunt.initConfig({
+        bower: {
+            install: {
+                options: {
+                    targetDir: 'app/static/lib',
+                    layout: 'byComponent',
+                    bowerOptions: {}
+                }
+            }
+        },
+
         wiredep: {
             app: {
                 src: [
                     'app/index.html'
-                ]
+                ],
+                options: {
+                    ignorePath: '../bower_components/',
+                    fileTypes: {
+                        html: {
+                            replace: {
+                                js: '<script src="static/lib//{{filePath}}"></script>',
+                                css: '<link rel="stylesheet" href="static/lib/{{filePath}}" />'
+                            }
+                        }
+                    }
+                }
             }
         },
-        
+
         useminPrepare: {
             html: 'app/index.html',
             options: {
@@ -33,33 +54,25 @@ module.exports = function(grunt) {
                 dest: 'app'
             }
         },
-        
+
         usemin: {
             html: 'app/index.html'
         },
-        
+
         watch: {
             files: ['bower_components/*'],
             tasks: ['wiredep']
         }
     });
-    
-    grunt.loadNpmTasks('grunt-usemin');
-    grunt.loadNpmTasks('grunt-contrib-cssmin');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-concat');
 
+    grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-wiredep');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    
+
     grunt.registerTask('changes', ['watch']);
 
     grunt.registerTask('default', [
-        'wiredep',
-        'useminPrepare',
-        'concat:generated',
-        'cssmin:generated',
-        'uglify:generated',
-        'usemin'
+        'bower',
+        'wiredep'
     ]);
 };

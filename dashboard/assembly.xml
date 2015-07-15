@@ -17,7 +17,7 @@
   -->
 <assembly>
     <id>dist</id>
-    
+
     <formats>
         <format>dir</format>
         <format>tar.gz</format>
@@ -36,14 +36,10 @@
             <unpack>false</unpack>
         </dependencySet>
     </dependencySets>
-    
+
     <fileSets>
         <fileSet>
             <directory>${project.build.directory}/target-grunt/app</directory>
-            <excludes>
-                <exclude>**/bower_components/**</exclude>
-            </excludes>
-
             <outputDirectory></outputDirectory>
             <fileMode>0755</fileMode>
         </fileSet>

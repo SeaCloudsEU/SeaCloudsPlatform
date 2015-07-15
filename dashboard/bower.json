@@ -29,13 +29,7 @@
     "angular-pnotify": "~0.0.6",
     "font-awesome": "~4.3.0"
   },
-  "overrides": {
-    "bootstrap": {
-      "main": [
-        "dist/js/bootstrap.js",
-        "dist/css/bootstrap.css",
-        "less/bootstrap.less"
-      ]
-    }
+  "resolutions": {
+    "angular": "~1.x"
   }
 }
