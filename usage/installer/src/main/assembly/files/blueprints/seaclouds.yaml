@@ -17,9 +17,9 @@ services:
     brooklyn.webconsole.security.users=admin
     brooklyn.webconsole.security.user.admin.password=p4ssw0rd
 
-- serviceType: eu.seaclouds.dashboard.SeacloudsDashboard
+- serviceType: eu.seaclouds.server.SeacloudsDashboard
   name: SeaClouds Dashboard
-  id: dashboard
+  id: server
   brooklyn.config: 
     port: 8000
     adminPort: 8001

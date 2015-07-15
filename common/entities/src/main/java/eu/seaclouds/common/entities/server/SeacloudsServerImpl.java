@@ -14,20 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.common.entities.dashboard;
+package eu.seaclouds.common.entities.server;
 
 import brooklyn.entity.basic.SoftwareProcessImpl;
 
-public class SeacloudsDashboardImpl extends SoftwareProcessImpl implements SeacloudsDashboard {
+public class SeacloudsServerImpl extends SoftwareProcessImpl implements SeacloudsServer {
 
     @Override
     public Class getDriverInterface() {
-        return SeacloudsDashboardDriver.class;
+        return SeacloudsServerDriver.class;
     }
 
     @Override
     public String getShortName() {
-        return "SeaClouds Dashboard";
+        return "SeaClouds Server";
     }
 
     @Override

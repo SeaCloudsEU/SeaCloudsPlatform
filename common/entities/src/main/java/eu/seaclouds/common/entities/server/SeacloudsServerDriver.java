@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.common.entities.dashboard;
+package eu.seaclouds.common.entities.server;
 
 import brooklyn.entity.java.JavaSoftwareProcessDriver;
 
-public interface SeacloudsDashboardDriver extends JavaSoftwareProcessDriver {
+public interface SeacloudsServerDriver extends JavaSoftwareProcessDriver {
     Integer getPort();
 }

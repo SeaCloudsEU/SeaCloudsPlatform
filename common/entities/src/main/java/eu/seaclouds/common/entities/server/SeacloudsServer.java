@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.common.entities.dashboard;
+package eu.seaclouds.common.entities.server;
 
 import brooklyn.catalog.Catalog;
 import brooklyn.config.ConfigKey;
@@ -29,74 +29,74 @@ import brooklyn.event.basic.PortAttributeSensorAndConfigKey;
 import brooklyn.location.basic.PortRanges;
 import brooklyn.util.flags.SetFromFlag;
 
-@Catalog(name = "SeaClouds Dashboard", description = "SeaClouds Dashboard", iconUrl =
+@Catalog(name = "SeaClouds Server", description = "SeaClouds Server", iconUrl =
         "classpath:///seaclouds.png")
-@ImplementedBy(SeacloudsDashboardImpl.class)
-public interface SeacloudsDashboard extends SoftwareProcess, UsesJava, HasShortName {
+@ImplementedBy(SeacloudsServerImpl.class)
+public interface SeacloudsServer extends SoftwareProcess, UsesJava, HasShortName {
 
     @SetFromFlag("version")
     ConfigKey<String> SUGGESTED_VERSION =
-            ConfigKeys.newConfigKeyWithDefault(SoftwareProcess.SUGGESTED_VERSION, "0.1.0-SNAPSHOT");
+            ConfigKeys.newConfigKeyWithDefault(SoftwareProcess.SUGGESTED_VERSION, "0.8.0-SNAPSHOT");
 
     @SetFromFlag("configUrl")
     BasicAttributeSensorAndConfigKey<String> CONFIG_URL = new BasicAttributeSensorAndConfigKey.StringAttributeSensorAndConfigKey(
-            "dashboard.config.url", "A URL of a YAML file to use to configure the dashboard",
-            "classpath://eu/seaclouds/dashboard/config.yml.template");
+            "server.config.url", "A URL of a YAML file to use to configure the server",
+            "classpath://eu/seaclouds/server/config.yml.template");
     
     @SetFromFlag("finalConfigName")
-    ConfigKey<String> FINAL_CONFIG_NAME = ConfigKeys.newStringConfigKey("seaclouds.dashboard.config.final.name","Final name for configuration file", "config.yml");
+    ConfigKey<String> FINAL_CONFIG_NAME = ConfigKeys.newStringConfigKey("seaclouds.server.config.final.name","Final name for configuration file", "config.yml");
 
 
     @SetFromFlag("downloadUrl")
     BasicAttributeSensorAndConfigKey<String> DOWNLOAD_URL = new BasicAttributeSensorAndConfigKey.StringAttributeSensorAndConfigKey(
-            Attributes.DOWNLOAD_URL, "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=dashboard&v=0.8.0-SNAPSHOT&e=jar");
+            Attributes.DOWNLOAD_URL, "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=server&v=0.8.0-SNAPSHOT&e=jar");
 
     @SetFromFlag("port")
     PortAttributeSensorAndConfigKey DASHBOARD_PORT = new PortAttributeSensorAndConfigKey(
-            "seaclouds.dashboard.port", "", PortRanges.fromInteger(8000));
+            "seaclouds.server.port", "", PortRanges.fromInteger(8000));
 
     @SetFromFlag("adminPort")
     PortAttributeSensorAndConfigKey DASHBOARD_ADMIN_PORT = new PortAttributeSensorAndConfigKey(
-            "seaclouds.dashboard.adminPort", "", PortRanges.fromInteger(8001));
+            "seaclouds.server.adminPort", "", PortRanges.fromInteger(8001));
     
     @SetFromFlag("deployerHost")
     ConfigKey<String> DEPLOYER_HOST = 
-            ConfigKeys.newStringConfigKey("seaclouds.dashboard.deployer.host", "Host address for the SeaClouds deployer", "localhost");
+            ConfigKeys.newStringConfigKey("seaclouds.server.deployer.host", "Host address for the SeaClouds deployer", "localhost");
 
     @SetFromFlag("deployerPort")
     ConfigKey<Integer> DEPLOYER_PORT =
-            ConfigKeys.newIntegerConfigKey("seaclouds.dashboard.deployer.port", "Port for the SeaClouds deployer", 8081);
+            ConfigKeys.newIntegerConfigKey("seaclouds.server.deployer.port", "Port for the SeaClouds deployer", 8081);
     
     @SetFromFlag("deployerUser")
     ConfigKey<String> DEPLOYER_USERNAME =
-            ConfigKeys.newStringConfigKey("seaclouds.dashboard.deployer.user", "Endpoint address for the SeaClouds deployer", "admin");
+            ConfigKeys.newStringConfigKey("seaclouds.server.deployer.user", "Endpoint address for the SeaClouds deployer", "admin");
 
     @SetFromFlag("deployerPassword")
     ConfigKey<String> DEPLOYER_PASSWORD =
-            ConfigKeys.newStringConfigKey("seaclouds.dashboard.deployer.password", "Endpoint address for the SeaClouds deployer", "p4ssw0rd");
+            ConfigKeys.newStringConfigKey("seaclouds.server.deployer.password", "Endpoint address for the SeaClouds deployer", "p4ssw0rd");
 
     @SetFromFlag("monitorHost")
     ConfigKey<String> MONITOR_HOST =
-            ConfigKeys.newStringConfigKey("seaclouds.dashboard.monitor.host", "Host address for the SeaClouds monitor", "localhost");
+            ConfigKeys.newStringConfigKey("seaclouds.server.monitor.host", "Host address for the SeaClouds monitor", "localhost");
 
     @SetFromFlag("monitorPort")
     ConfigKey<Integer> MONITOR_PORT =
-            ConfigKeys.newIntegerConfigKey("seaclouds.dashboard.monitor.port", "Port for the SeaClouds monitor", 8170);
+            ConfigKeys.newIntegerConfigKey("seaclouds.server.monitor.port", "Port for the SeaClouds monitor", 8170);
 
     @SetFromFlag("plannerHost")
     ConfigKey<String> PLANNER_HOST =
-            ConfigKeys.newStringConfigKey("seaclouds.dashboard.planner.host", "Host address for the SeaClouds planner", "localhost");
+            ConfigKeys.newStringConfigKey("seaclouds.server.planner.host", "Host address for the SeaClouds planner", "localhost");
 
     @SetFromFlag("plannerPort")
     ConfigKey<Integer> PLANNER_PORT =
-            ConfigKeys.newIntegerConfigKey("seaclouds.dashboard.planner.port", "Port for the SeaClouds planner", 8080);
+            ConfigKeys.newIntegerConfigKey("seaclouds.server.planner.port", "Port for the SeaClouds planner", 8080);
 
     @SetFromFlag("slaHost")
     ConfigKey<String> SLA_HOST =
-            ConfigKeys.newStringConfigKey("seaclouds.dashboard.sla.host", "Host address for the SeaClouds SLA manager", "localhost");
+            ConfigKeys.newStringConfigKey("seaclouds.server.sla.host", "Host address for the SeaClouds SLA manager", "localhost");
 
     @SetFromFlag("slaPort")
     ConfigKey<Integer> SLA_PORT =
-            ConfigKeys.newIntegerConfigKey("seaclouds.dashboard.sla.port", "Port for the SeaClouds SLA manager", 8080);
+            ConfigKeys.newIntegerConfigKey("seaclouds.server.sla.port", "Port for the SeaClouds SLA manager", 8080);
     
 }

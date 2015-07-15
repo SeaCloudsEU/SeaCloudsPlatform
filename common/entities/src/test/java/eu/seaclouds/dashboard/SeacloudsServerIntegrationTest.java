@@ -28,7 +28,7 @@ import brooklyn.test.Asserts;
 import brooklyn.test.EntityTestUtils;
 import brooklyn.test.entity.TestApplication;
 import com.google.common.collect.ImmutableList;
-import eu.seaclouds.common.entities.dashboard.SeacloudsDashboard;
+import eu.seaclouds.common.entities.server.SeacloudsServer;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -36,7 +36,7 @@ import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertFalse;
 
-public class SeacloudsDashboardIntegrationTest {
+public class SeacloudsServerIntegrationTest {
 
     private TestApplication app;
     private LocalhostMachineProvisioningLocation localhostProvisioningLocation;
@@ -58,25 +58,25 @@ public class SeacloudsDashboardIntegrationTest {
         launcher.setShutdownAppsOnExit(true);
         Application app = launcher.launchAppYaml("dashboard-single.yaml").getApplication();
 
-        final SeacloudsDashboard dashboard = (SeacloudsDashboard)
+        final SeacloudsServer dashboard = (SeacloudsServer)
                 findEntityChildByDisplayName(app, "Dashboard");
 
         Asserts.succeedsEventually(new Runnable() {
             public void run() {
                 EntityTestUtils.assertAttributeEqualsEventually(dashboard, Startable.SERVICE_UP, true);
-                EntityTestUtils.assertAttributeEquals(dashboard, SeacloudsDashboard.DASHBOARD_PORT, 8000);
-                EntityTestUtils.assertAttributeEquals(dashboard, SeacloudsDashboard.DASHBOARD_ADMIN_PORT, 8001);
+                EntityTestUtils.assertAttributeEquals(dashboard, SeacloudsServer.DASHBOARD_PORT, 8000);
+                EntityTestUtils.assertAttributeEquals(dashboard, SeacloudsServer.DASHBOARD_ADMIN_PORT, 8001);
 
-                EntityTestUtils.assertConfigEquals(dashboard, SeacloudsDashboard.DEPLOYER_HOST, "localhost");
-                EntityTestUtils.assertConfigEquals(dashboard, SeacloudsDashboard.DEPLOYER_PORT, 8081);
-                EntityTestUtils.assertConfigEquals(dashboard, SeacloudsDashboard.DEPLOYER_USERNAME, "admin");
-                EntityTestUtils.assertConfigEquals(dashboard, SeacloudsDashboard.DEPLOYER_PASSWORD, "p4ssw0rd");
+                EntityTestUtils.assertConfigEquals(dashboard, SeacloudsServer.DEPLOYER_HOST, "localhost");
+                EntityTestUtils.assertConfigEquals(dashboard, SeacloudsServer.DEPLOYER_PORT, 8081);
+                EntityTestUtils.assertConfigEquals(dashboard, SeacloudsServer.DEPLOYER_USERNAME, "admin");
+                EntityTestUtils.assertConfigEquals(dashboard, SeacloudsServer.DEPLOYER_PASSWORD, "p4ssw0rd");
 
-                EntityTestUtils.assertConfigEquals(dashboard, SeacloudsDashboard.MONITOR_HOST, "localhost");
-                EntityTestUtils.assertConfigEquals(dashboard, SeacloudsDashboard.MONITOR_PORT, 8170);
+                EntityTestUtils.assertConfigEquals(dashboard, SeacloudsServer.MONITOR_HOST, "localhost");
+                EntityTestUtils.assertConfigEquals(dashboard, SeacloudsServer.MONITOR_PORT, 8170);
 
-                EntityTestUtils.assertConfigEquals(dashboard, SeacloudsDashboard.SLA_HOST, "localhost");
-                EntityTestUtils.assertConfigEquals(dashboard, SeacloudsDashboard.SLA_PORT, 8080);
+                EntityTestUtils.assertConfigEquals(dashboard, SeacloudsServer.SLA_HOST, "localhost");
+                EntityTestUtils.assertConfigEquals(dashboard, SeacloudsServer.SLA_PORT, 8080);
 
                 dashboard.stop();
                 Assert.assertFalse(dashboard.getAttribute(Startable.SERVICE_UP));
@@ -94,34 +94,34 @@ public class SeacloudsDashboardIntegrationTest {
 
     @Test(groups = "Integration")
     public void testCanStartAndStop() throws Exception {
-        SeacloudsDashboard entity = app.createAndManageChild(
-                EntitySpec.create(SeacloudsDashboard.class)
-                        .configure(SeacloudsDashboard.DEPLOYER_HOST, "localhost")
-                        .configure(SeacloudsDashboard.DEPLOYER_PORT, 8081)
-                        .configure(SeacloudsDashboard.DEPLOYER_USERNAME, "user")
-                        .configure(SeacloudsDashboard.DEPLOYER_PASSWORD, "password")
-                        .configure(SeacloudsDashboard.MONITOR_HOST, "localhost")
-                        .configure(SeacloudsDashboard.MONITOR_PORT, 8170)
-                        .configure(SeacloudsDashboard.SLA_HOST, "localhost")
-                        .configure(SeacloudsDashboard.SLA_PORT, 8080)
+        SeacloudsServer entity = app.createAndManageChild(
+                EntitySpec.create(SeacloudsServer.class)
+                        .configure(SeacloudsServer.DEPLOYER_HOST, "localhost")
+                        .configure(SeacloudsServer.DEPLOYER_PORT, 8081)
+                        .configure(SeacloudsServer.DEPLOYER_USERNAME, "user")
+                        .configure(SeacloudsServer.DEPLOYER_PASSWORD, "password")
+                        .configure(SeacloudsServer.MONITOR_HOST, "localhost")
+                        .configure(SeacloudsServer.MONITOR_PORT, 8170)
+                        .configure(SeacloudsServer.SLA_HOST, "localhost")
+                        .configure(SeacloudsServer.SLA_PORT, 8080)
         );
 
         app.start(ImmutableList.of(localhostProvisioningLocation));
 
         EntityTestUtils.assertAttributeEqualsEventually(entity, Startable.SERVICE_UP, true);
-        EntityTestUtils.assertAttributeEquals(entity, SeacloudsDashboard.DASHBOARD_PORT, 8000);
-        EntityTestUtils.assertAttributeEquals(entity, SeacloudsDashboard.DASHBOARD_ADMIN_PORT, 8001);
+        EntityTestUtils.assertAttributeEquals(entity, SeacloudsServer.DASHBOARD_PORT, 8000);
+        EntityTestUtils.assertAttributeEquals(entity, SeacloudsServer.DASHBOARD_ADMIN_PORT, 8001);
         
-        EntityTestUtils.assertConfigEquals(entity, SeacloudsDashboard.DEPLOYER_HOST, "localhost");
-        EntityTestUtils.assertConfigEquals(entity, SeacloudsDashboard.DEPLOYER_PORT, 8081);
-        EntityTestUtils.assertConfigEquals(entity, SeacloudsDashboard.DEPLOYER_USERNAME, "user");
-        EntityTestUtils.assertConfigEquals(entity, SeacloudsDashboard.DEPLOYER_PASSWORD, "password");
+        EntityTestUtils.assertConfigEquals(entity, SeacloudsServer.DEPLOYER_HOST, "localhost");
+        EntityTestUtils.assertConfigEquals(entity, SeacloudsServer.DEPLOYER_PORT, 8081);
+        EntityTestUtils.assertConfigEquals(entity, SeacloudsServer.DEPLOYER_USERNAME, "user");
+        EntityTestUtils.assertConfigEquals(entity, SeacloudsServer.DEPLOYER_PASSWORD, "password");
         
-        EntityTestUtils.assertConfigEquals(entity, SeacloudsDashboard.MONITOR_HOST, "localhost");
-        EntityTestUtils.assertConfigEquals(entity, SeacloudsDashboard.MONITOR_PORT, 8170);
+        EntityTestUtils.assertConfigEquals(entity, SeacloudsServer.MONITOR_HOST, "localhost");
+        EntityTestUtils.assertConfigEquals(entity, SeacloudsServer.MONITOR_PORT, 8170);
         
-        EntityTestUtils.assertConfigEquals(entity, SeacloudsDashboard.SLA_HOST, "localhost");
-        EntityTestUtils.assertConfigEquals(entity, SeacloudsDashboard.SLA_PORT, 8080);
+        EntityTestUtils.assertConfigEquals(entity, SeacloudsServer.SLA_HOST, "localhost");
+        EntityTestUtils.assertConfigEquals(entity, SeacloudsServer.SLA_PORT, 8080);
 
         entity.stop();
         assertFalse(entity.getAttribute(Startable.SERVICE_UP));

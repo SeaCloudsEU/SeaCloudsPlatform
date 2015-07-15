@@ -1,7 +1,7 @@
 name: SeaClouds Platform
 location: localhost
 services:
-- type: eu.seaclouds.dashboard.SeacloudsDashboard
+- type: eu.seaclouds.server.SeacloudsDashboard
   name: Dashboard
   brooklyn.config: 
     port: 8000

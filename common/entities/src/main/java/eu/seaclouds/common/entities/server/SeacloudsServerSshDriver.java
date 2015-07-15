@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.common.entities.dashboard;
+package eu.seaclouds.common.entities.server;
 
 import static java.lang.String.format;
 
@@ -35,9 +35,9 @@ import brooklyn.util.net.Urls;
 import brooklyn.util.os.Os;
 import brooklyn.util.ssh.BashCommands;
 
-public class SeacloudsDashboardSshDriver extends JavaSoftwareProcessSshDriver implements SeacloudsDashboardDriver {
+public class SeacloudsServerSshDriver extends JavaSoftwareProcessSshDriver implements SeacloudsServerDriver {
     
-    public SeacloudsDashboardSshDriver(EntityLocal entity, SshMachineLocation machine) {
+    public SeacloudsServerSshDriver(EntityLocal entity, SshMachineLocation machine) {
         super(entity, machine);
     }
 
@@ -49,10 +49,10 @@ public class SeacloudsDashboardSshDriver extends JavaSoftwareProcessSshDriver im
     @Override
     public void preInstall() {
         resolver = Entities.newDownloader(this, ImmutableMap.<String, Object>builder()
-                .put("filename", "dashboard.jar").build());
+                .put("filename", "server.jar").build());
         setExpandedInstallDir(Os.mergePaths(
                 getInstallDir(), 
-                resolver.getUnpackedDirectoryName(format("dashboard-%s", getVersion()))));
+                resolver.getUnpackedDirectoryName(format("server-%s", getVersion()))));
     }
     
     @Override
@@ -72,13 +72,13 @@ public class SeacloudsDashboardSshDriver extends JavaSoftwareProcessSshDriver im
     @Override
     public void customize() {
         log.debug("Customizing {}", entity);
-        Networking.checkPortsValid(MutableMap.of("dashboardPort", getPort()));
+        Networking.checkPortsValid(MutableMap.of("serverPort", getPort()));
         newScript(CUSTOMIZING)
                 .body.append(
                         format("cp -R %s/* .", getInstallDir()),
-                        format("mkdir %s/seaclouds-dashboard", getRunDir())
+                        format("mkdir %s/seaclouds-server", getRunDir())
                 ).execute();
-        copyTemplate(entity.getConfig(SeacloudsDashboard.CONFIG_URL), getConfigFileLocation());
+        copyTemplate(entity.getConfig(SeacloudsServer.CONFIG_URL), getConfigFileLocation());
     }
 
     @Override
@@ -89,20 +89,20 @@ public class SeacloudsDashboardSshDriver extends JavaSoftwareProcessSshDriver im
 
         String mainUri = format("http://%s:%d", 
                 entity.getAttribute(Attributes.HOSTNAME), 
-                entity.getAttribute(SeacloudsDashboard.DASHBOARD_PORT));
+                entity.getAttribute(SeacloudsServer.DASHBOARD_PORT));
         entity.setAttribute(Attributes.MAIN_URI, URI.create(mainUri));
     }
     
     private String getCommand() {
         StringBuilder sb = new StringBuilder();
-        sb.append(format("nohup java -jar dashboard.jar server " + getFinalConfigName() +
+        sb.append(format("nohup java -jar server.jar server " + getFinalConfigName() +
                         " > %s 2>&1 &",
                 getLogFileLocation()));
         return sb.toString();
     }
     
     public String getPidFile() {
-        return Os.mergePathsUnix(getRunDir(), "seaclouds-dashboard.pid");
+        return Os.mergePathsUnix(getRunDir(), "seaclouds-server.pid");
     }
     
     @Override
@@ -117,7 +117,7 @@ public class SeacloudsDashboardSshDriver extends JavaSoftwareProcessSshDriver im
 
     @Override
     public Integer getPort() {
-        return entity.getAttribute(SeacloudsDashboard.DASHBOARD_PORT);
+        return entity.getAttribute(SeacloudsServer.DASHBOARD_PORT);
     }
 
     protected String getConfigFileLocation() {
@@ -125,6 +125,6 @@ public class SeacloudsDashboardSshDriver extends JavaSoftwareProcessSshDriver im
     }
     
     protected String getFinalConfigName() {
-        return entity.getConfig(SeacloudsDashboard.FINAL_CONFIG_NAME);
+        return entity.getConfig(SeacloudsServer.FINAL_CONFIG_NAME);
     }
 }

@@ -18,61 +18,18 @@
 module.exports = function (grunt) {
 
     grunt.initConfig({
-        bower: {
-            install: {
-                options: {
-                    targetDir: 'app/static/lib',
-                    layout: 'byComponent',
-                    bowerOptions: {}
-                }
-            }
-        },
-
         wiredep: {
             app: {
                 src: [
                     'app/index.html'
                 ],
-                options: {
-                    ignorePath: '../bower_components/',
-                    fileTypes: {
-                        html: {
-                            replace: {
-                                js: '<script src="static/lib//{{filePath}}"></script>',
-                                css: '<link rel="stylesheet" href="static/lib/{{filePath}}" />'
-                            }
-                        }
-                    }
-                }
+                ignorePath: 'app/'
             }
-        },
-
-        useminPrepare: {
-            html: 'app/index.html',
-            options: {
-                root: 'app',
-                dest: 'app'
-            }
-        },
-
-        usemin: {
-            html: 'app/index.html'
-        },
-
-        watch: {
-            files: ['bower_components/*'],
-            tasks: ['wiredep']
         }
     });
 
-    grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-wiredep');
-    grunt.loadNpmTasks('grunt-contrib-watch');
-
-    grunt.registerTask('changes', ['watch']);
-
-    grunt.registerTask('default', [
-        'bower',
+        grunt.registerTask('default', [
         'wiredep'
     ]);
 };
