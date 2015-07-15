@@ -35,7 +35,7 @@
 	<dependencies>
         <dependency>
             <groupId>eu.seaclouds-project</groupId>
-            <artifactId>common</artifactId>
+            <artifactId>model</artifactId>
             <version>${project.version}</version>
         </dependency>
         

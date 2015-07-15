@@ -19,6 +19,11 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <modules>
+        <module>entities</module>
+        <module>model</module>
+        <module>utils</module>
+    </modules>
 
     <parent>
         <groupId>eu.seaclouds-project</groupId>
@@ -29,118 +34,8 @@
 
     <groupId>eu.seaclouds-project</groupId>
     <artifactId>common</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <description>SeaClouds common module</description>
-
-    <repositories>
-        <repository>
-            <id>repo.opensource.fastconnect.org</id>
-            <url>http://fastconnect.org/maven/content/repositories/opensource</url>
-        </repository>
-    </repositories>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.brooklyn</groupId>
-            <artifactId>brooklyn-launcher</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.brooklyn</groupId>
-            <artifactId>brooklyn-software-base</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.brooklyn</groupId>
-            <artifactId>brooklyn-software-database</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.brooklyn</groupId>
-            <artifactId>brooklyn-software-webapp</artifactId>
-        </dependency>
-
-        <!-- a4c tosca -->
-        <dependency>
-            <groupId>alien4cloud</groupId>
-            <artifactId>alien4cloud-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.elasticsearch</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpmime</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.apache.brooklyn</groupId>
-            <artifactId>brooklyn-test-support</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.brooklyn</groupId>
-            <artifactId>brooklyn-core</artifactId>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.brooklyn</groupId>
-            <artifactId>brooklyn-launcher</artifactId>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.jclouds.provider</groupId>
-                    <artifactId>softlayer</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.jclouds.labs</groupId>
-                    <artifactId>docker</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.jclouds.labs</groupId>
-                    <artifactId>vcloud-director</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.jclouds.labs</groupId>
-                    <artifactId>dmtf</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>

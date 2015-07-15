@@ -26,7 +26,7 @@ import io.dropwizard.Configuration;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-public class ServerConfiguration extends Configuration {
+public class SeacloudsServerConfiguration extends Configuration {
 
     @Valid
     @NotNull

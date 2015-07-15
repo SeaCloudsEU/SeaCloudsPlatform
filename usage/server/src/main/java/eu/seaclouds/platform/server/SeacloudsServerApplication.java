@@ -29,13 +29,13 @@ import io.dropwizard.server.DefaultServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
-public class ServerApplication extends Application<ServerConfiguration> {
+public class SeacloudsServerApplication extends Application<SeacloudsServerConfiguration> {
     public static void main(String[] args) throws Exception {
-        new ServerApplication().run(args);
+        new SeacloudsServerApplication().run(args);
     }
 
     @Override
-    public void initialize(Bootstrap<ServerConfiguration> bootstrap) {
+    public void initialize(Bootstrap<SeacloudsServerConfiguration> bootstrap) {
         // Setting configuration from env variables
         bootstrap.setConfigurationSourceProvider(
                 new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(),
@@ -44,12 +44,12 @@ public class ServerApplication extends Application<ServerConfiguration> {
         );
 
         // Routing static assets files
-        bootstrap.addBundle(new AssetsBundle("/webapp", "/", "index.html"));
+        bootstrap.addBundle(new AssetsBundle("/seaclouds-dashboard", "/", "index.html"));
         
     }
 
     @Override
-    public void run(ServerConfiguration configuration, Environment environment) throws Exception {
+    public void run(SeacloudsServerConfiguration configuration, Environment environment) throws Exception {
         ((DefaultServerFactory) configuration.getServerFactory()).setJerseyRootPath("/api/*");
 
         environment.jersey().register(new DeployerResource(configuration.getDeployerFactory()));
