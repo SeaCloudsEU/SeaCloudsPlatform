@@ -49,7 +49,7 @@ public interface SeacloudsDashboard extends SoftwareProcess, UsesJava, HasShortN
 
     @SetFromFlag("downloadUrl")
     BasicAttributeSensorAndConfigKey<String> DOWNLOAD_URL = new BasicAttributeSensorAndConfigKey.StringAttributeSensorAndConfigKey(
-            Attributes.DOWNLOAD_URL, "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=dashboard&v=0.1.0-SNAPSHOT&e=jar");
+            Attributes.DOWNLOAD_URL, "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=dashboard&v=0.8.0-SNAPSHOT&e=jar");
 
     @SetFromFlag("port")
     PortAttributeSensorAndConfigKey DASHBOARD_PORT = new PortAttributeSensorAndConfigKey(
@@ -61,42 +61,42 @@ public interface SeacloudsDashboard extends SoftwareProcess, UsesJava, HasShortN
     
     @SetFromFlag("deployerHost")
     ConfigKey<String> DEPLOYER_HOST = 
-            ConfigKeys.newStringConfigKey("seaclouds.dashboard.deployer.host", "Host address for the SeaClouds deployer");
+            ConfigKeys.newStringConfigKey("seaclouds.dashboard.deployer.host", "Host address for the SeaClouds deployer", "localhost");
 
     @SetFromFlag("deployerPort")
     ConfigKey<Integer> DEPLOYER_PORT =
-            ConfigKeys.newIntegerConfigKey("seaclouds.dashboard.deployer.port", "Port for the SeaClouds deployer");
+            ConfigKeys.newIntegerConfigKey("seaclouds.dashboard.deployer.port", "Port for the SeaClouds deployer", 8081);
     
     @SetFromFlag("deployerUser")
     ConfigKey<String> DEPLOYER_USERNAME =
-            ConfigKeys.newStringConfigKey("seaclouds.dashboard.deployer.user", "Endpoint address for the SeaClouds deployer");
+            ConfigKeys.newStringConfigKey("seaclouds.dashboard.deployer.user", "Endpoint address for the SeaClouds deployer", "admin");
 
     @SetFromFlag("deployerPassword")
     ConfigKey<String> DEPLOYER_PASSWORD =
-            ConfigKeys.newStringConfigKey("seaclouds.dashboard.deployer.password", "Endpoint address for the SeaClouds deployer");
+            ConfigKeys.newStringConfigKey("seaclouds.dashboard.deployer.password", "Endpoint address for the SeaClouds deployer", "p4ssw0rd");
 
     @SetFromFlag("monitorHost")
     ConfigKey<String> MONITOR_HOST =
-            ConfigKeys.newStringConfigKey("seaclouds.dashboard.monitor.host", "Host address for the SeaClouds monitor");
+            ConfigKeys.newStringConfigKey("seaclouds.dashboard.monitor.host", "Host address for the SeaClouds monitor", "localhost");
 
     @SetFromFlag("monitorPort")
     ConfigKey<Integer> MONITOR_PORT =
-            ConfigKeys.newIntegerConfigKey("seaclouds.dashboard.monitor.port", "Port for the SeaClouds monitor");
+            ConfigKeys.newIntegerConfigKey("seaclouds.dashboard.monitor.port", "Port for the SeaClouds monitor", 8170);
 
-    @SetFromFlag("deployerHost")
+    @SetFromFlag("plannerHost")
     ConfigKey<String> PLANNER_HOST =
-            ConfigKeys.newStringConfigKey("seaclouds.dashboard.planner.host", "Host address for the SeaClouds planner");
+            ConfigKeys.newStringConfigKey("seaclouds.dashboard.planner.host", "Host address for the SeaClouds planner", "localhost");
 
-    @SetFromFlag("deployerPort")
+    @SetFromFlag("plannerPort")
     ConfigKey<Integer> PLANNER_PORT =
-            ConfigKeys.newIntegerConfigKey("seaclouds.dashboard.planner.port", "Port for the SeaClouds planner");
+            ConfigKeys.newIntegerConfigKey("seaclouds.dashboard.planner.port", "Port for the SeaClouds planner", 8080);
 
     @SetFromFlag("slaHost")
     ConfigKey<String> SLA_HOST =
-            ConfigKeys.newStringConfigKey("seaclouds.dashboard.sla.host", "Host address for the SeaClouds SLA manager");
+            ConfigKeys.newStringConfigKey("seaclouds.dashboard.sla.host", "Host address for the SeaClouds SLA manager", "localhost");
 
     @SetFromFlag("slaPort")
     ConfigKey<Integer> SLA_PORT =
-            ConfigKeys.newIntegerConfigKey("seaclouds.dashboard.sla.port", "Port for the SeaClouds SLA manager");
+            ConfigKeys.newIntegerConfigKey("seaclouds.dashboard.sla.port", "Port for the SeaClouds SLA manager", 8080);
     
 }
