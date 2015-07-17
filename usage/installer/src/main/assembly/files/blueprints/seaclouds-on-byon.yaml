@@ -19,12 +19,13 @@ services:
   - serviceType: "classpath://brooklyn/entity/brooklynnode/brooklyn-node.yaml"
     id: deployer
     name: SeaClouds Deployer
-    install.version: 0.7.0-SNAPSHOT
     managementUser: admin
     managementPassword: p4ssw0rd
     brooklynLocalPropertiesContents: |
       brooklyn.webconsole.security.users=admin
       brooklyn.webconsole.security.user.admin.password=p4ssw0rd
+    brooklyn.config:
+      download.url: https://github.com/kiuby88/incubator-brooklyn/releases/download/v0.8.0-cf/brooklyn-dist-0.8.0-SNAPSHOT-dist.tar.gz
 
 - serviceType: brooklyn.entity.basic.SameServerEntity
   name: SeaClouds Dashboard + Planner + SLA
