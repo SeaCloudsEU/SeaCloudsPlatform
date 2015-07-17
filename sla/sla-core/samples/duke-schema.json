@@ -1,0 +1,74 @@
+{
+    "cloudProviders": [
+        {
+            "id": "Cloud2"
+        },
+        {
+            "id": "Cloud1"
+        }
+    ],
+    "vMs": [
+        {
+            "numberOfCPUs": 6,
+            "cloudProvider": "Cloud2",
+            "type": "mysql_server_VM",
+            "id": "mysql_server_VM_ID"
+        },
+        {
+            "numberOfCPUs": 0,
+            "cloudProvider": "Cloud1",
+            "type": "tomcat_server_VM",
+            "id": "tomcat_server_VM_ID"
+        }
+    ],
+    "internalComponents": [
+        {
+            "requiredComponents": [
+                "mysql_server_VM_ID"
+            ],
+            "providedMethods": [],
+            "type": "mysql_server",
+            "id": "mysql_server_ID"
+        },
+        {
+            "requiredComponents": [
+                "tomcatServer_ID",
+                "java_ee_server_ID",
+                "DB1"
+            ],
+            "providedMethods": [
+                "anyMethod_ID"
+            ],
+            "type": "java_ee_server",
+            "id": "java_ee_server_ID"
+        },
+        {
+            "requiredComponents": [
+                "tomcatServer_ID"
+            ],
+            "providedMethods": [],
+            "type": "DB",
+            "id": "DB1"
+        },
+        {
+            "requiredComponents": [
+                "tomcat_server_VM_ID"
+            ],
+            "providedMethods": [],
+            "type": "tomcat_server",
+            "id": "tomcatServer_ID"
+        },
+        {
+            "requiredComponents": [],
+            "providedMethods": [],
+            "type": "chat_webApplication",
+            "id": "chat_webApplication_ID"
+        }
+    ],
+    "methods": [
+        {
+            "type": "anyMethod",
+            "id": "anyMethod_ID"
+        }
+    ]
+}

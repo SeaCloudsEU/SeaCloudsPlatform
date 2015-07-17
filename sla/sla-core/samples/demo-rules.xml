@@ -1,0 +1,107 @@
+<!--
+
+    Copyright 2014 Atos
+    Contact: Atos <roman.sosa@atos.net>
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+           http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+<monitoringRules xmlns="http://www.modaclouds.eu/xsd/1.0/monitoring_rules_schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.modaclouds.eu/xsd/1.0/monitoring_rules_schema">
+  <monitoringRule id="MySQLCPUUtilizationRule" startEnabled="true" timeStep="1" timeWindow="1">
+    <monitoredTargets>
+      <monitoredTarget class="VM" type="Database"/>
+    </monitoredTargets>
+    <collectedMetric metricName="CPUUtilization">
+      <parameter name="samplingTime">1</parameter>
+      <parameter name="samplingProbability">1</parameter>
+    </collectedMetric>
+    <actions>
+      <action name="OutputMetric">
+        <parameter name="resourceId">ID</parameter>
+        <parameter name="metric">DatabaseCPUUtilization</parameter>
+        <parameter name="value">METRIC</parameter>
+      </action>
+    </actions>
+  </monitoringRule>
+  <monitoringRule id="MySQLCPUUtilizationViolationRule" startEnabled="true" timeStep="20" timeWindow="20">
+    <monitoredTargets>
+      <monitoredTarget class="VM" type="Database"/>
+    </monitoredTargets>
+    <collectedMetric metricName="CPUUtilization">
+      <parameter name="samplingTime">2</parameter>
+      <parameter name="samplingProbability">1</parameter>
+    </collectedMetric>
+    <condition>METRIC &gt; 0.6</condition>
+    <metricAggregation aggregateFunction="Average" groupingClass="VM"/>
+    <actions>
+      <action name="OutputMetric">
+        <parameter name="resourceId">ID</parameter>
+        <parameter name="metric">AverageDatabaseCPUUtilizationViolated</parameter>
+        <parameter name="value">METRIC</parameter>
+      </action>
+    </actions>
+  </monitoringRule>
+  <monitoringRule id="MySLQThreadsRunningRule" timeStep="1" timeWindow="1">
+     <monitoredTargets>
+       <monitoredTarget class="InternalComponent" type="mysqlserverdb"/>
+     </monitoredTargets>
+    <collectedMetric metricName="Threads_running">
+      <parameter name="samplingProbability">1</parameter>
+      <parameter name="samplingTime">1</parameter>
+      <parameter name="databaseUser">brooklyn</parameter>
+      <parameter name="databasePassword">br00k11n</parameter>
+      <parameter name="databaseAddress">jdbc:drizzle://52.17.63.46:3306/visitors/</parameter>
+    </collectedMetric>
+    <actions>
+      <action name="OutputMetric">
+        <parameter name="metric">MySQLThreadRunning</parameter>
+        <parameter name="value">METRIC</parameter>
+        <parameter name="resourceId">ID</parameter>
+      </action>
+    </actions>
+  </monitoringRule>
+  <monitoringRule id="RAMUsedRule" startEnabled="true" timeStep="1" timeWindow="1">
+        <monitoredTargets>
+            <monitoredTarget class="VM" type="Database"/>
+        </monitoredTargets>
+        <collectedMetric metricName="MemUsed">
+            <parameter name="samplingTime">1</parameter>
+            <parameter name="samplingProbability">1</parameter>
+        </collectedMetric>
+        <actions>
+            <action name="OutputMetric">
+                <parameter name="resourceId">ID</parameter>
+                <parameter name="metric">RAMUsed</parameter>
+                <parameter name="value">METRIC</parameter>
+            </action>
+        </actions>
+  </monitoringRule>
+  <monitoringRule id="RAMRuleViolation" startEnabled="true" timeStep="20" timeWindow="20">
+        <monitoredTargets>
+            <monitoredTarget class="VM" type="Database"/>
+        </monitoredTargets>
+        <collectedMetric metricName="MemUsed">
+            <parameter name="samplingTime">2</parameter>
+            <parameter name="samplingProbability">1</parameter>
+        </collectedMetric>
+        <metricAggregation aggregateFunction="Average" groupingClass="VM"/>
+        <condition>METRIC &gt; 200</condition>
+        <actions>
+            <action name="OutputMetric">
+                <parameter name="resourceId">ID</parameter>
+                <parameter name="metric">AverageRAMViolated</parameter>
+                <parameter name="value">METRIC</parameter>
+            </action>
+        </actions>
+    </monitoringRule>
+</monitoringRules>
