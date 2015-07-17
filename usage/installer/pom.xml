@@ -52,7 +52,13 @@ limitations under the License.
             <artifactId>common</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
+        <dependency>
+            <groupId>eu.seaclouds-project</groupId>
+            <artifactId>deployer</artifactId>
+            <version>0.8.0-SNAPSHOT</version>
+        </dependency>
+
         <dependency>
             <!-- this pulls in all brooklyn entities and clouds;
                  you can cherry pick selected ones instead (for a smaller build) -->
@@ -98,22 +104,21 @@ limitations under the License.
             <scope>test</scope>
             <classifier>tests</classifier>
         </dependency>
-
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/assembly.xml</descriptor>
-                    </descriptors>
-                    <finalName>seaclouds-installer</finalName>
-                </configuration>
                 <executions>
                     <execution>
                         <id>build-distribution-archive</id>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/assembly.xml</descriptor>
+                            </descriptors>
+                            <finalName>seaclouds-installer</finalName>
+                        </configuration>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
@@ -122,6 +127,16 @@ limitations under the License.
                 </executions>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>${basedir}/../../deployer/target</directory>
+                <includes>
+                    <include>deployer-${project.version}.jar</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
     </build>
-
 </project>

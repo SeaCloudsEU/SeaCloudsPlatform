@@ -96,7 +96,7 @@
         <!-- Dependencies -->
         <guava.version>18.0</guava.version>
         <javatuples.version>1.2</javatuples.version>
-        <brooklyn.version>0.7.0-20150614.2158</brooklyn.version>
+        <brooklyn.version>0.8.0-SNAPSHOT</brooklyn.version>
         <jetty.version>9.2.4.v20141103</jetty.version>
         <dropwizard.version>0.8.1</dropwizard.version>
         <httpcomponents.version>4.3.6</httpcomponents.version>
@@ -122,7 +122,8 @@
         <modaclouds.version>2.4</modaclouds.version>
         <jaxb.version>2.2.6</jaxb.version>
         <castor.version>1.2</castor.version>
-        
+        <cloudfloundry.client.version>1.1.2</cloudfloundry.client.version>
+
         <!-- Test dependencies -->
         <junit.version>4.11</junit.version>
         <testng.version>6.8.8</testng.version>
@@ -345,6 +346,11 @@
             <!-- Brooklyn -->
             <dependency>
                 <groupId>org.apache.brooklyn</groupId>
+                <artifactId>brooklyn-core</artifactId>
+                <version>${brooklyn.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.brooklyn</groupId>
                 <artifactId>brooklyn-launcher</artifactId>
                 <version>${brooklyn.version}</version>
             </dependency>
@@ -441,6 +447,11 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cloudfoundry</groupId>
+                <artifactId>cloudfoundry-client-lib</artifactId>
+                <version>${cloudfloundry.client.version}</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
