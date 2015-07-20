@@ -1,0 +1,74 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+			http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+
+	<import resource="classpath*:repository-test-context.xml" />
+
+	<context:component-scan base-package="eu.atos.sla" />
+
+	<context:annotation-config />
+
+	<bean id="constraintEvaluator" class="eu.atos.sla.evaluation.constraint.simple.SimpleConstraintEvaluator"/>
+	
+	<bean id="breachRepository" class="eu.atos.sla.evaluation.guarantee.DummyBreachRepository"/>
+
+	<bean id="agreementEvaluator" class="eu.atos.sla.evaluation.AgreementEvaluator">
+		<property name="guaranteeTermEvaluator">
+			<bean class="eu.atos.sla.evaluation.guarantee.GuaranteeTermEvaluator">
+				<property name="serviceLevelEvaluator">
+					<bean class="eu.atos.sla.evaluation.guarantee.PoliciedServiceLevelEvaluator">
+						<property name="constraintEvaluator" ref="constraintEvaluator"/>
+						<property name="breachRepository" ref="breachRepository"/>
+					</bean>
+				</property>
+				<property name="businessEvaluator">
+					<bean class="eu.atos.sla.evaluation.guarantee.DummyBusinessValuesEvaluator"/>
+				</property>
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="agreementEnforcement" class="eu.atos.sla.enforcement.AgreementEnforcement">
+		<property name="constraintEvaluator" ref="constraintEvaluator"/>
+		<property name="agreementEvaluator" ref="agreementEvaluator"/>
+		<property name="maxRetrievedResults" value="1000"/>
+		<property name="metricsRetriever">
+			<bean class="eu.atos.sla.monitoring.simple.DummyMetricsRetriever"/>
+		</property>
+	</bean>
+	
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="placeholderPrefix" value="ENF{" />
+		<property name="placeholderSuffix" value="}" />
+		<property name="locations">
+			<list>
+				<value>classpath*:conf/enforcement-test.properties</value>
+			</list>
+		</property>
+	</bean>
+		
+	<bean id="taskExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="5" />
+		<property name="maxPoolSize" value="30" />
+		<property name="queueCapacity" value="1" />
+	</bean>	
+		
+	<bean id="notificationManager"	class="eu.atos.sla.notification.NotifierManager">
+		<property name="agreementEnforcementNotifier">
+			<bean class="eu.atos.sla.notification.DummyEnforcementNotifier"/>
+		 </property>
+	</bean>	
+		
+</beans>

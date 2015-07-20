@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsag:Agreement xmlns:wsag="http://www.ggf.org/namespaces/ws-agreement" xmlns:sla="http://sla.atos.eu">
+	<wsag:Name>ExampleAgreement</wsag:Name>
+	<wsag:Context>
+		<wsag:ExpirationTime>2014-03-07T12:00:00+0100</wsag:ExpirationTime>
+		<wsag:AgreementInitiator>initiator</wsag:AgreementInitiator>
+		<wsag:AgreementResponder>responder</wsag:AgreementResponder>
+		<wsag:ServiceProvider>AgreementResponder</wsag:ServiceProvider>
+		<wsag:TemplateId>template01</wsag:TemplateId>
+		<sla:Service>service01</sla:Service>
+	</wsag:Context>
+	<wsag:Terms>
+		<wsag:All>
+			<wsag:GuaranteeTerm wsag:Name="GT_ResponseTime">
+				<wsag:ServiceScope wsag:ServiceName="ServiceName">ScopeNameContent</wsag:ServiceScope>
+				<wsag:ServiceLevelObjective>
+					<wsag:KPITarget>
+						<wsag:KPIName>ResponseTime</wsag:KPIName>
+						<wsag:CustomServiceLevel>{"constraint" : "ResponseTime LT 100"}</wsag:CustomServiceLevel>
+					</wsag:KPITarget>
+				</wsag:ServiceLevelObjective>
+				<wsag:BusinessValueList>
+					<sla:CustomBusinessValue>
+						<sla:Penalty type="discount" expression="35" unit="%" validity="P1D"/>
+					</sla:CustomBusinessValue>
+					<sla:CustomBusinessValue count="5" duration="P1D">
+						<sla:Penalty type="service" expression="sms" validity="P1M"/>
+					</sla:CustomBusinessValue>
+				</wsag:BusinessValueList>
+			</wsag:GuaranteeTerm>
+		</wsag:All>
+	</wsag:Terms>
+</wsag:Agreement>
