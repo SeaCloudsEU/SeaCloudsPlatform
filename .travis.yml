@@ -2,11 +2,15 @@ language: java
 
 before_install: 
   - "git clone -b travis `git config --get remote.origin.url` target/travis"
-  - curl --silent --location https://deb.nodesource.com/setup_0.12 | sudo bash -
-  - sudo apt-get install -y nodejs
   
 after_success:
   - .buildscript/deploy_snapshot.sh
+
+addons:
+  apt:
+    packages:
+     - nodejs
+     - npm
 
 sudo: false
 
