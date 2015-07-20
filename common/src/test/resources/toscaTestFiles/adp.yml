@@ -9,7 +9,6 @@ description: Test ADP
 
 imports:
   - tosca-normative-types:1.0.0.wd03-SNAPSHOT
-  - puppa:3.0
 
 dsl_definitions:
   # list of YAML alias anchors (or macros)

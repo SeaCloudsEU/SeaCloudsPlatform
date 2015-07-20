@@ -24,9 +24,9 @@ import alien4cloud.tosca.parser.ParsingResult;
 import alien4cloud.tosca.parser.ToscaParser;
 import alien4cloud.tosca.serializer.VelocityUtil;
 
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,4 +59,19 @@ public class ToscaSerializer {
         ParsingResult<ArchiveRoot> parsingResult = parser.parseFile(filePath);
         return parsingResult;
     }
+
+    public static ParsingResult<ArchiveRoot> fromTOSCA(String yaml) throws ParsingException, IOException {
+        File tempFile = File.createTempFile("toscayamlFile", null);
+        BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile));
+        bw.write(yaml);
+        bw.close();
+
+        ToscaParser parser = new ToscaParserSupplier().get();
+        ParsingResult<ArchiveRoot> parsingResult = parser.parseFile(Paths.get(tempFile.getAbsolutePath()));
+
+        tempFile.delete();
+
+        return parsingResult;
+    }
+
 }
