@@ -1,0 +1,146 @@
+/*
+ * Copyright 2014 SeaClouds
+ * Contact: dev@seaclouds-project.eu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package eu.seaclouds.common.entities.server;
+
+import brooklyn.catalog.Catalog;
+import brooklyn.config.ConfigKey;
+import brooklyn.entity.basic.Attributes;
+import brooklyn.entity.basic.ConfigKeys;
+import brooklyn.entity.basic.SoftwareProcess;
+import brooklyn.entity.java.UsesJava;
+import brooklyn.entity.proxying.ImplementedBy;
+import brooklyn.entity.trait.HasShortName;
+import brooklyn.event.basic.BasicAttributeSensorAndConfigKey;
+import brooklyn.event.basic.PortAttributeSensorAndConfigKey;
+import brooklyn.location.basic.PortRanges;
+import brooklyn.util.flags.SetFromFlag;
+
+@Catalog(name = "SeaClouds Server", description = "SeaClouds Server", iconUrl =
+        "classpath:///seaclouds.png")
+@ImplementedBy(SeacloudsServerImpl.class)
+public interface SeacloudsServer extends SoftwareProcess, UsesJava, HasShortName {
+
+    @SetFromFlag("version")
+    ConfigKey<String> SUGGESTED_VERSION =
+            ConfigKeys.newConfigKeyWithDefault(SoftwareProcess.SUGGESTED_VERSION, "0.1.0-SNAPSHOT");
+
+    @SetFromFlag("configUrl")
+    BasicAttributeSensorAndConfigKey<String> CONFIG_URL = new BasicAttributeSensorAndConfigKey.StringAttributeSensorAndConfigKey(
+            "server.config.url", "A URL of a YAML file to use to configure the server",
+            "classpath://eu/seaclouds/server/config.yml.template");
+    
+    @SetFromFlag("finalConfigName")
+    ConfigKey<String> FINAL_CONFIG_NAME = ConfigKeys.newStringConfigKey("seaclouds.server.config.final.name","Final name for configuration file", "config.yml");
+
+
+    @SetFromFlag("downloadUrl")
+    BasicAttributeSensorAndConfigKey<String> DOWNLOAD_URL = new BasicAttributeSensorAndConfigKey.StringAttributeSensorAndConfigKey(
+<<<<<<< HEAD:common/entities/src/main/java/eu/seaclouds/common/entities/dashboard/SeacloudsDashboard.java
+            Attributes.DOWNLOAD_URL, "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=dashboard&v=0.8.0-SNAPSHOT&e=jar");
+=======
+            Attributes.DOWNLOAD_URL, "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=server&v=0.8.0-SNAPSHOT&e=jar");
+>>>>>>> Modified classpath references on yaml files to moved entities:common/entities/src/main/java/eu/seaclouds/common/entities/server/SeacloudsServer.java
+
+    @SetFromFlag("port")
+    PortAttributeSensorAndConfigKey DASHBOARD_PORT = new PortAttributeSensorAndConfigKey(
+            "seaclouds.server.port", "", PortRanges.fromInteger(8000));
+
+    @SetFromFlag("adminPort")
+    PortAttributeSensorAndConfigKey DASHBOARD_ADMIN_PORT = new PortAttributeSensorAndConfigKey(
+            "seaclouds.server.adminPort", "", PortRanges.fromInteger(8001));
+    
+    @SetFromFlag("deployerHost")
+    ConfigKey<String> DEPLOYER_HOST = 
+<<<<<<< HEAD:common/entities/src/main/java/eu/seaclouds/common/entities/dashboard/SeacloudsDashboard.java
+            ConfigKeys.newStringConfigKey("seaclouds.dashboard.deployer.host", "Host address for the SeaClouds deployer", "localhost");
+
+    @SetFromFlag("deployerPort")
+    ConfigKey<Integer> DEPLOYER_PORT =
+            ConfigKeys.newIntegerConfigKey("seaclouds.dashboard.deployer.port", "Port for the SeaClouds deployer", 8081);
+    
+    @SetFromFlag("deployerUser")
+    ConfigKey<String> DEPLOYER_USERNAME =
+            ConfigKeys.newStringConfigKey("seaclouds.dashboard.deployer.user", "Endpoint address for the SeaClouds deployer", "admin");
+
+    @SetFromFlag("deployerPassword")
+    ConfigKey<String> DEPLOYER_PASSWORD =
+            ConfigKeys.newStringConfigKey("seaclouds.dashboard.deployer.password", "Endpoint address for the SeaClouds deployer", "p4ssw0rd");
+
+    @SetFromFlag("monitorHost")
+    ConfigKey<String> MONITOR_HOST =
+            ConfigKeys.newStringConfigKey("seaclouds.dashboard.monitor.host", "Host address for the SeaClouds monitor", "localhost");
+
+    @SetFromFlag("monitorPort")
+    ConfigKey<Integer> MONITOR_PORT =
+            ConfigKeys.newIntegerConfigKey("seaclouds.dashboard.monitor.port", "Port for the SeaClouds monitor", 8170);
+=======
+            ConfigKeys.newStringConfigKey("seaclouds.server.deployer.host", "Host address for the SeaClouds deployer");
+
+    @SetFromFlag("deployerPort")
+    ConfigKey<Integer> DEPLOYER_PORT =
+            ConfigKeys.newIntegerConfigKey("seaclouds.server.deployer.port", "Port for the SeaClouds deployer");
+    
+    @SetFromFlag("deployerUser")
+    ConfigKey<String> DEPLOYER_USERNAME =
+            ConfigKeys.newStringConfigKey("seaclouds.server.deployer.user", "Endpoint address for the SeaClouds deployer");
+
+    @SetFromFlag("deployerPassword")
+    ConfigKey<String> DEPLOYER_PASSWORD =
+            ConfigKeys.newStringConfigKey("seaclouds.server.deployer.password", "Endpoint address for the SeaClouds deployer");
+
+    @SetFromFlag("monitorHost")
+    ConfigKey<String> MONITOR_HOST =
+            ConfigKeys.newStringConfigKey("seaclouds.server.monitor.host", "Host address for the SeaClouds monitor");
+
+    @SetFromFlag("monitorPort")
+    ConfigKey<Integer> MONITOR_PORT =
+            ConfigKeys.newIntegerConfigKey("seaclouds.server.monitor.port", "Port for the SeaClouds monitor");
+>>>>>>> Modified classpath references on yaml files to moved entities:common/entities/src/main/java/eu/seaclouds/common/entities/server/SeacloudsServer.java
+
+    @SetFromFlag("plannerHost")
+    ConfigKey<String> PLANNER_HOST =
+<<<<<<< HEAD:common/entities/src/main/java/eu/seaclouds/common/entities/dashboard/SeacloudsDashboard.java
+            ConfigKeys.newStringConfigKey("seaclouds.dashboard.planner.host", "Host address for the SeaClouds planner", "localhost");
+=======
+            ConfigKeys.newStringConfigKey("seaclouds.server.planner.host", "Host address for the SeaClouds planner");
+>>>>>>> Modified classpath references on yaml files to moved entities:common/entities/src/main/java/eu/seaclouds/common/entities/server/SeacloudsServer.java
+
+    @SetFromFlag("plannerPort")
+    ConfigKey<Integer> PLANNER_PORT =
+<<<<<<< HEAD:common/entities/src/main/java/eu/seaclouds/common/entities/dashboard/SeacloudsDashboard.java
+            ConfigKeys.newIntegerConfigKey("seaclouds.dashboard.planner.port", "Port for the SeaClouds planner", 8080);
+
+    @SetFromFlag("slaHost")
+    ConfigKey<String> SLA_HOST =
+            ConfigKeys.newStringConfigKey("seaclouds.dashboard.sla.host", "Host address for the SeaClouds SLA manager", "localhost");
+
+    @SetFromFlag("slaPort")
+    ConfigKey<Integer> SLA_PORT =
+            ConfigKeys.newIntegerConfigKey("seaclouds.dashboard.sla.port", "Port for the SeaClouds SLA manager", 8080);
+=======
+            ConfigKeys.newIntegerConfigKey("seaclouds.server.planner.port", "Port for the SeaClouds planner");
+
+    @SetFromFlag("slaHost")
+    ConfigKey<String> SLA_HOST =
+            ConfigKeys.newStringConfigKey("seaclouds.server.sla.host", "Host address for the SeaClouds SLA manager");
+
+    @SetFromFlag("slaPort")
+    ConfigKey<Integer> SLA_PORT =
+            ConfigKeys.newIntegerConfigKey("seaclouds.server.sla.port", "Port for the SeaClouds SLA manager");
+>>>>>>> Modified classpath references on yaml files to moved entities:common/entities/src/main/java/eu/seaclouds/common/entities/server/SeacloudsServer.java
+    
+}
