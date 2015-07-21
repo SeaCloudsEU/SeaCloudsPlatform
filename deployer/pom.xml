@@ -24,7 +24,6 @@
     <version>0.8.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>eu.seaclouds-project</groupId>
   <artifactId>deployer</artifactId>
   <packaging>jar</packaging>
 
