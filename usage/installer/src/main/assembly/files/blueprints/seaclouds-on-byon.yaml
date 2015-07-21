@@ -27,11 +27,11 @@ services:
       brooklyn.webconsole.security.user.admin.password=p4ssw0rd
 
 - serviceType: brooklyn.entity.basic.SameServerEntity
-  name: SeaClouds Dashboard + Planner + SLA
+  name: SeaClouds Server + Planner + SLA
   brooklyn.children:
-  - serviceType: eu.seaclouds.dashboard.SeacloudsDashboard
-    name: SeaClouds Dashboard
-    id: dashboard
+  - serviceType: eu.seaclouds.common.entities.server.SeacloudsServer
+    name: SeaClouds Server
+    id: server
     brooklyn.config:
       port: 8000
       adminPort: 8001

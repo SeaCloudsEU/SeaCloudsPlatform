@@ -1,0 +1,59 @@
+<div ng-controller="StatusCtrl">
+
+
+    <div role="tabpanel">
+
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" ng-class="{active: !isStatusSettingVisible()}">
+                <a aria-controls="status-viewer" role="tab" data-toggle="tab"
+                   ng-click="showStatusSettings(false)">Topology & Status Diagram</a>
+            </li>
+            <li role="presentation" ng-class="{active: isStatusSettingVisible()}">
+                <a aria-controls="status-settings" role="tab" data-toggle="tab"
+                   ng-click="showStatusSettings(true)">Application Attributes</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+
+            <!-- Sta Viewer -->
+            <div id="status-viewer" role="tabpanel" class="tab-pane" ng-class="{active: !isStatusSettingVisible()}"
+                 ng-if="!isStatusSettingVisible()">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <topology-status topology="topology"></topology-status>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metric Settings -->
+            <div id="status-settings" role="tabpanel" class="tab-pane" ng-class="{active: isStatusSettingVisible()}"
+                 ng-if="isStatusSettingVisible()">
+                <div class="row" ng-repeat="entity in entities">
+                    <h4>
+                        <small>{{entity.id}} - {{entity.name}}</small>
+                    </h4>
+                    <table datatable="" dt-options="dtOptions" class="table table-striped compact" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th><small>Sensor</small></th>
+                            <th><small>Value</small></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="sensor in entity.sensors">
+                            <td><small>{{sensor.name}}</small></td>
+                            <td><small>{{sensor.value}}</small></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+</div>

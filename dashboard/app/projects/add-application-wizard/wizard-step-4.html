@@ -1,0 +1,36 @@
+<div class="row">
+    <div class="row">
+        <div class="col-lg-12">
+            <h3>
+                <small>Deployable Application Model</small>
+            </h3>
+            <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="editorOptionsDam"
+                           ng-model="$parent.damInput"></ui-codemirror>
+            <div ngf-select class="btn btn-default btn-primary" ngf-multiple="false" ng-model="damInputFile">
+                Load file
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <h3>
+            <small>Monitoring Rules</small>
+        </h3>
+        <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="editorOptionsMonitoringRules"
+                       ng-model="$parent.monitoringRulesInput"></ui-codemirror>
+        <div ngf-select class="btn btn-default btn-primary" ngf-multiple="false" ng-model="monitoringRulesInputFile">
+            Load file
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <h3>
+            <small>Service Level Agreements</small>
+        </h3>
+        <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="editorOptionsSLA"
+                       ng-model="$parent.slaInput" disabled></ui-codemirror>
+        <div ngf-select class="btn btn-default btn-primary" ngf-multiple="false" ng-model="slaInputFile">
+            Load file
+        </div>
+    </div>
+</div>

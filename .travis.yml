@@ -1,8 +1,16 @@
 language: java
 
-before_install: "git clone -b travis `git config --get remote.origin.url` target/travis"
+before_install: 
+  - "git clone -b travis `git config --get remote.origin.url` target/travis"
+  
 after_success:
   - .buildscript/deploy_snapshot.sh
+
+addons:
+  apt:
+    packages:
+     - nodejs
+     - npm
 
 sudo: false
 

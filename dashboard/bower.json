@@ -1,0 +1,44 @@
+{
+  "name": "seaclouds-dashboard",
+  "description": "Dashboard user interface for SeaClouds Platform",
+  "version": "0.8.0-SNAPSHOT",
+  "homepage": "https://github.com/SeaCloudsEU/SeaCloudsPlatform",
+  "license": "Apache",
+  "private": false,
+  "dependencies": {
+    "angular": "~1.4.1",
+    "angular-route": "~1.4.1",
+    "angular-loader": "~1.4.1",
+    "angular-material": "~0.10.0",
+    "angular-chart.js": "~0.7.2",
+    "angular-google-maps": "~2.1.5",
+    "angular-animate": "~1.4.2",
+    "angular-sanitize": "~1.4.2",
+    "angular-datatables": "~0.4.3",
+    "angular-ui-codemirror": "~0.3.0",
+    "angular-material-data-table": "*",
+    "angular-spinner": "~0.6.2",
+    "angular-loading-spinner": "~0.0.3",
+    "ng-file-upload": "~5.0.9",
+    "bootstrap": "~3.3.5",
+    "jquery": "~2.1.4",
+    "d3": "~3.5.6",
+    "js-yaml": "~3.3.1",
+    "lodash": "~3.10.0",
+    "angular-bootstrap": "~0.13.0",
+    "angular-pnotify": "~0.0.6",
+    "font-awesome": "~4.3.0"
+  },
+  "resolutions": {
+    "angular": "~1.4.1"
+  },
+  "overrides": {
+    "bootstrap": {
+      "main": [
+        "dist/js/bootstrap.js",
+        "dist/css/bootstrap.css",
+        "less/bootstrap.less"
+      ]
+    }
+  }
+}

@@ -1,0 +1,220 @@
+<span><h3>
+    <small>Please define the topology of <strong>{{applicationName}}</strong></small>
+</h3></span>
+<div class="btn-group pull-right">
+    <div id="add-buttons-">
+        <button class="btn btn-default" type="button" data-type="Database">Database</button>
+        <button class="btn btn-default" type="button" data-type="RestService">Rest</button>
+        <button class="btn btn-default" type="button" data-type="WebApplication">Web application</button>
+    </div>
+
+</div>
+
+
+<topology-editor topology="topology"></topology-editor>
+
+<div class="modal fade" id="add-form">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">Add new...</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form">
+                    <fieldset id="set-common">
+                        <legend>Description <a href="#"><i class="fa fa-chevron-down"> </i></a></legend>
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" class="form-control" id="name" placeholder="Module name">
+                        </div>
+                        <div class="form-group">
+                            <label for="label">Label on screen</label>
+                            <input type="text" class="form-control" id="label" placeholder="Module label">
+                        </div>
+                    </fieldset>
+                    <fieldset id="set-code-tech">
+                        <legend>Technological Requirements <a href="#"><i class="fa fa-chevron-down"> </i></a></legend>
+                        <div class="form-group">
+                            <label for="code-language">Language</label>
+                            <select class="form-control" id="code-language"> </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="code-version">Version</label>
+                            <select class="form-control" id="code-version" multiple> </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="code-artifact">Artifact</label>
+                            <input type="file" class="form-control" id="code-artifact">
+                        </div>
+                    </fieldset>
+                    <fieldset id="set-database-tech">
+                        <legend>Technological Requirements <a href="#"><i class="fa fa-chevron-down"> </i></a></legend>
+                        <div class="form-group">
+                            <label for="database-category">Category</label>
+                            <select class="form-control" id="database-category"> </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="database-artifact">Initialization script</label>
+                            <input type="file" class="form-control" id="database-artifact">
+                        </div>
+                    </fieldset>
+                    <fieldset id="set-nonfunctional">
+                        <legend>Non-functional Requirements <a href="#"><i class="fa fa-chevron-down"> </i></a></legend>
+                        <div class="form-group">
+                            <label for="nf-cost">Cost</label>
+                            <select class="form-control" id="nf-cost"> </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="nf-location">Location</label>
+                            <label class="radio-inline">
+                                <input type="radio" id="nf-location-none" name="nf-location" value="">None
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" id="nf-location-static" name="nf-location" value="STATIC">Static
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" id="nf-location-dynamic" name="nf-location" value="DYNAMIC">Dynamic
+                            </label>
+                        </div>
+                        <div class="form-group" id="nf-location-static-div">
+                            <label for="nf-location-static-options">Static location</label>
+                            <select class="form-control" id="nf-location-static-options"> </select>
+                        </div>
+                        <div class="form-group" id="nf-location-dynamic-div">
+                            <label for="nf-location-dynamic-options">Policy</label>
+                            <select class="form-control" id="nf-location-dynamic-options"> </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="nf-qos">QoS</label>
+                            <table class="table table-bordered" id="nf-qos">
+                                <thead>
+                                <tr>
+                                    <th>Metric name
+                                    <th>Operator
+                                    <th>Threshold
+                                    <th>Actions
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <input type="text" class="form-control" name="metric">
+                                    <td>
+                                        <select class="form-control" name="operator" id="nf-qos-operator">
+                                            <option value=""></option>
+                                            <option value="LT">&lt;</option>
+                                            <option value="LE">&lt;=</option>
+                                            <option value="EQ">=</option>
+                                            <option value="GE">&gt;=</option>
+                                            <option value="GT">&gt;</option>
+                                        </select>
+                                    <td>
+                                        <input type="text" class="form-control" name="threshold">
+                                    <td>
+                                        <button type="button" data-action="delete"><i class="fa fa-remove"> </i>
+                                        </button>
+                                </tr>
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td>
+                                    <td>
+                                    <td>
+                                    <td>
+                                        <button type="button" id="nf-qos-add" data-action="add"><span
+                                                class="fa fa-plus"> </span></button>
+                                </tr>
+                                </tfoot>
+                            </table>
+                            <!--<input type="text" class="form-control" id="nf-qos" name="nf-qos">-->
+                        </div>
+                    </fieldset>
+                    <fieldset id="set-infrastructure">
+                        <legend>Provider Infrastructure <a href="#"><i class="fa fa-chevron-down"> </i></a></legend>
+                        <div class="form-group">
+                            <label for="infrastructure">Provider is</label>
+                            <label class="radio-inline">
+                                <input type="radio" id="infrastructure-none" name="infrastructure" value="">None
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" id="infrastructure-iaas" name="infrastructure" value="IAAS"> IaaS
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" id="infrastructure-paas" name="infrastructure" value="PAAS"> PaaS
+                            </label>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Add!</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="update-link-form">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">Update link</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form">
+                    <fieldset id="set-operations">
+                        <legend>Description</legend>
+                        <div class="form-group">
+                            <label for="link-operations">Operations</label>
+                            <table class="table table-bordered" id="link-operations">
+                                <thead>
+                                <tr>
+                                    <th>Source operation
+                                    <th>Target operation
+                                    <th># Calls
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <input type="text" class="form-control" name="source-operation-name">
+                                    <td>
+                                        <input type="text" class="form-control" name="target-operation-name">
+                                    <td>
+                                        <input type="text" class="form-control" name="operation-calls">
+                                    <td>
+                                        <button type="button" data-action="delete"><i class="fa fa-remove"> </i>
+                                        </button>
+                                </tr>
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td>
+                                    <td>
+                                    <td>
+                                    <td>
+                                        <button type="button" id="links-operations-add" data-action="add"><span
+                                                class="fa fa-plus"> </span></button>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="link-update" type="button" class="btn btn-primary">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+

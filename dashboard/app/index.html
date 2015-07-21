@@ -1,0 +1,79 @@
+<!--
+    Copyright 2014 SeaClouds
+    Contact: SeaClouds
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<!DOCTYPE html>
+
+<!-- TODO: Check and warn about an unsupported browser version (Older than IE9) -->
+<html lang="en" ng-app="seacloudsDashboard" ng-controller="GlobalCtrl">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="icon" type="image/png" href="static/img/favicon.png" />
+    <title>{{Page.getTitle()}}</title>
+
+    <!-- build:css static/css/dependencies.css -->
+    <!-- bower:css -->
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- Custom libraries -->
+    <link href="static/css/canvas.css" rel="stylesheet">
+    <link href="static/css/editor.css" rel="stylesheet">
+    <link href="static/css/custom.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <header ng-cloak></header>
+    <div ng-view ng-cloak></div>
+    <footer ng-cloak></footer>
+
+</body>
+
+<!-- build:js static/js/lib.js -->
+<!-- bower:js -->
+<!-- endbower -->
+<!-- endbuild -->
+
+<!-- Custom libraries -->
+<script src="static/js/loglevel.js"></script>
+<script src="static/js/editor/log.js"></script>
+<script src="static/js/editor/graph.js"></script>
+<script src="static/js/editor/canvas.js"></script>
+<script src="static/js/editor/types.js"></script>
+<script src="static/js/editor/forms.js"></script>
+<script src="static/js/editor/editor.js"></script>
+<script src="static/js/editor/status.js"></script>
+<script src="static/js/editor/angular-topology-editor.js"></script>
+<script src="static/js/xml-json-yaml-validator.js"></script>
+
+<!-- Application specific JavaScript -->
+<script src="app.js"></script>
+<script src="header/header.js"></script>
+<script src="footer/footer.js"></script>
+<script src="signin/signin.js"></script>
+<script src="about/about.js"></script>
+<script src="help/help.js"></script>
+<script src="projects/projects.js"></script>
+<script src="projects/add-application-wizard/add-application-wizard.js"></script>
+<script src="projects/project/project.js"></script>
+<script src="projects/project/status/status.js"></script>
+<script src="projects/project/monitor/monitor.js"></script>
+<script src="projects/project/sla/sla.js"></script>
+
+</html>

@@ -1,0 +1,71 @@
+<div ng-controller="ProjectCtrl" ng-cloak>
+    <div class="container" ng-if="!project && isLoaded">
+        <span class="text-danger text-center"><h1>This application doesn't exist</h1></span>
+    </div>
+    <div class="container" ng-if="project">
+        <div class="row">
+            <div class="col-lg-2 col-sm-12">
+                <ul class="nav nav-pills nav-stacked project-pills ">
+                    <li role="presentation" class="title-pill" disabled><a><strong>{{project.name}}</strong></a></li>
+                    <li class="divider">
+                        <hr>
+                    </li>
+                    <li role="presentation" ng-class="{active:getSelectedTab()==1}">
+                        <a aria-controls="profile" role="tab" data-toggle="tab" ng-click="setSelectedTab(1)">Topology
+                            & Status</a></li>
+                    <li role="presentation" ng-class="{active:getSelectedTab()==2}">
+                        <a aria-controls="profile" role="tab" data-toggle="tab" ng-click="setSelectedTab(2)">Application
+                            Monitor</a>
+                    </li>
+                    <li role="presentation" ng-class="{active:getSelectedTab()==3}">
+                        <a aria-controls="profile" role="tab" data-toggle="tab" ng-click="setSelectedTab(3)">SLA</a>
+                    </li>
+                    <li class="divider">
+                        <hr>
+                    </li>
+                    <li role="presentation" class="red-pill"><a data-toggle="modal" data-target="#removeModal">Remove
+                        Application</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-10">
+                <status role="tabpanel" class="tab-pane" ng-class="{active:getSelectedTab()==1}" id="status"
+                        ng-show="getSelectedTab()==1"></status>
+                <monitor role="tabpanel" class="tab-pane" ng-class="{active:getSelectedTab()==2}" id="monitor"
+                         ng-show="getSelectedTab()==2"></monitor>
+                <sla role="tabpanel" class="tab-pane" ng-class="{active:getSelectedTab()==3}" id="sla"
+                     ng-show="getSelectedTab()==3"></sla>
+            </div>
+        </div>
+
+        <!--TODO: Use angular modals to be able to dismiss the modal properly (now fades after ng-click"-->
+        <div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="removeModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="removeModalLabel">Remove application</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>You are going to remove <b>{{project.name}}</b>, if you continue the removal process will
+                            start, freeing all the resources used
+                            by the application.</p>
+
+                        <p>This step is <span class="text-danger"><b>IRREVERSIBLE</b></span>, do you want to continue?
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <a type="button" class="btn btn-danger" data-dismiss="modal" ng-click="removeProject()">Yes,
+                            remove it!</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
