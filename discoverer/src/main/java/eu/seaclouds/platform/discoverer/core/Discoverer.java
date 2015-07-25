@@ -20,6 +20,7 @@ package eu.seaclouds.platform.discoverer.core;
 /* std imports */
 import java.io.*;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.lang.Exception;
 
@@ -200,7 +201,26 @@ public class Discoverer {
 		/* creating and returning the iterator */
 		return new OfferingRepoIterator(files);
 	}
-	
+
+
+
+	public Date getDate(String cloudOfferingId) {
+		if( !Offering.validateOfferingId(cloudOfferingId) )
+			throw new IllegalArgumentException("Invalid offering ID: " + cloudOfferingId);
+
+		/* loading insertion date */
+		try {
+			String dateFileName = getWorkingDirectory() + cloudOfferingId + ".date";
+			FileInputStream fis = new FileInputStream(dateFileName);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			Date ret = (Date) ois.readObject();
+			return ret;
+		} catch(IOException | ClassNotFoundException ex) {
+			/* something is wrong */
+			ex.printStackTrace();
+			throw new RuntimeException(ex.getMessage());
+		}
+	}
 	
 	
 	/* implementation of the iterator */

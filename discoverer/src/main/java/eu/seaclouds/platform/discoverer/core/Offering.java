@@ -245,4 +245,35 @@ public class Offering {
 		String nodeTemplateName = nts.keySet().iterator().next();
 		return nodeTemplateName;
 	}
+
+	/**
+	 * Sanitizes a name by replacing every not alphanumeric character with '_'
+	 *
+	 * @param name the name of the offerings
+	 * @return the sanitized name
+	 */
+	public static String sanitizeName(String name) {
+
+		if (name  == null)
+			throw new NullPointerException("Parameter name cannot be null");
+
+		name = name.trim();
+
+		if (name.length() == 0)
+			throw new IllegalArgumentException("Parameter name cannot be empty");
+
+		StringBuilder ret = new StringBuilder("");
+
+		for (int i = 0; i < name.length(); i++) {
+			char ch = name.charAt(i);
+			if (Character.isLetter(ch) || Character.isDigit(ch)) {
+				ret.append(ch);
+			} else {
+				ret.append("_");
+			}
+
+		}
+
+		return ret.toString();
+	}
 }

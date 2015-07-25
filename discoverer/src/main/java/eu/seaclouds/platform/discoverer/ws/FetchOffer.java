@@ -29,13 +29,14 @@ import eu.seaclouds.platform.discoverer.core.Discoverer;
 
 
 /* io */
-import java.io.IOException;
+import java.io.*;
 
 /* std */
 import java.util.Iterator;
 
 
 /* json parser */
+import eu.seaclouds.platform.discoverer.core.Offering;
 import org.json.simple.*;
 
 @SuppressWarnings("serial")
@@ -51,26 +52,61 @@ public class FetchOffer extends HttpServlet {
 	public void init() {
 		this.core = Discoverer.instance();
 	}
-	
-	
+
+
+
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+		/* collecting all the ids within the repository */
+		JSONArray ids = new JSONArray();
+		Iterator<String> it = core.enumerateOffers();
+		while( it.hasNext() ) {
+			String cid = it.next();
+			ids.add(cid);
+		}
+
+		/* response to the caller */
+		response.setContentType("application/json");
+		PrintWriter out = response.getWriter();
+		out.write(ids.toString());
+		out.close();
+		return;
+	}
+
+
 	
 	@SuppressWarnings("unchecked")
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
-		/* getting ids */
-		Iterator<String> offerIds = this.core.enumerateOffers();
-		
-		/* wrapping the result in a json array */
-		JSONObject responseData = new JSONObject();
-		int offerIndex = 0;
-		while( offerIds.hasNext() ) {
-			String currentOfferId = offerIds.next();
-			responseData.put("#" + offerIndex, currentOfferId);
-			offerIndex++;
+		/* response setup */
+		response.setContentType("application/json");
+		JSONObject res = new JSONObject();
+		PrintWriter out = response.getWriter();
+
+		/* input check */
+		String offerId = request.getParameter("oid");
+		if(offerId == null || Offering.validateOfferingId(offerId) == false) {
+			res.put("code", "Meh.");
+			res.put("errormessage", "Invalid Offering ID: " + ((offerId == null) ? "null" : offerId));
+			out.write(res.toString());
+			out.close();
+			return;
 		}
-		
-		/* returning the json */
-		response.getWriter().print(responseData);
+
+		/* fetching the offering */
+		Offering offering = this.core.fetch(offerId);
+		if(offering == null) {
+			res.put("code", "Meh.");
+			res.put("errormessage", "Unable to fetch selected offering.");
+		} else {
+			res.put("code", "WOOT!");
+			res.put(offerId, offering.toTosca());
+		}
+
+		/* sending response to the caller */
+		out.write(res.toString());
+		out.close();
+		return;
 	}
 
 }

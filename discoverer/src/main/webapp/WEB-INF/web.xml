@@ -22,6 +22,18 @@
   <description>The SeaClouds's Discoverer as RESTful service</description>
 
 
+  <!-- FETCH OFFERING -->
+    <servlet>
+        <servlet-name>discoverer_fetch_offering</servlet-name>
+        <servlet-class>eu.seaclouds.platform.discoverer.ws.FetchOffer</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>discoverer_fetch_offering</servlet-name>
+        <url-pattern>/fetch</url-pattern>
+    </servlet-mapping>
+
+
   <!-- ADD OFFERING -->
   <servlet>
 	<servlet-name>discoverer_add_offering</servlet-name>
