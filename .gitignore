@@ -13,3 +13,4 @@ target/
 **/nohup.out
 release.properties
 pom.xml.*
+.DS_Store
