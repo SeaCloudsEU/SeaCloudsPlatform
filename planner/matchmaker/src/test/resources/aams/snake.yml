@@ -1,0 +1,51 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0
+
+description: Template hosting requirements and placement policy.
+
+topology_template:
+  inputs:
+    # omitted here for brevity
+
+  node_templates:
+    wordpress_server:
+      type: tosca.nodes.WebServer
+      properties:
+        # omitted here for brevity
+      requirements:
+        - host:
+            # Find a Compute node that fulfills these additional filter reqs.
+            node_filter:
+              capabilities:
+                - host:
+                    properties:
+                      - mem_size: { greater_or_equal: 2 MB }
+                      - disk_size: { greater_or_equal: 10 MB }
+                - os:
+                    properties:
+                      - architecture: x86_64
+                      - type: linux
+
+    mysql:
+      type: tosca.nodes.DBMS.MySQL
+      properties:
+        # omitted here for brevity
+      requirements:
+        - host:
+            node: tosca.nodes.Compute
+            node_filter:
+              capabilities:
+                - host:
+                    properties:
+                      - disk_size: { greater_or_equal: 1 GB }
+                - os:
+                    properties:
+                      - architecture: x86_64
+                      - type: linux
+
+  groups:
+    my_collocation_group:
+      members: [ wordpress_server, mysql ]
+      policies:
+        - my_anti_collocation_policy:
+             # Specific policy definitions are considered domain specific and
+             # are not included here

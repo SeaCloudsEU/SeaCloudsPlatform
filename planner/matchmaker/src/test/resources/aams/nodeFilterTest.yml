@@ -1,0 +1,22 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+
+description: Template with requirements against hosting infrastructure.
+
+imports:
+  - tosca-normative-types:1.0.0.wd03-SNAPSHOT
+
+topology_template:
+  node_templates:
+    mysql:
+      type: tosca.nodes.DBMS.MySQL
+      requirements:
+        - host: sdtfygjkh
+
+node_types:
+  seaclouds.types.QosInfo:
+      properties:
+        benchmark_platform:
+          type: string
+        execution_time:
+          type: scalar-unit
+

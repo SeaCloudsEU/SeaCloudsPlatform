@@ -1,0 +1,235 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+
+tosca_default_namespace:   # Optional. default namespace (schema, types version)
+template_name:             # Optional name of this service template
+template_author:           # Optional author of this service template
+template_version:          # Optional version of this service template
+
+description: AAM for SeaClouds Demo
+
+imports:
+  - tosca-normative-types:1.0.0.wd03-SNAPSHOT
+
+dsl_definitions:
+  # list of YAML alias anchors (or macros)
+
+inputs:
+  # list of global input parameters
+
+topology_template:
+ node_templates:
+  # list of node templates
+  java_ee_server:
+    type: seaclouds.Nodes.Platform
+
+  db:
+    type: seaclouds.Nodes.Compute
+    properties:
+      mySQL_support: true
+
+  mysql_server:
+        type: seaclouds.nodes.deploy.MySQL
+        properties:
+          name: some_name
+          user: some_user
+          password: some_password
+          version: 5.5.37
+        artifacts:
+          - db_create: files/db_create.sql
+            type: tosca.artifacts.File
+        requirements:
+          - host: db
+
+  tomcat_server:
+    type: seaclouds.nodes.deploy.tomcatServer
+    properties:
+         version: 7.0.53
+    artifacts:
+      - war: chat-webApplication.war
+    requirements:
+      - host: java_ee_server
+
+  db.query:
+   type: seaclouds.nodes.Logic
+   properties:
+     qos_info:
+       execution_time: 30 ms
+       benchmark_platform: hp_cloud_services.2xl
+   requirements:
+     - host: db
+
+  java_ee_server.operation:
+     type: seaclouds.nodes.Logic
+     properties:
+         qos_info:
+           execution_time: 50 ms
+           benchmark_platform: hp_cloud_services.2xl
+         qos_requirements:
+           response_time: 2 sec
+           availability: 0.998
+           cost: 200 euros_per_month
+           workload: 50 req_per_mins
+     requirements:
+         - host: java_ee_server
+         - dependence_to_query:
+             node: db.query
+             relationship: java_ee_server.query.db
+
+
+relationship_templates:
+  # list of relationship templates
+    java_ee_server.query.db:
+      type: seaclouds.relationships.Uses
+      properties:
+        average_usage_count: 2
+
+
+node_types:
+  seaclouds.Nodes.Logic:
+    derived_from: tosca.nodes.Root
+    properties:
+      qos_info:
+        type: seaclouds.types.QosInfo
+      qos_requirements:
+        type: seaclouds.types.QosRequirements
+
+  seaclouds.types.QosRequirements:
+        properties:
+            response_time:
+                    type: scalar-unit
+            execution_time:
+                    type: scalar-unit
+            availability:
+                    type: float
+
+  seaclouds.types.QosInfo:
+        properties:
+          benchmark_platform:
+            type: string
+          execution_time:
+            type: scalar-unit
+
+  seaclouds.Nodes.Deploy:
+    derived_from: tosca.nodes.Root
+    properties:
+      name:
+        type: string
+      user:
+        type: string
+      password:
+        type: string
+      version:
+        type: version
+
+  seaclouds.Nodes.Deploy.MySQL:
+    derived_from: seaclouds.Nodes.Deploy
+
+  seaclouds.Nodes.Compute:
+    derived_from: tosca.nodes.Compute
+    properties:
+            scaling_horizontal:
+                type: string
+                constraints:
+                    - valid_values: [ no, manual, auto]
+                default: no
+            scaling_vertical:
+                type: string
+                constraints:
+                    - valid_values: [no,manual,auto]
+                default: no
+            storage_type:
+                type: string
+                default: ''
+                # (tbd)
+            storage_file_system:
+                type: string
+                default: ''
+                # (maybe not needed)
+            region:
+                type: string
+                default: ''
+            networking:
+                type: seaclouds.types.NodeNetworkInfo
+                default:
+                    outbound_bandwidth: 2 MB
+                    inbound_bandwidth: 1 MB
+                    load_balancing: false
+                    number_of_ipv4: 1
+            disk_type:
+                type: string
+            load_balancing:
+                type: boolean
+            disk_size:
+                type: scalar-unit
+
+  seaclouds.Nodes.Platform:
+    derived_from: tosca.nodes.Root
+    properties:
+      go_support:
+        type: boolean
+        default: false
+      java_support:
+        type: boolean
+        default: false
+      node_support:
+        type: boolean
+        default: false
+      php_support:
+        type: boolean
+        default: false
+      python_support:
+        type: boolean
+        default: false
+      ruby_support:
+        type: boolean
+        default: false
+      mysql_support:
+        type: boolean
+        default: false
+      postgresql_support:
+        type: boolean
+        default: false
+      mongoDB_support:
+        type: boolean
+        default: false
+      redis_support:
+        type: boolean
+        default: false
+      riak_support:
+        type: boolean
+        default: false
+      dataStax_support:
+        type: boolean
+        default: false
+      neo4j_support:
+        type: boolean
+        default: false
+      pivotalHD_support:
+        type: boolean
+        default: false
+
+  seaclouds.Nodes.Platform.Pivotal:
+    derived_from: seaclouds.Nodes.Platform
+
+  seaclouds.Nodes.Compute.Amazon:
+    derived_from: seaclouds.Nodes.Compute
+
+capability_types:
+  # list of capability type definitions
+
+relationship_types:
+  # list of relationship type definitions
+  seaclouds.relationships.Uses:
+    derive_from: tosca.relationships.Root
+    properties:
+      average_usage_count:
+        type: integer
+
+artifact_types:
+  # list of artifact type definitions
+
+groups:
+  # list of groups defined in service template
+
+outputs:
+  # list of output parameters
