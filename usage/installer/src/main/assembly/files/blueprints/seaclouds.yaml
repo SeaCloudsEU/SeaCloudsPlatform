@@ -10,14 +10,13 @@ services:
 - serviceType: "classpath://brooklyn/entity/brooklynnode/brooklyn-node.yaml"
   id: deployer
   name: SeaClouds Deployer
-  install.version: 0.8.0-SNAPSHOT
   managementUser: admin
   managementPassword: p4ssw0rd
   brooklynLocalPropertiesContents: |
     brooklyn.webconsole.security.users=admin
     brooklyn.webconsole.security.user.admin.password=p4ssw0rd
   brooklyn.config:
-    brooklynnode.download.archive.subpath: brooklyn-dist-0.8.0-SNAPSHOT/
+    brooklynnode.download.archive.subpath: brooklyn-dist-0.7.0-incubating/
     brooklynnode.classpath:
       - classpath://deployer-0.8.0-SNAPSHOT.jar
 
