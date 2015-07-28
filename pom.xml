@@ -26,7 +26,7 @@
         <!--module>monitor</module-->
         <module>deployer</module>
         <module>planner</module>
-		<module>discoverer</module>
+		    <module>discoverer</module>
         <module>dashboard</module>
         <module>sla</module>
         <module>usage/installer</module>
@@ -92,11 +92,11 @@
 
         <includedTestGroups />
         <excludedTestGroups>Integration,Live</excludedTestGroups>
-        
+
         <!-- Dependencies -->
         <guava.version>18.0</guava.version>
         <javatuples.version>1.2</javatuples.version>
-        <brooklyn.version>0.7.0-20150614.2158</brooklyn.version>
+        <brooklyn.version>0.7.0-incubating</brooklyn.version>
         <jetty.version>9.2.4.v20141103</jetty.version>
         <dropwizard.version>0.8.1</dropwizard.version>
         <httpcomponents.version>4.3.6</httpcomponents.version>
@@ -122,7 +122,7 @@
         <modaclouds.version>2.4</modaclouds.version>
         <jaxb.version>2.2.6</jaxb.version>
         <castor.version>1.2</castor.version>
-        
+
         <!-- Test dependencies -->
         <junit.version>4.11</junit.version>
         <testng.version>6.8.8</testng.version>
@@ -426,7 +426,7 @@
                 <artifactId>jackson-datatype-joda</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
@@ -507,7 +507,7 @@
                 <artifactId>jaxb-impl</artifactId>
                 <version>${jaxb.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>it.polimi.modaclouds.qos-models</groupId>
                 <artifactId>qos-models</artifactId>
@@ -555,7 +555,7 @@
                 <artifactId>validation-api</artifactId>
                 <version>${validation-api.version}</version>
             </dependency>
-            
+
             <!-- Spring -->
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -632,7 +632,7 @@
                 <artifactId>spring-security-config</artifactId>
                 <version>${spring-security.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
@@ -658,7 +658,7 @@
                 <artifactId>commons-httpclient</artifactId>
                 <version>${commons-httpclient.version}</version>
             </dependency>
-            
+
             <!-- Test dependencies -->
             <dependency>
                 <groupId>org.testng</groupId>
@@ -733,7 +733,7 @@
                 <scope>test</scope>
                 <classifier>tests</classifier>
             </dependency>
-            
+
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
