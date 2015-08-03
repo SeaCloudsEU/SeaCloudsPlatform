@@ -30,8 +30,34 @@ limitations under the License.
     <dependencies>
         <dependency>
             <groupId>eu.seaclouds-project</groupId>
-            <artifactId>toscamodel</artifactId>
-            <version>1.0.0</version>
+            <artifactId>common</artifactId>
+            <version>0.8.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.brooklyn</groupId>
+                    <artifactId>brooklyn-launcher</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.brooklyn</groupId>
+                    <artifactId>brooklyn-software-base</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.brooklyn</groupId>
+                    <artifactId>brooklyn-software-database</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.brooklyn</groupId>
+                    <artifactId>brooklyn-software-webapp</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
         </dependency>
     </dependencies>
     

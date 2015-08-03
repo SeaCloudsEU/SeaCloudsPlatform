@@ -1,0 +1,103 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+
+description: AAM for SeaClouds Demo V2.0
+
+imports:
+  - tosca-normative-types:1.0.0.wd03-SNAPSHOT
+
+topology_template:
+ node_templates:
+   java_ee_server:
+    type: seaclouds.nodes.Compute.Amazon
+    properties:
+      location: aws-ec2:us-west-2
+
+   db:
+    type: seaclouds.nodes.Platform.Pivotal
+    properties:
+      location: pivotal
+
+   mysql_server:
+    type: seaclouds.nodes.Deploy.MySQL
+    properties:
+       name: some_name
+       user: some_user
+       password: some_password
+       version: 5.5.37
+    artifacts:
+      - db_create: files/db_create.sql
+        type: tosca.artifacts.File
+    requirements:
+      - host: db
+
+    tomcat_server:
+      type: seaclouds.nodes.deploy.tomcatServer
+      properties:
+           version: 7.0.53
+      artifacts:
+        - war: chat-webApplication.war
+      requirements:
+        - host: java_ee_server
+
+    aws-ec2:us-west-2:
+        type: seaclouds.nodes.Compute.Amazon
+        properties:
+          type: compute
+          num_cpus: 4
+          availability: 0.98
+          cost: 0.928 usd_per_hour
+          performance: 62 ecb
+
+      pivotal:
+        type: seaclouds.nodes.Platform.Pivotal
+        properties:
+          type: platform
+          go_support: true
+          java_support: true
+          node_support: true
+          php_support: true
+          python_support: true
+          ruby_support: true
+          mysql_support: true
+          postgresql_support: true
+          mongoDB_support: true
+          redis_support: true
+          riak_support: true
+          dataStax_support: true
+          neo4j_support: true
+          pivotalHD_support: true
+          price: 0.03 $_perGB_per_h
+
+groups:
+  db_query:
+    members: [db]
+    policies:
+      - QoSInfo:
+          execution_time: 30 ms
+          benchmark_platform: hp_cloud_services.2xl
+      - dependencies:
+          other_modules: []
+
+  java_ee_server_operation:
+    members: [java_ee_server]
+    policies:
+      - QoSInfo:
+          execution_time: 50 ms
+          benchmark_platform: hp_cloud_services.2xl
+      - QoSRequirements:
+          response_time: { less_than: 2 sec }
+          availability: { greater_than: 0.998 }
+          cost: { less_or_equal: 200 euros_per_month }
+          workload: { less_or_equal: 50 req_per_mins }
+      - dependencies:
+          other_modules: [ db_query ]
+
+  db_monitoringrules:
+    members: [db]
+    policies:
+      - ...
+
+  db_slarules:
+    members: [db]
+     policies:
+      - ...

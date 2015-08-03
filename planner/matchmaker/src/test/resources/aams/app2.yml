@@ -1,0 +1,43 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+
+description: App with dependency
+
+imports:
+  - tosca-normative-types:1.0.0.wd03-SNAPSHOT
+
+
+topology_template:
+ node_templates:
+  my_app:
+    type: my.types.MyApplication
+    properties:
+      name: "Seaclouds Application"
+    requirements:
+      dependency: some_service
+
+  some_service:
+    type: some.nodetype.SomeService
+    properties:
+      #omitted
+
+node_types:
+  seaclouds.Nodes.Deploy:
+    properties:
+      name:
+        constraints:
+          - greater_than: 3
+      user:
+        constraints:
+          - equal: pippo
+      password:
+        type: string
+      version:
+        type: version
+# my_app:
+#   derived_from: my.types.MyApplication
+#   properties:
+#     name: "Seaclouds Application"
+#  some_service:
+#   derived_from: some.nodetype.SomeService
+
+

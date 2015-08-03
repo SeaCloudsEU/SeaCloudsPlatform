@@ -33,16 +33,14 @@ limitations under the License.
         <module>matchmaker</module>
         <module>optimizer</module>
         <module>core</module>
+        <module>service</module>
     </modules>
     <dependencies>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-servlet-api</artifactId>
-        </dependency>
+
     </dependencies>
 
     <repositories>
@@ -55,4 +53,5 @@ limitations under the License.
             </snapshots>
         </repository>
     </repositories>
+
 </project>

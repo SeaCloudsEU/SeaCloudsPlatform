@@ -1,0 +1,43 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+
+tosca_default_namespace:   # Optional. default namespace (schema, types version)
+template_name:             # Optional name of this service template
+template_author:           # Optional author of this service template
+template_version:          # Optional version of this service template
+
+description: AAM for SeaClouds Demo V2.0
+
+imports:
+  - tosca-normative-types:1.0.0.wd03-SNAPSHOT
+
+topology_template:
+ node_templates:
+  aws-ec2:us-west-2:
+    type: seaclouds.nodes.Compute.Amazon
+    properties:
+      resource_type: compute
+      num_cpus: 4
+      availability: 0.98
+      cost: 0.928 usd_per_hour
+      performance: 62 ecb
+
+  pivotal:
+    type: seaclouds.nodes.Platform.Pivotal
+    properties:
+      resource_type: platform
+      go_support: true
+      java_support: true
+      node_support: true
+      php_support: true
+      python_support: true
+      ruby_support: true
+      mysql_support: true
+      postgresql_support: true
+      mongoDB_support: true
+      redis_support: true
+      riak_support: true
+      dataStax_support: true
+      neo4j_support: true
+      pivotalHD_support: true
+      price: 0.03 $_perGB_per_h
+
