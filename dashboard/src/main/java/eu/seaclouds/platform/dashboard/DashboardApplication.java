@@ -17,6 +17,7 @@
 
 package eu.seaclouds.platform.dashboard;
 
+import eu.seaclouds.platform.dashboard.resources.AamWriterResource;
 import eu.seaclouds.platform.dashboard.resources.DeployerResource;
 import eu.seaclouds.platform.dashboard.resources.MonitorResource;
 import eu.seaclouds.platform.dashboard.resources.PlannerResource;
@@ -56,5 +57,6 @@ public class DashboardApplication extends Application<DashboardConfiguration> {
         environment.jersey().register(new MonitorResource(configuration.getMonitorFactory()));
         environment.jersey().register(new PlannerResource(configuration.getPlannerFactory()));
         environment.jersey().register(new SlaResource(configuration.getSlaFactory()));
+        environment.jersey().register(new AamWriterResource());
     }
 }

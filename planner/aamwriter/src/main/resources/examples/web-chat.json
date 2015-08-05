@@ -1,0 +1,47 @@
+{
+    "name": "WebChat application",
+    "nodes": [
+        {
+            "name": "Chat",
+            "type": "WebApplication",
+            "properties": {
+                "language": "JAVA",
+                "artifact": "http://www.seaclouds.eu/artifacts/chat-webApplication.war",
+                "min_version": "6",
+                "infrastructure": "platform",
+                "container": "webapp.tomcat.TomcatServer",
+                "benchmark_rt": "50",
+                "benchmark_platform": "hp_cloud_services.2xl"
+            }
+        },
+        {
+            "name": "MessageDatabase",
+            "type": "Database",
+            "properties": {
+                "category": "database.mysql.MySqlNode",
+                "artifact": "http://www.seaclouds.eu/artifacts/create-message-database.sql",
+                "min_version": "5.0",
+                "max_version": "5.0",
+                "disk_size": "50",
+                "infrastructure": "compute",
+                "benchmark_rt": "30",
+                "benchmark_platform": "hp_cloud_services.2xl"
+            }
+        }
+    ],
+    "links": [
+        {
+            "source": "Chat",
+            "target": "MessageDatabase",
+            "properties": {
+                "calls": "2"
+            }
+        },
+    ],
+    "application_requirements": {
+        "response_time": "2000", 
+        "availability": "0.998",
+        "cost": "200",
+        "workload": "50"
+    }
+}

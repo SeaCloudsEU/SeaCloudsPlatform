@@ -34,6 +34,7 @@ limitations under the License.
         <module>optimizer</module>
         <module>core</module>
         <module>service</module>
+        <module>aamwriter</module>
     </modules>
     <dependencies>
         <dependency>

@@ -1,0 +1,82 @@
+{
+    "name": "Sample 3-tier application",
+    "nodes": [
+        {
+            "name": "www",
+            "label": "www",
+            "type": "WebApplication",
+            "properties": {
+                "language": "JAVA",
+                "artifact": "",
+                "min_version": "7",
+                "max_version": "8",
+                "qos": [
+                    {
+                        "metric": "throughput",
+                        "operator": "LT",
+                        "threshold": "10"
+                    },
+                    {
+                        "metric": "responsetime",
+                        "operator": "LT",
+                        "threshold": "5000"
+                    }
+                ],
+                "infrastructure": "platform",
+                "container": "webapp.tomcat.TomcatServer",
+                "benchmark_rt": "200",
+                "benchmark_platform": "hp_cloud_services.2xl"
+            }
+        },
+        {
+            "name": "webservices",
+            "label": "webservices",
+            "type": "WebApplication",
+            "properties": {
+                "language": "JAVA",
+                "artifact": "",
+                "min_version": "7",
+                "max_version": "8",
+                "location": "",
+                "qos": [],
+                "infrastructure": "compute",
+                "num_cpus": "4",
+                "disk_size": "256",
+                "benchmark_rt": "100",
+                "benchmark_platform": "hp_cloud_services.2xl"
+            }
+        },
+        {
+            "name": "db1",
+            "label": "db1",
+            "type": "Database",
+            "properties": {
+                "category": "database.mysql.MySqlNode",
+                "min_version": "5.0",
+                "max_version": "5.6",
+            }
+        }
+    ],
+    "links": [
+        {
+            "source": "www",
+            "target": "webservices",
+            "properties": {
+                "calls": "2"
+            }
+        },
+        {
+            "source": "webservices",
+            "target": "db1",
+            "properties": {
+                "calls": "1"
+            }
+        }
+    ],
+    "application_requirements": {
+        "response_time": "2000",
+        "availability": "0.98",
+        "cost": "200",
+        "workload": "50"
+    }
+}
