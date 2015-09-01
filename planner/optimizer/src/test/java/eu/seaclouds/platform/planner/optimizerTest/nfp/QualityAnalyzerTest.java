@@ -34,6 +34,7 @@ import eu.seaclouds.platform.planner.optimizer.Topology;
 import eu.seaclouds.platform.planner.optimizer.TopologyElement;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
+import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
 
 public class QualityAnalyzerTest {
 
@@ -53,7 +54,7 @@ public class QualityAnalyzerTest {
 
    }
 
-   @Test
+   @Test(enabled=TOSCAkeywords.EnabledTest)
    public void testPerformanceEvaluation() {
 
       log.info("==== TEST for PERFORMANCE EVALUATION starts ====");
@@ -79,7 +80,7 @@ public class QualityAnalyzerTest {
 
    }
 
-   @Test
+   @Test(enabled=TOSCAkeywords.EnabledTest)
    public void testAvailabilityEvaluation() {
 
       log.info("==== TEST for AVAILABILITY EVALUATION starts ====");
@@ -104,7 +105,7 @@ public class QualityAnalyzerTest {
 
    }
 
-   @Test
+   @Test(enabled=TOSCAkeywords.EnabledTest)
    public void testCostEvaluation() {
 
       log.info("==== TEST for COST EVALUATION starts ====");
@@ -124,7 +125,7 @@ public class QualityAnalyzerTest {
 
    }
 
-   @Test
+   @Test(enabled=TOSCAkeywords.EnabledTest)
    public void testReconfigurationThresholds() {
 
       log.info("==== TEST for RECONFIGURATION THRESHOLDS starts ====");

@@ -36,7 +36,7 @@ import eu.seaclouds.platform.planner.optimizer.TopologyElement;
 import eu.seaclouds.platform.planner.optimizer.TopologyElementCalled;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 
-public class YAMLoptimizerParser {
+public class YAMLoptimizerParserV01 {
 
    // Reducing verbosity . If somebody knows a better approach for doing this (I
    // could not set dynamically the level of the logging) it should be changed
@@ -44,7 +44,7 @@ public class YAMLoptimizerParser {
    private static final boolean IS_DEBUG                                           = false;
 
    static Logger                log                                                = LoggerFactory
-                                                                                         .getLogger(YAMLoptimizerParser.class);
+                                                                                         .getLogger(YAMLoptimizerParserV01.class);
 
    public static void CleanSuitableOfferForModule(String modulename,
          Map<String, Object> appMap) {
@@ -205,14 +205,10 @@ public class YAMLoptimizerParser {
          String appModel, String suitableCloudOffers) {
 
       Map<String, Object> appMap = GetMAPofAPP(appModel);
-      try{
-      appMap = (Map<String, Object>) appMap.get(TOSCAkeywords.TOPOLOGY_TEMPLATE);
+ 
+      
       appMap = (Map<String, Object>) appMap.get(TOSCAkeywords.NODE_TEMPLATE);
-      }
-      catch(NullPointerException E){
-         log.error("It was not found '"+TOSCAkeywords.TOPOLOGY_TEMPLATE + "' or '" + TOSCAkeywords.NODE_TEMPLATE + "' in the TOSCA model");
-         return null;
-      }
+    
       SuitableOptions options = new SuitableOptions();
 
       // FOR EACH OF THE APP MODULES (but in this level there are more concepts
@@ -772,8 +768,8 @@ public class YAMLoptimizerParser {
     */
    public static Map<String, Object> cloneYAML(Map<String, Object> yamlMap) {
 
-      String stringyaml = YAMLoptimizerParser.FromMAPtoYAMLstring(yamlMap);
-      Map<String, Object> newMap = YAMLoptimizerParser.GetMAPofAPP(stringyaml);
+      String stringyaml = YAMLoptimizerParserV01.FromMAPtoYAMLstring(yamlMap);
+      Map<String, Object> newMap = YAMLoptimizerParserV01.GetMAPofAPP(stringyaml);
 
       return newMap;
 

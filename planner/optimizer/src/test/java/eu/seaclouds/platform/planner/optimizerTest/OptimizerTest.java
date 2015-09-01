@@ -36,6 +36,7 @@ import eu.seaclouds.platform.planner.optimizer.Optimizer;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
 
+
 public class OptimizerTest {
 
    private static Optimizer    optimizer;
@@ -82,7 +83,7 @@ public class OptimizerTest {
       return new String(encoded, StandardCharsets.UTF_8);
    }
 
-   @Test
+   @Test(enabled=TOSCAkeywords.EnabledTest)
    public void testPresenceSolutionBlind() {
 
       log.info("=== TEST for SOLUTION GENERATION of BLIND optimizer STARTED ===");
@@ -108,7 +109,7 @@ public class OptimizerTest {
 
    }
 
-   @Test
+   @Test(enabled=TOSCAkeywords.EnabledTest)
    public void testPresenceSolutionHillClimb() {
 
       log.info("=== TEST for SOLUTION GENERATION of HILLCLIMB optimizer STARTED ===");
@@ -136,7 +137,7 @@ public class OptimizerTest {
    }
 
    
-   @Test
+   @Test(enabled=TOSCAkeywords.EnabledTest)
    public void testPresenceSolutionAnneal() {
 
       log.info("=== TEST for SOLUTION GENERATION of ANNEAL optimizer STARTED ===");
@@ -221,7 +222,7 @@ public class OptimizerTest {
 
    }
 
-   @Test
+   @Test(enabled=TOSCAkeywords.EnabledTest)
    public void testPerformanceComplete() {
 
       optimizer = new Optimizer();

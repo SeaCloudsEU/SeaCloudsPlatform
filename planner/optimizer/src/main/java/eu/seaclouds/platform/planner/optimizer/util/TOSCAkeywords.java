@@ -19,6 +19,7 @@ package eu.seaclouds.platform.planner.optimizer.util;
 
 public class TOSCAkeywords {
 
+   public static final String TOPOLOGY_TEMPLATE                   = "topology_template";
    public static final String NODE_TEMPLATE                       = "node_templates";
    public static final String SUITABLE_SERVICES                   = "suitableServices";
    public static final String MODULE_REQUIREMENTS                 = "requirements";
@@ -56,4 +57,5 @@ public class TOSCAkeywords {
 
    public static final String CLOUD_OFFER_PROVIDER_NAME_SEPARATOR = "\\.";
 
+   public static final boolean EnabledTest = false;
 }
