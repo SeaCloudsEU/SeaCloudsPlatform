@@ -1,0 +1,89 @@
+{
+  "_:-379a59fa:14854b01d3c:-7ffc" : {
+    "http://www.modaclouds.eu/rdfs/1.0/monitoringdata#metric" : [ 
+      {
+        "type" : "literal" ,
+        "value" : "WinVMCPUUtilization"
+      }
+    ] ,
+    "http://www.modaclouds.eu/rdfs/1.0/monitoringdata#timestamp" : [ 
+      {
+        "type" : "literal" ,
+        "value" : "1410170109303" ,
+        "datatype" : "http://www.w3.org/2001/XMLSchema#integer"
+      }
+    ] ,
+    "http://www.modaclouds.eu/rdfs/1.0/monitoringdata#value" : [ 
+      {
+        "type" : "literal" ,
+        "value" : "0.865e0" ,
+        "datatype" : "http://www.w3.org/2001/XMLSchema#double"
+      }
+    ] ,
+    "http://www.modaclouds.eu/rdfs/1.0/monitoringdata#resourceId" : [ 
+      {
+        "type" : "literal" ,
+        "value" : "frontend1" ,
+        "datatype" : "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ]
+  },
+  "_:-379a59fa:14854b01d3d:-7ffc" : {
+    "http://www.modaclouds.eu/rdfs/1.0/monitoringdata#metric" : [ 
+      {
+        "type" : "literal" ,
+        "value" : "WinVMCPUUtilization"
+      }
+    ] ,
+    "http://www.modaclouds.eu/rdfs/1.0/monitoringdata#timestamp" : [ 
+      {
+        "type" : "literal" ,
+        "value" : "1410170110303" ,
+        "datatype" : "http://www.w3.org/2001/XMLSchema#integer"
+      }
+    ] ,
+    "http://www.modaclouds.eu/rdfs/1.0/monitoringdata#value" : [ 
+      {
+        "type" : "literal" ,
+        "value" : "0.866e0" ,
+        "datatype" : "http://www.w3.org/2001/XMLSchema#double"
+      }
+    ] ,
+    "http://www.modaclouds.eu/rdfs/1.0/monitoringdata#resourceId" : [ 
+      {
+        "type" : "literal" ,
+        "value" : "frontend1" ,
+        "datatype" : "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ]
+  },
+  "_:-379a59fa:14854b01d3e:-7ffc" : {
+    "http://www.modaclouds.eu/rdfs/1.0/monitoringdata#metric" : [ 
+      {
+        "type" : "literal" ,
+        "value" : "WinVMCPUUtilization"
+      }
+    ] ,
+    "http://www.modaclouds.eu/rdfs/1.0/monitoringdata#timestamp" : [ 
+      {
+        "type" : "literal" ,
+        "value" : "1410170111303" ,
+        "datatype" : "http://www.w3.org/2001/XMLSchema#integer"
+      }
+    ] ,
+    "http://www.modaclouds.eu/rdfs/1.0/monitoringdata#value" : [ 
+      {
+        "type" : "literal" ,
+        "value" : "0.867e0" ,
+        "datatype" : "http://www.w3.org/2001/XMLSchema#double"
+      }
+    ] ,
+    "http://www.modaclouds.eu/rdfs/1.0/monitoringdata#resourceId" : [ 
+      {
+        "type" : "literal" ,
+        "value" : "frontend1" ,
+        "datatype" : "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ]
+  }
+}

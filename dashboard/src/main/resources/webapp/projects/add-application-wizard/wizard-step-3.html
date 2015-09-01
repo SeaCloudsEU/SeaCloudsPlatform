@@ -1,0 +1,63 @@
+<!--
+  ~  Copyright 2014 SeaClouds
+  ~  Contact: SeaClouds
+  ~
+  ~      Licensed under the Apache License, Version 2.0 (the "License");
+  ~      you may not use this file except in compliance with the License.
+  ~      You may obtain a copy of the License at
+  ~
+  ~          http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~      Unless required by applicable law or agreed to in writing, software
+  ~      distributed under the License is distributed on an "AS IS" BASIS,
+  ~      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~      See the License for the specific language governing permissions and
+  ~      limitations under the License.
+  -->
+<div class="row">
+    <div class="row">
+        <div class="col-lg-5">
+            <h3>
+                <small>Abstract Application Model</small>
+            </h3>
+            <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="editorOptionsInput"
+                           ng-model="$parent.matchmakerInput"></ui-codemirror>
+        </div>
+        <div class="col-lg-2 col-centered">
+                <div  ngf-select class="btn btn-default btn-primary"  ngf-multiple="false" ng-model="matchmakerInputFile"><- Load file</div>
+                <hr>
+                <button class="btn btn-default btn-primary" ng-click="processAAM()"> Process -></button>
+            </div>
+        <div class="col-lg-5">
+            <h3>
+                <small>Abstract Deployment Plan</small>
+            </h3>
+            <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="editorOptionsOutput"
+                           ng-model="$parent.matchmakerResult" disabled></ui-codemirror>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-lg-5">
+            <h3>
+                <small>Optimizer ADP</small>
+            </h3>
+            <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="editorOptionsInput"
+                           ng-model="$parent.optimizerInput"></ui-codemirror>
+        </div>
+        <div class="col-lg-2 col-centered">
+                <div  ngf-select class="btn btn-default btn-primary"  ngf-multiple="false" ng-model="optimizerInputFile"><- Load file</div>
+                <hr>
+                <button class="btn btn-default btn-primary" ng-click="processADP()"> Process -></button>
+        </div>
+        <div class="col-lg-5">
+            <h3>
+                <small>Deployment Application Model Candidates</small>
+            </h3>
+            <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="editorOptionsOutput"
+                           ng-model="$parent.optimizerResult" disabled></ui-codemirror>
+        </div>
+    </div>
+</div>

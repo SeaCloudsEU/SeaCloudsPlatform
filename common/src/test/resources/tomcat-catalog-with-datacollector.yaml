@@ -1,0 +1,23 @@
+brooklyn.catalog:
+  id: eu.seaclouds-project.tomcat
+  version: 1.0
+  description: A Tomcat app-server
+  displayName: Tomcat
+  iconUrl: classpath:///tomcat-logo.png
+  itemType: template
+
+  item:
+    services:
+    - type: eu.seaclouds.common.apps.SeaCloudsApp
+      defaultDisplayName: Tomcat
+      brooklyn.config:
+        childSpec:
+          $brooklyn:entitySpec:
+            type: brooklyn.entity.webapp.tomcat.TomcatServer
+            id: childid
+            name: Tomcat Server
+            brooklyn.policies:
+            - policyType: eu.seaclouds.common.policies.DataCollectorInstallationPolicy
+              brooklyn.config:
+                modacloudsDdaIp: 192.168.0.1
+                modacloudsKbIp: 192.168.0.2

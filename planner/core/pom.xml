@@ -1,6 +1,5 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
-
 Copyright 2014 SeaClouds
 Contact: SeaClouds
 
@@ -17,32 +16,50 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 -->
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>eu.seaclouds-project</groupId>
-    <artifactId>planner</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>planner-core</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
-  <name>planner-core</name>
-  <url>http://maven.apache.org</url>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  <dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>eu.seaclouds-project</groupId>
+        <artifactId>planner</artifactId>
+        <version>0.8.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
 
-    <dependency>
-      <groupId>eu.seaclouds-project</groupId>
-      <artifactId>matchmaker</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>eu.seaclouds-project</groupId>
-      <artifactId>planner-utils</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
-    </dependency>
-  </dependencies>
+    <artifactId>planner-core</artifactId>
+    <name>planner-core</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>eu.seaclouds-project</groupId>
+            <artifactId>matchmaker</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.brooklyn</groupId>
+                    <artifactId>brooklyn-launcher</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.brooklyn</groupId>
+                    <artifactId>brooklyn-software-base</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.brooklyn</groupId>
+                    <artifactId>brooklyn-software-database</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.brooklyn</groupId>
+                    <artifactId>brooklyn-software-webapp</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>

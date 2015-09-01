@@ -1,0 +1,18 @@
+brooklyn.catalog:
+  id: eu.seaclouds-project.jboss7
+  version: 1.0
+  description: A JBoss 6 App-server
+  displayName: JBoss6
+  iconUrl: classpath:///jboss_logo.png
+  itemType: template
+
+  item:
+    services:
+    - type: eu.seaclouds.common.apps.SeaCloudsApp
+      defaultDisplayName: JBoss 6 app
+      brooklyn.config:
+        childSpec:
+          $brooklyn:entitySpec:
+            type: brooklyn.entity.webapp.jboss.JBoss7Server
+            id: childid
+            name: JBoss 7 Server

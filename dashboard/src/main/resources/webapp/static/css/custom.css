@@ -1,0 +1,300 @@
+/*
+ *  Copyright 2014 SeaClouds
+ *  Contact: SeaClouds
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak, .ng-hide {
+    display: none !important;
+}
+
+.col-centered{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.navbar {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.navbar-nav li a {
+    line-height: 48px;
+    padding-top : 1px;
+    padding-bottom : 1px;
+}
+
+.navbar-brand {
+    float: left;
+    height: 50px;
+    padding: 0px 15px;
+    line-height: 48px;
+}
+
+.navbar-seaclouds {
+    background-image: none;
+    background-color: #F8F8F8;
+    border: none;
+    border-radius: 0px;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 20px;
+    background-color: #f8f8f8;
+    border: 1px #e7e7e7;
+    margin: 0px !important;
+}
+
+.form-signin {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+    margin-bottom: 10px;
+}
+.form-signin .checkbox {
+    font-weight: normal;
+}
+.form-signin .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+.form-signin input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.form-signin button {
+    background-color : #6CB3EF !important;
+    background-image: none;
+    border: 0px;
+}
+
+.project-panel {
+    height: 150px;
+    position: relative;
+    background-image : none;
+    background-color : #6CB3EF;
+    border-color: transparent;
+    color: white;
+}
+
+
+.project-panel>.project-panel-body {
+    text-align: center;
+    height: 150px;
+    line-height: 100px;
+
+}
+
+.project-panel-body  h3 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+
+}
+
+.project-panel-body h5 {
+    text-align: left;
+    font-size: 15px;
+    padding-left: 12px;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+
+    text-transform: uppercase;
+}
+
+.project-panel-body hr {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.project-panel-body > .new-project-icon {
+    line-height: 125px;
+}
+
+.project-panel-body > .project-status-icon {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+
+.project-pills {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.project-pills>li.active>a,.project-pills>li.active>a:focus,.project-pills>li.active>a:hover {
+    background-color : #6CB3EF;
+    cursor:pointer;
+}
+
+.project-pills>li.active>a,.project-pills>li.active>a:focus,.project-pills>li.active>a:hover {
+    background-color : #6CB3EF;
+}
+
+
+.project-pills .red-pill{
+    background-color:#F57676;
+    border-radius: 4px;
+}
+
+.red-pill>a{
+    color: white;
+}
+
+.nav>.red-pill>a:focus, .nav>.red-pill>a:hover {
+    background-color : #E82849;
+}
+
+
+.title-pill>a {
+    color : black;
+    cursor:default;
+}
+
+.nav>.title-pill>a:focus, .nav>.title-pill>a:hover {
+    background-color : white;
+    cursor:default;
+}
+
+
+
+
+
+.chart-container {
+    height: 300px;
+}
+/* Wizard CSS */
+/* TODO: Wizard step graph is not responsive */
+
+.wizard-panel {
+    height: 100%;
+    margin: 10px 20px 20px 10px;
+}
+
+.wizard-body {
+    height: 100%;
+}
+
+.wizard-footer{
+    background-color: inherit;
+    border-top: inherit;
+    position: fixed;
+    bottom: 75px;
+    width: 100%;
+    padding: 0px 30px 0px 10px;
+    height: 20px;
+}
+
+.stepwizard-step p {
+    margin-top: 10px;
+}
+
+.stepwizard-row {
+    display: table-row;
+}
+
+.stepwizard {
+    display: table;
+    width: 100%;
+    position: relative;
+}
+
+.stepwizard-step button[disabled] {
+    opacity: 1 !important;
+    filter: alpha(opacity=100) !important;
+}
+
+.stepwizard-row:before {
+    top: 14px;
+    bottom: 0;
+    position: absolute;
+    content: " ";
+    width: 100%;
+    height: 1px;
+    background-color: #ccc;
+    z-order: 0;
+
+}
+
+.stepwizard-step {
+    display: table-cell;
+    text-align: center;
+    position: relative;
+}
+
+.btn-circle {
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    padding: 6px 0;
+    font-size: 12px;
+    line-height: 1.428571429;
+    border-radius: 15px;
+}
+
+/* CodeMirror */
+.CodeMirror {
+    border: 1px solid #eee;
+}
+
+.codemirror-height-xs .CodeMirror  {
+    height : 100px;
+}
+
+.codemirror-height-sm .CodeMirror  {
+    height : 200px;
+}
+
+
+.codemirror-height-md .CodeMirror  {
+    height : 300px;
+}
+
+.codemirror-height-lg .CodeMirror  {
+    height : 500px;
+}

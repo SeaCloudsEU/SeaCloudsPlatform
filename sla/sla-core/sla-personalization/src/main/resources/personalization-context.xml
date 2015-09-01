@@ -1,0 +1,49 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans.xsd        
+						http://www.springframework.org/schema/context 
+						http://www.springframework.org/schema/context/spring-context.xsd">
+
+<!-- 
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="ignoreUnresolvablePlaceholders" value="false"/>
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+		<property name="location" value="classpath:seaclouds.properties"/>
+	</bean>
+ -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+		<property name="locations">
+			<list>
+				<value>classpath:datasource.properties</value>
+				<value>classpath:seaclouds.properties</value>
+			</list>
+		</property>
+		<property name="ignoreUnresolvablePlaceholders" value="true"/>
+	</bean>
+	
+
+	<bean id="agreementEnforcement" class="eu.atos.sla.enforcement.AgreementEnforcement">
+		<property name="constraintEvaluator" ref="constraintEvaluator"/>
+		<property name="agreementEvaluator" ref="agreementEvaluator"/>
+		<property name="maxRetrievedResults" value="1000"/>
+		<property name="metricsRetriever">
+			<bean class="${enforcement.metricsRetriever.class}">
+				<constructor-arg>
+					<bean class="eu.seaclouds.sla.retriever.BrooklynMetricsRetrieverV1.SensorClient">
+						<constructor-arg value="${BROOKLYN_URL}"/>
+					</bean>
+				</constructor-arg>
+			</bean>
+		</property>
+	</bean>
+
+	<bean class="eu.atos.sla.service.rest.Tower4CloudsTranslator">
+		<constructor-arg ref="constraintEvaluator" />
+	</bean>
+
+
+</beans>

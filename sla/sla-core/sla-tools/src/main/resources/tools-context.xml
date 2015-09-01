@@ -1,0 +1,29 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans.xsd        
+						http://www.springframework.org/schema/aop 
+						http://www.springframework.org/schema/aop/spring-aop.xsd        
+						http://www.springframework.org/schema/tx 
+						http://www.springframework.org/schema/tx/spring-tx.xsd        
+						http://www.springframework.org/schema/context 
+						http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<context:component-scan base-package="eu.atos.sla.parser" />
+	<bean id="agreementJsonParser" class="${parser.json.agreement.class}"/>
+
+	<bean id="agreementXmlParser" class="${parser.xml.agreement.class}"/>
+
+	<bean id="templateJsonParser" class="${parser.json.template.class}"/>
+
+	<bean id="templateXmlParser" class="${parser.xml.template.class}"/>
+
+	<bean class="eu.atos.sla.parser.DateTimeAdapter" scope="singleton">
+		<property name="dateFormat" value="${parser.date.format}" />
+		<property name="unmarshallTimezone" value="${parser.date.unmarshall.timezone}" />
+		<property name="marshallTimezone" value="${parser.date.marshall.timezone}" />
+	</bean>
+
+</beans>
