@@ -240,6 +240,9 @@ public class OptimizerTest {
       log.info("=== TEST for PERFORMANCE of optimizer FINISHED===");
 
    }
+   
+   
+   
 
    @AfterClass
    public void testFinishced() {

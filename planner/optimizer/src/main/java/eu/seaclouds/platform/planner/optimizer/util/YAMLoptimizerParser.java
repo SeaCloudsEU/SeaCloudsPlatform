@@ -41,7 +41,7 @@ public class YAMLoptimizerParser {
    // Reducing verbosity . If somebody knows a better approach for doing this (I
    // could not set dynamically the level of the logging) it should be changed
    private static int           BeeingTooVerboseWithLackOfInformationInCloudOffers = 3;
-   private static final boolean IS_DEBUG                                           = false;
+   private static final boolean IS_DEBUG                                           = true;
 
    static Logger                log                                                = LoggerFactory
                                                                                          .getLogger(YAMLoptimizerParser.class);
@@ -123,32 +123,11 @@ public class YAMLoptimizerParser {
 
    }
 
-   @SuppressWarnings("unchecked")
    private static List<String> GetListOfSuitableOptionsForAlreadyFoundModule(
          Object appSubMap) {
-      Map<String, Object> moduleInfo = null;
-      try {
-         moduleInfo = (Map<String, Object>) appSubMap;
-      } catch (ClassCastException E) {
-         // If it was not a Map, nothing to do, we are not in the correct part
-         // of the model.
-         return null;
-      }
-
-      if (moduleInfo.containsKey(TOSCAkeywords.SUITABLE_SERVICES)) {
-         return (List<String>) moduleInfo.get(TOSCAkeywords.SUITABLE_SERVICES);
-
-      }
-
-      // The recursive part
-      for (Map.Entry<String, Object> entry : moduleInfo.entrySet()) {
-         List<String> suitableOptions = GetListOfSuitableOptionsForAlreadyFoundModule(entry
-               .getValue());
-         if (suitableOptions != null) {
-            return suitableOptions;
-         }
-
-      }
+   //TODO: Implement this with the new information of the matchmaker regarding the matching options found. 
+      //Probably the input to this method should not be appSubMap but a string with the module name and the object
+      // that contains the suitable optios of all modules
       return null;
 
    }
@@ -206,6 +185,9 @@ public class YAMLoptimizerParser {
 
       Map<String, Object> appMap = GetMAPofAPP(appModel);
       try{
+         if (IS_DEBUG) {
+            log.info("Opening TOSCA for obtaining modules");
+         }
       appMap = (Map<String, Object>) appMap.get(TOSCAkeywords.TOPOLOGY_TEMPLATE);
       appMap = (Map<String, Object>) appMap.get(TOSCAkeywords.NODE_TEMPLATE);
       }
@@ -219,6 +201,10 @@ public class YAMLoptimizerParser {
       // than only the modules)
       for (Map.Entry<String, Object> entry : appMap.entrySet()) {
          String potentialModuleName = entry.getKey();
+         if(IS_DEBUG){
+            log.info("In GetSuitableCloudOptionsAndCharacteristicsForModules method. In inspection of module name: "+potentialModuleName);
+         }
+         
          List<String> potentialListOfOffersNames = GetListOfSuitableOptionsForAlreadyFoundModule(entry
                .getValue());
 
@@ -454,8 +440,20 @@ public class YAMLoptimizerParser {
    @SuppressWarnings("unchecked")
    public static void ReplaceSuitableServiceByHost(Map<String, Object> appMap) {
 
-      Map<String, Object> templates = (Map<String, Object>) appMap
+      Map<String, Object> templates;
+      try{
+         if (IS_DEBUG) {
+            log.info("Opening TOSCA for obtaining modules");
+         }
+      appMap = (Map<String, Object>) appMap.get(TOSCAkeywords.TOPOLOGY_TEMPLATE);
+      templates = (Map<String, Object>) appMap
             .get(TOSCAkeywords.NODE_TEMPLATE);
+      }
+      catch(NullPointerException E){
+         log.error("It was not found '"+TOSCAkeywords.TOPOLOGY_TEMPLATE + "' or '" + TOSCAkeywords.NODE_TEMPLATE + "' in the TOSCA model");
+         return;
+      }
+
 
       // FOR EACH OF THE APP MODULES (again, in this level there are more
       // concepts than only the modules)
@@ -782,28 +780,85 @@ public class YAMLoptimizerParser {
    @SuppressWarnings("unchecked")
    private static Map.Entry<String, Object> getInitialElement(
          Map<String, Object> appMap) {
-      // We assume that The initial element is such one that is not required by
-      // anyone.
+      // The initial element is such one that has QoSrequirements in the "groups" part.
 
-      appMap = (Map<String, Object>) appMap.get(TOSCAkeywords.NODE_TEMPLATE);
+      Map<String, Object> groupsMap;
+      try{
+         if (IS_DEBUG) {
+            log.info("Opening TOSCA for obtaining groups");
+         }
+      groupsMap = (Map<String, Object>) appMap.get(TOSCAkeywords.GROUP_ELEMENT_TAG);
+      
+      }
+      catch(NullPointerException E){
+         log.error("It was not found '"+TOSCAkeywords.GROUP_ELEMENT_TAG + "' . Cannot be unveiled the dependencies between modules calls");
+         return null;
+      }
+    
 
       // FOR EACH OF THE APP MODULES (but in this level there are more concepts
       // than only the modules)
-      for (Map.Entry<String, Object> entry : appMap.entrySet()) {
-         String potentialModuleName = entry.getKey();
+      for (Map.Entry<String, Object> entry : groupsMap.entrySet()) {
+         String potentialGroupName = entry.getKey();
 
+         if (IS_DEBUG) {
+            log.info("checking if group '"+potentialGroupName+"' is an element which receceives user requests");
+         }
          // If it has requirements but nobody requires it..
-         if (YAMLmodulesOptimizerParser.ModuleHasModuleRequirements(
-               entry.getValue(), appMap)
-               && (!moduleIsRequiredByOthers(appMap, potentialModuleName))) {
-            return entry;
+         if (YAMLgroupsOptimizerParser.GroupHasQoSRequirements(entry.getValue())){
+            //group found. 
+            //Now, 1) get the name of modules that are members of the group. 
+            //Since it should be only one member in the group in as list  
+            //we get the first module name found
+            String moduleName = YAMLgroupsOptimizerParser.getFirstMemberName(entry.getValue());
+            //2) find the module in the topology with this name.  
+            
+            Map<String,Object> modulesMap = YAMLoptimizerParser.getModuleMapFromAppMap(appMap);
+            return YAMLoptimizerParser.getModuleInfoFromModulesMap(modulesMap,moduleName);
+
          }
       }
+      
 
-      log.warn("Initial element not found unveiling the typology. Possible circular dependences in the design. Please, state clearly which the initial element is");
+      log.warn("Initial element not found unveiling the topology. Possible circular dependences in the design. Please, state clearly which the initial element is");
       return null;
    }
 
+   
+   private static Entry<String, Object> getModuleInfoFromModulesMap(Map<String, Object> modulesMap, String moduleName) {
+      if(modulesMap.containsKey(moduleName)){
+         for(Map.Entry<String, Object> entry : modulesMap.entrySet()){
+            if(entry.getKey().equals(moduleName)){
+               if(IS_DEBUG){
+                log.info("return entry that describes module with name '"+entry.getKey()+"'");  
+               }
+               return entry;
+            }
+         }
+      }
+      log.warn("Module description not found. Check correcness of name given as group members and modules name");
+      return null;
+   }
+
+   @SuppressWarnings("unchecked")
+   private static Map<String,Object> getModuleMapFromAppMap(Map<String,Object> appMap){
+      
+      Map<String, Object> modulesMap;
+      try{
+         if (IS_DEBUG) {
+            log.info("Opening TOSCA for obtaining modules");
+         }
+         modulesMap = (Map<String, Object>) appMap.get(TOSCAkeywords.TOPOLOGY_TEMPLATE);
+         modulesMap = (Map<String, Object>) modulesMap.get(TOSCAkeywords.NODE_TEMPLATE);
+      }
+      catch(NullPointerException E){
+         log.error("It was not found '"+TOSCAkeywords.TOPOLOGY_TEMPLATE + "' or '" + TOSCAkeywords.NODE_TEMPLATE + "' in the TOSCA model");
+         return null;
+      }
+      
+      return modulesMap;
+   }
+   
    private static boolean moduleIsRequiredByOthers(Map<String, Object> appMap,
          String potentialModuleName) {
 

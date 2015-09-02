@@ -1,5 +1,7 @@
 package eu.seaclouds.platform.planner.optimizerTest;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,12 +21,12 @@ import eu.seaclouds.platform.planner.optimizer.Optimizer;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
 
+public class OptimizerTOSCAjuly2015Test {
 
-public class OptimizerTestNewTOSCA {
    private static Optimizer    optimizer;
    private static String       appModel;
    private static String       suitableCloudOffer;
-   private static final String APP_MODEL_FILENAME    = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/aam.yaml";
+   private static final String APP_MODEL_FILENAME    = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/aam.yml";
    private static final String CLOUD_OFFER_FILENAME  = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/cloudOfferWithQoS.yaml";
    private static final String OUTPUT_FILENAME       = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/target/outputNewTOSCA";
    private static final String OPEN_SQUARE_BRACKET   = "[";
@@ -33,14 +35,17 @@ public class OptimizerTestNewTOSCA {
 
    private static final int    NUM_PLANS_TO_GENERATE = 5;
 
+  
+   
    static Logger               log                   = LoggerFactory
-                                                           .getLogger(OptimizerTestNewTOSCA.class);
-
+                                                           .getLogger(OptimizerTOSCAjuly2015Test.class);
+   
 
 @BeforeClass
 public void createObjects() {
 
-   log.info("Starting TEST optimizer for the TOSCA systax of July 2015");
+   System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
+   log.info("Starting TEST optimizer for the TOSCA syntax of July 2015");
 
    final String dir = System.getProperty("user.dir");
    log.debug("Trying to open files: current executino dir = " + dir);
@@ -66,10 +71,10 @@ private static String filenameToString(String path) throws IOException {
    return new String(encoded, StandardCharsets.UTF_8);
 }
 
-@Test
+@Test(enabled=true)
 public void testPresenceSolutionBlind() {
 
-   log.info("=== TEST for SOLUTION GENERATION of BLIND optimizer STARTED ===");
+   log.info("=== TEST for SOLUTION GENERATION of BLIND optimizer STARTED (syntax July 2015)===");
 
    optimizer = new Optimizer(NUM_PLANS_TO_GENERATE,
          SearchMethodName.BLINDSEARCH);
@@ -155,5 +160,6 @@ private void saveFile(String outputFilename, String dam) {
 public void testFinishced() {
    log.info("===== ALL TESTS FOR OPTIMIZER USING JULY 2015 TOSCA FINISHED ===");
 }
-}
+   
 
+}

@@ -24,10 +24,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class YAMLmodulesOptimizerParser {
+public class YAMLmodulesOptimizerParserV01 {
 
    static Logger log = LoggerFactory
-                           .getLogger(YAMLmodulesOptimizerParser.class);
+                           .getLogger(YAMLmodulesOptimizerParserV01.class);
 
    @SuppressWarnings("unchecked")
    public static boolean ModuleHasModuleRequirements(Object module,
@@ -338,5 +338,4 @@ public class YAMLmodulesOptimizerParser {
 
    }
 
- 
 }

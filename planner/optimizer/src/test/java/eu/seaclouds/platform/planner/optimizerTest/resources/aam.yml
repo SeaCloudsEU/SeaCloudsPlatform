@@ -76,7 +76,6 @@ groups:
           workload: { less_or_equal: 50 req_per_mins }
       - QoB:
           qos: response_time
-          window: { count: <integer>, interval: <xs:duration> }
           type: mail
           value: admin@chatapp.com
       - dependencies:
