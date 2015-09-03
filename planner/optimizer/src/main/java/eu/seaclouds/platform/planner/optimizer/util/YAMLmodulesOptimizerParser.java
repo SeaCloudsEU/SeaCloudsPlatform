@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 public class YAMLmodulesOptimizerParser {
 
+   private static final boolean IS_DEBUG = true;
    static Logger log = LoggerFactory
                            .getLogger(YAMLmodulesOptimizerParser.class);
 
@@ -162,59 +163,61 @@ public class YAMLmodulesOptimizerParser {
    }
 
    @SuppressWarnings("unchecked")
-   public static String getMeasuredPerformanceHost(Map<String, Object> module) {
+   public static String getMeasuredPerformanceHost(String moduleName, Map<String, Object> groups) {
       Map<String, Object> moduleInfo = null;
       Map<String, Object> moduleReqs = null;
-      try {
-         moduleInfo = (Map<String, Object>) module;
-         // Check existence of qos properties
-         if (!moduleInfo.containsKey(TOSCAkeywords.MODULE_QOS_PROPERTIES)) {
-            return null;
+      
+      Map<String, Object> qoSinfoOfGroupOfModule = YAMLgroupsOptimizerParser.getQoSinfoOfMemberName(moduleName,groups);
+      
+      if(qoSinfoOfGroupOfModule==null){
+         if(IS_DEBUG){
+            log.info("There has not been found info of QoS for module called " + moduleName);
          }
-         moduleReqs = (Map<String, Object>) moduleInfo
-               .get(TOSCAkeywords.MODULE_QOS_PROPERTIES);
-
-         // Check Existence of measured host
-         if (moduleReqs
-               .containsKey(TOSCAkeywords.MODULE_QOS_PERFORMANCE_LOCATION)) {
-            return (String) moduleReqs
-                  .get(TOSCAkeywords.MODULE_QOS_PERFORMANCE_LOCATION);
-         }
-
-      } catch (ClassCastException E) {
          return null;
       }
+      
+      if(qoSinfoOfGroupOfModule.containsKey(TOSCAkeywords.GROUP_ELEMENT_QOS_BENCHMARK_PLATFORM)){
+         return (String) qoSinfoOfGroupOfModule.get(TOSCAkeywords.GROUP_ELEMENT_QOS_BENCHMARK_PLATFORM);
+      }
+
       // not found There were qos properties but not the information of teh
       // machine tested
+      if(IS_DEBUG){
+         log.info("Module had qos info but it did not contain information of the platform where it was executed");
+      }
       return null;
    }
 
-   @SuppressWarnings("unchecked")
-   public static double getMeasuredExecTimeMillis(Map<String, Object> module) {
+   
+   public static double getMeasuredExecTimeMillis(String moduleName, Map<String, Object> groups) {
       Map<String, Object> moduleInfo = null;
       Map<String, Object> moduleReqs = null;
-      try {
-         moduleInfo = (Map<String, Object>) module;
-         // Check existence of qos properties
-         if (!moduleInfo.containsKey(TOSCAkeywords.MODULE_QOS_PROPERTIES)) {
-            return 0.0;
+      
+      Map<String, Object> qoSinfoOfGroupOfModule = YAMLgroupsOptimizerParser.getQoSinfoOfMemberName(moduleName,groups);
+      
+      if(qoSinfoOfGroupOfModule==null){
+         if(IS_DEBUG){
+            log.info("There has not been found info of QoS for module called " + moduleName);
          }
-         moduleReqs = (Map<String, Object>) moduleInfo
-               .get(TOSCAkeywords.MODULE_QOS_PROPERTIES);
-
-         // Check Existence of measured host
-         if (moduleReqs
-               .containsKey(TOSCAkeywords.MODULE_QOS_PERFORMANCE_MILLIS)) {
-            return (Double) moduleReqs
-                  .get(TOSCAkeywords.MODULE_QOS_PERFORMANCE_MILLIS);
-         }
-
-      } catch (ClassCastException E) {
          return 0.0;
       }
-      // not found There were qos properties but not the information of teh
+      
+      if(qoSinfoOfGroupOfModule.containsKey(TOSCAkeywords.GROUP_ELEMENT_QOS_BENCHMARK_PLATFORM)){
+         return  YAMLmodulesOptimizerParser.castToDouble(qoSinfoOfGroupOfModule.get(TOSCAkeywords.GROUP_ELEMENT_QOS_EXECUTIONTIME));
+      }
+
+      // not found There were qos properties but not the information of the execution time
       // machine tested
+      if(IS_DEBUG){
+         log.info("Module had qos info but it did not contain information of the time it took to execute in isolation");
+      }
+
       return 0.0;
+   }
+   
+   private static double castToDouble(Object object) {
+      //It creates circular dependencies between classes. Think for the next version how to refactor it.
+      return YAMLoptimizerParser.castToDouble(object);
    }
 
    @SuppressWarnings("unchecked")

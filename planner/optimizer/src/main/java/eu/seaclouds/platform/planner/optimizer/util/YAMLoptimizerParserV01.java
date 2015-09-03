@@ -622,10 +622,10 @@ public class YAMLoptimizerParserV01 {
          return null;
       }
 
-      if (modules.containsKey(YAMLmodulesOptimizerParser
+      if (modules.containsKey(YAMLmodulesOptimizerParserV01
             .getHostOfModule(module))) {
          return getFinalHostNameOfModule(modules,
-               YAMLmodulesOptimizerParser.getHostOfModule(module));
+               YAMLmodulesOptimizerParserV01.getHostOfModule(module));
       } else {
          return modName;
       }
@@ -642,13 +642,13 @@ public class YAMLoptimizerParserV01 {
 
       TopologyElement newelement = new TopologyElement(elementName);
       double hostPerformance = getPerformanceOfOfferByName(
-            YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(element),
+            YAMLmodulesOptimizerParserV01.getMeasuredPerformanceHost(element),
             allCloudOffers);
-      newelement.setExecTimeMillis(YAMLmodulesOptimizerParser
+      newelement.setExecTimeMillis(YAMLmodulesOptimizerParserV01
             .getMeasuredExecTimeMillis(element) * hostPerformance);
 
       // The module does not have requiremetns
-      if (!YAMLmodulesOptimizerParser.ModuleHasModuleRequirements(element,
+      if (!YAMLmodulesOptimizerParserV01.ModuleHasModuleRequirements(element,
             modules)) {
          // Include it directly
          topology.addModule(newelement);
@@ -656,7 +656,7 @@ public class YAMLoptimizerParserV01 {
       }
 
       // module has requirements
-      for (String moduleReqName : YAMLmodulesOptimizerParser
+      for (String moduleReqName : YAMLmodulesOptimizerParserV01
             .ModuleRequirementsOfAModule(element, modules)) {
          // For each requiremnt of teh element (that is not its host but it's a
          // module in the system)
@@ -667,7 +667,7 @@ public class YAMLoptimizerParserV01 {
             // dependence cannot exist yet)
             // Read the operational profile for the number of calls.
 
-            double opProfileBetweenModules = YAMLmodulesOptimizerParser
+            double opProfileBetweenModules = YAMLmodulesOptimizerParserV01
                   .getOpProfileWithModule(element, moduleReqName);
             // create the dependence between these two modules by
             // addelementcalled.
@@ -680,7 +680,7 @@ public class YAMLoptimizerParserV01 {
             topology = getApplicationTopologyRecursive(moduleReqName,
                   (Map<String, Object>) modules.get(moduleReqName), topology,
                   modules, allCloudOffers);
-            double opProfileBetweenModules = YAMLmodulesOptimizerParser
+            double opProfileBetweenModules = YAMLmodulesOptimizerParserV01
                   .getOpProfileWithModule(element, moduleReqName);
             // create the dependence between these two modules by
             // addelementcalled.
@@ -789,7 +789,7 @@ public class YAMLoptimizerParserV01 {
          String potentialModuleName = entry.getKey();
 
          // If it has requirements but nobody requires it..
-         if (YAMLmodulesOptimizerParser.ModuleHasModuleRequirements(
+         if (YAMLmodulesOptimizerParserV01.ModuleHasModuleRequirements(
                entry.getValue(), appMap)
                && (!moduleIsRequiredByOthers(appMap, potentialModuleName))) {
             return entry;
@@ -804,7 +804,7 @@ public class YAMLoptimizerParserV01 {
          String potentialModuleName) {
 
       for (Map.Entry<String, Object> entry : appMap.entrySet()) {
-         if (YAMLmodulesOptimizerParser.ModuleRequirementFromTo(
+         if (YAMLmodulesOptimizerParserV01.ModuleRequirementFromTo(
                entry.getValue(), potentialModuleName)) {
             return true;
          }

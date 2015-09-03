@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -350,7 +352,7 @@ public class YAMLoptimizerParser {
 
    }
 
-   private static double castToDouble(Object object) {
+   public static double castToDouble(Object object) {
       double result = -1.0;
       boolean success = false;
 
@@ -374,7 +376,10 @@ public class YAMLoptimizerParser {
 
       if (!success) {
          try {
-            result = Double.parseDouble((String) object);
+            Pattern p = Pattern.compile("\\d+");
+            Matcher m = p.matcher((String) object);
+            m.find();
+            result = Double.parseDouble(m.group());
             success = true;
          } catch (ClassCastException E) {
             // nothing to do, it was not String
@@ -590,7 +595,8 @@ public class YAMLoptimizerParser {
       // gets the topology of the connected graph to element passed as argument.
       topology = getApplicationTopologyRecursive(initialElement.getKey(),
             (Map<String, Object>) initialElement.getValue(), topology,
-            (Map<String, Object>) appMap.get(TOSCAkeywords.NODE_TEMPLATE),
+            YAMLoptimizerParser.getModuleMapFromAppMap(appMap),
+            YAMLoptimizerParser.getGroupMapFromAppMap(appMap),
             allCloudOffers);
 
       replaceModuleNameByHostName(topology,
@@ -636,18 +642,20 @@ public class YAMLoptimizerParser {
 
    private static Topology getApplicationTopologyRecursive(String elementName,
          Map<String, Object> element, Topology topology,
-         Map<String, Object> modules, Map<String, Object> allCloudOffers) {
+         Map<String, Object> modules, 
+         Map<String, Object> groups, 
+         Map<String, Object> allCloudOffers) {
 
       if (topology.contains(elementName)) {
          return topology;
       }
 
       TopologyElement newelement = new TopologyElement(elementName);
-      double hostPerformance = getPerformanceOfOfferByName(
-            YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(element),
+      double hostPerformance = getPerformanceOfOfferByName(//TODO: THIS CALL HAS TO BE IMPLEMENTED
+            YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName,groups), 
             allCloudOffers);
       newelement.setExecTimeMillis(YAMLmodulesOptimizerParser
-            .getMeasuredExecTimeMillis(element) * hostPerformance);
+            .getMeasuredExecTimeMillis(elementName,groups) * hostPerformance);
 
       // The module does not have requiremetns
       if (!YAMLmodulesOptimizerParser.ModuleHasModuleRequirements(element,
@@ -681,7 +689,7 @@ public class YAMLoptimizerParser {
             // associate with this element.
             topology = getApplicationTopologyRecursive(moduleReqName,
                   (Map<String, Object>) modules.get(moduleReqName), topology,
-                  modules, allCloudOffers);
+                  modules, groups, allCloudOffers);
             double opProfileBetweenModules = YAMLmodulesOptimizerParser
                   .getOpProfileWithModule(element, moduleReqName);
             // create the dependence between these two modules by
@@ -701,6 +709,7 @@ public class YAMLoptimizerParser {
    private static double getPerformanceOfOfferByName(String offername,
          Map<String, Object> allCloudOffers) {
 
+      //TODO: implement this with the current information of the mathcmaker!!! THIS WILL CAUSE ERROR NOW!!!
       if (!allCloudOffers.containsKey(offername)) {
          return 0.0;
       }
@@ -782,18 +791,8 @@ public class YAMLoptimizerParser {
          Map<String, Object> appMap) {
       // The initial element is such one that has QoSrequirements in the "groups" part.
 
-      Map<String, Object> groupsMap;
-      try{
-         if (IS_DEBUG) {
-            log.info("Opening TOSCA for obtaining groups");
-         }
-      groupsMap = (Map<String, Object>) appMap.get(TOSCAkeywords.GROUP_ELEMENT_TAG);
-      
-      }
-      catch(NullPointerException E){
-         log.error("It was not found '"+TOSCAkeywords.GROUP_ELEMENT_TAG + "' . Cannot be unveiled the dependencies between modules calls");
-         return null;
-      }
+      Map<String, Object> groupsMap=YAMLoptimizerParser.getGroupMapFromAppMap(appMap);
+  
     
 
       // FOR EACH OF THE APP MODULES (but in this level there are more concepts
@@ -857,6 +856,22 @@ public class YAMLoptimizerParser {
       }
       
       return modulesMap;
+   }
+   
+   private static Map<String, Object> getGroupMapFromAppMap(Map<String,Object> appMap){
+      Map<String, Object> groupsMap;
+      try{
+         if (IS_DEBUG) {
+            log.info("Opening TOSCA for obtaining groups");
+         }
+      groupsMap = (Map<String, Object>) appMap.get(TOSCAkeywords.GROUP_ELEMENT_TAG);
+      
+      }
+      catch(NullPointerException E){
+         log.error("It was not found '"+TOSCAkeywords.GROUP_ELEMENT_TAG + "' . Cannot be unveiled the dependencies between modules calls");
+         return null;
+      }
+      return groupsMap;
    }
    
    private static boolean moduleIsRequiredByOthers(Map<String, Object> appMap,
