@@ -9,7 +9,6 @@ location:
     - 192.168.100.11
 
 services:
-
 - serviceType: brooklyn.entity.basic.SameServerEntity
   name: SeaClouds Deployer + Monitoring
   brooklyn.children:
@@ -19,9 +18,8 @@ services:
   - serviceType: eu.seaclouds.modaclouds.manager.MODACloudsMonitoringManager
     name: MODAclouds Monitoring Manager
     id: monitoring-manager
-    install.latch: $brooklyn:component("monitoring-dda").attributeWhenReady("service.isUp")
     brooklyn.config:
-      modaclouds.dda.ip: 192.168.100.10
+      modaclouds.dda.ip: $brooklyn:component("monitoring-dda").attributeWhenReady("host.address")
   - serviceType: "classpath://brooklyn/entity/brooklynnode/brooklyn-node.yaml"
     id: deployer
     name: SeaClouds Deployer
@@ -37,10 +35,15 @@ services:
 
 - serviceType: brooklyn.entity.basic.SameServerEntity
   name: SeaClouds Dashboard + Planner + SLA
+
+  shell.env:
+    SLA_HOST: $brooklyn:component("sla-core").attributeWhenReady("host.address")
+    SLA_PORT: $brooklyn:component("sla-core").attributeWhenReady("http.port")  
+  
   brooklyn.children:
   - serviceType: eu.seaclouds.dashboard.SeacloudsDashboard
     name: SeaClouds Dashboard
-    id: dashboard
+    id: dashboard  
     brooklyn.config:
       port: 8000
       adminPort: 8001
@@ -48,11 +51,11 @@ services:
       deployerPort: $brooklyn:component("deployer").attributeWhenReady("brooklynnode.webconsole.httpPort")
       deployerUser: $brooklyn:component("deployer").config("brooklynnode.managementUser")
       deployerPassword: $brooklyn:component("deployer").config("brooklynnode.managementPassword")
+      slaHost: $SLA_HOST
       monitorHost: $brooklyn:component("monitoring-manager").attributeWhenReady("host.address")
-      monitorPort: $brooklyn:component("monitoring-manager").attributeWhenReady("modaclouds.mm.port")
-      slaHost: $brooklyn:component("sla-core").attributeWhenReady("host.address")
-      slaPort: $brooklyn:component("sla-core").attributeWhenReady("http.port")
-
+      monitorPort: $brooklyn:component("monitoring-manager").attributeWhenReady("modaclouds.mm.port")      
+    install.latch: $brooklyn:component("sla-core").attributeWhenReady("service.isUp")
+    
   - serviceType: brooklyn.entity.webapp.tomcat.TomcatServer
     name: SLA service Core
     id: sla-core
