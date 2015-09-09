@@ -12,10 +12,14 @@ public class MonitoringConditions extends QualityInformation {
       return moduleName;
    }
 
-   public void setModuleNane(String moduleNane) {
+   public void setModuleName(String moduleNane) {
       this.moduleName = moduleNane;
    }
    
    
-  
+  @Override
+  public String toString(){
+     return "moduleName=" + moduleName + " RespTime=" + super.getResponseTime() + " Availability="
+           + super.getAvailability() ;
+  }
 }

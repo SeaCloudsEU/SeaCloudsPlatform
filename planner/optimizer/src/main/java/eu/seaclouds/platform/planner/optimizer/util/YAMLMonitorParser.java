@@ -53,6 +53,7 @@ public class YAMLMonitorParser {
                   MonitoringConditions qosInfoOfGroup = YAMLMonitorParser
                         .getQoSRequirementsOfGroup(entry.getValue());
                   if (qosInfoOfGroup != null) {
+                     qosInfoOfGroup.setModuleName(moduleName);
                      qualityOfModules.add(qosInfoOfGroup);
                   }
 

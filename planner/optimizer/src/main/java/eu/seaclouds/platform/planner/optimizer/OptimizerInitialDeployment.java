@@ -111,6 +111,9 @@ public class OptimizerInitialDeployment {
          log.info("following requirements found: " + requirements.toString());
       }
       List<MonitoringConditions> monitoring = YAMLMonitorParser.getModuleConditions(appModel);
+      if(IS_DEBUG){
+         log.info("following monitoring conditions found: " + monitoring.get(0).toString());
+      }
       
       // Create the skeleton of the numPlansToGenerate solutions to fill
       // This is only to avoid using the appMap or call to the TOSCA parser

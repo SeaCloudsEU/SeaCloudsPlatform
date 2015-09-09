@@ -134,7 +134,7 @@ public class QualityAnalyzerTest {
       SuitableOptions cloudCharacteristics = createSuitableOptions();
 
       QualityInformation requirements = new QualityInformation();
-      requirements.setResponseTime(1000.0);
+      requirements.setResponseTimeSecs(1000.0);
       requirements.setWorkload(10.0);
       requirements.setCostHour(40.0);
 
