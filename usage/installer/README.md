@@ -12,7 +12,7 @@ Make sure you have [Apache Maven](https://maven.apache.org/) v.3.5.5+
 First of all you need to build the SeaCloudsPlatform project with:
 
 ```bash
-mvn clean install
+mvn clean install -DskipTests
 ```
 
 ## Launching SeaClouds on the cloud
