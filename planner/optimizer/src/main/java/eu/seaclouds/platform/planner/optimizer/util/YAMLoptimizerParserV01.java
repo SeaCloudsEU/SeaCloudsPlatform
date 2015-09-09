@@ -723,7 +723,7 @@ public class YAMLoptimizerParserV01 {
       QualityInformation requirements = new QualityInformation();
 
       requirements = new QualityInformation();
-      requirements.setResponseTime(1.0);
+      requirements.setResponseTimeSecs(1.0);
       requirements.setAvailability(0.9);
       requirements.setCostHour(10.0);
       requirements.setWorkload(-1.0);

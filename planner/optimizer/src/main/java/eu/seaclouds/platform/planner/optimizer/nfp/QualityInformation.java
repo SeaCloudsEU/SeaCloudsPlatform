@@ -31,12 +31,12 @@ public class QualityInformation {
       return respTime;
    }
 
-   public void setResponseTime(double respTime) {
+   public void setResponseTimeSecs(double respTime) {
       this.respTime = respTime;
    }
 
    public void setResponseTimeMillis(Double resp) {
-      setResponseTime(resp / 1000.0);
+      setResponseTimeSecs(resp / 1000.0);
    }
 
    public boolean existResponseTimeRequirement() {
@@ -97,7 +97,8 @@ public class QualityInformation {
    public String toString() {
       String info = "";
       info += "RespTime=" + this.respTime + " Availability="
-            + this.availability + " Cost=" + this.getCostMonth();
+            + this.availability + " Cost=" + this.getCostMonth() + 
+            " Workload= " + this.getWorkload();
 
       return info;
    }

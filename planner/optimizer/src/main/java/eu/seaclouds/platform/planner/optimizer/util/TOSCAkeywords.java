@@ -31,11 +31,18 @@ public class TOSCAkeywords {
    public static final String GROUP_ELEMENT_TAG               = "groups";
    public static final String GROUP_ELEMENT_MEMBERS_TAG       = "members";
 
-   public static final String GROUP_ELEMENT_QOSREQUIREMENTS        = "QoSRequirements";
+   public static final String GROUP_POLICY_QOSREQUIREMENTS        = "QoSRequirements";
    public static final String GROUP_POLICY_QOSINFO                 = "QoSInfo";
    public static final String GROUP_ELEMENT_QOS_EXECUTIONTIME      = "execution_time";
    public static final String GROUP_ELEMENT_QOS_BENCHMARK_PLATFORM = "benchmark_platform";
+   public static final String GROUP_POLICY_DEPENDENCIES = "dependencies";
+   public static final String GROUP_ELEMENT_DEPENDENCIES_MODULES_TAG = "other_modules";
 
+   public static final String GROUP_POLICY_QOSREQUIREMENTS_RESPONSETIME  = "response_time";
+   public static final String GROUP_POLICY_QOSREQUIREMENTS_AVAILABILITY = "availability";
+   public static final String GROUP_POLICY_QOSREQUIREMENTS_COST_MONTH   = "cost";
+   public static final String GROUP_POLICY_QOSREQUIREMENTS_WORKLOAD_MINUTE  = "workload";
+   
    public static final String MODULE_PROPOSED_INSTANCES = "instancesPOC";
 
    // These ones have not been defined yet. I temporarily use this definition

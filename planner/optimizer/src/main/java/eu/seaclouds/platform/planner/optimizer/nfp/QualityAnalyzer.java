@@ -149,7 +149,7 @@ public class QualityAnalyzer {
                + bestSol.toString() + " is: " + respTime);
       }
       // after computing, save the performance info in properties.performance
-      properties.setResponseTime(respTime);
+      properties.setResponseTimeSecs(respTime);
 
       return properties;
    }

@@ -19,6 +19,7 @@ package eu.seaclouds.platform.planner.optimizer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -29,8 +30,10 @@ import eu.seaclouds.platform.planner.optimizer.heuristics.HillClimb;
 import eu.seaclouds.platform.planner.optimizer.heuristics.BlindSearch;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethod;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
+import eu.seaclouds.platform.planner.optimizer.nfp.MonitoringConditions;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
+import eu.seaclouds.platform.planner.optimizer.util.YAMLMonitorParser;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
 public class OptimizerInitialDeployment {
@@ -39,7 +42,7 @@ public class OptimizerInitialDeployment {
    static Logger                log      = LoggerFactory
                                                .getLogger(OptimizerInitialDeployment.class);
 
-   private static final boolean IS_DEBUG = false;
+   private static final boolean IS_DEBUG = true;
 
    public OptimizerInitialDeployment() {
       engine = new BlindSearch();
@@ -72,17 +75,25 @@ public class OptimizerInitialDeployment {
       Map<String, Object> appMap = YAMLoptimizerParser.GetMAPofAPP(appModel);
 
       // Get cloud offers
+      if(IS_DEBUG){
+         log.info("Getting cloud optoins and characteristics");
+      }
       SuitableOptions appInfoSuitableOptions = YAMLoptimizerParser
             .GetSuitableCloudOptionsAndCharacteristicsForModules(appModel,
                   suitableCloudOffer);
       Map<String, Object> allCloudOffers = YAMLoptimizerParser
             .getMAPofCloudOffers(suitableCloudOffer);
 
+      if(IS_DEBUG){
+         log.info("Getting application Topology");
+      }
       // TODO: Obtain Application topology. At 10/02/2015 this information is
       // not included in the YAML. It's not possible to retrieve it
-      Topology topology = YAMLoptimizerParser.getApplicationTopology(appMap,
+      Topology topology = null;
+      try{
+       topology = YAMLoptimizerParser.getApplicationTopology(appMap,
             allCloudOffers);
-
+      }catch(Exception E){log.error("There was an exception while reading topology. More errors ahead");}
       // TODO: Remove the following temporal management of the lack of topology.
       // Create an incorrect and ad-hoc one to keep the system working
       if (topology == null) {
@@ -92,8 +103,15 @@ public class OptimizerInitialDeployment {
       }
 
       // Read the quality requirements of the application
+      if(IS_DEBUG){
+         log.info("Getting application Requirements");
+      }
       QualityInformation requirements = loadQualityRequirements(appMap);
-
+      if(IS_DEBUG){
+         log.info("following requirements found: " + requirements.toString());
+      }
+      List<MonitoringConditions> monitoring = YAMLMonitorParser.getModuleConditions(appModel);
+      
       // Create the skeleton of the numPlansToGenerate solutions to fill
       // This is only to avoid using the appMap or call to the TOSCA parser
       // inside
@@ -259,7 +277,8 @@ public class OptimizerInitialDeployment {
 
       QualityInformation requirements = YAMLoptimizerParser
             .getQualityRequirements(applicationMap);
-
+     
+           
       // Maybe the previous operation did not work because Requirements could
       // not be found in the YAML. Follow an ad-hoc solution to get some
       // requirements
