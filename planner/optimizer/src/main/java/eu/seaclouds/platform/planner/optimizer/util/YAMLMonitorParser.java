@@ -178,7 +178,7 @@ public class YAMLMonitorParser {
    
    private static MonitoringConditions getQoSRequirementsOfGroup(Object group) {
 
-      Map<String, Object> qosInformation = YAMLgroupsOptimizerParser.getQoSInformationInPolicies(group);
+      Map<String, Object> qosInformation = YAMLMonitorParser.getQoSInformationInPolicies(group);
 
       if (qosInformation == null) {
          log.warn("There was not found QoS information in the policies of the group. returning null");
@@ -249,5 +249,24 @@ public class YAMLMonitorParser {
       log.warn("Explored all vvalues of the Map and it was NOT found any double value. Returning -1");
       return -1;
    }
-   
+ 
+private static Map<String,Object> getQoSInformationInPolicies(Object group){
+      
+      Map<String, Object> groupInfo = null;
+      List<Object> groupPoliciesList = null;
+      Map<String, Object> groupReqs = null;
+      
+      
+      try {
+         groupInfo = (Map<String, Object>) group;
+         groupReqs = YAMLMonitorParser.getPolicySubInfoFromGroupInfo(groupInfo, TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS);
+         
+         
+      } catch (ClassCastException E) {
+         log.warn("Error casting the group raw object information to a Map");
+         
+         return null;
+      }
+      return groupReqs;
+   }
 }
