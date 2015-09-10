@@ -3,6 +3,8 @@ package eu.seaclouds.platform.planner.optimizer.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,71 +12,69 @@ import org.yaml.snakeyaml.Yaml;
 
 import eu.seaclouds.platform.planner.optimizer.nfp.MonitoringConditions;
 
-
 public class YAMLMonitorParser {
 
-   private static final boolean IS_DEBUG                                           = true;
-   static Logger log = LoggerFactory.getLogger(YAMLMonitorParser.class);
-   
-   
+   private static final boolean IS_DEBUG = true;
+   static Logger                log      = LoggerFactory.getLogger(YAMLMonitorParser.class);
+
    /**
     * @param aam
-    * @return  the monitoring conditions, which are the QoS requirements of all modules
+    * @return the monitoring conditions, which are the QoS requirements of all
+    *         modules
     */
    public static List<MonitoringConditions> getModuleConditions(String aam) {
-      
-      // Get aam into a map 
+
+      // Get aam into a map
       Map<String, Object> appMap = YAMLMonitorParser.GetMAPofAPP(aam);
-      return YAMLMonitorParser.getModuleConditionsFromMap(appMap); 
+      return YAMLMonitorParser.getModuleConditionsFromMap(appMap);
    }
-   
+
    @SuppressWarnings("unchecked")
    private static List<MonitoringConditions> getModuleConditionsFromMap(Map<String, Object> appMap) {
 
-         Map<String, Object> groupsMap = YAMLMonitorParser.getGroupMapFromAppMap(appMap);
-         List<MonitoringConditions> qualityOfModules = new ArrayList<MonitoringConditions>();
+      Map<String, Object> groupsMap = YAMLMonitorParser.getGroupMapFromAppMap(appMap);
+      List<MonitoringConditions> qualityOfModules = new ArrayList<MonitoringConditions>();
 
-         // FOR EACH OF THE APP MODULES (but in this level there are more concepts
-         // than only the modules)
-         for (Map.Entry<String, Object> entry : groupsMap.entrySet()) {
-            String potentialGroupName = entry.getKey();
+      // FOR EACH OF THE APP MODULES (but in this level there are more concepts
+      // than only the modules)
+      for (Map.Entry<String, Object> entry : groupsMap.entrySet()) {
+         String potentialGroupName = entry.getKey();
 
-            if (IS_DEBUG) {
-               log.info("checking if group '" + potentialGroupName + "' is an element which has quality requirements");
-            }
-            // If it has requirements but nobody requires it..
-            if (YAMLMonitorParser.GroupHasQoSRequirements(entry.getValue())) {
-               // there are requirements.
-               // Now, 1) for each of the get the name of modules that are members
-               // of the group.
-               // Since it should be only one member in the group in as list
-               // we get the first module name found
-               for (String moduleName : YAMLMonitorParser.getListOfMemberNames(entry.getValue())) {
-                  MonitoringConditions qosInfoOfGroup = YAMLMonitorParser
-                        .getQoSRequirementsOfGroup(entry.getValue());
-                  if (qosInfoOfGroup != null) {
-                     qosInfoOfGroup.setModuleName(moduleName);
-                     qualityOfModules.add(qosInfoOfGroup);
-                  }
-
+         if (IS_DEBUG) {
+            log.info("checking if group '" + potentialGroupName + "' is an element which has quality requirements");
+         }
+         // If it has requirements but nobody requires it..
+         if (YAMLMonitorParser.GroupHasQoSRequirements(entry.getValue())) {
+            // there are requirements.
+            // Now, 1) for each of the get the name of modules that are members
+            // of the group.
+            // Since it should be only one member in the group in as list
+            // we get the first module name found
+            for (String moduleName : YAMLMonitorParser.getListOfMemberNames(entry.getValue())) {
+               MonitoringConditions qosInfoOfGroup = YAMLMonitorParser.getQoSRequirementsOfGroup(entry.getValue());
+               if (qosInfoOfGroup != null) {
+                  qosInfoOfGroup.setModuleName(moduleName);
+                  qualityOfModules.add(qosInfoOfGroup);
                }
+
             }
          }
+      }
 
-         // 2) return the first element of this list
-         if (qualityOfModules.size() > 0) {
-            return qualityOfModules;
-         }
+      // 2) return the first element of this list
+      if (qualityOfModules.size() > 0) {
+         return qualityOfModules;
+      }
 
-         log.warn("List of quality requirements was empty. Not requirements found. Returning null");
-         return null;
+      log.warn("List of quality requirements was empty. Not requirements found. Returning null");
+      return null;
 
-      
    }
 
    /**
     * @param appModel
-    * @return a Map that has loaded the String passed as argument if it complains with YAML grammar description
+    * @return a Map that has loaded the String passed as argument if it
+    *         complains with YAML grammar description
     */
    @SuppressWarnings("unchecked")
    private static Map<String, Object> GetMAPofAPP(String appModel) {
@@ -82,8 +82,6 @@ public class YAMLMonitorParser {
       return (Map<String, Object>) yamlApp.load(appModel);
    }
 
-   
-   
    private static Map<String, Object> getGroupMapFromAppMap(Map<String, Object> appMap) {
       Map<String, Object> groupsMap;
       try {
@@ -99,28 +97,26 @@ public class YAMLMonitorParser {
       }
       return groupsMap;
    }
-   
+
    private static boolean GroupHasQoSRequirements(Object group) {
 
       Map<String, Object> groupInfo = null;
       List<Object> groupPoliciesList = null;
       Map<String, Object> groupReqs = null;
-      
-      
+
       try {
          groupInfo = (Map<String, Object>) group;
-         groupReqs = YAMLMonitorParser.getPolicySubInfoFromGroupInfo(groupInfo, TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS);
-         
-         
+         groupReqs = YAMLMonitorParser.getPolicySubInfoFromGroupInfo(groupInfo,
+               TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS);
+
       } catch (ClassCastException E) {
          log.warn("Error casting the group raw object information to a Map");
-         
+
          return false;
       }
-      return groupReqs!=null;
+      return groupReqs != null;
    }
-   
-   
+
    private static Map<String, Object> getPolicySubInfoFromGroupInfo(Map<String, Object> groupInfo,
          String infoToSearch) {
 
@@ -151,7 +147,7 @@ public class YAMLMonitorParser {
       log.info("  Check for '" + infoToSearch + "' was NOT successful");
       return null;
    }
-   
+
    private static List<String> getListOfMemberNames(Object group) {
       Map<String, Object> groupInfo = null;
       List<String> memberList = null;
@@ -175,7 +171,7 @@ public class YAMLMonitorParser {
       log.warn("  It was found a group with declaration of members but without information of who where the members");
       return null;
    }
-   
+
    private static MonitoringConditions getQoSRequirementsOfGroup(Object group) {
 
       Map<String, Object> qosInformation = YAMLMonitorParser.getQoSInformationInPolicies(group);
@@ -187,7 +183,7 @@ public class YAMLMonitorParser {
       return YAMLMonitorParser.parseQoS(qosInformation);
 
    }
-   
+
    private static MonitoringConditions parseQoS(Map<String, Object> qosInformation) {
 
       MonitoringConditions quality = new MonitoringConditions();
@@ -196,12 +192,12 @@ public class YAMLMonitorParser {
       if (qosInformation.containsKey(TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS_AVAILABILITY)) {
          Map<String, Object> availabilityMapValue = YAMLMonitorParser.getMapValueFromQuality(qosInformation,
                TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS_AVAILABILITY);
-         quality.setAvailability(YAMLMonitorParser.getDoubleValueFromMapValue(availabilityMapValue)); 
+         quality.setAvailability(YAMLMonitorParser.getDoubleValueFromMapValue(availabilityMapValue));
       }
 
       // check performance
       if (qosInformation.containsKey(TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS_RESPONSETIME)) {
-         
+
          Map<String, Object> responsetimeMapValue = YAMLMonitorParser.getMapValueFromQuality(qosInformation,
                TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS_RESPONSETIME);
          quality.setResponseTimeSecs(YAMLMonitorParser.getDoubleValueFromMapValue(responsetimeMapValue));
@@ -223,7 +219,7 @@ public class YAMLMonitorParser {
          return null;
       }
    }
-   
+
    private static Map<String, Object> getMapValueFromQuality(Map<String, Object> qosInformation, String qualityName) {
       Map<String, Object> availabilityMapValue;
       try {
@@ -234,12 +230,12 @@ public class YAMLMonitorParser {
       }
       return availabilityMapValue;
    }
-   
+
    private static double getDoubleValueFromMapValue(Map<String, Object> quality) {
 
       for (Map.Entry<String, Object> entry : quality.entrySet()) {
          try {
-            double qualityValue = YAMLoptimizerParser.castToDouble(entry.getValue());
+            double qualityValue = YAMLMonitorParser.castToDouble(entry.getValue());
             return qualityValue;
          } catch (Exception E) {
             log.info("Explored quality and a Value of its Map did not contain double values");
@@ -249,22 +245,59 @@ public class YAMLMonitorParser {
       log.warn("Explored all vvalues of the Map and it was NOT found any double value. Returning -1");
       return -1;
    }
- 
-private static Map<String,Object> getQoSInformationInPolicies(Object group){
-      
+
+   private static double castToDouble(Object object) {
+      double result = -1.0;
+      boolean success = false;
+
+      if (!success) {
+         try {
+            result = (Double) object;
+            success = true;
+         } catch (ClassCastException E) {
+            // nothing to do, it was not double
+         }
+      }
+
+      if (!success) {
+         try {
+            result = ((Integer) object).doubleValue();
+            success = true;
+         } catch (ClassCastException E) {
+            // nothing to do, it was not Integer
+         }
+      }
+
+      if (!success) {
+         try {
+            Pattern p = Pattern.compile("\\d+");
+            Matcher m = p.matcher((String) object);
+            m.find();
+            result = Double.parseDouble(m.group());
+            success = true;
+         } catch (ClassCastException E) {
+            // nothing to do, it was not String
+         }
+      }
+
+      return result;
+
+   }
+
+   private static Map<String, Object> getQoSInformationInPolicies(Object group) {
+
       Map<String, Object> groupInfo = null;
       List<Object> groupPoliciesList = null;
       Map<String, Object> groupReqs = null;
-      
-      
+
       try {
          groupInfo = (Map<String, Object>) group;
-         groupReqs = YAMLMonitorParser.getPolicySubInfoFromGroupInfo(groupInfo, TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS);
-         
-         
+         groupReqs = YAMLMonitorParser.getPolicySubInfoFromGroupInfo(groupInfo,
+               TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS);
+
       } catch (ClassCastException E) {
          log.warn("Error casting the group raw object information to a Map");
-         
+
          return null;
       }
       return groupReqs;
