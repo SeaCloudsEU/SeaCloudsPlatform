@@ -49,6 +49,8 @@
             <button type="button" class="btn btn-default btn-primary" ng-click='nextStep()'
                     ng-disabled="!wizardCanContinue()" ng-if="currentStep < 4">Next
             </button>
+            <button type="button" class="btn btn-default btn-warning" ng-click='nextStep()' ng-if="currentStep == 3">Skip step
+            </button>
             <button type="button" class="btn btn-default btn-success" ng-click='nextStep()'
                     ng-disabled="!wizardCanContinue()" ng-if="currentStep == 4">Deploy
             </button>
