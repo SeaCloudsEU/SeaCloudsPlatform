@@ -1,0 +1,132 @@
+<!--
+
+    Copyright 2015 SeaCloudsEU
+    Contact: Michele Guerriero <michele.guerriero@mail.polimi.it>
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+           http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+
+	<parent>
+		<artifactId>monitor</artifactId>
+		<groupId>eu.seaclouds-project.monitor</groupId>
+		<version>0.1.0-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>eu.seaclouds-project.monitor.nuro-dc</groupId>
+	<artifactId>nuro-data-collector</artifactId>
+	<packaging>jar</packaging>
+
+	<name>nuro-data-collector</name>
+
+	<repositories>
+		<repository>
+			<id>deib-polimi-releases</id>
+			<url>https://github.com/deib-polimi/deib-polimi-mvn-repo/raw/master/releases</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.9.13</version>
+		</dependency>
+
+		<dependency>
+			<groupId>it.polimi.tower4clouds</groupId>
+			<artifactId>data-collector-library</artifactId>
+			<version>0.2.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.9.4</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+
+		<plugins>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>jar-with-dependencies</id>
+						<phase>install</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<attach>false</attach>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<archive>
+								<manifest>
+									<mainClass>dataCollector.Main</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <header>${project.basedir}/LICENSE-header.txt</header>
+                    <properties>
+                        <organization>SeaCloudsEU</organization>
+                        <year>2015</year>
+                        <owner>Michele Guerriero</owner>
+                        <email>michele.guerriero@mail.polimi.it</email>
+                        <artid>${project.artifactId}</artid>
+                    </properties>
+                    <excludes>
+                        <exclude>**/README</exclude>
+                        <exclude>*.log</exclude>
+                        <exclude>LICENSE.txt</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>check-headers</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+		</plugins>
+	</build>
+</project>
