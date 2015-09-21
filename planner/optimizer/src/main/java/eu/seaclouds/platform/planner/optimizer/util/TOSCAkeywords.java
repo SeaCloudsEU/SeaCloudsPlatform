@@ -45,12 +45,19 @@ public class TOSCAkeywords {
    
    public static final String MODULE_PROPOSED_INSTANCES = "instancesPOC";
 
-   // These ones have not been defined yet. I temporarily use this definition
+   //These are for the MM version of September 2015
+   public static final String CLOUD_CONCRETE_OFFER_AVAILABILITY = "availability";
+   public static final String CLOUD_CONCRETE_PROPERTY_PERFORMANCE  = "performance";
+   public static final String CLOUD_CONCRETE_PROPERTY_COST         = "cost";
+   
+   // These ones have not been defined yet. I temporarily use this definition. Used by the first working version of Optimizer
    public static final String CLOUD_OFFER_PROPERTY_AVAILABILITY = "availabilityPOC";
    public static final String CLOUD_OFFER_PROPERTY_PERFORMANCE  = "performancePOC";
    public static final String CLOUD_OFFER_PROPERTY_COST         = "costPOC";
    public static final String LATENCY_INTER_DATACENTER_MILLIS   = "latencyExternalPOC";
    public static final String LATENCY_INTRA_DATACENTER_MILLIS   = "latencyInternalPOC";
+   
+   
 
    public static final String RECONFIGURATION_WORKLOAD_TAG = "ReconfigurationsPOC";
    public static final String EXPECTED_QUALITY_PROPERTIES  = "ExpectedQualityPOC";
