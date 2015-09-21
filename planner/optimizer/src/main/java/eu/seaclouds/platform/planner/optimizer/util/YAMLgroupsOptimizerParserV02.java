@@ -27,11 +27,11 @@ import org.slf4j.LoggerFactory;
 
 
 //Version of July 2015
-public class YAMLgroupsOptimizerParser {
+public class YAMLgroupsOptimizerParserV02 {
 
    public static final boolean IS_DEBUG = true;
 
-   static Logger log = LoggerFactory.getLogger(YAMLgroupsOptimizerParser.class);
+   static Logger log = LoggerFactory.getLogger(YAMLgroupsOptimizerParserV02.class);
 
    public static boolean GroupHasQoSRequirements(Object group) {
 
@@ -41,7 +41,7 @@ public class YAMLgroupsOptimizerParser {
 
       try {
          groupInfo = (Map<String, Object>) group;
-         groupReqs = YAMLgroupsOptimizerParser.getPolicySubInfoFromGroupInfo(groupInfo,
+         groupReqs = YAMLgroupsOptimizerParserV02.getPolicySubInfoFromGroupInfo(groupInfo,
                TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS);
 
       } catch (ClassCastException E) {
@@ -82,7 +82,7 @@ public class YAMLgroupsOptimizerParser {
    @SuppressWarnings({ "unchecked", "null" })
    public static String getFirstMemberName(Object group) {
 
-      List<String> listNames = YAMLgroupsOptimizerParser.getListOfMemberNames(group);
+      List<String> listNames = YAMLgroupsOptimizerParserV02.getListOfMemberNames(group);
       if (listNames != null) {
          return listNames.get(0);
       } else {
@@ -93,15 +93,15 @@ public class YAMLgroupsOptimizerParser {
    }
 
    public static Map<String, Object> getQoSinfoOfMemberName(String moduleName, Map<String, Object> groups) {
-      Map<String, Object> groupInfo = YAMLgroupsOptimizerParser.findGroupOfMemberName(moduleName, groups);
-      return YAMLgroupsOptimizerParser.getPolicySubInfoFromGroupInfo(groupInfo, TOSCAkeywords.GROUP_POLICY_QOSINFO);
+      Map<String, Object> groupInfo = YAMLgroupsOptimizerParserV02.findGroupOfMemberName(moduleName, groups);
+      return YAMLgroupsOptimizerParserV02.getPolicySubInfoFromGroupInfo(groupInfo, TOSCAkeywords.GROUP_POLICY_QOSINFO);
 
    }
 
    private static Map<String, Object> findGroupOfMemberName(String moduleName, Map<String, Object> groups) {
 
       for (Map.Entry<String, Object> entry : groups.entrySet()) {
-         if (YAMLgroupsOptimizerParser.isMemberOfGroup(moduleName, entry.getValue())) {
+         if (YAMLgroupsOptimizerParserV02.isMemberOfGroup(moduleName, entry.getValue())) {
             return (Map<String, Object>) entry.getValue();
          }
       }
@@ -120,7 +120,7 @@ public class YAMLgroupsOptimizerParser {
     */
    private static boolean isMemberOfGroup(String moduleName, Object group) {
 
-      return YAMLgroupsOptimizerParser.getFirstMemberName(group).equals(moduleName);
+      return YAMLgroupsOptimizerParserV02.getFirstMemberName(group).equals(moduleName);
 
    }
 
@@ -156,8 +156,8 @@ public class YAMLgroupsOptimizerParser {
    }
 
    public static Map<String, Object> getDependenciesInfoOfMemberName(String moduleName, Map<String, Object> groups) {
-      Map<String, Object> groupInfo = YAMLgroupsOptimizerParser.findGroupOfMemberName(moduleName, groups);
-      return YAMLgroupsOptimizerParser.getPolicySubInfoFromGroupInfo(groupInfo,
+      Map<String, Object> groupInfo = YAMLgroupsOptimizerParserV02.findGroupOfMemberName(moduleName, groups);
+      return YAMLgroupsOptimizerParserV02.getPolicySubInfoFromGroupInfo(groupInfo,
             TOSCAkeywords.GROUP_POLICY_DEPENDENCIES);
    }
 
@@ -165,7 +165,7 @@ public class YAMLgroupsOptimizerParser {
 
       Map<String, Object> moduleDependencies = null;
 
-      Map<String, Object> dependeciesInfoOfGroupOfModule = YAMLgroupsOptimizerParser
+      Map<String, Object> dependeciesInfoOfGroupOfModule = YAMLgroupsOptimizerParserV02
             .getDependenciesInfoOfMemberName(moduleName, groups);
 
       if (dependeciesInfoOfGroupOfModule == null) {
@@ -235,7 +235,7 @@ public class YAMLgroupsOptimizerParser {
 
    public static double getReceivedWorkloadOfGroup(Object group) {
 
-      Map<String, Object> qosInformation = YAMLgroupsOptimizerParser.getQoSInformationInPolicies(group);
+      Map<String, Object> qosInformation = YAMLgroupsOptimizerParserV02.getQoSInformationInPolicies(group);
 
       if (qosInformation == null) {
          log.warn("qosInformation was not found among the policies of the group");
@@ -269,7 +269,7 @@ public class YAMLgroupsOptimizerParser {
 
       try {
          groupInfo = (Map<String, Object>) group;
-         groupReqs = YAMLgroupsOptimizerParser.getPolicySubInfoFromGroupInfo(groupInfo,
+         groupReqs = YAMLgroupsOptimizerParserV02.getPolicySubInfoFromGroupInfo(groupInfo,
                TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS);
 
       } catch (ClassCastException E) {

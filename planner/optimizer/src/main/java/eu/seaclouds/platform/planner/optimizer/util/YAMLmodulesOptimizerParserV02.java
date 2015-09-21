@@ -28,10 +28,10 @@ import org.slf4j.LoggerFactory;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 
 //Version of July 2015
-public class YAMLmodulesOptimizerParser {
+public class YAMLmodulesOptimizerParserV02 {
 
    private static final boolean IS_DEBUG = true;
-   static Logger                log      = LoggerFactory.getLogger(YAMLmodulesOptimizerParser.class);
+   static Logger                log      = LoggerFactory.getLogger(YAMLmodulesOptimizerParserV02.class);
 
    @SuppressWarnings("unchecked")
    public static boolean ModuleHasModuleRequirements(String moduleName, Map<String, Object> groups) {
@@ -201,11 +201,11 @@ public class YAMLmodulesOptimizerParser {
       if (qoSinfoOfGroupOfModule.containsKey(TOSCAkeywords.GROUP_ELEMENT_QOS_BENCHMARK_PLATFORM)) {
          if (IS_DEBUG) {
             log.info("Found that module " + moduleName + " takes "
-                  + YAMLmodulesOptimizerParser
+                  + YAMLmodulesOptimizerParserV02
                         .castToDouble(qoSinfoOfGroupOfModule.get(TOSCAkeywords.GROUP_ELEMENT_QOS_EXECUTIONTIME))
                   + " milliseconds to execute in its benchmark platform");
          }
-         return YAMLmodulesOptimizerParser
+         return YAMLmodulesOptimizerParserV02
                .castToDouble(qoSinfoOfGroupOfModule.get(TOSCAkeywords.GROUP_ELEMENT_QOS_EXECUTIONTIME));
       }
 
@@ -330,7 +330,7 @@ public class YAMLmodulesOptimizerParser {
          log.warn("There was not found QoS information in the policies of the group. returning null");
          return null;
       }
-      return YAMLmodulesOptimizerParser.parseQoS(qosInformation);
+      return YAMLmodulesOptimizerParserV02.parseQoS(qosInformation);
 
    }
 
@@ -357,7 +357,7 @@ public class YAMLmodulesOptimizerParser {
       if (qosInformation.containsKey(TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS_AVAILABILITY)) {
          Map<String, Object> availabilityMapValue = getMapValueFromQuality(qosInformation,
                TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS_AVAILABILITY);
-         quality.setAvailability(YAMLmodulesOptimizerParser.getDoubleValueFromMapValue(availabilityMapValue));
+         quality.setAvailability(YAMLmodulesOptimizerParserV02.getDoubleValueFromMapValue(availabilityMapValue));
       }
 
       // check performance
@@ -365,14 +365,14 @@ public class YAMLmodulesOptimizerParser {
          
          Map<String, Object> responsetimeMapValue = getMapValueFromQuality(qosInformation,
                TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS_RESPONSETIME);
-         quality.setResponseTimeSecs(YAMLmodulesOptimizerParser.getDoubleValueFromMapValue(responsetimeMapValue));
+         quality.setResponseTimeSecs(YAMLmodulesOptimizerParserV02.getDoubleValueFromMapValue(responsetimeMapValue));
       }
 
       // check cost
       if (qosInformation.containsKey(TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS_COST_MONTH)) {
          Map<String, Object> costMapValue = getMapValueFromQuality(qosInformation,
                TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS_COST_MONTH);
-         quality.setCostMonth(YAMLmodulesOptimizerParser.getDoubleValueFromMapValue(costMapValue));
+         quality.setCostMonth(YAMLmodulesOptimizerParserV02.getDoubleValueFromMapValue(costMapValue));
       }
 
       // check whether any of them existed

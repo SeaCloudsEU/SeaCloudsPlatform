@@ -36,6 +36,7 @@ import eu.seaclouds.platform.planner.optimizer.TopologyElement;
 import eu.seaclouds.platform.planner.optimizer.TopologyElementCalled;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 
+//Version of February 2015
 public class YAMLoptimizerParserV01 {
 
    // Reducing verbosity . If somebody knows a better approach for doing this (I

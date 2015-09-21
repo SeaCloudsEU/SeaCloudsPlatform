@@ -24,6 +24,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+//Version of February 2015
 public class YAMLmodulesOptimizerParserV01 {
 
    static Logger log = LoggerFactory

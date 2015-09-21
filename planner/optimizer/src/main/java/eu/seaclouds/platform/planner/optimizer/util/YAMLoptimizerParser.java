@@ -15,6 +15,7 @@
  *    limitations under the License.
  */
 
+//Version of July 2015
 package eu.seaclouds.platform.planner.optimizer.util;
 
 import java.util.ArrayList;
@@ -477,14 +478,14 @@ public class YAMLoptimizerParser {
             log.info("checking if group '" + potentialGroupName + "' is an element which has quality requirements");
          }
          // If it has requirements but nobody requires it..
-         if (YAMLgroupsOptimizerParser.GroupHasQoSRequirements(entry.getValue())) {
+         if (YAMLgroupsOptimizerParserV02.GroupHasQoSRequirements(entry.getValue())) {
             // there are requirements.
             // Now, 1) for each of the get the name of modules that are members
             // of the group.
             // Since it should be only one member in the group in as list
             // we get the first module name found
-            for (String moduleName : YAMLgroupsOptimizerParser.getListOfMemberNames(entry.getValue())) {
-               QualityInformation qosInfoOfGroup = YAMLmodulesOptimizerParser
+            for (String moduleName : YAMLgroupsOptimizerParserV02.getListOfMemberNames(entry.getValue())) {
+               QualityInformation qosInfoOfGroup = YAMLmodulesOptimizerParserV02
                      .getQoSRequirementsOfGroup(entry.getValue());
                if (qosInfoOfGroup != null) {
                   qualityOfModules.add(qosInfoOfGroup);
@@ -521,9 +522,9 @@ public class YAMLoptimizerParser {
             log.info("checking if group '" + potentialGroupName + "' is an element which receceives user requests");
          }
          // If it has requirements but nobody requires it..
-         if (YAMLgroupsOptimizerParser.GroupHasQoSRequirements(entry.getValue())) {
+         if (YAMLgroupsOptimizerParserV02.GroupHasQoSRequirements(entry.getValue())) {
             // group found.
-            return YAMLgroupsOptimizerParser.getReceivedWorkloadOfGroup(entry.getValue());
+            return YAMLgroupsOptimizerParserV02.getReceivedWorkloadOfGroup(entry.getValue());
 
          }
       }
@@ -574,8 +575,8 @@ public class YAMLoptimizerParser {
          return null;
       }
 
-      if (modules.containsKey(YAMLmodulesOptimizerParser.getHostOfModule(module))) {
-         return getFinalHostNameOfModule(modules, YAMLmodulesOptimizerParser.getHostOfModule(module));
+      if (modules.containsKey(YAMLmodulesOptimizerParserV02.getHostOfModule(module))) {
+         return getFinalHostNameOfModule(modules, YAMLmodulesOptimizerParserV02.getHostOfModule(module));
       } else {
          return modName;
       }
@@ -594,19 +595,19 @@ public class YAMLoptimizerParser {
       double hostPerformance = getPerformanceOfOfferByName(// TODO: THIS CALL
                                                            // HAS TO BE
                                                            // IMPLEMENTED
-            YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups), allCloudOffers);
+            YAMLmodulesOptimizerParserV02.getMeasuredPerformanceHost(elementName, groups), allCloudOffers);
       newelement.setExecTimeMillis(
-            YAMLmodulesOptimizerParser.getMeasuredExecTimeMillis(elementName, groups) * hostPerformance);
+            YAMLmodulesOptimizerParserV02.getMeasuredExecTimeMillis(elementName, groups) * hostPerformance);
 
       // The module does not have requiremetns
-      if (!YAMLmodulesOptimizerParser.ModuleHasModuleRequirements(elementName, groups)) {
+      if (!YAMLmodulesOptimizerParserV02.ModuleHasModuleRequirements(elementName, groups)) {
          // Include it directly
          topology.addModule(newelement);
          return topology;
       }
 
       // module has requirements
-      for (String moduleReqName : YAMLmodulesOptimizerParser.ModuleRequirementsOfAModule(elementName, groups)) {
+      for (String moduleReqName : YAMLmodulesOptimizerParserV02.ModuleRequirementsOfAModule(elementName, groups)) {
          // For each requiremnt of teh element (that is not its host but it's a
          // module in the system)
          if (topology.contains(moduleReqName)) {
@@ -616,7 +617,7 @@ public class YAMLoptimizerParser {
             // dependence cannot exist yet)
             // Read the operational profile for the number of calls.
 
-            double opProfileBetweenModules = YAMLmodulesOptimizerParser.getOpProfileWithModule(element, moduleReqName);
+            double opProfileBetweenModules = YAMLmodulesOptimizerParserV02.getOpProfileWithModule(element, moduleReqName);
             // create the dependence between these two modules by
             // addelementcalled.
             newelement.addElementCalled(
@@ -627,7 +628,7 @@ public class YAMLoptimizerParser {
             // associate with this element.
             topology = getApplicationTopologyRecursive(moduleReqName, (Map<String, Object>) modules.get(moduleReqName),
                   topology, modules, groups, allCloudOffers);
-            double opProfileBetweenModules = YAMLmodulesOptimizerParser.getOpProfileWithModule(element, moduleReqName);
+            double opProfileBetweenModules = YAMLmodulesOptimizerParserV02.getOpProfileWithModule(element, moduleReqName);
             // create the dependence between these two modules by
             // addelementcalled.
             newelement.addElementCalled(
@@ -734,12 +735,12 @@ public class YAMLoptimizerParser {
             log.info("checking if group '" + potentialGroupName + "' is an element which receceives user requests");
          }
          // If it has requirements but nobody requires it..
-         if (YAMLgroupsOptimizerParser.GroupHasQoSRequirements(entry.getValue())) {
+         if (YAMLgroupsOptimizerParserV02.GroupHasQoSRequirements(entry.getValue())) {
             // group found.
             // Now, 1) get the name of modules that are members of the group.
             // Since it should be only one member in the group in as list
             // we get the first module name found
-            String moduleName = YAMLgroupsOptimizerParser.getFirstMemberName(entry.getValue());
+            String moduleName = YAMLgroupsOptimizerParserV02.getFirstMemberName(entry.getValue());
             // 2) find the module in the topology with this name.
 
             Map<String, Object> modulesMap = YAMLoptimizerParser.getModuleMapFromAppMap(appMap);
@@ -806,7 +807,7 @@ public class YAMLoptimizerParser {
    private static boolean moduleIsRequiredByOthers(Map<String, Object> appMap, String potentialModuleName) {
 
       for (Map.Entry<String, Object> entry : appMap.entrySet()) {
-         if (YAMLmodulesOptimizerParser.ModuleRequirementFromTo(entry.getValue(), potentialModuleName)) {
+         if (YAMLmodulesOptimizerParserV02.ModuleRequirementFromTo(entry.getValue(), potentialModuleName)) {
             return true;
          }
       }

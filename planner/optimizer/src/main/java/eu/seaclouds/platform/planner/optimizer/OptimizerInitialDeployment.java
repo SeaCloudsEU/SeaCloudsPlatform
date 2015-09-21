@@ -34,7 +34,7 @@ import eu.seaclouds.platform.planner.optimizer.nfp.MonitoringConditions;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLMonitorParser;
-import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
+import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParserV02;
 
 public class OptimizerInitialDeployment {
 
@@ -72,16 +72,16 @@ public class OptimizerInitialDeployment {
          int numPlansToGenerate) {
 
       // Get app characteristics
-      Map<String, Object> appMap = YAMLoptimizerParser.GetMAPofAPP(appModel);
+      Map<String, Object> appMap = YAMLoptimizerParserV02.GetMAPofAPP(appModel);
 
       // Get cloud offers
       if(IS_DEBUG){
          log.info("Getting cloud optoins and characteristics");
       }
-      SuitableOptions appInfoSuitableOptions = YAMLoptimizerParser
+      SuitableOptions appInfoSuitableOptions = YAMLoptimizerParserV02
             .GetSuitableCloudOptionsAndCharacteristicsForModules(appModel,
                   suitableCloudOffer);
-      Map<String, Object> allCloudOffers = YAMLoptimizerParser
+      Map<String, Object> allCloudOffers = YAMLoptimizerParserV02
             .getMAPofCloudOffers(suitableCloudOffer);
 
       if(IS_DEBUG){
@@ -91,7 +91,7 @@ public class OptimizerInitialDeployment {
       // not included in the YAML. It's not possible to retrieve it
       Topology topology = null;
       try{
-       topology = YAMLoptimizerParser.getApplicationTopology(appMap,
+       topology = YAMLoptimizerParserV02.getApplicationTopology(appMap,
             allCloudOffers);
       }catch(Exception E){log.error("There was an exception while reading topology. More errors ahead");}
       // TODO: Remove the following temporal management of the lack of topology.
@@ -134,8 +134,8 @@ public class OptimizerInitialDeployment {
 
       String[] stringSolutions = new String[numPlansToGenerate];
       for (int i = 0; i < appMapSolutions.length; i++) {
-         YAMLoptimizerParser.ReplaceSuitableServiceByHost(appMapSolutions[i]);
-         stringSolutions[i] = YAMLoptimizerParser
+         YAMLoptimizerParserV02.ReplaceSuitableServiceByHost(appMapSolutions[i]);
+         stringSolutions[i] = YAMLoptimizerParserV02
                .FromMAPtoYAMLstring(appMapSolutions[i]);
       }
 
@@ -154,14 +154,14 @@ public class OptimizerInitialDeployment {
 
       for (int i = 0; i < bestSols.length; i++) {
 
-         Map<String, Object> baseAppMap = YAMLoptimizerParser
+         Map<String, Object> baseAppMap = YAMLoptimizerParserV02
                .cloneYAML(applicMap);
 
          addSolutionToAppMap(bestSols[i], baseAppMap);
 
          HashMap<String, ArrayList<Double>> thresholds = createReconfigurationThresholds(
                bestSols[i], baseAppMap, topology, cloudOffers, requirements);
-         YAMLoptimizerParser.AddReconfigurationThresholds(thresholds,
+         YAMLoptimizerParserV02.AddReconfigurationThresholds(thresholds,
                baseAppMap);
 
          solutions[i] = baseAppMap;
@@ -174,14 +174,14 @@ public class OptimizerInitialDeployment {
 
       for (String solkey : currentSol) {
 
-         YAMLoptimizerParser
+         YAMLoptimizerParserV02
                .CleanSuitableOfferForModule(solkey, applicationMap);
 
-         YAMLoptimizerParser.AddSuitableOfferForModule(solkey,
+         YAMLoptimizerParserV02.AddSuitableOfferForModule(solkey,
                currentSol.getCloudOfferNameForModule(solkey),
                currentSol.getCloudInstancesForModule(solkey), applicationMap);
 
-         YAMLoptimizerParser.AddQualityOfSolution(currentSol, applicationMap);
+         YAMLoptimizerParserV02.AddQualityOfSolution(currentSol, applicationMap);
 
       }
 
@@ -278,7 +278,7 @@ public class OptimizerInitialDeployment {
    private QualityInformation loadQualityRequirements(
          Map<String, Object> applicationMap) {
 
-      QualityInformation requirements = YAMLoptimizerParser
+      QualityInformation requirements = YAMLoptimizerParserV02
             .getQualityRequirements(applicationMap);
      
            
@@ -287,7 +287,7 @@ public class OptimizerInitialDeployment {
       // requirements
       if (requirements == null) {
          log.error("Quality requirements not found in the input document. Loading dummy quality requirements for testing purposes");
-         requirements = YAMLoptimizerParser.getQualityRequirementsForTesting();
+         requirements = YAMLoptimizerParserV02.getQualityRequirementsForTesting();
 
       }
 
@@ -302,7 +302,7 @@ public class OptimizerInitialDeployment {
    private void loadWorkload(Map<String, Object> applicationMap,
          QualityInformation requirements) {
       if (requirements.getWorkload() <= 0.0) {
-         requirements.setWorkloadMinute(YAMLoptimizerParser
+         requirements.setWorkloadMinute(YAMLoptimizerParserV02
                .getApplicationWorkload(applicationMap));
       }
       // Maybe the previous operation did not work correctly because the
@@ -310,7 +310,7 @@ public class OptimizerInitialDeployment {
       // get some requirements
       if (!requirements.hasValidWorkload()) {
          log.error("Valid workload information not found in the input document. Loading dummy quality requirements for testing purposes");
-         requirements.setWorkloadMinute(YAMLoptimizerParser
+         requirements.setWorkloadMinute(YAMLoptimizerParserV02
                .getApplicationWorkloadTest());
       }
 

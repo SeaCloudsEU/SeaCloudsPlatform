@@ -33,7 +33,7 @@ import org.testng.annotations.Test;
 import eu.seaclouds.platform.planner.optimizer.Optimizer;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLmatchmakerToOptimizerParser;
-import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
+import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParserV02;
 
 public class MMoutputTest {
 
