@@ -18,14 +18,14 @@
  */
 package brooklyn.entity.cloudfoundry.services;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import brooklyn.entity.cloudfoundry.PaasEntityCloudFoundryDriver;
 import brooklyn.location.cloudfoundry.CloudFoundryPaasLocation;
 import org.cloudfoundry.client.lib.domain.CloudEntity;
 import org.cloudfoundry.client.lib.domain.CloudService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class PaasServiceCloudFoundryDriver extends PaasEntityCloudFoundryDriver
         implements PaasServiceDriver {
@@ -68,12 +68,16 @@ public abstract class PaasServiceCloudFoundryDriver extends PaasEntityCloudFound
     public void start() {
         super.start();
 
+        preLaunch();
         launch();
         postLaunch();
     }
-    
-    public void launch() {
+
+    public void preLaunch() {
         serviceInstance = new CloudService(CloudEntity.Meta.defaultMeta(), serviceInstanceName);
+    }
+
+    public void launch() {
         serviceInstance.setLabel(serviceTypeId);
         //TODO check if the plan is an existing plan
         serviceInstance.setPlan(servicePlan);
