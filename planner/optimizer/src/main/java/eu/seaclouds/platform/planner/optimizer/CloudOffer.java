@@ -17,10 +17,16 @@
 
 package eu.seaclouds.platform.planner.optimizer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
+
 
 public class CloudOffer {
 
+   static Logger log = LoggerFactory.getLogger(CloudOffer.class);
+   
    private String name;
    private double performanceForExecutionUnit;
    private double availability;
@@ -30,6 +36,7 @@ public class CloudOffer {
    public CloudOffer(String name, double performance, double availability,
          double cost, double numCores) {
 
+      
       this.name = name;
 
       // We expect to save here the value MU (service rate) of the cloud offer
@@ -112,6 +119,7 @@ public class CloudOffer {
    public void setNumCores(double numCores, boolean adjustPerformanceOfOffer) {
 
       if (adjustPerformanceOfOffer) {
+         if(numCores==0.0){log.warn("Approaching a division by 0");}
          setPerformance(getPerformance() / numCores);
       }
       setNumCores(numCores);

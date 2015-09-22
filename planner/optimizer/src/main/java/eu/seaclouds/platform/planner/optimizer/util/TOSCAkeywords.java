@@ -31,6 +31,7 @@ public class TOSCAkeywords {
    public static final String GROUP_ELEMENT_TAG               = "groups";
    public static final String GROUP_ELEMENT_MEMBERS_TAG       = "members";
 
+   
    public static final String GROUP_POLICY_QOSREQUIREMENTS        = "QoSRequirements";
    public static final String GROUP_POLICY_QOSINFO                 = "QoSInfo";
    public static final String GROUP_ELEMENT_QOS_EXECUTIONTIME      = "execution_time";

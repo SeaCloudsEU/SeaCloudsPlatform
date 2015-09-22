@@ -38,7 +38,7 @@ public class YAMLmodulesOptimizerParser {
 
       Map<String, Object> moduleDependencies = null;
 
-      Map<String, Object> dependeciesInfoOfGroupOfModule = YAMLgroupsOptimizerParserV02
+      Map<String, Object> dependeciesInfoOfGroupOfModule = YAMLgroupsOptimizerParser
             .getDependenciesInfoOfMemberName(moduleName, groups);
 
       if (dependeciesInfoOfGroupOfModule == null) {
@@ -48,22 +48,12 @@ public class YAMLmodulesOptimizerParser {
          return false;
       }
 
-      if (dependeciesInfoOfGroupOfModule.containsKey(TOSCAkeywords.GROUP_ELEMENT_DEPENDENCIES_MODULES_TAG)) {
-         List<String> moduleNamesDependent = (List<String>) dependeciesInfoOfGroupOfModule
-               .get(TOSCAkeywords.GROUP_ELEMENT_DEPENDENCIES_MODULES_TAG);
-
-         if (IS_DEBUG) {
-
-            log.info("Found that module " + moduleName + " has dependecies on " + moduleNamesDependent.toString());
-         }
-         return moduleNamesDependent.size() > 0;
+      if (dependeciesInfoOfGroupOfModule.size() > 0) {
+         return true;
       }
 
-      // not found There were qos properties but not the information of the
-      // execution time
-      // machine tested
       if (IS_DEBUG) {
-         log.info("Module had dependencies but it id not contain information of other modules");
+         log.info("Module'" + moduleName + "' had dependencies but it id not contain information of other modules");
       }
 
       return false;
@@ -164,7 +154,7 @@ public class YAMLmodulesOptimizerParser {
       Map<String, Object> moduleInfo = null;
       Map<String, Object> moduleReqs = null;
 
-      Map<String, Object> qoSinfoOfGroupOfModule = YAMLgroupsOptimizerParserV02.getQoSinfoOfMemberName(moduleName, groups);
+      Map<String, Object> qoSinfoOfGroupOfModule = YAMLgroupsOptimizerParser.getQoSinfoOfMemberName(moduleName, groups);
 
       if (qoSinfoOfGroupOfModule == null) {
          if (IS_DEBUG) {
@@ -189,7 +179,7 @@ public class YAMLmodulesOptimizerParser {
       Map<String, Object> moduleInfo = null;
       Map<String, Object> moduleReqs = null;
 
-      Map<String, Object> qoSinfoOfGroupOfModule = YAMLgroupsOptimizerParserV02.getQoSinfoOfMemberName(moduleName, groups);
+      Map<String, Object> qoSinfoOfGroupOfModule = YAMLgroupsOptimizerParser.getQoSinfoOfMemberName(moduleName, groups);
 
       if (qoSinfoOfGroupOfModule == null) {
          if (IS_DEBUG) {
@@ -225,39 +215,6 @@ public class YAMLmodulesOptimizerParser {
       return YAMLoptimizerParser.castToDouble(object);
    }
 
-   @SuppressWarnings("unchecked")
-   public static double getOpProfileWithModule(Map<String, Object> module, String moduleReqName) {
-
-      Map<String, Object> moduleReqs = null;
-      try {
-
-         // Check existence of qos properties
-         if (!module.containsKey(TOSCAkeywords.MODULE_QOS_PROPERTIES)) {
-            return 1.0;
-         }
-         moduleReqs = (Map<String, Object>) module.get(TOSCAkeywords.MODULE_QOS_PROPERTIES);
-      } catch (ClassCastException E) {
-         return 1.0;
-      }
-
-      try {
-         // Check Existence of measured host
-         if (moduleReqs.containsKey(TOSCAkeywords.MODULE_QOS_OPERATIONAL_PROFILE)) {
-
-            Map<String, Object> opprofilemodule = (Map<String, Object>) moduleReqs
-                  .get(TOSCAkeywords.MODULE_QOS_OPERATIONAL_PROFILE);
-
-            return (Double) opprofilemodule.get(moduleReqName);
-         }
-      } catch (ClassCastException E) {
-         return 1.0;
-      }
-
-      // not found There were qos properties but not the information of teh
-      // machine tested
-      return 0.0;
-   }
-
    /**
     * @param module
     * @param modules
@@ -275,15 +232,15 @@ public class YAMLmodulesOptimizerParser {
 
       ArrayList<String> dependentModules = new ArrayList<String>();
 
-      List<String> dependentGroups = (List<String>) YAMLgroupsOptimizerParserV02.getListDependentGroupsOfModule(moduleName,
+      List<String> dependentGroups = (List<String>) YAMLgroupsOptimizerParser.getListDependentGroupsOfModule(moduleName,
             groups);
 
-      if (dependentGroups == null) {
+      if ((dependentGroups == null) || (dependentGroups.size() == 0)) {
          return null;
       }
 
       for (String groupName : dependentGroups) {
-         List<String> membersOfGroup = YAMLgroupsOptimizerParserV02.getAllMembersOfGroupName(groupName, groups);
+         List<String> membersOfGroup = YAMLgroupsOptimizerParser.getAllMembersOfGroupName(groupName, groups);
          if (membersOfGroup != null) {
             dependentModules.addAll(membersOfGroup);
          }
@@ -324,7 +281,7 @@ public class YAMLmodulesOptimizerParser {
 
    public static QualityInformation getQoSRequirementsOfGroup(Object group) {
 
-      Map<String, Object> qosInformation = YAMLgroupsOptimizerParserV02.getQoSInformationInPolicies(group);
+      Map<String, Object> qosInformation = YAMLgroupsOptimizerParser.getQoSInformationInPolicies(group);
 
       if (qosInformation == null) {
          log.warn("There was not found QoS information in the policies of the group. returning null");
@@ -362,7 +319,7 @@ public class YAMLmodulesOptimizerParser {
 
       // check performance
       if (qosInformation.containsKey(TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS_RESPONSETIME)) {
-         
+
          Map<String, Object> responsetimeMapValue = getMapValueFromQuality(qosInformation,
                TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS_RESPONSETIME);
          quality.setResponseTimeSecs(YAMLmodulesOptimizerParser.getDoubleValueFromMapValue(responsetimeMapValue));

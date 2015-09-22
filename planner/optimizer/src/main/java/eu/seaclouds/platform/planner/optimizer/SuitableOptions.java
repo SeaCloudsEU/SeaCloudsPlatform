@@ -237,7 +237,8 @@ public class SuitableOptions { // implements Iterable<List<String>
       }
 
       if (!found) {
-         log.warn("Chosen cloud option in solution has not been found as possibility for the suitable options for the module. ERROR ahead!");
+         log.warn("Chosen cloud option (i.e,. "+cloudOptionNameForModule+") in solution has not been found as possibility"
+               + " for the suitable options for the module ("+moduleName+"). ERROR ahead!");
       }
 
       return suitableOptionsCharacteristics.get(indexModule).get(

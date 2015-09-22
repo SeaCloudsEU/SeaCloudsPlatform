@@ -88,7 +88,7 @@ private static String filenameToString(String path) throws IOException {
    return new String(encoded, StandardCharsets.UTF_8);
 }
 
-@Test(enabled=true)
+@Test(enabled=false)
 public void testPresenceSolutionBlind() {
 
    log.info("=== TEST for SOLUTION GENERATION of BLIND optimizer STARTED (syntax July 2015)===");

@@ -194,7 +194,12 @@ private static CloudOffer getAllCharacteristicsOfCloudOffer(String offerName,
 
          offer.setCost(getPropertyOfCloudOffer(TOSCAkeywords.CLOUD_CONCRETE_OFFER_COST,cloudOfferInfoMap));
 
-         offer.setNumCores(getPropertyOfCloudOffer(TOSCAkeywords.CLOUD_CONCRETE_OFFER_NUM_CORES,cloudOfferInfoMap), true);
+         double numcores=getPropertyOfCloudOffer(TOSCAkeywords.CLOUD_CONCRETE_OFFER_NUM_CORES,cloudOfferInfoMap);
+         if(numcores==0){
+            numcores=1;
+            log.warn("not found number of cores for offer '"+offerName+"' . Assuming 1 core.");
+            }
+         offer.setNumCores(numcores, true);
       } catch (NullPointerException E) {
          return null;
       }

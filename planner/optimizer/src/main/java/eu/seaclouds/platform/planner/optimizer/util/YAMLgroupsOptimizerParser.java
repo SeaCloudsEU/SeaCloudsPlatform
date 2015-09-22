@@ -17,13 +17,17 @@
 
 package eu.seaclouds.platform.planner.optimizer.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import eu.seaclouds.platform.planner.optimizer.Solution;
 
 
 //Version of September 2015
@@ -98,7 +102,7 @@ public class YAMLgroupsOptimizerParser {
 
    }
 
-   private static Map<String, Object> findGroupOfMemberName(String moduleName, Map<String, Object> groups) {
+   public static Map<String, Object> findGroupOfMemberName(String moduleName, Map<String, Object> groups) {
 
       for (Map.Entry<String, Object> entry : groups.entrySet()) {
          if (YAMLgroupsOptimizerParser.isMemberOfGroup(moduleName, entry.getValue())) {
@@ -111,6 +115,21 @@ public class YAMLgroupsOptimizerParser {
       }
       return null;
    }
+   
+   private static String findGroupNameOfMemberName(String moduleName, Map<String, Object> groups) {
+
+      for (Map.Entry<String, Object> entry : groups.entrySet()) {
+         if (YAMLgroupsOptimizerParser.isMemberOfGroup(moduleName, entry.getValue())) {
+            return  entry.getKey();
+         }
+      }
+
+      if (IS_DEBUG) {
+         log.info("Module " + moduleName + " is not member of any group. Found out while looking for the name of its group. Possible unexpected behavior.");
+      }
+      return null;
+   }
+   
 
    /**
     * @param moduleName
@@ -165,27 +184,36 @@ public class YAMLgroupsOptimizerParser {
 
       Map<String, Object> moduleDependencies = null;
 
-      Map<String, Object> dependeciesInfoOfGroupOfModule = YAMLgroupsOptimizerParser
+      Map<String, Object> dependenciesInfoOfGroupOfModule = YAMLgroupsOptimizerParser
             .getDependenciesInfoOfMemberName(moduleName, groups);
 
-      if (dependeciesInfoOfGroupOfModule == null) {
+      if (dependenciesInfoOfGroupOfModule == null) {
          if (IS_DEBUG) {
             log.info(
                   "There has not been found info of dependencies for module called " + moduleName + " returning null");
          }
          return null;
       }
-
-      if (dependeciesInfoOfGroupOfModule.containsKey(TOSCAkeywords.GROUP_ELEMENT_DEPENDENCIES_MODULES_TAG)) {
-         return (List<String>) dependeciesInfoOfGroupOfModule.get(TOSCAkeywords.GROUP_ELEMENT_DEPENDENCIES_MODULES_TAG);
-
+      if (dependenciesInfoOfGroupOfModule.size()==0) {
+         if (IS_DEBUG) {
+            log.info(
+                  "There has been found EMPY info of dependencies for module called " + moduleName + " returning null");
+         }
+         return null;
       }
 
+      List<String> dependencesGroupNames= new ArrayList<String>();
+      for(Map.Entry<String,Object> dependency : dependenciesInfoOfGroupOfModule.entrySet()){
+         dependencesGroupNames.add(dependency.getKey());
+      }
+      if(dependencesGroupNames.size()>0){
+         return dependencesGroupNames;
+      }
       // not found There were qos properties but not the information of the
       // execution time
       // machine tested
       if (IS_DEBUG) {
-         log.info("Module had dependencies but it id not contain information of other modules");
+         log.info("Module '"+moduleName+"' had dependencies but it id not contain information of other modules");
       }
 
       return null;
@@ -279,5 +307,85 @@ public class YAMLgroupsOptimizerParser {
       }
       return groupReqs;
 
+   }
+   
+   @SuppressWarnings("unchecked")
+   public static double getOpProfileWithModule(String moduleName, String moduleReqName,  Map<String, Object> groups) {
+
+      Map<String, Object> dependenciesInfoOfModule = getDependenciesInfoOfMemberName(moduleName,groups);
+      String groupNameOfRequestedModule = findGroupNameOfMemberName(moduleReqName,groups);
+      
+      if(dependenciesInfoOfModule!=null && dependenciesInfoOfModule.size()>0){
+         if(dependenciesInfoOfModule.containsKey(groupNameOfRequestedModule)){
+            return YAMLoptimizerParser.castToDouble(dependenciesInfoOfModule.get(groupNameOfRequestedModule));
+         }
+         else{
+            log.warn("Found dependences of module '"+moduleName+"' but '"+moduleReqName+"' was not among them. Returning 0 ");
+            return 0;
+         }
+      }
+      
+      log.warn("Not found the Op profile of the dependences between modules'"+moduleName+"' and'"+moduleReqName+"' because there WAS NOT "
+            + "ANY dependency for the first one. Returning 1");
+      
+      return 1.0;
+      
+   }
+
+   /**
+    * @param sol
+    * @param initialElementName
+    * @param groups
+    * It adds to the groups where "moduleName" is member an entry in its policies with the expected quality of the solution
+    */
+   public static void addQualityOfSolutionToGroup(Solution sol, String initialElementName, Map<String, Object> groups) {
+
+      
+      HashMap<String, Object> expectedQuality = createHashmapOfExpectedQuality(sol);
+      
+      Map<String,Object> groupInfo = YAMLgroupsOptimizerParser.findGroupOfMemberName(initialElementName,groups);
+
+      List<Object> policies=null;
+      if(groupInfo.containsKey(TOSCAkeywords.GROUP_ELEMENT_POLICY_TAG)){
+         policies= (List<Object>)groupInfo.get(TOSCAkeywords.GROUP_ELEMENT_POLICY_TAG);
+      }
+      else{
+         policies = new ArrayList<Object>();
+         groupInfo.put(TOSCAkeywords.GROUP_ELEMENT_POLICY_TAG, policies);
+      }
+      
+      policies.add(groupInfo);
+      
+   }
+
+   private static HashMap<String, Object> createHashmapOfExpectedQuality(Solution sol) {
+      HashMap<String, Double> qosPropsMap = new HashMap<String, Double>();
+
+      if (sol.getSolutionQuality() == null) {
+         log.warn("quality Of Solution Not Found for solution: " + sol.toString());
+      }
+      try {
+         if (sol.getSolutionQuality().existAvailabilityRequirement()) {
+            qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_AVAILABILITY, sol.getSolutionQuality().getAvailability());
+
+         }
+      } catch (Exception E) {
+         log.warn("Availability not found for solutiot: " + sol.toString());
+      }
+
+      if (sol.getSolutionQuality().existCostRequirement()) {
+         qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_COST_MONTH, sol.getSolutionQuality().getCostMonth());
+      }
+
+      if (sol.getSolutionQuality().existResponseTimeRequirement()) {
+         qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_PERFORMANCE_SEC, sol.getSolutionQuality().getResponseTime());
+
+      }
+
+      qosPropsMap.put(TOSCAkeywords.OVERALL_QOS_FITNESS, sol.getSolutionFitness());
+
+      HashMap<String, Object> expectedQuality = new HashMap<String,Object>();
+      expectedQuality.put(TOSCAkeywords.EXPECTED_QUALITY_PROPERTIES, qosPropsMap);
+      return expectedQuality;
    }
 }

@@ -129,40 +129,12 @@ public class YAMLoptimizerParser {
    @SuppressWarnings("unchecked")
    public static void AddQualityOfSolution(Solution sol, Map<String, Object> applicationMapComplete) {
 
-      Map<String, Object> appMap;
-      try {
-         appMap = (Map<String, Object>) applicationMapComplete.get(TOSCAkeywords.NODE_TEMPLATE);
-
-      } catch (ClassCastException e) {
-         return;
-      }
-
-      HashMap<String, Double> qosPropsMap = new HashMap<String, Double>();
-
-      if (sol.getSolutionQuality() == null) {
-         log.warn("quality Of Solution Not Found for solution: " + sol.toString());
-      }
-      try {
-         if (sol.getSolutionQuality().existAvailabilityRequirement()) {
-            qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_AVAILABILITY, sol.getSolutionQuality().getAvailability());
-
-         }
-      } catch (Exception E) {
-         log.warn("Availability not found for solutiot: " + sol.toString());
-      }
-
-      if (sol.getSolutionQuality().existCostRequirement()) {
-         qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_COST_MONTH, sol.getSolutionQuality().getCostMonth());
-      }
-
-      if (sol.getSolutionQuality().existResponseTimeRequirement()) {
-         qosPropsMap.put(TOSCAkeywords.EXPECTED_QOS_PERFORMANCE_SEC, sol.getSolutionQuality().getResponseTime());
-
-      }
-
-      qosPropsMap.put(TOSCAkeywords.OVERALL_QOS_FITNESS, sol.getSolutionFitness());
-
-      appMap.put(TOSCAkeywords.EXPECTED_QUALITY_PROPERTIES, qosPropsMap);
+      //1 get name of initial element. 2) getGroupOfinitial element, 3) get its policies, 4) write the info. 
+     
+      String initialElementName = getInitialElementName(applicationMapComplete);
+      Map<String,Object> groups=YAMLoptimizerParser.getGroupMapFromAppMap(applicationMapComplete);
+      YAMLgroupsOptimizerParser.addQualityOfSolutionToGroup(sol, initialElementName, groups);
+      
 
    }
 
@@ -224,14 +196,51 @@ public class YAMLoptimizerParser {
    public static void AddSuitableOfferForModule(String moduleName, String solutionName, int instances,
          Map<String, Object> applicationMap) {
 
-      List<String> options = GetListOfSuitableOptionsForModule(moduleName, applicationMap);
+     
+      Map<String,Object> hostInfo = SetUpHostInfoForModule(moduleName,applicationMap);
       if (IS_DEBUG) {
-         log.debug("Adding selected offer " + solutionName + " to module " + moduleName + " and instances " + instances
-               + " with current suitable options " + options.toString());
+         log.debug("Adding selected offer " + solutionName + " to module " + moduleName + " and instances " + instances);
       }
-      options.add(solutionName);
-      options.add(String.valueOf(instances));
+      hostInfo.put(TOSCAkeywords.MODULE_REQUIREMENTS_HOST,solutionName);
+      hostInfo.put(TOSCAkeywords.MODULE_PROPOSED_INSTANCES, instances);
 
+   }
+
+   private static Map<String, Object> SetUpHostInfoForModule(String moduleName, Map<String, Object> applicationMap) {
+      Map<String, Object> templates=null;
+      try {
+         if (IS_DEBUG) {
+            log.info("Opening TOSCA for obtaining modules");
+         }
+         applicationMap = (Map<String, Object>) applicationMap.get(TOSCAkeywords.TOPOLOGY_TEMPLATE);
+         templates = (Map<String, Object>) applicationMap.get(TOSCAkeywords.NODE_TEMPLATE);
+      } catch (NullPointerException E) {
+         log.error("It was not found '" + TOSCAkeywords.TOPOLOGY_TEMPLATE + "' or '" + TOSCAkeywords.NODE_TEMPLATE
+               + "' in the TOSCA model");
+         return null;
+      }
+
+      if(!templates.containsKey(moduleName)){
+         log.warn("Module name '"+moduleName+"' not found for setting its host");
+         return null;
+      }
+      Map<String, Object> moduleInfo =  (Map<String, Object>)templates.get(moduleName);
+      
+      HashMap<String,Object> hostReqs=null;
+      if(moduleInfo.containsKey(TOSCAkeywords.MODULE_REQUIREMENTS)){
+         List<Object> requirementsInfo = (List<Object>)moduleInfo.get(TOSCAkeywords.MODULE_REQUIREMENTS);
+         hostReqs = new HashMap<String,Object>();
+         requirementsInfo.add(hostReqs);
+      }
+      else{//Module did not contain "requirements". Create the structure for adding them: Map+List+Map
+         List<Object> listReqs= new ArrayList<Object>();
+         hostReqs = new HashMap<String,Object>();
+         listReqs.add(hostReqs);
+         moduleInfo.put(TOSCAkeywords.MODULE_REQUIREMENTS, listReqs);
+        
+      }
+      return hostReqs;
+      
    }
 
    /**
@@ -353,7 +362,7 @@ public class YAMLoptimizerParser {
             // Since it should be only one member in the group in as list
             // we get the first module name found
             for (String moduleName : YAMLgroupsOptimizerParser.getListOfMemberNames(entry.getValue())) {
-               QualityInformation qosInfoOfGroup = YAMLmodulesOptimizerParserV02
+               QualityInformation qosInfoOfGroup = YAMLmodulesOptimizerParser
                      .getQoSRequirementsOfGroup(entry.getValue());
                if (qosInfoOfGroup != null) {
                   qualityOfModules.add(qosInfoOfGroup);
@@ -413,8 +422,9 @@ public class YAMLoptimizerParser {
             (Map<String, Object>) initialElement.getValue(), topology,
             YAMLoptimizerParser.getModuleMapFromAppMap(appMap), YAMLoptimizerParser.getGroupMapFromAppMap(appMap),
             appInfoSuitableOptions);
-
-      replaceModuleNameByHostName(topology, (Map<String, Object>) appMap.get(TOSCAkeywords.NODE_TEMPLATE));
+      log.info("Reading topology. Next step: replace the module name by the name of the host");
+      //TODO: uncomment this. It may be required as it was in previous versions. Change done in the phase of module testing.
+      //replaceModuleNameByHostName(topology, (Map<String, Object>) appMap.get(TOSCAkeywords.NODE_TEMPLATE));
       return topology;
    }
 
@@ -490,7 +500,7 @@ public class YAMLoptimizerParser {
             // dependence cannot exist yet)
             // Read the operational profile for the number of calls.
 
-            double opProfileBetweenModules = YAMLmodulesOptimizerParser.getOpProfileWithModule(element, moduleReqName);
+            double opProfileBetweenModules = YAMLgroupsOptimizerParser.getOpProfileWithModule(elementName, moduleReqName, groups);
             // create the dependence between these two modules by
             // addelementcalled.
             newelement.addElementCalled(
@@ -501,7 +511,7 @@ public class YAMLoptimizerParser {
             // associate with this element.
             topology = getApplicationTopologyRecursive(moduleReqName, (Map<String, Object>) modules.get(moduleReqName),
                   topology, modules, groups, appInfoSuitableOptions);
-            double opProfileBetweenModules = YAMLmodulesOptimizerParser.getOpProfileWithModule(element, moduleReqName);
+            double opProfileBetweenModules = YAMLgroupsOptimizerParser.getOpProfileWithModule(elementName, moduleReqName, groups);
             // create the dependence between these two modules by
             // addelementcalled.
             newelement.addElementCalled(
@@ -601,6 +611,37 @@ public class YAMLoptimizerParser {
             Map<String, Object> modulesMap = YAMLoptimizerParser.getModuleMapFromAppMap(appMap);
             return YAMLoptimizerParser.getModuleInfoFromModulesMap(modulesMap, moduleName);
 
+         }
+      }
+
+      log.warn(
+            "Initial element not found unveiling the topology. Possible circular dependences in the design. Please, state clearly which the initial element is");
+      return null;
+   }
+   
+   @SuppressWarnings("unchecked")
+   private static String getInitialElementName(Map<String, Object> appMap) {
+      // The initial element is such one that has QoSrequirements in the
+      // "groups" part.
+
+      Map<String, Object> groupsMap = YAMLoptimizerParser.getGroupMapFromAppMap(appMap);
+
+      // FOR EACH OF THE APP MODULES (but in this level there are more concepts
+      // than only the modules)
+      for (Map.Entry<String, Object> entry : groupsMap.entrySet()) {
+         String potentialGroupName = entry.getKey();
+
+         if (IS_DEBUG) {
+            log.info("checking if group '" + potentialGroupName + "' is an element which receceives user requests");
+         }
+         // If it has requirements but nobody requires it..
+         if (YAMLgroupsOptimizerParser.GroupHasQoSRequirements(entry.getValue())) {
+            // group found.
+            // The name of modules that are members of the group.
+            // Since it should be only one member in the group in as list
+            // we get the first module name found
+            return YAMLgroupsOptimizerParser.getFirstMemberName(entry.getValue());
+            
          }
       }
 

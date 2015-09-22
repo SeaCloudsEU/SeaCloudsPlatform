@@ -2,7 +2,7 @@
 - 
   webservices: 
     - 
-      webserviceValidOffering: 
+      hp_cloud_services.2xl: 
         properties: 
           availability: 0.98
           cost: "0.928 usd_per_hour"
@@ -10,7 +10,7 @@
           num_cpus: 8
           performance: 543
           resource_type: compute
-        type: seacluds.nodes.webserviceValidOffering
+        type: seacluds.nodes.hp_cloud_services.2xl
 - 
   db1: 
     - 
