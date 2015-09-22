@@ -47,8 +47,9 @@ public class TOSCAkeywords {
 
    //These are for the MM version of September 2015
    public static final String CLOUD_CONCRETE_OFFER_AVAILABILITY = "availability";
-   public static final String CLOUD_CONCRETE_PROPERTY_PERFORMANCE  = "performance";
-   public static final String CLOUD_CONCRETE_PROPERTY_COST         = "cost";
+   public static final String CLOUD_CONCRETE_OFFER_PERFORMANCE  = "performance";
+   public static final String CLOUD_CONCRETE_OFFER_COST         = "cost";
+   public static final String CLOUD_CONCRETE_OFFER_NUM_CORES    = "num_cpus";
    
    // These ones have not been defined yet. I temporarily use this definition. Used by the first working version of Optimizer
    public static final String CLOUD_OFFER_PROPERTY_AVAILABILITY = "availabilityPOC";

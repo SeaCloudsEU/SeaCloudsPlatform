@@ -39,12 +39,14 @@ import eu.seaclouds.platform.planner.optimizer.TopologyElement;
 import eu.seaclouds.platform.planner.optimizer.TopologyElementCalled;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 
-//Version of September 2015
-public class YAMLoptimizerParser {
+public class YAMLoptimizerParserV02 {
 
-   private static final boolean IS_DEBUG = true;
+   // Reducing verbosity . If somebody knows a better approach for doing this (I
+   // could not set dynamically the level of the logging) it should be changed
+   private static int           BeeingTooVerboseWithLackOfInformationInCloudOffers = 3;
+   private static final boolean IS_DEBUG                                           = true;
 
-   static Logger log = LoggerFactory.getLogger(YAMLoptimizerParser.class);
+   static Logger log = LoggerFactory.getLogger(YAMLoptimizerParserV02.class);
 
    public static void CleanSuitableOfferForModule(String modulename, Map<String, Object> appMap) {
 
@@ -166,6 +168,56 @@ public class YAMLoptimizerParser {
 
    }
 
+   @SuppressWarnings("unchecked")
+   public static SuitableOptions GetSuitableCloudOptionsAndCharacteristicsForModules(String appModel,
+         String suitableCloudOffers) {
+
+      Map<String, Object> appMap = GetMAPofAPP(appModel);
+      try {
+         if (IS_DEBUG) {
+            log.info("Opening TOSCA for obtaining modules");
+         }
+         appMap = (Map<String, Object>) appMap.get(TOSCAkeywords.TOPOLOGY_TEMPLATE);
+         appMap = (Map<String, Object>) appMap.get(TOSCAkeywords.NODE_TEMPLATE);
+      } catch (NullPointerException E) {
+         log.error("It was not found '" + TOSCAkeywords.TOPOLOGY_TEMPLATE + "' or '" + TOSCAkeywords.NODE_TEMPLATE
+               + "' in the TOSCA model");
+         return null;
+      }
+      SuitableOptions options = new SuitableOptions();
+
+      // FOR EACH OF THE APP MODULES (but in this level there are more concepts
+      // than only the modules)
+      for (Map.Entry<String, Object> entry : appMap.entrySet()) {
+         String potentialModuleName = entry.getKey();
+         if (IS_DEBUG) {
+            log.info("In GetSuitableCloudOptionsAndCharacteristicsForModules method. In inspection of module name: "
+                  + potentialModuleName);
+         }
+
+         List<String> potentialListOfOffersNames = GetListOfSuitableOptionsForAlreadyFoundModule(entry.getValue());
+
+         if (potentialListOfOffersNames != null) {
+            if (IS_DEBUG) {
+               log.debug("Found suitable options, saving their reference. Module name= " + potentialModuleName
+                     + " cloud offers=" + potentialListOfOffersNames.toString());
+            }
+            List<CloudOffer> potentialListOfOfferCharacteristics = getCloudOfferCharacteristcisByName(
+                  potentialListOfOffersNames, suitableCloudOffers);
+            options.addSuitableOptions(potentialModuleName, potentialListOfOffersNames,
+                  potentialListOfOfferCharacteristics);
+
+         }
+      }
+      // Retrieve communication latencies
+      options.setLatencyDatacenterMillis(
+            getCloudLatency(suitableCloudOffers, TOSCAkeywords.LATENCY_INTRA_DATACENTER_MILLIS));
+      options.setLatencyInternetMillis(
+            getCloudLatency(suitableCloudOffers, TOSCAkeywords.LATENCY_INTER_DATACENTER_MILLIS));
+
+      return options;
+   }
+
    private static double getCloudLatency(String suitableCloudOffers, String latencyKeyword) {
 
       Map<String, Object> cloudOffersMap = GetMAPofAPP(suitableCloudOffers);
@@ -181,6 +233,91 @@ public class YAMLoptimizerParser {
       }
 
       return 0.0;
+   }
+
+   private static List<CloudOffer> getCloudOfferCharacteristcisByName(List<String> potentialListOfOffers,
+         String suitableCloudOffers) {
+
+      Map<String, Object> cloudOffersMap = GetMAPofAPP(suitableCloudOffers);
+
+      List<CloudOffer> potentiaListOfCloudOffersWithCharacteristics = new ArrayList<CloudOffer>();
+
+      // for each offer, look for its characteristics
+      for (String potentialOffer : potentialListOfOffers) {
+         CloudOffer cloudOfferCharacteristics = getAllCharacteristicsOfCloudOffer(potentialOffer, cloudOffersMap);
+
+         // Iff the offer was found, add its characteristics to the list
+         if (cloudOfferCharacteristics != null) {
+            potentiaListOfCloudOffersWithCharacteristics.add(cloudOfferCharacteristics);
+         } else { // If it was not found, add an identificative Element
+            potentiaListOfCloudOffersWithCharacteristics
+                  .add(new CloudOffer(potentialOffer + " (CLOUD OFFER NOT EXISTENT IN FILE WITH CLOUD OFFERS)"));
+            log.warn("Cloud offer " + potentialOffer
+                  + " was not found among cloud offer options. Potential subsequent error");
+         }
+      }
+
+      return potentiaListOfCloudOffersWithCharacteristics;
+
+   }
+
+   @SuppressWarnings("unchecked")
+   private static CloudOffer getAllCharacteristicsOfCloudOffer(String potentialOffer,
+         Map<String, Object> cloudOffersMap) {
+
+      Map<String, Object> cloudMap = cloudOffersMap;
+
+      if (cloudOffersMap.containsKey(TOSCAkeywords.NODE_TEMPLATE)) {
+         cloudMap = (Map<String, Object>) cloudOffersMap.get(TOSCAkeywords.NODE_TEMPLATE);
+      }
+
+      CloudOffer offer;
+      try {
+         offer = new CloudOffer(potentialOffer);
+
+         offer.setAvailability(getPropertyOfCloudOffer(TOSCAkeywords.CLOUD_OFFER_PROPERTY_AVAILABILITY,
+               (Map<String, Object>) cloudMap.get(potentialOffer)));
+
+         offer.setPerformance(getPropertyOfCloudOffer(TOSCAkeywords.CLOUD_OFFER_PROPERTY_PERFORMANCE,
+               (Map<String, Object>) cloudMap.get(potentialOffer)));
+
+         offer.setCost(getPropertyOfCloudOffer(TOSCAkeywords.CLOUD_OFFER_PROPERTY_COST,
+               (Map<String, Object>) cloudMap.get(potentialOffer)));
+
+         offer.setNumCores(getPropertyOfCloudOffer(TOSCAkeywords.CLOUD_OFFER_NUM_CORES_TAG,
+               (Map<String, Object>) cloudMap.get(potentialOffer)), true);
+      } catch (NullPointerException E) {
+         return null;
+      }
+
+      return offer;
+   }
+
+   private static double getPropertyOfCloudOffer(String cloudOfferProperty, Map<String, Object> singleOfferMap) {
+
+      Map<String, Object> propertiesOfOffer = (Map<String, Object>) singleOfferMap
+            .get(TOSCAkeywords.CLOUD_OFFER_PROPERTIES_TAG);
+
+      double valueOfProperty = 0.0;
+
+      if (propertiesOfOffer.containsKey(cloudOfferProperty)) {
+         // If there is an error here, treat the value returned in the Map as
+         // List<String> instead of as String; i.e., add a .get(0)
+         valueOfProperty = castToDouble(propertiesOfOffer.get(cloudOfferProperty));
+
+      } else {
+         // Many times it will not exist the value and it will return 0
+         // Try to make theo output less verbose
+         if (BeeingTooVerboseWithLackOfInformationInCloudOffers > 0) {
+            log.info("Property " + cloudOfferProperty + " not found. REAL SOLUTION CANNOT BE COMPUTED in case that "
+                  + cloudOfferProperty + " requirement existed in the system");
+            BeeingTooVerboseWithLackOfInformationInCloudOffers--;
+         }
+
+      }
+
+      return valueOfProperty;
+
    }
 
    public static double castToDouble(Object object) {
@@ -234,11 +371,6 @@ public class YAMLoptimizerParser {
 
    }
 
-   /**
-    * @param appModel
-    * @return a Map with the information of the String aapModel if it represents
-    *         a valid YAML document
-    */
    @SuppressWarnings("unchecked")
    public static Map<String, Object> GetMAPofAPP(String appModel) {
       Yaml yamlApp = new Yaml();
@@ -334,7 +466,7 @@ public class YAMLoptimizerParser {
    @SuppressWarnings("unchecked")
    public static QualityInformation getQualityRequirements(Map<String, Object> applicationMap) {
 
-      Map<String, Object> groupsMap = YAMLoptimizerParser.getGroupMapFromAppMap(applicationMap);
+      Map<String, Object> groupsMap = YAMLoptimizerParserV02.getGroupMapFromAppMap(applicationMap);
       List<QualityInformation> qualityOfModules = new ArrayList<QualityInformation>();
 
       // FOR EACH OF THE APP MODULES (but in this level there are more concepts
@@ -346,13 +478,13 @@ public class YAMLoptimizerParser {
             log.info("checking if group '" + potentialGroupName + "' is an element which has quality requirements");
          }
          // If it has requirements but nobody requires it..
-         if (YAMLgroupsOptimizerParser.GroupHasQoSRequirements(entry.getValue())) {
+         if (YAMLgroupsOptimizerParserV02.GroupHasQoSRequirements(entry.getValue())) {
             // there are requirements.
             // Now, 1) for each of the get the name of modules that are members
             // of the group.
             // Since it should be only one member in the group in as list
             // we get the first module name found
-            for (String moduleName : YAMLgroupsOptimizerParser.getListOfMemberNames(entry.getValue())) {
+            for (String moduleName : YAMLgroupsOptimizerParserV02.getListOfMemberNames(entry.getValue())) {
                QualityInformation qosInfoOfGroup = YAMLmodulesOptimizerParserV02
                      .getQoSRequirementsOfGroup(entry.getValue());
                if (qosInfoOfGroup != null) {
@@ -379,7 +511,7 @@ public class YAMLoptimizerParser {
       // The initial element is such one that has QoSrequirements in the
       // "groups" part.
 
-      Map<String, Object> groupsMap = YAMLoptimizerParser.getGroupMapFromAppMap(applicationMap);
+      Map<String, Object> groupsMap = YAMLoptimizerParserV02.getGroupMapFromAppMap(applicationMap);
 
       // FOR EACH OF THE APP MODULES (but in this level there are more concepts
       // than only the modules)
@@ -390,9 +522,9 @@ public class YAMLoptimizerParser {
             log.info("checking if group '" + potentialGroupName + "' is an element which receceives user requests");
          }
          // If it has requirements but nobody requires it..
-         if (YAMLgroupsOptimizerParser.GroupHasQoSRequirements(entry.getValue())) {
+         if (YAMLgroupsOptimizerParserV02.GroupHasQoSRequirements(entry.getValue())) {
             // group found.
-            return YAMLgroupsOptimizerParser.getReceivedWorkloadOfGroup(entry.getValue());
+            return YAMLgroupsOptimizerParserV02.getReceivedWorkloadOfGroup(entry.getValue());
 
          }
       }
@@ -402,7 +534,7 @@ public class YAMLoptimizerParser {
 
    }
 
-   public static Topology getApplicationTopology(Map<String, Object> appMap, SuitableOptions appInfoSuitableOptions) {
+   public static Topology getApplicationTopology(Map<String, Object> appMap, Map<String, Object> allCloudOffers) {
 
       Map.Entry<String, Object> initialElement = getInitialElement(appMap);
 
@@ -411,8 +543,8 @@ public class YAMLoptimizerParser {
       // gets the topology of the connected graph to element passed as argument.
       topology = getApplicationTopologyRecursive(initialElement.getKey(),
             (Map<String, Object>) initialElement.getValue(), topology,
-            YAMLoptimizerParser.getModuleMapFromAppMap(appMap), YAMLoptimizerParser.getGroupMapFromAppMap(appMap),
-            appInfoSuitableOptions);
+            YAMLoptimizerParserV02.getModuleMapFromAppMap(appMap), YAMLoptimizerParserV02.getGroupMapFromAppMap(appMap),
+            allCloudOffers);
 
       replaceModuleNameByHostName(topology, (Map<String, Object>) appMap.get(TOSCAkeywords.NODE_TEMPLATE));
       return topology;
@@ -443,8 +575,8 @@ public class YAMLoptimizerParser {
          return null;
       }
 
-      if (modules.containsKey(YAMLmodulesOptimizerParser.getHostOfModule(module))) {
-         return getFinalHostNameOfModule(modules, YAMLmodulesOptimizerParser.getHostOfModule(module));
+      if (modules.containsKey(YAMLmodulesOptimizerParserV02.getHostOfModule(module))) {
+         return getFinalHostNameOfModule(modules, YAMLmodulesOptimizerParserV02.getHostOfModule(module));
       } else {
          return modName;
       }
@@ -453,34 +585,29 @@ public class YAMLoptimizerParser {
 
    private static Topology getApplicationTopologyRecursive(String elementName, Map<String, Object> element,
          Topology topology, Map<String, Object> modules, Map<String, Object> groups,
-         SuitableOptions appInfoSuitableOptions) {
+         Map<String, Object> allCloudOffers) {
 
       if (topology.contains(elementName)) {
          return topology;
       }
 
       TopologyElement newelement = new TopologyElement(elementName);
-      double hostPerformance = appInfoSuitableOptions.getCloudCharacteristics(elementName,
-            YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups)).getPerformance();
-      // YAMLmatchmakerToOptimizerParser.getPerformanceOfOfferByName(// TODO:
-      // THIS CALL
-      // HAS TO BE
-      // IMPLEMENTED
-      // YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName,
-      // groups), appInfoSuitableOptions);
-
+      double hostPerformance = getPerformanceOfOfferByName(// TODO: THIS CALL
+                                                           // HAS TO BE
+                                                           // IMPLEMENTED
+            YAMLmodulesOptimizerParserV02.getMeasuredPerformanceHost(elementName, groups), allCloudOffers);
       newelement.setExecTimeMillis(
-            YAMLmodulesOptimizerParser.getMeasuredExecTimeMillis(elementName, groups) * hostPerformance);
+            YAMLmodulesOptimizerParserV02.getMeasuredExecTimeMillis(elementName, groups) * hostPerformance);
 
       // The module does not have requiremetns
-      if (!YAMLmodulesOptimizerParser.ModuleHasModuleRequirements(elementName, groups)) {
+      if (!YAMLmodulesOptimizerParserV02.ModuleHasModuleRequirements(elementName, groups)) {
          // Include it directly
          topology.addModule(newelement);
          return topology;
       }
 
       // module has requirements
-      for (String moduleReqName : YAMLmodulesOptimizerParser.ModuleRequirementsOfAModule(elementName, groups)) {
+      for (String moduleReqName : YAMLmodulesOptimizerParserV02.ModuleRequirementsOfAModule(elementName, groups)) {
          // For each requiremnt of teh element (that is not its host but it's a
          // module in the system)
          if (topology.contains(moduleReqName)) {
@@ -490,7 +617,7 @@ public class YAMLoptimizerParser {
             // dependence cannot exist yet)
             // Read the operational profile for the number of calls.
 
-            double opProfileBetweenModules = YAMLmodulesOptimizerParser.getOpProfileWithModule(element, moduleReqName);
+            double opProfileBetweenModules = YAMLmodulesOptimizerParserV02.getOpProfileWithModule(element, moduleReqName);
             // create the dependence between these two modules by
             // addelementcalled.
             newelement.addElementCalled(
@@ -500,8 +627,8 @@ public class YAMLoptimizerParser {
             // Recursive call for the moduleReqNAme, and this element and
             // associate with this element.
             topology = getApplicationTopologyRecursive(moduleReqName, (Map<String, Object>) modules.get(moduleReqName),
-                  topology, modules, groups, appInfoSuitableOptions);
-            double opProfileBetweenModules = YAMLmodulesOptimizerParser.getOpProfileWithModule(element, moduleReqName);
+                  topology, modules, groups, allCloudOffers);
+            double opProfileBetweenModules = YAMLmodulesOptimizerParserV02.getOpProfileWithModule(element, moduleReqName);
             // create the dependence between these two modules by
             // addelementcalled.
             newelement.addElementCalled(
@@ -513,6 +640,24 @@ public class YAMLoptimizerParser {
       // included), with its qos characteristics (performance)
       topology.addModule(newelement);
       return topology;
+
+   }
+
+   private static double getPerformanceOfOfferByName(String offername, Map<String, Object> allCloudOffers) {
+
+      // TODO: implement this with the current information of the mathcmaker!!!
+      // THIS WILL CAUSE ERROR NOW!!!
+      if (!allCloudOffers.containsKey(offername)) {
+         return 0.0;
+      }
+
+      CloudOffer offer = getAllCharacteristicsOfCloudOffer(offername, allCloudOffers);
+
+      if (offer == null) {
+         return 0.0;
+      }
+
+      return offer.getPerformance();
 
    }
 
@@ -567,8 +712,8 @@ public class YAMLoptimizerParser {
     */
    public static Map<String, Object> cloneYAML(Map<String, Object> yamlMap) {
 
-      String stringyaml = YAMLoptimizerParser.FromMAPtoYAMLstring(yamlMap);
-      Map<String, Object> newMap = YAMLoptimizerParser.GetMAPofAPP(stringyaml);
+      String stringyaml = YAMLoptimizerParserV02.FromMAPtoYAMLstring(yamlMap);
+      Map<String, Object> newMap = YAMLoptimizerParserV02.GetMAPofAPP(stringyaml);
 
       return newMap;
 
@@ -579,7 +724,7 @@ public class YAMLoptimizerParser {
       // The initial element is such one that has QoSrequirements in the
       // "groups" part.
 
-      Map<String, Object> groupsMap = YAMLoptimizerParser.getGroupMapFromAppMap(appMap);
+      Map<String, Object> groupsMap = YAMLoptimizerParserV02.getGroupMapFromAppMap(appMap);
 
       // FOR EACH OF THE APP MODULES (but in this level there are more concepts
       // than only the modules)
@@ -590,16 +735,16 @@ public class YAMLoptimizerParser {
             log.info("checking if group '" + potentialGroupName + "' is an element which receceives user requests");
          }
          // If it has requirements but nobody requires it..
-         if (YAMLgroupsOptimizerParser.GroupHasQoSRequirements(entry.getValue())) {
+         if (YAMLgroupsOptimizerParserV02.GroupHasQoSRequirements(entry.getValue())) {
             // group found.
             // Now, 1) get the name of modules that are members of the group.
             // Since it should be only one member in the group in as list
             // we get the first module name found
-            String moduleName = YAMLgroupsOptimizerParser.getFirstMemberName(entry.getValue());
+            String moduleName = YAMLgroupsOptimizerParserV02.getFirstMemberName(entry.getValue());
             // 2) find the module in the topology with this name.
 
-            Map<String, Object> modulesMap = YAMLoptimizerParser.getModuleMapFromAppMap(appMap);
-            return YAMLoptimizerParser.getModuleInfoFromModulesMap(modulesMap, moduleName);
+            Map<String, Object> modulesMap = YAMLoptimizerParserV02.getModuleMapFromAppMap(appMap);
+            return YAMLoptimizerParserV02.getModuleInfoFromModulesMap(modulesMap, moduleName);
 
          }
       }
@@ -662,7 +807,7 @@ public class YAMLoptimizerParser {
    private static boolean moduleIsRequiredByOthers(Map<String, Object> appMap, String potentialModuleName) {
 
       for (Map.Entry<String, Object> entry : appMap.entrySet()) {
-         if (YAMLmodulesOptimizerParser.ModuleRequirementFromTo(entry.getValue(), potentialModuleName)) {
+         if (YAMLmodulesOptimizerParserV02.ModuleRequirementFromTo(entry.getValue(), potentialModuleName)) {
             return true;
          }
       }

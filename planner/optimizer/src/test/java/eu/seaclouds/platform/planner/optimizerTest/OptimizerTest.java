@@ -36,7 +36,7 @@ import eu.seaclouds.platform.planner.optimizer.Optimizer;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
 
-
+ 
 public class OptimizerTest {
 
    private static Optimizer    optimizer;

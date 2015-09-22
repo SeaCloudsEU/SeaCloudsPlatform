@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-//Version of July 2015
+//Version of September 2015
 public class YAMLgroupsOptimizerParser {
 
    public static final boolean IS_DEBUG = true;
@@ -253,7 +253,7 @@ public class YAMLgroupsOptimizerParser {
          }
 
          for (Map.Entry<String, Object> entry : workloadInfo.entrySet()) {
-            return YAMLoptimizerParserV02.castToDouble(entry.getValue());
+            return YAMLoptimizerParser.castToDouble(entry.getValue());
 
          }
       }

@@ -33,18 +33,19 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
+ 
 import eu.seaclouds.platform.planner.optimizer.Optimizer;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
- 
-public class OptimizerTOSCAjuly2015Test {
+
+public class OptimizerTOSCASeptember2015Test {
 
    private static Optimizer    optimizer;
    private static String       appModel;
    private static String       suitableCloudOffer;
    private static final String APP_MODEL_FILENAME    = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/aam.yml";
-   private static final String CLOUD_OFFER_FILENAME  = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/cloudOfferWithQoS.yaml";
+  
+   private static final String CLOUD_OFFER_FILENAME  = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/MMoutputV-15-09.yml";
    private static final String OUTPUT_FILENAME       = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/target/outputNewTOSCA";
    private static final String OPEN_SQUARE_BRACKET   = "[";
    private static final String CLOSE_SQUARE_BRACKET  = "]";
@@ -55,7 +56,7 @@ public class OptimizerTOSCAjuly2015Test {
   
    
    static Logger               log                   = LoggerFactory
-                                                           .getLogger(OptimizerTOSCAjuly2015Test.class);
+                                                           .getLogger(OptimizerTOSCASeptember2015Test.class);
    
 
 @BeforeClass

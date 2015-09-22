@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 
-//Version of July 2015
+//Version of September 2015
 public class YAMLmodulesOptimizerParser {
 
    private static final boolean IS_DEBUG = true;
@@ -222,7 +222,7 @@ public class YAMLmodulesOptimizerParser {
    private static double castToDouble(Object object) {
       // It creates circular dependencies between classes. Think for the next
       // version how to refactor it.
-      return YAMLoptimizerParserV02.castToDouble(object);
+      return YAMLoptimizerParser.castToDouble(object);
    }
 
    @SuppressWarnings("unchecked")
@@ -338,7 +338,7 @@ public class YAMLmodulesOptimizerParser {
 
       for (Map.Entry<String, Object> entry : quality.entrySet()) {
          try {
-            double qualityValue = YAMLoptimizerParserV02.castToDouble(entry.getValue());
+            double qualityValue = YAMLoptimizerParser.castToDouble(entry.getValue());
             return qualityValue;
          } catch (Exception E) {
             log.info("Explored quality and a Value of its Map did not contain double values");
