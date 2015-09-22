@@ -70,6 +70,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.openshift</groupId>
+            <artifactId>openshift-java-client</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
@@ -78,6 +83,13 @@
             <!-- includes testng and useful logging for tests -->
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-test-support</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <!-- includes testng and useful logging for tests -->
+            <groupId>org.apache.brooklyn</groupId>
+            <artifactId>brooklyn-software-database</artifactId>
             <scope>test</scope>
         </dependency>
 
