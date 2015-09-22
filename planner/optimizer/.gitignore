@@ -6,3 +6,4 @@ target/
 .metadata
 .settings/
 output*.yaml
+.checkstyle
