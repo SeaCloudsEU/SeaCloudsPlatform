@@ -29,7 +29,7 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 //Version of September 2015
 public class YAMLmodulesOptimizerParser {
 
-   private static final boolean IS_DEBUG = true;
+   private static final boolean IS_DEBUG = false;
    static Logger                log      = LoggerFactory.getLogger(YAMLmodulesOptimizerParser.class);
 
 

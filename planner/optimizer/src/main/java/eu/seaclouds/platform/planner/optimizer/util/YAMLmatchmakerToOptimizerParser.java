@@ -47,7 +47,9 @@ public class YAMLmatchmakerToOptimizerParser {
    @SuppressWarnings("unchecked")
    public static List<Object> GetListofOptions(String appModel) {
       Yaml yamlApp = new Yaml();
+      if(IS_DEBUG){
       log.info("Loading String to a YAML using sknakeyaml.Yaml");
+      }
       return (List<Object>) yamlApp.load(appModel);
    } 
 
@@ -187,7 +189,7 @@ private static CloudOffer getAllCharacteristicsOfCloudOffer(String offerName,
          double numcores=getPropertyOfCloudOffer(TOSCAkeywords.CLOUD_CONCRETE_OFFER_NUM_CORES,cloudOfferInfoMap);
          if(numcores==0){
             numcores=1;
-            log.warn("not found number of cores for offer '"+offerName+"' . Assuming 1 core.");
+            log.warn("not found number of cores for offer '"+offerName+"' . Assuming single core.");
             }
          offer.setNumCores(numcores, true);
       } catch (NullPointerException E) {
