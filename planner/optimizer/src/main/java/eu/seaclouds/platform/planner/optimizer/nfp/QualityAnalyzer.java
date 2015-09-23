@@ -126,12 +126,12 @@ public class QualityAnalyzer {
             cloudCharacteristics);
 
       if (IS_DEBUG) {
-         log.debug("Solution to check the mus is: " + bestSol.toString());
-         log.debug("Mus of servers are: " + Arrays.toString(mus));
-         log.debug("Num visits modules is: " + Arrays.toString(numVisitsModule));
-         log.debug("Workload received of modules: "
+         log.info("Solution to check the mus is: " + bestSol.toString());
+         log.info("Mus of servers are: " + Arrays.toString(mus));
+         log.info("Num visits modules is: " + Arrays.toString(numVisitsModule));
+         log.info("Workload received of modules: "
                + Arrays.toString(workloadsModules));
-         log.debug("Workload received of each execution unit by its numberOfInstances and Cores: "
+         log.info("Workload received of each execution unit by its numberOfInstances and Cores: "
                + Arrays.toString(workloadsModulesByCoresAndNumInstances));
       }
       double respTime = getSystemRespTime(numVisitsModule,
@@ -557,10 +557,10 @@ public class QualityAnalyzer {
       while (continueGeneratingThresholds(limitWorkload, workload, modifSol,
             requirements, cloudCharacteristics, existModulesToScaleOut)) {
          // Stop condition is the highest allowed cost or, if cost is not
-         // specified, ten times the expected worklaod
-
+          // specified, ten times the expected worklaod
+ 
          if (IS_DEBUG) {
-            log.debug("Creating threshold for workload above " + limitWorkload);
+            log.info("Creating threshold for workload above " + limitWorkload);
          }
          limitWorkload = findWorkloadForWhichRespTimeIsExceeded(
                requirements.getResponseTime(), limitWorkload, mus, modifSol,
@@ -689,13 +689,27 @@ public class QualityAnalyzer {
       // Stop also if the highest allowed cost or, if cost is not specified, ten
       // times the expected workload
 
+      if (IS_DEBUG) {
+         log.info("checking if continue generating thresholds for: " );
+      }
+      
       if (!existModulesToScaleOut) {
          return false;
       }
       if (requirements.existCostRequirement()) {
+         
+         if (IS_DEBUG) {
+            log.info("  current cost: "+computeCost(sol, cloudCharacteristics) +" cost limit: " + requirements.getCostHour());
+         }
+         
          return computeCost(sol, cloudCharacteristics) <= requirements
                .getCostHour();
       }
+      
+      if (IS_DEBUG) {
+         log.info("  limitWorkload: "+limitWorkload +" current workload " + (MAX_TIMES_WORKLOAD_FOR_THRESHOLDS * workload));
+      }
+      
       return limitWorkload <= (MAX_TIMES_WORKLOAD_FOR_THRESHOLDS * workload);
 
    }

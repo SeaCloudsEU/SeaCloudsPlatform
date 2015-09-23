@@ -120,6 +120,9 @@ public class YAMLmatchmakerToOptimizerParser {
       for(String offerName : listOfferNames){
          CloudOffer offer = getAllCharacteristicsOfCloudOffer(offerName, listOptions);
          if(offer!=null){
+            if(IS_DEBUG){
+            log.info("Found cloud offer with info:" +offer.toString() );
+            }
             listOffers.add(offer);
          }
          else{

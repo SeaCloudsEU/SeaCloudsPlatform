@@ -1,7 +1,7 @@
 [ {
   "webservices" : [ {
-    "webserviceValidOffering" : {
-      "type" : "seacluds.nodes.webserviceValidOffering",
+    "hp_cloud_services.2xl" : {
+      "type" : "seacluds.nodes.hp_cloud_services.2xl",
       "properties" : {
         "num_cpus" : 8,
         "disk_size" : 512,

@@ -42,14 +42,6 @@ public class OptimizerTest {
    private static Optimizer    optimizer;
    private static String       appModel;
    private static String       suitableCloudOffer;
-   private static final String APP_MODEL_FILENAME    = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/MatchmakeroutputWithQoSAutomatic.yaml";
-   private static final String CLOUD_OFFER_FILENAME  = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/cloudOfferWithQoS.yaml";
-   private static final String OUTPUT_FILENAME       = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/target/output";
-   private static final String OPEN_SQUARE_BRACKET   = "[";
-   private static final String CLOSE_SQUARE_BRACKET  = "]";
-   private static final double MAX_MILLIS_EXECUTING  = 20000;
-
-   private static final int    NUM_PLANS_TO_GENERATE = 5;
 
    static Logger               log                   = LoggerFactory
                                                            .getLogger(OptimizerTest.class);
@@ -63,14 +55,14 @@ public class OptimizerTest {
       log.debug("Trying to open files: current executino dir = " + dir);
 
       try {
-         appModel = filenameToString(APP_MODEL_FILENAME);
+         appModel = filenameToString(TestConstants.APP_MODEL_FILENAME);
       } catch (IOException e) {
          log.error("File for APPmodel not found");
          e.printStackTrace();
       }
 
       try {
-         suitableCloudOffer = filenameToString(CLOUD_OFFER_FILENAME);
+         suitableCloudOffer = filenameToString(TestConstants.CLOUD_OFFER_FILENAME);
       } catch (IOException e) {
          log.error("File for Cloud Offers not found");
          e.printStackTrace();
@@ -83,12 +75,12 @@ public class OptimizerTest {
       return new String(encoded, StandardCharsets.UTF_8);
    }
 
-   @Test(enabled=TOSCAkeywords.EnabledTest)
+   @Test(enabled=TestConstants.EnabledTest)
    public void testPresenceSolutionBlind() {
 
       log.info("=== TEST for SOLUTION GENERATION of BLIND optimizer STARTED ===");
 
-      optimizer = new Optimizer(NUM_PLANS_TO_GENERATE,
+      optimizer = new Optimizer(TestConstants.NUM_PLANS_TO_GENERATE,
             SearchMethodName.BLINDSEARCH);
 
       String[] arrayDam = optimizer.optimize(appModel, suitableCloudOffer);
@@ -101,7 +93,7 @@ public class OptimizerTest {
                   + arrayDam[damnum]);
             throw e;
          }
-         saveFile(OUTPUT_FILENAME + SearchMethodName.BLINDSEARCH + damnum
+         saveFile(TestConstants.OUTPUT_FILENAME + SearchMethodName.BLINDSEARCH + damnum
                + ".yaml", arrayDam[damnum]);
       }
 
@@ -109,12 +101,12 @@ public class OptimizerTest {
 
    }
 
-   @Test(enabled=TOSCAkeywords.EnabledTest)
+   @Test(enabled=TestConstants.EnabledTest)
    public void testPresenceSolutionHillClimb() {
 
       log.info("=== TEST for SOLUTION GENERATION of HILLCLIMB optimizer STARTED ===");
 
-      optimizer = new Optimizer(NUM_PLANS_TO_GENERATE,
+      optimizer = new Optimizer(TestConstants.NUM_PLANS_TO_GENERATE,
             SearchMethodName.HILLCLIMB);
 
       String[] arrayDam = optimizer.optimize(appModel, suitableCloudOffer);
@@ -127,7 +119,7 @@ public class OptimizerTest {
                   + arrayDam[damnum]);
             throw e;
          }
-         saveFile(OUTPUT_FILENAME + SearchMethodName.HILLCLIMB + damnum
+         saveFile(TestConstants.OUTPUT_FILENAME + SearchMethodName.HILLCLIMB + damnum
                + ".yaml", arrayDam[damnum]);
 
       }
@@ -137,12 +129,12 @@ public class OptimizerTest {
    }
 
    
-   @Test(enabled=TOSCAkeywords.EnabledTest)
+   @Test(enabled=TestConstants.EnabledTest)
    public void testPresenceSolutionAnneal() {
 
       log.info("=== TEST for SOLUTION GENERATION of ANNEAL optimizer STARTED ===");
 
-      optimizer = new Optimizer(NUM_PLANS_TO_GENERATE,
+      optimizer = new Optimizer(TestConstants.NUM_PLANS_TO_GENERATE,
             SearchMethodName.ANNEAL);
 
       String[] arrayDam = optimizer.optimize(appModel, suitableCloudOffer);
@@ -155,7 +147,7 @@ public class OptimizerTest {
                   + arrayDam[damnum]);
             throw e;
          }
-         saveFile(OUTPUT_FILENAME + SearchMethodName.ANNEAL + damnum
+         saveFile(TestConstants.OUTPUT_FILENAME + SearchMethodName.ANNEAL + damnum
                + ".yaml", arrayDam[damnum]);
 
       }
@@ -179,13 +171,13 @@ public class OptimizerTest {
          if ((line != null) && (line.contains(TOSCAkeywords.SUITABLE_SERVICES))) {
 
             numServices++;
-            String suitableServicesLine[] = line.split(OPEN_SQUARE_BRACKET);
+            String suitableServicesLine[] = line.split(TestConstants.OPEN_SQUARE_BRACKET);
 
             for (String suitableLine : suitableServicesLine) {
                if ((suitableLine != null)
-                     && suitableLine.contains(CLOSE_SQUARE_BRACKET)) {
+                     && suitableLine.contains(TestConstants.CLOSE_SQUARE_BRACKET)) {
                   String suitableService = suitableLine.substring(0,
-                        suitableLine.indexOf(CLOSE_SQUARE_BRACKET));
+                        suitableLine.indexOf(TestConstants.CLOSE_SQUARE_BRACKET));
                   Assert.assertTrue("Suitable service is the empty string",
                         suitableService != "");
                   Assert.assertTrue(
@@ -222,7 +214,7 @@ public class OptimizerTest {
 
    }
 
-   @Test(enabled=TOSCAkeywords.EnabledTest)
+   @Test(enabled=TestConstants.EnabledTest)
    public void testPerformanceComplete() {
 
       optimizer = new Optimizer();
@@ -235,8 +227,8 @@ public class OptimizerTest {
       log.debug("Optimizer execution time= "
             + (((double) (finishTime - startTime)) / 1000.0) + " seconds");
       Assert.assertTrue("Otimizer does not have good Performance. More than "
-                      + ((double) MAX_MILLIS_EXECUTING) / 1000.1 + " seconds",
-              (finishTime - startTime) < MAX_MILLIS_EXECUTING);
+                      + ((double) TestConstants.MAX_MILLIS_EXECUTING) / 1000.1 + " seconds",
+              (finishTime - startTime) < TestConstants.MAX_MILLIS_EXECUTING);
       log.info("=== TEST for PERFORMANCE of optimizer FINISHED===");
 
    }

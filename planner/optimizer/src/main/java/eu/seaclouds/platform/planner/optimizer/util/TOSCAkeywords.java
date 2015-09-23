@@ -81,5 +81,5 @@ public class TOSCAkeywords {
 
    public static final String CLOUD_OFFER_PROVIDER_NAME_SEPARATOR = "\\.";
 
-   public static final boolean EnabledTest = false;
+
 }

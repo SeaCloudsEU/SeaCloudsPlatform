@@ -70,7 +70,7 @@ groups:
     policies:
     - QoSInfo:
         execution_time: 200 ms
-        benchmark_platform: hp_cloud_services.2xl
+        benchmark_platform: wwwValidOffering
     - dependencies:
         operation_webservices: '2'
     - QoSRequirements:
@@ -98,4 +98,4 @@ groups:
     - dependencies: {}
     - QoSInfo:
         execution_time: 50 ms
-        benchmark_platform: hp_cloud_services.2xl
+        benchmark_platform: db1ValidOffering

@@ -43,15 +43,7 @@ public class OptimizerTOSCASeptember2015Test {
    private static Optimizer    optimizer;
    private static String       appModel;
    private static String       suitableCloudOffer;
-   private static final String APP_MODEL_FILENAME    = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/aam_atos_case_study.yml";
-  
-   private static final String CLOUD_OFFER_FILENAME  = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/MMoutputCleanYAMLV-15-09.yml";
-   private static final String OUTPUT_FILENAME       = "./src/test/java/eu/seaclouds/platform/planner/optimizerTest/resources/target/outputNewTOSCA";
-   private static final String OPEN_SQUARE_BRACKET   = "[";
-   private static final String CLOSE_SQUARE_BRACKET  = "]";
-   private static final double MAX_MILLIS_EXECUTING  = 20000;
 
-   private static final int    NUM_PLANS_TO_GENERATE = 5;
 
   
    
@@ -69,14 +61,14 @@ public void createObjects() {
    log.debug("Trying to open files: current executino dir = " + dir);
 
    try {
-      appModel = filenameToString(APP_MODEL_FILENAME);
+      appModel = filenameToString(TestConstants.APP_MODEL_FILENAME);
    } catch (IOException e) {
       log.error("File for APPmodel not found");
       e.printStackTrace();
    }
 
    try {
-      suitableCloudOffer = filenameToString(CLOUD_OFFER_FILENAME);
+      suitableCloudOffer = filenameToString(TestConstants.CLOUD_OFFER_FILENAME);
    } catch (IOException e) {
       log.error("File for Cloud Offers not found");
       e.printStackTrace();
@@ -94,7 +86,7 @@ public void testPresenceSolutionBlind() {
 
    log.info("=== TEST for SOLUTION GENERATION of BLIND optimizer STARTED (syntax July 2015)===");
 
-   optimizer = new Optimizer(NUM_PLANS_TO_GENERATE,
+   optimizer = new Optimizer(TestConstants.NUM_PLANS_TO_GENERATE,
          SearchMethodName.BLINDSEARCH);
 
    String[] arrayDam = optimizer.optimize(appModel, suitableCloudOffer);
@@ -107,13 +99,70 @@ public void testPresenceSolutionBlind() {
                + arrayDam[damnum]);
          throw e;
       }
-      saveFile(OUTPUT_FILENAME + SearchMethodName.BLINDSEARCH + damnum
+      saveFile(TestConstants.OUTPUT_FILENAME + SearchMethodName.BLINDSEARCH + damnum
             + ".yaml", arrayDam[damnum]);
    }
 
    log.info("=== TEST for SOLUTION GENERATION of BLIND optimizer FINISEHD ===");
 
 }
+
+@Test(enabled=true)
+public void testPresenceSolutionHillClimb() {
+
+   log.info("=== TEST for SOLUTION GENERATION of HILLCLIMB optimizer STARTED ===");
+
+   optimizer = new Optimizer(TestConstants.NUM_PLANS_TO_GENERATE,
+         SearchMethodName.HILLCLIMB);
+
+   String[] arrayDam = optimizer.optimize(appModel, suitableCloudOffer);
+   for (int damnum = 0; damnum < arrayDam.length; damnum++) {
+
+      try {
+         checkCorrectness(arrayDam[damnum]);
+      } catch (Exception e) {
+         log.error("There was an error in the check of correctness. Solution was: "
+               + arrayDam[damnum]);
+         throw e;
+      }
+      saveFile(TestConstants.OUTPUT_FILENAME + SearchMethodName.HILLCLIMB + damnum
+            + ".yaml", arrayDam[damnum]);
+
+   }
+
+   log.info("=== TEST for SOLUTION GENERATION of HILLCLIMB optimizer FINISEHD ===");
+
+}
+
+
+@Test(enabled=true)
+public void testPresenceSolutionAnneal() {
+
+   log.info("=== TEST for SOLUTION GENERATION of ANNEAL optimizer STARTED ===");
+
+   optimizer = new Optimizer(TestConstants.NUM_PLANS_TO_GENERATE,
+         SearchMethodName.ANNEAL);
+
+   String[] arrayDam = optimizer.optimize(appModel, suitableCloudOffer);
+   for (int damnum = 0; damnum < arrayDam.length; damnum++) {
+
+      try {
+         checkCorrectness(arrayDam[damnum]);
+      } catch (Exception e) {
+         log.error("There was an error in the check of correctness. Solution was: "
+               + arrayDam[damnum]);
+         throw e;
+      }
+      saveFile(TestConstants.OUTPUT_FILENAME + SearchMethodName.ANNEAL + damnum
+            + ".yaml", arrayDam[damnum]);
+
+   }
+
+   log.info("=== TEST for SOLUTION GENERATION of ANNEAL optimizer FINISEHD ===");
+
+}
+
+
 
 private void checkCorrectness(String dam) {
 
@@ -130,13 +179,13 @@ private void checkCorrectness(String dam) {
       if ((line != null) && (line.contains(TOSCAkeywords.SUITABLE_SERVICES))) {
 
          numServices++;
-         String suitableServicesLine[] = line.split(OPEN_SQUARE_BRACKET);
+         String suitableServicesLine[] = line.split(TestConstants.OPEN_SQUARE_BRACKET);
 
          for (String suitableLine : suitableServicesLine) {
             if ((suitableLine != null)
-                  && suitableLine.contains(CLOSE_SQUARE_BRACKET)) {
+                  && suitableLine.contains(TestConstants.CLOSE_SQUARE_BRACKET)) {
                String suitableService = suitableLine.substring(0,
-                     suitableLine.indexOf(CLOSE_SQUARE_BRACKET));
+                     suitableLine.indexOf(TestConstants.CLOSE_SQUARE_BRACKET));
                Assert.assertTrue("Suitable service is the empty string",
                      suitableService != "");
                Assert.assertTrue(

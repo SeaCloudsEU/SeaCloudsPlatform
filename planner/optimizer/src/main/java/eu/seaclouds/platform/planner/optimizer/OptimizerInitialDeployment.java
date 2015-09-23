@@ -247,6 +247,9 @@ public class OptimizerInitialDeployment {
          // arraylist with the thresholds for reconfigurations.
          HashMap<String, ArrayList<Double>> thresholds = new HashMap<String, ArrayList<Double>>();
 
+         if (IS_DEBUG) {
+            log.info("Starting teh computation of reconfiguration thresholds");
+         }
          thresholds = qualityAnalyzer.computeThresholds(sol, topology, requirements, cloudCharacteristics);
 
          if (IS_DEBUG) {

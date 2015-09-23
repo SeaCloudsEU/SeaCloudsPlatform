@@ -73,10 +73,12 @@ public class MMoutputTest {
       log.info("=== TEST for load info from MM===");
 
       List<Object> mapOffers = YAMLmatchmakerToOptimizerParser.GetListofOptions(appModel);
+      Assert.assertNotNull(mapOffers);
       log.info("=== List created===");
       String againToString = YAMLmatchmakerToOptimizerParser.FromListtoYAMLstring(mapOffers);
       Assert.assertNotNull(againToString);
       
+      Assert.assertTrue(mapOffers.size()>0);
       
       log.info("=== TEST for load info from MM FINISHED===");
 

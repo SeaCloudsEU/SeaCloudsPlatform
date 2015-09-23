@@ -179,7 +179,7 @@ public class YAMLoptimizerParser {
 
       if (!success) {
          try {
-            Pattern p = Pattern.compile("\\d+");
+            Pattern p = Pattern.compile("\\d+.?\\d*");
             Matcher m = p.matcher((String) object);
             m.find();
             result = Double.parseDouble(m.group());
