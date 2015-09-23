@@ -33,6 +33,8 @@ public class CloudOffer {
    private double cost;
    private double numCores;
 
+   
+   
    public CloudOffer(String name, double performance, double availability,
          double cost, double numCores) {
 
@@ -137,4 +139,9 @@ public class CloudOffer {
       return name.split(TOSCAkeywords.CLOUD_OFFER_PROVIDER_NAME_SEPARATOR)[0];
    }
 
+   @Override
+   public String toString(){
+      return "Offer name: " + name + " performance: " + performanceForExecutionUnit + " availability; " +
+   availability + " cost: " + cost + " numCores " + numCores;
+   }
 }

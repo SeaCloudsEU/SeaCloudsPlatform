@@ -17,7 +17,6 @@
 
 package eu.seaclouds.platform.planner.optimizerTest;
 
-import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileWriter;

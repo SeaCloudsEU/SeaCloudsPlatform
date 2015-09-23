@@ -18,7 +18,6 @@
 package eu.seaclouds.platform.planner.optimizer.util;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -33,10 +32,9 @@ public class YAMLmodulesOptimizerParser {
    private static final boolean IS_DEBUG = true;
    static Logger                log      = LoggerFactory.getLogger(YAMLmodulesOptimizerParser.class);
 
-   @SuppressWarnings("unchecked")
+
    public static boolean ModuleHasModuleRequirements(String moduleName, Map<String, Object> groups) {
 
-      Map<String, Object> moduleDependencies = null;
 
       Map<String, Object> dependeciesInfoOfGroupOfModule = YAMLgroupsOptimizerParser
             .getDependenciesInfoOfMemberName(moduleName, groups);

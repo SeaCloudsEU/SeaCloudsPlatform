@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,10 +30,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import eu.seaclouds.platform.planner.optimizer.Optimizer;
-import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
+
 import eu.seaclouds.platform.planner.optimizer.util.YAMLmatchmakerToOptimizerParser;
-import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParserV02;
 
 public class MMoutputTest {
 

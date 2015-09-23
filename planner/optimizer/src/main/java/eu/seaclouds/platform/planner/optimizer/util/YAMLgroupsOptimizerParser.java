@@ -33,7 +33,7 @@ import eu.seaclouds.platform.planner.optimizer.Solution;
 //Version of September 2015
 public class YAMLgroupsOptimizerParser {
 
-   public static final boolean IS_DEBUG = true;
+   public static final boolean IS_DEBUG = false;
 
    static Logger log = LoggerFactory.getLogger(YAMLgroupsOptimizerParser.class);
 
@@ -55,32 +55,7 @@ public class YAMLgroupsOptimizerParser {
       }
       return groupReqs != null;
 
-      /*
-       * Map<String, Object> groupInfo = null; List<Object> groupPoliciesList =
-       * null; Map<String, Object> groupReqs = null; try { groupInfo =
-       * (Map<String, Object>) group; if
-       * (!groupInfo.containsKey(TOSCAkeywords.GROUP_ELEMENT_POLICY_TAG)) {
-       * return false; } } catch (ClassCastException E) { return false; }
-       * 
-       * try { groupPoliciesList = (List<Object>)
-       * groupInfo.get(TOSCAkeywords.GROUP_ELEMENT_POLICY_TAG); } catch
-       * (ClassCastException E) { log.info(
-       * "  No policies found here in this gorup"); return false; }
-       * 
-       * for (Object listElement : groupPoliciesList) { Map<String, Object>
-       * mapEntryListElement; try { mapEntryListElement = (Map<String, Object>)
-       * listElement; } catch (ClassCastException E) { log.info(
-       * "  Casting of list of policies has not been successful"); return false;
-       * }
-       * 
-       * if (mapEntryListElement.containsKey(TOSCAkeywords.
-       * GROUP_POLICY_QOSREQUIREMENTS)) { // found QoS requirements in a module
-       * log.info("  Check successful, it has quality requirements"); return
-       * true; } } log.info(
-       * "  Check NOT successful, it does not receive user requests"); return
-       * false;
-       */
-
+  
    }
 
    @SuppressWarnings({ "unchecked", "null" })

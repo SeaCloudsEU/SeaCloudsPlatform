@@ -19,7 +19,6 @@ package eu.seaclouds.platform.planner.optimizer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -30,10 +29,8 @@ import eu.seaclouds.platform.planner.optimizer.heuristics.HillClimb;
 import eu.seaclouds.platform.planner.optimizer.heuristics.BlindSearch;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethod;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
-import eu.seaclouds.platform.planner.optimizer.nfp.MonitoringConditions;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
-import eu.seaclouds.platform.planner.optimizer.util.YAMLMonitorParser;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLmatchmakerToOptimizerParser;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
@@ -42,7 +39,7 @@ public class OptimizerInitialDeployment {
    private SearchMethod engine;
    static Logger        log = LoggerFactory.getLogger(OptimizerInitialDeployment.class);
 
-   private static final boolean IS_DEBUG = true;
+   private static final boolean IS_DEBUG = false;
 
    public OptimizerInitialDeployment() {
       engine = new BlindSearch();
@@ -127,7 +124,7 @@ public class OptimizerInitialDeployment {
       if (IS_DEBUG) {
          log.info("Before ReplaceSuitableServiceByHost");
       }
-      
+
       String[] stringSolutions = new String[numPlansToGenerate];
       for (int i = 0; i < appMapSolutions.length; i++) {
          YAMLoptimizerParser.ReplaceSuitableServiceByHost(appMapSolutions[i]);
@@ -152,15 +149,14 @@ public class OptimizerInitialDeployment {
          Map<String, Object> baseAppMap = YAMLoptimizerParser.cloneYAML(applicMap);
 
          addSolutionToAppMap(bestSols[i], baseAppMap);
-         
+
          if (IS_DEBUG) {
             log.info("Before creating reconfiguration thesholds");
          }
-       
 
          HashMap<String, ArrayList<Double>> thresholds = createReconfigurationThresholds(bestSols[i], baseAppMap,
                topology, cloudOffers, requirements);
-         
+
          if (IS_DEBUG) {
             log.info("Before adding the reconfiguration thesholds to the map");
          }
@@ -183,23 +179,22 @@ public class OptimizerInitialDeployment {
          // .CleanSuitableOfferForModule(solkey, applicationMap);
 
          if (IS_DEBUG) {
-            log.info("Before adding instances to '" + solkey + "': cloudOffer=" + currentSol.getCloudOfferNameForModule(solkey)
-                  + " instances=" + currentSol.getCloudInstancesForModule(solkey));
+            log.info("Before adding instances to '" + solkey + "': cloudOffer="
+                  + currentSol.getCloudOfferNameForModule(solkey) + " instances="
+                  + currentSol.getCloudInstancesForModule(solkey));
          }
          YAMLoptimizerParser.AddSuitableOfferForModule(solkey, currentSol.getCloudOfferNameForModule(solkey),
                currentSol.getCloudInstancesForModule(solkey), applicationMap);
 
-         
          if (IS_DEBUG) {
             log.info("Added '" + solkey + "' to solution");
          }
       }
-      
+
       if (IS_DEBUG) {
          log.info("Adding the quality of the solution to the group of the intial element");
       }
       YAMLoptimizerParser.AddQualityOfSolution(currentSol, applicationMap);
-      
 
    }
 
@@ -234,7 +229,7 @@ public class OptimizerInitialDeployment {
       if (IS_DEBUG) {
          log.info("Create reconfiguration Thresholds method has finished its call to compute Performance");
       }
-      
+
       if ((requirements.existResponseTimeRequirement()) && (perfGoodness >= 1.0)) {// response
                                                                                    // time
                                                                                    // requirements

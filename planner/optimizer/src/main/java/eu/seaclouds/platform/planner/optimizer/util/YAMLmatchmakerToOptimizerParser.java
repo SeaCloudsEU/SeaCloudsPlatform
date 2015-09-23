@@ -40,7 +40,7 @@ public class YAMLmatchmakerToOptimizerParser {
    // Reducing verbosity . If somebody knows a better approach for doing this (I
    // could not set dynamically the level of the logging) it should be changed
    private static int           BeeingTooVerboseWithLackOfInformationInCloudOffers = 3;
-   private static final boolean IS_DEBUG = true;
+   private static final boolean IS_DEBUG = false;
 
    static Logger log = LoggerFactory.getLogger(YAMLmatchmakerToOptimizerParser.class);
 
@@ -160,20 +160,7 @@ public class YAMLmatchmakerToOptimizerParser {
       
    }
 
-/*
-   List<String> potentialListOfOffersNames = GetListOfSuitableOptionsForAlreadyFoundModule(entry.getValue());
 
- 
-      List<CloudOffer> potentialListOfOfferCharacteristics = getCloudOfferCharacteristcisByName(
-            potentialListOfOffersNames, suitableCloudOffers);
-      options.addSuitableOptions(potentialModuleName, potentialListOfOffersNames, potentialListOfOfferCharacteristics);
-
-   }
-}
-// Retrieve communication latencies
-options.setLatencyDatacenterMillis(getCloudLatency(suitableCloudOffers,TOSCAkeywords.LATENCY_INTRA_DATACENTER_MILLIS));options.setLatencyInternetMillis(getCloudLatency(suitableCloudOffers,TOSCAkeywords.LATENCY_INTER_DATACENTER_MILLIS));
-
-return options;}*/
 
 
 
