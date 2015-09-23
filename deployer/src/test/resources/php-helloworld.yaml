@@ -1,0 +1,7 @@
+name: PHP HelloWorld
+services:
+- serviceType: org.apache.brooklyn.entity.php.httpd.PhpHttpdServer
+  name: PHP-HTTPD Server
+  location: aws-ec2:us-west-2
+  git.url: https://github.com/kiuby88/phpHelloWorld.git
+  app.name: test-app
