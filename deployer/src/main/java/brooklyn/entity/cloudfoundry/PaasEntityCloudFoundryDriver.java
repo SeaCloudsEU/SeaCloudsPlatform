@@ -18,12 +18,12 @@
  */
 package brooklyn.entity.cloudfoundry;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import brooklyn.location.cloudfoundry.CloudFoundryPaasLocation;
 import org.cloudfoundry.client.lib.CloudFoundryClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract  class PaasEntityCloudFoundryDriver implements PaasEntityDriver {
 
@@ -54,6 +54,7 @@ public abstract  class PaasEntityCloudFoundryDriver implements PaasEntityDriver 
     }
 
     protected CloudFoundryClient getClient(){
+        setUpClient();
         return client;
     }
 

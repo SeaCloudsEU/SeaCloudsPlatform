@@ -10,7 +10,6 @@ services:
     bind: 
     - $brooklyn:component("db")
     env: 
-      myDbJdbcUrl: $brooklyn:component("db").attributeWhenReady("test-brooklyn-app-from-yaml.credentials.jdbcUrl")
       myDbName: $brooklyn:component("db").attributeWhenReady("test-brooklyn-app-from-yaml.credentials.name")
       myDbHostName: $brooklyn:component("db").attributeWhenReady("test-brooklyn-app-from-yaml.credentials.hostname")
       myDbUser: $brooklyn:component("db").attributeWhenReady("test-brooklyn-app-from-yaml.credentials.username")

@@ -18,6 +18,11 @@
  */
 package eu.seaclouds.location.cloudfoundry;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
+
 import brooklyn.entity.Application;
 import brooklyn.entity.Entity;
 import brooklyn.entity.basic.Attributes;
@@ -31,11 +36,6 @@ import brooklyn.location.cloudfoundry.PaasLocationConfig;
 import brooklyn.test.Asserts;
 import brooklyn.util.text.Strings;
 import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
 
 @Test( groups={"Live"} )
 public class CloudFoundryYamlLiveTest {
@@ -110,6 +110,65 @@ public class CloudFoundryYamlLiveTest {
 
             }
         });
+    }
+
+    public void deployWebappWithUserProvidedServicesFromYaml() {
+        SimpleYamlLauncher launcher = new SimpleYamlLauncher();
+        launcher.setShutdownAppsOnExit(true);
+        Application app = launcher.launchAppYaml("webapp-db-user-provided.yaml").getApplication();
+
+        final CloudFoundryService db = (CloudFoundryService)
+                findEntityChildByDisplayName(app, "DB");
+        
+        final CloudFoundryWebApp webapp = (CloudFoundryWebApp)
+                findEntityChildByDisplayName(app, "Webapp");
+        
+        Asserts.succeedsEventually(new Runnable() {
+            public void run() {
+
+                assertNotNull(webapp);
+                assertNotNull(db);
+
+                assertEquals(webapp.getAttribute(CloudFoundryWebApp.BOUND_SERVICES).size(), 1);
+                assertTrue(webapp.getAttribute(Startable.SERVICE_UP));
+                assertTrue(webapp.getAttribute(JavaCloudFoundryPaasWebApp
+                        .SERVICE_PROCESS_IS_RUNNING));
+
+                assertNotNull(webapp.getAttribute(Attributes.MAIN_URI));
+                assertNotNull(webapp.getAttribute(JavaCloudFoundryPaasWebApp.ROOT_URL));
+
+                assertEquals(webapp.getAttribute(JavaCloudFoundryPaasWebApp.DISK),
+                        PaasLocationConfig.REQUIRED_DISK.getDefaultValue());
+                assertEquals(webapp.getAttribute(JavaCloudFoundryPaasWebApp.INSTANCES_NUM),
+                        PaasLocationConfig.REQUIRED_INSTANCES.getDefaultValue());
+                assertEquals(webapp.getAttribute(JavaCloudFoundryPaasWebApp.MEMORY),
+                        PaasLocationConfig.REQUIRED_MEMORY.getDefaultValue());
+
+                assertNotNull(webapp.getAttribute(CloudFoundryWebApp.VCAP_SERVICES));
+                assertFalse(Strings.isBlank(webapp.getAttribute(CloudFoundryWebApp.VCAP_SERVICES)));
+
+                //db
+                assertTrue(db.getAttribute(Startable.SERVICE_UP));
+                assertTrue(db.getAttribute(JavaCloudFoundryPaasWebApp
+                        .SERVICE_PROCESS_IS_RUNNING));
+
+                assertEquals(db.getAttribute(CloudFoundryService.SERVICE_TYPE_ID),
+                        SERVICE_TYPE_ID);
+                assertEquals(db.getConfig(CloudFoundryService.PLAN), SERVICE_PLAN);
+                assertEquals(db.getConfig(CloudFoundryService.SERVICE_INSTANCE_NAME),
+                        SERVICE_NAME);
+
+                //dynamicSensors for credentials
+                assertFalse(Strings.isBlank((String) findSensorValueByName(db, JDBC_SENSOR)));
+                assertFalse(Strings.isBlank((String) findSensorValueByName(db, NAME_SENSOR)));
+                assertFalse(Strings.isBlank((String) findSensorValueByName(db, HOSTNAME_SENSOR)));
+                assertFalse(Strings.isBlank((String) findSensorValueByName(db, USERNAME_SENSOR)));
+                assertFalse(Strings.isBlank((String) findSensorValueByName(db, PASSWORD_SENSOR)));
+                assertFalse(Strings.isBlank((String) findSensorValueByName(db, PORT_SENSOR)));
+
+            }
+        });
+        
     }
 
     private Entity findEntityChildByDisplayName(Application app, String displayName){
