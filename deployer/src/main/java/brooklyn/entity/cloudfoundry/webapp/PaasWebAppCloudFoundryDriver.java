@@ -20,6 +20,8 @@ package brooklyn.entity.cloudfoundry.webapp;
 
 import brooklyn.entity.Entity;
 import brooklyn.entity.basic.Attributes;
+import brooklyn.entity.basic.BrooklynConfigKeys;
+import brooklyn.entity.basic.Entities;
 import brooklyn.entity.cloudfoundry.PaasEntityCloudFoundryDriver;
 import brooklyn.entity.cloudfoundry.services.CloudFoundryService;
 import brooklyn.location.cloudfoundry.CloudFoundryPaasLocation;
@@ -145,6 +147,10 @@ public abstract class PaasWebAppCloudFoundryDriver extends PaasEntityCloudFoundr
 
 
             if (!Strings.isEmpty(serviceName)){
+
+                Entities.waitForServiceUp(cloudFoundryService,
+                        cloudFoundryService.getConfig(BrooklynConfigKeys.START_TIMEOUT));
+
                 bindingServiceToEntity(serviceName);
                 setCredentialsOnService(cloudFoundryService);
                 cloudFoundryService.operation(getEntity());
@@ -210,7 +216,7 @@ public abstract class PaasWebAppCloudFoundryDriver extends PaasEntityCloudFoundr
 
     public void postLaunch() {
         CloudApplication application = getClient().getApplication(applicationName);
-        String domainUri = application.getUris().get(0);
+        String domainUri = "http://"+application.getUris().get(0);
         getEntity().setAttribute(Attributes.MAIN_URI, URI.create(domainUri));
         getEntity().setAttribute(CloudFoundryWebApp.ROOT_URL, domainUri);
 
