@@ -13,22 +13,18 @@ services:
   name: SeaClouds Deployer + Monitoring
   brooklyn.children:
   - serviceType: eu.seaclouds.modaclouds.dda.MODACloudsDeterministicDataAnalyzer
-    name: MODAclouds Deterministic Data Analyzer
+    name: Monitoring DDA
     id: monitoring-dda
   - serviceType: eu.seaclouds.modaclouds.manager.MODACloudsMonitoringManager
-    name: MODAclouds Monitoring Manager
+    name: Monitoring Manager
     id: monitoring-manager
     brooklyn.config:
       modaclouds.dda.ip: $brooklyn:component("monitoring-dda").attributeWhenReady("host.address")
   - serviceType: "classpath://brooklyn/entity/brooklynnode/brooklyn-node.yaml"
     id: deployer
-    name: SeaClouds Deployer
-    managementUser: admin
-    managementPassword: p4ssw0rd
-    brooklynLocalPropertiesContents: |
-      brooklyn.webconsole.security.users=admin
-      brooklyn.webconsole.security.user.admin.password=p4ssw0rd
+    name: Deployer
     brooklyn.config:
+      brooklynnode.webconsole.nosecurity: true
       brooklynnode.download.archive.subpath: brooklyn-dist-0.7.0-incubating/
       brooklynnode.classpath:
         - classpath://deployer-0.8.0-SNAPSHOT.jar
@@ -38,26 +34,31 @@ services:
 
   shell.env:
     SLA_HOST: $brooklyn:component("sla-core").attributeWhenReady("host.address")
-    SLA_PORT: $brooklyn:component("sla-core").attributeWhenReady("http.port")  
-  
+    SLA_PORT: $brooklyn:component("sla-core").attributeWhenReady("http.port")
+
   brooklyn.children:
   - serviceType: eu.seaclouds.dashboard.SeacloudsDashboard
-    name: SeaClouds Dashboard
-    id: dashboard  
+    name: Dashboard
+    id: dashboard
     brooklyn.config:
       port: 8000
       adminPort: 8001
       deployerHost: $brooklyn:component("deployer").attributeWhenReady("host.address")
       deployerPort: $brooklyn:component("deployer").attributeWhenReady("brooklynnode.webconsole.httpPort")
-      deployerUser: $brooklyn:component("deployer").config("brooklynnode.managementUser")
-      deployerPassword: $brooklyn:component("deployer").config("brooklynnode.managementPassword")
       slaHost: $SLA_HOST
       monitorHost: $brooklyn:component("monitoring-manager").attributeWhenReady("host.address")
-      monitorPort: $brooklyn:component("monitoring-manager").attributeWhenReady("modaclouds.mm.port")      
+      monitorPort: $brooklyn:component("monitoring-manager").attributeWhenReady("modaclouds.mm.port")
     install.latch: $brooklyn:component("sla-core").attributeWhenReady("service.isUp")
-    
+
+  - serviceType: "classpath://eu.seaclouds.planner/planner_blueprint.yml"
+    id: planner
+    name: Planner
+    brooklyn.config:
+        planner.install.version: "0.8.0-20150918.142713-9"
+    launch.latch: $brooklyn:component("sla-core").attributeWhenReady("service.isUp")
+
   - serviceType: brooklyn.entity.webapp.tomcat.TomcatServer
-    name: SLA service Core
+    name: SLA Core
     id: sla-core
     brooklyn.config:
       java.sysprops:
@@ -70,6 +71,6 @@ services:
 
   - serviceType: brooklyn.entity.database.mysql.MySqlNode
     id: sla-db
-    name: SLA service Db
+    name: SLA Db
     brooklyn.config:
       creationScriptUrl: https://raw.githubusercontent.com/SeaCloudsEU/sla-core/e1d3bd4dec27236cfdefa1eae81d38db3dcd11da/sla-repository/src/main/resources/sql/01database.sql
