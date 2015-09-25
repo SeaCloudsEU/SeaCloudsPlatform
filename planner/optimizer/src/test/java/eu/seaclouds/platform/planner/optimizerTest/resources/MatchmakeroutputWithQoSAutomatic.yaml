@@ -1,16 +1,19 @@
+---
 tosca_definitions_version: tosca_simple_yaml_1_0
 node_templates:
-  nuroCaseStudy:
+  parser:
     type: seaClouds.nodes.WebApplication.PHP
     properties: {version: 5.5}
-    requirements: {host: webServer, database_endpoint: nuroDatabase}
+    requirements: {host: webServer1, database_endpoint: database, analyzer: contentAnalyzer}
     QoSpropertiesPOC:
       executionTimeMeasuredInPOC: AWS.compute.c1.medium
-      executionTimePOC: 100.0
-      OpProfilePOC: {nuroDatabase: 4.0}
-  nuroDatabase:
+      executionTimePOC: 5.0
+      OpProfilePOC: {database: 0.001, contentAnalyzer: 0.999}
+  
+
+  database:
     type: seaClouds.nodes.Database.MySQL
-    properties: {db_name: nuroDB, version: 5.1}
+    properties: {db_name: exampleDB, version: 5.1}
     capabilities:
       database_endpoint:
         properties: {port: 80}
@@ -24,9 +27,10 @@ node_templates:
         localStorage: {greater_or_equal: 100}
         memory: {greater_or_equal: 0.4}
         suitableServices: [AWS.compute.c1.medium, AWS.compute.m1.small, AWS.compute.m1.medium,
-          AWS.compute.m1.large]
-    QoSpropertiesPOC: {executionTimeMeasuredInPOC: AWS.compute.c1.medium, executionTimePOC: 100.0}
-  webServer:
+          AWS.compute.m1.large, AWS.compute.t1.micro, AWS.compute.t2.small, Rackspace.compute.1gb, Rackspace.compute.compute1-15, HP.compute.standard.xsmall, HP.compute.standard.small, HP.compute.standard.medium, HP.compute.standard.large, HP.compute.standard.xlarge, HP.compute.standard.2xlarge]
+    QoSpropertiesPOC: {executionTimeMeasuredInPOC: AWS.compute.c1.medium, executionTimePOC: 50.0}
+  
+  webServer1:
     type: seaClouds.nodes.WebServer
     capabilities: {host: seaclouds.nodes.WebApplication.PHP}
     requirements:
@@ -36,7 +40,77 @@ node_templates:
           in_range: [2, 8]
         memory: {greater_or_equal: 0.4}
         operatingSystem: linux.ubuntu
-        suitableServices: [AWS.compute.c1.medium, AWS.compute.m1.large, Rackspace.compute.compute1-15]
+        suitableServices: [AWS.compute.c1.medium, AWS.compute.m1.small, AWS.compute.m1.medium,
+          AWS.compute.m1.large, AWS.compute.t1.micro, AWS.compute.t2.small, Rackspace.compute.1gb, Rackspace.compute.compute1-15, HP.compute.standard.xsmall, HP.compute.standard.small, HP.compute.standard.medium, HP.compute.standard.large, HP.compute.standard.xlarge, HP.compute.standard.2xlarge]
+
+  contentAnalyzer:
+    type: seaClouds.nodes.WebApplication.PHP
+    properties: {version: 5.5}
+    requirements: {host: webServer2, database_endpoint: database, analyzer: semanticAnalyzer}
+    QoSpropertiesPOC:
+      executionTimeMeasuredInPOC: AWS.compute.c1.medium
+      executionTimePOC: 50.0
+      OpProfilePOC: {database: 0.1, semanticAnalyzer: 0.9}
+
+  webServer2:
+    type: seaClouds.nodes.WebServer
+    capabilities: {host: seaclouds.nodes.WebApplication.PHP}
+    requirements:
+      host: seaclouds.nodes.Compute
+      constraints:
+        cpuCores:
+          in_range: [2, 8]
+        memory: {greater_or_equal: 0.4}
+        operatingSystem: linux.ubuntu
+        suitableServices: [AWS.compute.c1.medium, AWS.compute.m1.small, AWS.compute.m1.medium,
+          AWS.compute.m1.large, AWS.compute.t1.micro, AWS.compute.t2.small, Rackspace.compute.1gb, Rackspace.compute.compute1-15, HP.compute.standard.xsmall, HP.compute.standard.small, HP.compute.standard.medium, HP.compute.standard.large, HP.compute.standard.xlarge, HP.compute.standard.2xlarge]
+
+  semanticAnalyzer:
+    type: seaClouds.nodes.WebApplication.PHP
+    properties: {version: 5.5}
+    requirements: {host: webServer3, database_endpoint: database, analyzer: extractor}
+    QoSpropertiesPOC:
+      executionTimeMeasuredInPOC: AWS.compute.c1.medium
+      executionTimePOC: 100.0
+      OpProfilePOC: {database: 0.1, extractor: 0.9}
+    
+  webServer3:
+    type: seaClouds.nodes.WebServer
+    capabilities: {host: seaclouds.nodes.WebApplication.PHP}
+    requirements:
+      host: seaclouds.nodes.Compute
+      constraints:
+        cpuCores:
+          in_range: [2, 8]
+        memory: {greater_or_equal: 0.4}
+        operatingSystem: linux.ubuntu
+        suitableServices: [AWS.compute.c1.medium, AWS.compute.m1.small, AWS.compute.m1.medium,
+          AWS.compute.m1.large, AWS.compute.t1.micro, AWS.compute.t2.small, Rackspace.compute.1gb, Rackspace.compute.compute1-15, HP.compute.standard.xsmall, HP.compute.standard.small, HP.compute.standard.medium, HP.compute.standard.large, HP.compute.standard.xlarge, HP.compute.standard.2xlarge]
+
+  extractor:
+    type: seaClouds.nodes.WebApplication.PHP
+    properties: {version: 5.5}
+    requirements: {host: webServer4, database_endpoint: database}
+    QoSpropertiesPOC:
+      executionTimeMeasuredInPOC: AWS.compute.c1.medium
+      executionTimePOC: 150.0
+      OpProfilePOC: {database: 1.0}
+
+  webServer4:
+    type: seaClouds.nodes.WebServer
+    capabilities: {host: seaclouds.nodes.WebApplication.PHP}
+    requirements:
+      host: seaclouds.nodes.Compute
+      constraints:
+        cpuCores:
+          in_range: [2, 8]
+        memory: {greater_or_equal: 0.4}
+        operatingSystem: linux.ubuntu
+        suitableServices: [AWS.compute.c1.medium, AWS.compute.m1.small, AWS.compute.m1.medium,
+          AWS.compute.m1.large, AWS.compute.t1.micro, AWS.compute.t2.small, Rackspace.compute.1gb, Rackspace.compute.compute1-15, HP.compute.standard.xsmall, HP.compute.standard.small, HP.compute.standard.medium, HP.compute.standard.large, HP.compute.standard.xlarge, HP.compute.standard.2xlarge]
+
+
+
+
 QoSrequirementsPOC: {availabilityPOC: 0.99, responseTimePOC: 2000.0, workloadPOC: 1000.0,
   costPOC: 1500.0}
-

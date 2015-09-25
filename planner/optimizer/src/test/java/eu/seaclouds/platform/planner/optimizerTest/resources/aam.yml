@@ -1,0 +1,82 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+
+description: AAM for SeaClouds Demo V2.0
+
+imports:
+  - tosca-normative-types:1.0.0.wd03-SNAPSHOT
+
+topology_template:
+ node_templates:
+   java_ee_host:
+    type: sc_req.java_ee_host
+
+   db_host:
+    type: sc_req.db_host
+
+   mysql_server:
+     type: seaclouds.nodes.Deploy.MySQL
+     properties:
+        name: some_name
+        user: some_user
+        password: some_password
+        version: 5.5.37
+     artifacts:
+       - db_create: files/db_create.sql
+         type: tosca.artifacts.File
+     requirements:
+       - host: db_host
+
+   tomcat_server:
+      type: seaclouds.nodes.deploy.tomcatServer
+      properties:
+           version: 7.0.53
+      artifacts:
+        - war: chat-webApplication.war
+      requirements:
+        - host: java_ee_host
+
+node_types:
+  sc_req.java_ee_host:
+    derived_from: seaclouds.nodes.Compute
+    properties:
+      resource_type:
+        constraints:
+          - equal: compute
+
+  sc_req.db_host:
+    derived_from: seaclouds.nodes.Platform
+    properties:
+      resource_type:
+        constraints:
+          - equal: platform
+      mysql_support:
+        constraints:
+          - equal: true
+
+groups:
+  db_query:
+    members: [mysql_server]
+    policies:
+      - QoSInfo:
+          execution_time: 30 ms
+          benchmark_platform: hp_cloud_services.2xl
+      - dependencies:
+          other_modules: []
+
+  tomcat_server_operation:
+    members: [tomcat_server]
+    policies:
+      - QoSInfo:
+          execution_time: 50 ms
+          benchmark_platform: hp_cloud_services.2xl
+      - QoSRequirements:
+          response_time: { less_than: 2 sec }
+          availability: { greater_than: 0.998 }
+          cost: { less_or_equal: 200 euros_per_month }
+          workload: { less_or_equal: 50 req_per_mins }
+      - QoB:
+          qos: response_time
+          type: mail
+          value: admin@chatapp.com
+      - dependencies:
+          other_modules: [ db_query ]

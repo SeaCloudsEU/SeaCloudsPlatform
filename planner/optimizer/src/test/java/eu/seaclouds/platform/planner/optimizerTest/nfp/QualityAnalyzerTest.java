@@ -34,6 +34,7 @@ import eu.seaclouds.platform.planner.optimizer.Topology;
 import eu.seaclouds.platform.planner.optimizer.TopologyElement;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
+import eu.seaclouds.platform.planner.optimizerTest.TestConstants;
 
 public class QualityAnalyzerTest {
 
@@ -53,7 +54,7 @@ public class QualityAnalyzerTest {
 
    }
 
-   @Test
+   @Test(enabled=TestConstants.EnabledTest)
    public void testPerformanceEvaluation() {
 
       log.info("==== TEST for PERFORMANCE EVALUATION starts ====");
@@ -70,16 +71,16 @@ public class QualityAnalyzerTest {
 
       Assert.assertTrue("Compute performance returned null", qInfo != null);
 
-      if (qInfo != null) {
+      
          log.info("Testing performance. Returned application response time is "
                + qInfo.getResponseTime());
-      }
+      
 
       log.info("==== TEST for PERFORMANCE EVALUATION finishes ====");
 
    }
 
-   @Test
+   @Test(enabled=TestConstants.EnabledTest)
    public void testAvailabilityEvaluation() {
 
       log.info("==== TEST for AVAILABILITY EVALUATION starts ====");
@@ -104,7 +105,7 @@ public class QualityAnalyzerTest {
 
    }
 
-   @Test
+   @Test(enabled=TestConstants.EnabledTest)
    public void testCostEvaluation() {
 
       log.info("==== TEST for COST EVALUATION starts ====");
@@ -124,7 +125,7 @@ public class QualityAnalyzerTest {
 
    }
 
-   @Test
+   @Test(enabled=TestConstants.EnabledTest)
    public void testReconfigurationThresholds() {
 
       log.info("==== TEST for RECONFIGURATION THRESHOLDS starts ====");
@@ -133,7 +134,7 @@ public class QualityAnalyzerTest {
       SuitableOptions cloudCharacteristics = createSuitableOptions();
 
       QualityInformation requirements = new QualityInformation();
-      requirements.setResponseTime(1000.0);
+      requirements.setResponseTimeSecs(1000.0);
       requirements.setWorkload(10.0);
       requirements.setCostHour(40.0);
 
@@ -147,7 +148,7 @@ public class QualityAnalyzerTest {
       log.info("==== TEST for RECONFIGURATION THRESHOLDS starts ====");
    }
 
-   private Solution createSolution() {
+   private static Solution createSolution() {
 
       Solution sol = new Solution();
       sol.addItem("Module1", "CloudOffer1");
@@ -157,7 +158,7 @@ public class QualityAnalyzerTest {
 
    }
 
-   private Topology createTopology() {
+   private static Topology createTopology() {
 
       TopologyElement e1 = new TopologyElement("Module1", 1.0); // name and
                                                                 // execution
@@ -176,7 +177,7 @@ public class QualityAnalyzerTest {
 
    }
 
-   private SuitableOptions createSuitableOptions() {
+   private static SuitableOptions createSuitableOptions() {
 
       CloudOffer offer1 = new CloudOffer("CloudOffer1", 20, 0.99, 2);
       CloudOffer offer2 = new CloudOffer("CloudOffer2", 30, 0.95, 3);
