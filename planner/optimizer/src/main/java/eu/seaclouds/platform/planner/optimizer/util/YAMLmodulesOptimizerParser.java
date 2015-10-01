@@ -24,50 +24,36 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
+
+//Version of September 2015
 public class YAMLmodulesOptimizerParser {
 
-   static Logger log = LoggerFactory
-                           .getLogger(YAMLmodulesOptimizerParser.class);
+   private static final boolean IS_DEBUG = false;
+   static Logger                log      = LoggerFactory.getLogger(YAMLmodulesOptimizerParser.class);
 
-   @SuppressWarnings("unchecked")
-   public static boolean ModuleHasModuleRequirements(Object module,
-         Map<String, Object> modulesMap) {
 
-      Map<String, Object> moduleInfo = null;
-      Map<String, Object> moduleReqs = null;
-      try {
-         moduleInfo = (Map<String, Object>) module;
-         if (!moduleInfo.containsKey(TOSCAkeywords.MODULE_REQUIREMENTS)) {
-            return false;
+   public static boolean moduleHasModuleRequirements(String moduleName, Map<String, Object> groups) {
+
+
+      Map<String, Object> dependeciesInfoOfGroupOfModule = YAMLgroupsOptimizerParser
+            .getDependenciesInfoOfMemberName(moduleName, groups);
+
+      if (dependeciesInfoOfGroupOfModule == null) {
+         if (IS_DEBUG) {
+            log.debug("There has not been found info of dependencies for module called " + moduleName);
          }
-         moduleReqs = (Map<String, Object>) moduleInfo
-               .get(TOSCAkeywords.MODULE_REQUIREMENTS);
-
-      } catch (ClassCastException E) {
          return false;
       }
 
-      // If requirements=1, it could be its host so check that there are at
-      // least two requirements
-      // It can also happen that the module has constraints.
-
-      // if any of the module requirements has the name of potentialModuleName,
-      // then there is a requirement between modules.
-      for (Map.Entry<String, Object> entry : moduleReqs.entrySet()) {
-         if (!entry.getKey().equals(TOSCAkeywords.MODULE_REQUIREMENTS_HOST)) {
-
-            try { // It may happen that the result is not a String but a
-                  // Hashmap... in that case just skip the check for this entry
-               if (isModuleName((String) entry.getValue(), modulesMap)) {
-                  return true;
-               }
-            } catch (ClassCastException E) {// It wasnt a string, maybe they
-                                            // were constraints
-            }
-
-         }
-
+      if (dependeciesInfoOfGroupOfModule.size() > 0) {
+         return true;
       }
+
+      if (IS_DEBUG) {
+         log.debug("Module'" + moduleName + "' had dependencies but it id not contain information of other modules");
+      }
+
       return false;
 
    }
@@ -81,14 +67,19 @@ public class YAMLmodulesOptimizerParser {
     *           map teh module names
     * @return
     */
-   public static boolean isModuleName(String value,
-         Map<String, Object> modulesMap) {
+   public static boolean isModuleName(String value, Map<String, Object> modulesMap) {
       return modulesMap.containsKey(value);
    }
 
+   /**
+    * @param module
+    * @param potentialModuleName
+    * @return For M12 implementation TOSCA, whether a module depends on the
+    *         other module (not very sure of teh from-to relationship, check
+    *         it).
+    */
    @SuppressWarnings("unchecked")
-   public static boolean ModuleRequirementFromTo(Object module,
-         String potentialModuleName) {
+   public static boolean moduleRequirementFromTo(Object module, String potentialModuleName) {
       Map<String, Object> moduleInfo = null;
       Map<String, Object> moduleReqs = null;
 
@@ -99,8 +90,7 @@ public class YAMLmodulesOptimizerParser {
             return false;
          }
 
-         moduleReqs = (Map<String, Object>) moduleInfo
-               .get(TOSCAkeywords.MODULE_REQUIREMENTS);
+         moduleReqs = (Map<String, Object>) moduleInfo.get(TOSCAkeywords.MODULE_REQUIREMENTS);
 
       } catch (ClassCastException E) {
          return false;
@@ -122,8 +112,7 @@ public class YAMLmodulesOptimizerParser {
    }
 
    @SuppressWarnings("unchecked")
-   public static boolean moduleIsHostOfOther(String moduleName,
-         Map<String, Object> modulesMap) {
+   public static boolean moduleIsHostOfOther(String moduleName, Map<String, Object> modulesMap) {
 
       for (Map.Entry<String, Object> entry : modulesMap.entrySet()) {
          Map<String, Object> moduleInfo = null;
@@ -137,16 +126,13 @@ public class YAMLmodulesOptimizerParser {
             // check it has requirements
             if (moduleInfo.containsKey(TOSCAkeywords.MODULE_REQUIREMENTS)) {
 
-               moduleReqs = (Map<String, Object>) moduleInfo
-                     .get(TOSCAkeywords.MODULE_REQUIREMENTS);
+               moduleReqs = (Map<String, Object>) moduleInfo.get(TOSCAkeywords.MODULE_REQUIREMENTS);
 
                // check it has host as requirements
-               if (moduleReqs
-                     .containsKey(TOSCAkeywords.MODULE_REQUIREMENTS_HOST)) {
+               if (moduleReqs.containsKey(TOSCAkeywords.MODULE_REQUIREMENTS_HOST)) {
 
                   // check if the host requirement is equal to the searched name
-                  if (moduleReqs.get(TOSCAkeywords.MODULE_REQUIREMENTS_HOST)
-                        .equals(moduleName)) {
+                  if (moduleReqs.get(TOSCAkeywords.MODULE_REQUIREMENTS_HOST).equals(moduleName)) {
                      return true;
                   }
 
@@ -162,95 +148,69 @@ public class YAMLmodulesOptimizerParser {
    }
 
    @SuppressWarnings("unchecked")
-   public static String getMeasuredPerformanceHost(Map<String, Object> module) {
+   public static String getMeasuredPerformanceHost(String moduleName, Map<String, Object> groups) {
       Map<String, Object> moduleInfo = null;
       Map<String, Object> moduleReqs = null;
-      try {
-         moduleInfo = (Map<String, Object>) module;
-         // Check existence of qos properties
-         if (!moduleInfo.containsKey(TOSCAkeywords.MODULE_QOS_PROPERTIES)) {
-            return null;
-         }
-         moduleReqs = (Map<String, Object>) moduleInfo
-               .get(TOSCAkeywords.MODULE_QOS_PROPERTIES);
 
-         // Check Existence of measured host
-         if (moduleReqs
-               .containsKey(TOSCAkeywords.MODULE_QOS_PERFORMANCE_LOCATION)) {
-            return (String) moduleReqs
-                  .get(TOSCAkeywords.MODULE_QOS_PERFORMANCE_LOCATION);
-         }
+      Map<String, Object> qoSinfoOfGroupOfModule = YAMLgroupsOptimizerParser.getQoSinfoOfMemberName(moduleName, groups);
 
-      } catch (ClassCastException E) {
+      if (qoSinfoOfGroupOfModule == null) {
+         if (IS_DEBUG) {
+            log.debug("There has not been found info of QoS for module called " + moduleName);
+         }
          return null;
       }
+
+      if (qoSinfoOfGroupOfModule.containsKey(TOSCAkeywords.GROUP_ELEMENT_QOS_BENCHMARK_PLATFORM)) {
+         return (String) qoSinfoOfGroupOfModule.get(TOSCAkeywords.GROUP_ELEMENT_QOS_BENCHMARK_PLATFORM);
+      }
+
       // not found There were qos properties but not the information of teh
       // machine tested
+      if (IS_DEBUG) {
+         log.debug("Module had qos info but it did not contain information of the platform where it was executed");
+      }
       return null;
    }
 
-   @SuppressWarnings("unchecked")
-   public static double getMeasuredExecTimeMillis(Map<String, Object> module) {
+   public static double getMeasuredExecTimeMillis(String moduleName, Map<String, Object> groups) {
       Map<String, Object> moduleInfo = null;
       Map<String, Object> moduleReqs = null;
-      try {
-         moduleInfo = (Map<String, Object>) module;
-         // Check existence of qos properties
-         if (!moduleInfo.containsKey(TOSCAkeywords.MODULE_QOS_PROPERTIES)) {
-            return 0.0;
-         }
-         moduleReqs = (Map<String, Object>) moduleInfo
-               .get(TOSCAkeywords.MODULE_QOS_PROPERTIES);
 
-         // Check Existence of measured host
-         if (moduleReqs
-               .containsKey(TOSCAkeywords.MODULE_QOS_PERFORMANCE_MILLIS)) {
-            return (Double) moduleReqs
-                  .get(TOSCAkeywords.MODULE_QOS_PERFORMANCE_MILLIS);
-         }
+      Map<String, Object> qoSinfoOfGroupOfModule = YAMLgroupsOptimizerParser.getQoSinfoOfMemberName(moduleName, groups);
 
-      } catch (ClassCastException E) {
+      if (qoSinfoOfGroupOfModule == null) {
+         if (IS_DEBUG) {
+            log.debug("There has not been found info of QoS for module called " + moduleName);
+         }
          return 0.0;
       }
-      // not found There were qos properties but not the information of teh
+
+      if (qoSinfoOfGroupOfModule.containsKey(TOSCAkeywords.GROUP_ELEMENT_QOS_BENCHMARK_PLATFORM)) {
+         if (IS_DEBUG) {
+            log.debug("Found that module " + moduleName + " takes "
+                  + YAMLmodulesOptimizerParser
+                        .castToDouble(qoSinfoOfGroupOfModule.get(TOSCAkeywords.GROUP_ELEMENT_QOS_EXECUTIONTIME))
+                  + " milliseconds to execute in its benchmark platform");
+         }
+         return YAMLmodulesOptimizerParser
+               .castToDouble(qoSinfoOfGroupOfModule.get(TOSCAkeywords.GROUP_ELEMENT_QOS_EXECUTIONTIME));
+      }
+
+      // not found There were qos properties but not the information of the
+      // execution time
       // machine tested
+      if (IS_DEBUG) {
+         log.debug("Module had qos info but it did not contain information of the time it took to execute in isolation");
+      }
+
       return 0.0;
    }
 
-   @SuppressWarnings("unchecked")
-   public static double getOpProfileWithModule(Map<String, Object> module,
-         String moduleReqName) {
-
-      Map<String, Object> moduleReqs = null;
-      try {
-
-         // Check existence of qos properties
-         if (!module.containsKey(TOSCAkeywords.MODULE_QOS_PROPERTIES)) {
-            return 1.0;
-         }
-         moduleReqs = (Map<String, Object>) module
-               .get(TOSCAkeywords.MODULE_QOS_PROPERTIES);
-      } catch (ClassCastException E) {
-         return 1.0;
-      }
-
-      try {
-         // Check Existence of measured host
-         if (moduleReqs
-               .containsKey(TOSCAkeywords.MODULE_QOS_OPERATIONAL_PROFILE)) {
-
-            Map<String, Object> opprofilemodule = (Map<String, Object>) moduleReqs
-                  .get(TOSCAkeywords.MODULE_QOS_OPERATIONAL_PROFILE);
-
-            return (Double) opprofilemodule.get(moduleReqName);
-         }
-      } catch (ClassCastException E) {
-         return 1.0;
-      }
-
-      // not found There were qos properties but not the information of teh
-      // machine tested
-      return 0.0;
+   private static double castToDouble(Object object) {
+      // It creates circular dependencies between classes. Think for the next
+      // version how to refactor it.
+      return YAMLoptimizerParser.castToDouble(object);
    }
 
    /**
@@ -262,49 +222,29 @@ public class YAMLmodulesOptimizerParser {
     *         its name is in the general list of existing modules,
     */
    @SuppressWarnings("unchecked")
-   public static List<String> ModuleRequirementsOfAModule(
-         Map<String, Object> module, Map<String, Object> modules) {
+   public static List<String> moduleRequirementsOfAModule(String moduleName, Map<String, Object> groups) {
 
-      ArrayList<String> reqnameslist = new ArrayList<String>();
+      // It returns a list of string that is the concatenation of the modules
+      // that are members of each of the groups on which
+      // the group of modulename belongs
 
-      Map<String, Object> moduleInfo = null;
-      Map<String, Object> moduleReqs = null;
+      ArrayList<String> dependentModules = new ArrayList<String>();
 
-      try {
-         moduleInfo = (Map<String, Object>) module;
+      List<String> dependentGroups = (List<String>) YAMLgroupsOptimizerParser.getListDependentGroupsOfModule(moduleName,
+            groups);
 
-         if (!moduleInfo.containsKey(TOSCAkeywords.MODULE_REQUIREMENTS)) {
-            // return empty list
-            return reqnameslist;
-         }
-
-         moduleReqs = (Map<String, Object>) moduleInfo
-               .get(TOSCAkeywords.MODULE_REQUIREMENTS);
-
-      } catch (ClassCastException E) {
-         // return empty list
-         return reqnameslist;
+      if ((dependentGroups == null) || (dependentGroups.size() == 0)) {
+         return null;
       }
 
-      // if any of the module requirements has the name of potentialModuleName,
-      // then there is a requirement between modules.
-      for (Map.Entry<String, Object> entry : moduleReqs.entrySet()) {
-         try {
-            if (isModuleName((String) entry.getValue(), modules)) {// if it is a
-                                                                   // module
-               if (!entry.getKey().equals(
-                     TOSCAkeywords.MODULE_REQUIREMENTS_HOST)) {// it isn't its
-                                                               // execution host
-                  reqnameslist.add((String) entry.getValue());
-               }
-            }
-         } catch (ClassCastException E) {// It wasnt a string, maybe they were
-                                         // constraints
+      for (String groupName : dependentGroups) {
+         List<String> membersOfGroup = YAMLgroupsOptimizerParser.getAllMembersOfGroupName(groupName, groups);
+         if (membersOfGroup != null) {
+            dependentModules.addAll(membersOfGroup);
          }
       }
 
-      return reqnameslist;
-
+      return dependentModules;
    }
 
    /**
@@ -321,8 +261,7 @@ public class YAMLmodulesOptimizerParser {
          if (!module.containsKey(TOSCAkeywords.MODULE_REQUIREMENTS)) {
             return null;
          }
-         moduleReqs = (Map<String, Object>) module
-               .get(TOSCAkeywords.MODULE_REQUIREMENTS);
+         moduleReqs = (Map<String, Object>) module.get(TOSCAkeywords.MODULE_REQUIREMENTS);
 
       } catch (ClassCastException E) {
          return null;
@@ -336,6 +275,80 @@ public class YAMLmodulesOptimizerParser {
          return null;
       }
 
+   }
+
+   public static QualityInformation getQoSRequirementsOfGroup(Object group) {
+
+      Map<String, Object> qosInformation = YAMLgroupsOptimizerParser.getQoSInformationInPolicies(group);
+
+      if (qosInformation == null) {
+         log.warn("There was not found QoS information in the policies of the group. returning null");
+         return null;
+      }
+      return YAMLmodulesOptimizerParser.parseQoS(qosInformation);
+
+   }
+
+   private static double getDoubleValueFromMapValue(Map<String, Object> quality) {
+
+      for (Map.Entry<String, Object> entry : quality.entrySet()) {
+         try {
+            double qualityValue = YAMLoptimizerParser.castToDouble(entry.getValue());
+            return qualityValue;
+         } catch (Exception E) {
+            log.info("Explored quality and a Value of its Map did not contain double values");
+         }
+
+      }
+      log.warn("Explored all vvalues of the Map and it was NOT found any double value. Returning -1");
+      return -1;
+   }
+
+   private static QualityInformation parseQoS(Map<String, Object> qosInformation) {
+
+      QualityInformation quality = new QualityInformation();
+
+      // check availability
+      if (qosInformation.containsKey(TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS_AVAILABILITY)) {
+         Map<String, Object> availabilityMapValue = getMapValueFromQuality(qosInformation,
+               TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS_AVAILABILITY);
+         quality.setAvailability(YAMLmodulesOptimizerParser.getDoubleValueFromMapValue(availabilityMapValue));
+      }
+
+      // check performance
+      if (qosInformation.containsKey(TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS_RESPONSETIME)) {
+
+         Map<String, Object> responsetimeMapValue = getMapValueFromQuality(qosInformation,
+               TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS_RESPONSETIME);
+         quality.setResponseTimeSecs(YAMLmodulesOptimizerParser.getDoubleValueFromMapValue(responsetimeMapValue));
+      }
+
+      // check cost
+      if (qosInformation.containsKey(TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS_COST_MONTH)) {
+         Map<String, Object> costMapValue = getMapValueFromQuality(qosInformation,
+               TOSCAkeywords.GROUP_POLICY_QOSREQUIREMENTS_COST_MONTH);
+         quality.setCostMonth(YAMLmodulesOptimizerParser.getDoubleValueFromMapValue(costMapValue));
+      }
+
+      // check whether any of them existed
+      if (quality.existAvailabilityRequirement() || quality.existCostRequirement()
+            || quality.existResponseTimeRequirement()) {
+         return quality;
+      } else {
+         log.info("There was not found any quality requirement in the application");
+         return null;
+      }
+   }
+
+   private static Map<String, Object> getMapValueFromQuality(Map<String, Object> qosInformation, String qualityName) {
+      Map<String, Object> availabilityMapValue;
+      try {
+         availabilityMapValue = (Map<String, Object>) qosInformation.get(qualityName);
+      } catch (ClassCastException E) {
+         log.warn("I could not Cast the information inside quality '" + qualityName + "' to a Map");
+         return null;
+      }
+      return availabilityMapValue;
    }
 
 }

@@ -18,7 +18,6 @@
 package eu.seaclouds.platform.planner.optimizer.heuristics;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,123 +27,150 @@ import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.Topology;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 
-public class HillClimb extends AbstractHeuristic implements SearchMethod {
+public class Anneal extends AbstractHeuristic implements SearchMethod {
+
+   private static final int MAX_ITERATIONS_NOT_CHANGE_STATE = 20;
+   private static final double INITIAL_TEMPERATURE = 60.0; // MaxFitness... by
+                                                           // convenience
+   private static final double GEOM_TEMP_DECREMENT = 0.95;
 
    @SuppressWarnings("hiding")
-   private static boolean IS_DEBUG = AbstractHeuristic.IS_DEBUG || false;
+   private static final boolean IS_DEBUG = AbstractHeuristic.IS_DEBUG || false;
 
-   static Logger logHill = LoggerFactory.getLogger(HillClimb.class);
+   static Logger logAnneal = LoggerFactory.getLogger(Anneal.class);
 
-   public HillClimb() {
-      super();
-
-   }
-
-   public HillClimb(int maxIter) {
+   public Anneal(int maxIter) {
       super(maxIter);
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethod#
-    * computeOptimalSolution
-    * (eu.seaclouds.platform.planner.optimizer.SuitableOptions, java.util.Map)
-    */
+   public Anneal() {
+   }
+
    @Override
    public Solution[] computeOptimizationProblem(SuitableOptions cloudOffers, QualityInformation requirements,
          Topology topology, int numPlansToGenerate) {
-
-      // To findSolution method, we pass an Empty solution instead of a null
-      // value to or create a new method that does not consider the current one.
-      // This way may help for replanning, when even the first attempt for
-      // solution will be based on the current deployment
 
       cloudOffers.sortDescendingPerformance();
       Solution[] bestSols = super.findInitialRandomSolutions(cloudOffers, numPlansToGenerate);
       super.setFitnessOfSolutions(bestSols, requirements, topology, cloudOffers);
       if (IS_DEBUG) {
-         logHill.debug(
-               "Start checking the presence of quality attached to solutions after the first generation HILLCLIMB");
+         logAnneal
+               .debug("Start checking the presence of quality attached to solutions after the first generation ANNEAL");
          super.checkQualityAttachedToSolutions(bestSols);
       }
       super.sortSolutionsByFitness(bestSols);
 
       int numItersNoImprovement = 0;
-      while (numItersNoImprovement < super.getMaxIterNoImprove()) { // each
-                                                                    // iteration
-                                                                    // finds a
-                                                                    // peak
+      int currentIterNum = 1;
+      while (numItersNoImprovement < super.getMaxIterNoImprove()) {
+         // Maybe this value of MaxIterNoImprove is too high for theh Anneal
+         // method
 
          Solution currentSol = super.findRandomSolution(cloudOffers);
          currentSol.setSolutionFitness(super.fitness(currentSol, requirements, topology, cloudOffers));
+         // This method can decrease the fitness, so we will return the best
+         // solution found along the way
+         Solution bestSolSoFar = currentSol;
 
-         boolean neighborsImprove = true;
-         int pathLengthTraversed = 0;
-         while (neighborsImprove) {
-            Solution[] candidates = findNeighbors(currentSol, cloudOffers, topology);
-            if (IS_DEBUG) {
-               logHill.debug(
-                     "Found " + candidates.length + " neighbors of the solution: Are " + Arrays.toString(candidates));
-            }
-            super.setFitnessOfSolutions(candidates, requirements, topology, cloudOffers);
-            Solution bestCandidate = super.getSolutionWithMaximumFitness(candidates);
-            if (bestCandidate.getSolutionFitness() > currentSol.getSolutionFitness()) {
-               currentSol = bestCandidate;
-               pathLengthTraversed++;
-               if (IS_DEBUG) {
-                  if (pathLengthTraversed > 100) {
-                     logHill.debug("Something weird is happening, iteration: " + pathLengthTraversed
-                           + "without finding local maxima: Fitness: " + currentSol.getSolutionFitness() + " Solution: "
-                           + currentSol.toString());
-                  }
+         int iterationsWithoutChangeState = 0;
+
+         double temperature = INITIAL_TEMPERATURE;
+         while (iterationsWithoutChangeState < MAX_ITERATIONS_NOT_CHANGE_STATE) {
+
+            Solution neighbor = getRandomNeighbour(currentSol, cloudOffers, topology);
+            neighbor.setSolutionFitness(super.fitness(neighbor, requirements, topology, cloudOffers));
+
+            if (neighbourShouldBeSelected(currentSol.getSolutionFitness(), neighbor.getSolutionFitness(),
+                  temperature)) {
+               currentSol = neighbor;
+               if (currentSol.getSolutionFitness() > bestSolSoFar.getSolutionFitness()) {
+                  bestSolSoFar = currentSol;
                }
-            } else {// there is not any better neighbor. See if this solution
-                    // can be included among the set of best solutions
-               neighborsImprove = false;
-               pathLengthTraversed = 0;
+               iterationsWithoutChangeState = 0;
+            } else {
+               iterationsWithoutChangeState++;
             }
+
+            currentIterNum++;
+            temperature = getTemperature(currentIterNum, INITIAL_TEMPERATURE, temperature);
          }
 
-         // We have a local maxima in currentSol, let's see if it is better than
-         // the previous maxima.
-         if (super.solutionShouldBeIncluded(currentSol, bestSols)) {
+         if (IS_DEBUG) {
 
-            if (IS_DEBUG) {
-               logHill.debug("After " + numItersNoImprovement
-                     + " iterations we have found a local maxima solution that is going to be included: "
-                     + currentSol.toString());
-            }
-            super.insertOrdered(bestSols, currentSol);
+            logAnneal.debug("Solution do not find suitable neighbors for a while. Solution found is: "
+                  + bestSolSoFar.toString() + " with fitness " + bestSolSoFar.getSolutionFitness() + ". It took "
+                  + currentIterNum + " iterations to find it and finished with temperature=" + temperature);
+
+         }
+
+         // Too many iterations without changing state. Try to include the the
+         // best one found so far.
+         //
+         if (super.solutionShouldBeIncluded(bestSolSoFar, bestSols)) {
+            super.insertOrdered(bestSols, bestSolSoFar);
             numItersNoImprovement = 0;
 
             if (IS_DEBUG) {
-               logHill.debug(
-                     "Start checking the presence of quality attached to solutions after adding a solution in HILLCLIMB");
+               logAnneal.debug("Found that solution " + bestSolSoFar.toString()
+                     + " is to be included in the current list of solutions to return");
+
+               logAnneal.debug(
+                     "Start checking the presence of quality attached to solutions after adding a solution in ANNEAL");
                super.checkQualityAttachedToSolutions(bestSols);
             }
 
          } else {
-            if (IS_DEBUG) {
-               logHill.debug("After " + numItersNoImprovement
-                     + " iterations we have found a local maxima, but it will not be included: "
-                     + currentSol.toString());
-            }
             numItersNoImprovement++;
          }
 
-      }
-
-      if (IS_DEBUG) {
-         logHill.debug(
-               "Start checking the presence of quality attached to solutions after adding a solution in HILLCLIMB");
-         super.checkQualityAttachedToSolutions(bestSols);
+         currentIterNum = 0;
       }
 
       return bestSols;
 
    }
 
+   private double getTemperature(int currentIterNum, double initialTemperature, double temperature) {
+      return temperature * GEOM_TEMP_DECREMENT;
+
+   }
+
+   protected boolean neighbourShouldBeSelected(double currentFitness, double neighborFitness, double temperature) {
+
+      if (neighborFitness > currentFitness) {
+         return true;
+      }
+
+      // neighbor is worse than current, calculate an exponential distribution
+      double probability = Math.expm1(-1.0 * (currentFitness - neighborFitness) / temperature) + 1.0;
+      double random = Math.random();
+      return probability > random;
+
+   }
+
+   private Solution exploredSol;
+   private Solution[] neighborsOfExplored;
+
+   private Solution getRandomNeighbour(Solution currentSol, SuitableOptions cloudOffers, Topology topology) {
+
+      if (exploredSol == null) {
+         neighborsOfExplored = findNeighbors(currentSol, cloudOffers, topology);
+         exploredSol = currentSol;
+      }
+      if (!currentSol.equals(exploredSol)) {
+         neighborsOfExplored = findNeighbors(currentSol, cloudOffers, topology);
+         exploredSol = currentSol;
+      }
+      // at this point in neighbors is the useful list of neighbours.
+
+      int neighborIndexChosen = (int) Math.floor(Math.random() * (double) neighborsOfExplored.length);
+
+      return neighborsOfExplored[neighborIndexChosen];
+
+   }
+
+   // TODO: The following code is repeated from HillClimb. A refactor will be
+   // necessary.
    /**
     * @param currentSol
     * @param cloudOffers
@@ -242,11 +268,11 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
       // out.
       if (topology.getModule(modulename).canScale()) {
          neighborSol = currentSol.clone();
-         try{
-         neighborSol.modifyNumInstancesOfModule(modulename, currentSol.getCloudInstancesForModule(modulename) + 1);
+         try {
+            neighborSol.modifyNumInstancesOfModule(modulename, currentSol.getCloudInstancesForModule(modulename) + 1);
          } catch (Exception E) {
+            // exception getting the cloud instances for module. Setting to 0.
             neighborSol.modifyNumInstancesOfModule(modulename, 0);
-            
          }
          neighbors.add(neighborSol);
       }

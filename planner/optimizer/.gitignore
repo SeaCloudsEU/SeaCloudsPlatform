@@ -5,3 +5,5 @@ target/
 .project
 .metadata
 .settings/
+output*.yaml
+**/.checkstyle
