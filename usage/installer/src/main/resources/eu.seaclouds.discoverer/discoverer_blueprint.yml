@@ -1,0 +1,10 @@
+name: SeaClouds discoverer
+services:
+- type: brooklyn.entity.webapp.tomcat.TomcatServer
+  name: tomcat
+
+  brooklyn.config:
+    http.port: 8080+
+    discoverer.snapshot.url: https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=discoverer&v=LATEST&e=war
+  wars.root:
+    $brooklyn:config("discoverer.snapshot.url")
