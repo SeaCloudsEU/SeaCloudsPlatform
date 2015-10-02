@@ -14,7 +14,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package dataCollector;
+package eu.seaclouds.monitor.nuroDataCollector.dataCollector;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,7 +23,7 @@ import org.codehaus.jackson.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import exception.MetricNotAvailableException;
+import eu.seaclouds.monitor.nuroDataCollector.exception.MetricNotAvailableException;
 
 public class MetricManager {
 

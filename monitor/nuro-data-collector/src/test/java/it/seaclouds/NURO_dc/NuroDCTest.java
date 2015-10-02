@@ -25,10 +25,10 @@ import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import dataCollector.MetricManager;
-import dataCollector.Metrics;
-import dataCollector.NuroApplicationDC;
-import exception.MetricNotAvailableException;
+import eu.seaclouds.monitor.nuroDataCollector.dataCollector.MetricManager;
+import eu.seaclouds.monitor.nuroDataCollector.dataCollector.Metrics;
+import eu.seaclouds.monitor.nuroDataCollector.dataCollector.NuroApplicationDC;
+import eu.seaclouds.monitor.nuroDataCollector.exception.MetricNotAvailableException;
 
 
 
