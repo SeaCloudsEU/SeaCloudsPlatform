@@ -1,26 +1,22 @@
-name: SeaClouds Planner Rest Service
-location: localhost
+name: SeaClouds Planner
 services:
 - type: brooklyn.entity.basic.VanillaSoftwareProcess
-  name: Rest Service
-
+  name: Planner Rest Service
   brooklyn.config:
-    planner.install.version: "0.8.0-20150911.114153-8"
     planner.config.port: 1234
     planner.config.discoverer.url: undefined
     planner.config.optimizer.url: undefined
-    planner.config.credential_generator.url: undefined
     planner.config.monitor_generator.url: undefined
     planner.config.sla_generator.url: undefined
+    planner.config.service.url: https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=planner-service&v=LATEST&e=jar
 
   shell.env:
-    VERSION: $brooklyn:config("planner.install.version")
     PLANNER_PORT: $brooklyn:config("planner.config.port")
     DISCOVERER_URL: $brooklyn:config("planner.config.discoverer.url")
     OPTIMIZER_URL: $brooklyn:config("planner.config.optimizer.url")
-    CREDENTIAL_GENERATOR_URL: $brooklyn:config("planner.config.credential_generator.url")
     MONITOR_GENERATOR_URL: $brooklyn:config("planner.config.monitor_generator.url")
     SLA_GENERATOR_URL: $brooklyn:config("planner.config.sla_generator.url")
+    PLANNER_SERVICE_URL: $brooklyn:config("planner.config.service.url")
 
   launch.command: |
                 sudo apt-get update
@@ -28,17 +24,17 @@ services:
                 tee ./conf.yml  <<EOF
                 server:
                   type: simple
-                  applicationContextPath: /application
+                  applicationContextPath: /planner
                   adminContextPath: /admin
                   connector:
                    type: http
                    port: ${PLANNER_PORT}
                 discovererURL: ${DISCOVERER_URL}
                 optimizerURL: ${OPTIMIZER_URL}
-                credentialGeneratorURL: ${CREDENTIAL_GENERATOR_URL}
                 monitorGeneratorURL: ${MONITOR_GENERATOR_URL}
                 slaGeneratorURL: ${SLA_GENERATOR_URL}
                 EOF
-                wget "https://oss.sonatype.org/content/repositories/snapshots/eu/seaclouds-project/planner-service/0.8.0-SNAPSHOT/planner-service-${VERSION}.jar"
-                nohup java -jar planner-service-${VERSION}.jar server conf.yml > console.out 2>&1 &
+                wget -O planner-service.jar ${PLANNER_SERVICE_URL}
+                nohup java -jar planner-service.jar server conf.yml > console.out 2>&1 &
                 echo $! > $PID_FILE
+
