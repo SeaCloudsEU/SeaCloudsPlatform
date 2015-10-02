@@ -18,13 +18,17 @@ package config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+<<<<<<< HEAD
 
+=======
+>>>>>>> c643229719a924926c3969ef3d1d6480dd915bac
 import exception.ConfigurationException;
 
 
 public class EnvironmentReader {
            
             private Logger logger = LoggerFactory.getLogger(EnvironmentReader.class);
+<<<<<<< HEAD
             
             public static final String MODACLOUDS_TOWER4CLOUDS_MANAGER_IP = "MODACLOUDS_TOWER4CLOUDS_MANAGER_IP";
             public static final String MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT = "MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT";
@@ -40,6 +44,8 @@ public class EnvironmentReader {
             public static final String MODACLOUDS_TOWER4CLOUDS_LOCATION_TYPE = "MODACLOUDS_TOWER4CLOUDS_LOCATION_TYPE";
             public static final String MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID = "MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID";
             public static final String MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE = "MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE";
+=======
+>>>>>>> c643229719a924926c3969ef3d1d6480dd915bac
 
             private static EnvironmentReader _instance = null;
             private String mmIP;
@@ -65,21 +71,35 @@ public class EnvironmentReader {
 
             private EnvironmentReader() {
                   try {
+<<<<<<< HEAD
                         mmIP = getMandatoryEnvVar(MODACLOUDS_TOWER4CLOUDS_MANAGER_IP);
                         String mmPortString = getMandatoryEnvVar(MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT);
                         mmPort = Integer.parseInt(mmPortString);
 
                         String dcSyncPeriodString = getOptionalEnvVar(
                                     MODACLOUDS_TOWER4CLOUDS_DC_SYNC_PERIOD,
+=======
+                        mmIP = getMandatoryEnvVar(Environment.MODACLOUDS_TOWER4CLOUDS_MANAGER_IP);
+                        String mmPortString = getMandatoryEnvVar(Environment.MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT);
+                        mmPort = Integer.parseInt(mmPortString);
+
+                        String dcSyncPeriodString = getOptionalEnvVar(
+                                    Environment.MODACLOUDS_TOWER4CLOUDS_DC_SYNC_PERIOD,
+>>>>>>> c643229719a924926c3969ef3d1d6480dd915bac
                                     Integer.toString(dcSyncPeriod));
                         dcSyncPeriod = Integer.parseInt(dcSyncPeriodString);
                         
                         String resourcesKeepAlivePeriodString = getOptionalEnvVar(
+<<<<<<< HEAD
                                     MODACLOUDS_TOWER4CLOUDS_RESOURCES_KEEP_ALIVE_PERIOD,
+=======
+                                    Environment.MODACLOUDS_TOWER4CLOUDS_RESOURCES_KEEP_ALIVE_PERIOD,
+>>>>>>> c643229719a924926c3969ef3d1d6480dd915bac
                                     Integer.toString(resourcesKeepAlivePeriod));
                         resourcesKeepAlivePeriod = Integer.parseInt(resourcesKeepAlivePeriodString);
                         
                         cloudProviderId = getOptionalEnvVar(
+<<<<<<< HEAD
                                     MODACLOUDS_TOWER4CLOUDS_CLOUD_PROVIDER_ID);
                         cloudProviderType = getOptionalEnvVar(MODACLOUDS_TOWER4CLOUDS_CLOUD_PROVIDER_TYPE);
                         paasServiceId = getOptionalEnvVar(MODACLOUDS_TOWER4CLOUDS_PAAS_SERVICE_ID);
@@ -90,6 +110,18 @@ public class EnvironmentReader {
                         locationtype = getOptionalEnvVar(MODACLOUDS_TOWER4CLOUDS_LOCATION_TYPE);
                         internalComponentId = getOptionalEnvVar(MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID);
                         internalComponentType = getOptionalEnvVar(MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE);
+=======
+                                    Environment.MODACLOUDS_TOWER4CLOUDS_CLOUD_PROVIDER_ID);
+                        cloudProviderType = getOptionalEnvVar(Environment.MODACLOUDS_TOWER4CLOUDS_CLOUD_PROVIDER_TYPE);
+                        paasServiceId = getOptionalEnvVar(Environment.MODACLOUDS_TOWER4CLOUDS_PAAS_SERVICE_ID);
+                        paasServiceType = getOptionalEnvVar(Environment.MODACLOUDS_TOWER4CLOUDS_PAAS_SERVICE_TYPE);
+                        vmId = getOptionalEnvVar(Environment.MODACLOUDS_TOWER4CLOUDS_VM_ID);
+                        vmType = getOptionalEnvVar(Environment.MODACLOUDS_TOWER4CLOUDS_VM_TYPE);
+                        locationId = getOptionalEnvVar(Environment.MODACLOUDS_TOWER4CLOUDS_LOCATION_ID);
+                        locationtype = getOptionalEnvVar(Environment.MODACLOUDS_TOWER4CLOUDS_LOCATION_TYPE);
+                        internalComponentId = getOptionalEnvVar(Environment.MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID);
+                        internalComponentType = getOptionalEnvVar(Environment.MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE);
+>>>>>>> c643229719a924926c3969ef3d1d6480dd915bac
                         
 
                   } catch (ConfigurationException e) {
