@@ -1,9 +1,9 @@
 name: Test - Web+DB (User provided-aws)
 services:
-- serviceType: brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
+- serviceType: org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
   name: Webapp 
   id: webapp
-  location: cloudfoundry-pivotal
+  location: cloudfoundry-instance
   brooklyn.config:
     application-name: test-app-user-provided
     application-url: classpath://brooklyn-webapp-custom-env.war
@@ -15,10 +15,10 @@ services:
       myDbPassword: $brooklyn:component("db").attributeWhenReady("test-brooklyn-app-from-yaml.credentials.password")
       myDbPort: $brooklyn:component("db").attributeWhenReady("test-brooklyn-app-from-yaml.credentials.port")
 
-- serviceType: brooklyn.entity.cloudfoundry.services.user.UserProvidedService
+- serviceType: org.apache.brooklyn.entity.cloudfoundry.services.user.UserProvidedService
   name: DB - provided service
   id: db
-  location: cloudfoundry-pivotal
+  location: cloudfoundry-instance
   brooklyn.config:
      serviceInstanceName: db
      credentials:
@@ -33,9 +33,9 @@ services:
        password: $brooklyn:component("mysql").attributeWhenReady("host.address")
        
 
-- serviceType: brooklyn.entity.database.mysql.MySqlNode
+- serviceType: org.apache.brooklyn.entity.database.mysql.MySqlNode
   name: External DB
   id: mysql
-  location: aws-ec2-eu-west
+  location: aws-ec2:us-west-2
   brooklyn.config:
     creationScriptUrl: classpath://chat-database.sql

@@ -18,13 +18,13 @@
  */
 package eu.seaclouds.location.cloudfoundry;
 
-import brooklyn.entity.cloudfoundry.services.CloudFoundryService;
-import brooklyn.entity.cloudfoundry.services.sql.cleardb.ClearDbService;
-import brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp;
-import brooklyn.entity.proxying.EntitySpec;
-import brooklyn.entity.trait.Startable;
-import brooklyn.test.Asserts;
+import org.apache.brooklyn.entity.cloudfoundry.services.CloudFoundryService;
+import org.apache.brooklyn.entity.cloudfoundry.services.sql.cleardb.ClearDbService;
+import org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp;
 import com.google.common.collect.ImmutableList;
+import org.apache.brooklyn.api.entity.EntitySpec;
+import org.apache.brooklyn.core.entity.trait.Startable;
+import org.apache.brooklyn.test.Asserts;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;

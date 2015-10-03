@@ -18,13 +18,13 @@
  */
 package eu.seaclouds.location.cloudfoundry;
 
-import brooklyn.config.BrooklynProperties;
-import brooklyn.entity.BrooklynAppLiveTestSupport;
-import brooklyn.entity.basic.Entities;
-import brooklyn.location.cloudfoundry.CloudFoundryPaasLocation;
-import brooklyn.management.internal.LocalManagementContext;
-import brooklyn.test.entity.LocalManagementContextForTests;
-import brooklyn.test.entity.TestApplication;
+import org.apache.brooklyn.location.cloudfoundry.CloudFoundryPaasLocation;
+import org.apache.brooklyn.core.entity.Entities;
+import org.apache.brooklyn.core.internal.BrooklynProperties;
+import org.apache.brooklyn.core.mgmt.internal.LocalManagementContext;
+import org.apache.brooklyn.core.test.BrooklynAppLiveTestSupport;
+import org.apache.brooklyn.core.test.entity.LocalManagementContextForTests;
+import org.apache.brooklyn.core.test.entity.TestApplication;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 

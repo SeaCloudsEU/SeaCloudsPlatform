@@ -18,17 +18,16 @@
  */
 package eu.seaclouds.location.cloudfoundry;
 
-import brooklyn.entity.basic.Attributes;
-import brooklyn.entity.basic.Lifecycle;
-import brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp;
-import brooklyn.entity.proxying.EntitySpec;
-import brooklyn.entity.trait.Startable;
-import brooklyn.location.cloudfoundry.PaasLocationConfig;
-import brooklyn.test.Asserts;
-import brooklyn.util.exceptions.PropagatedRuntimeException;
+import org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp;
+import org.apache.brooklyn.location.cloudfoundry.PaasLocationConfig;
 import com.google.common.collect.ImmutableList;
+import org.apache.brooklyn.api.entity.EntitySpec;
+import org.apache.brooklyn.core.entity.Attributes;
+import org.apache.brooklyn.core.entity.lifecycle.Lifecycle;
+import org.apache.brooklyn.core.entity.trait.Startable;
+import org.apache.brooklyn.test.Asserts;
+import org.apache.brooklyn.util.exceptions.PropagatedRuntimeException;
 import org.testng.annotations.Test;
-
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;

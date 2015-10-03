@@ -18,17 +18,18 @@
  */
 package eu.seaclouds.location.cloudfoundry;
 
-import brooklyn.entity.Entity;
-import brooklyn.entity.basic.Attributes;
-import brooklyn.entity.cloudfoundry.services.CloudFoundryService;
-import brooklyn.entity.cloudfoundry.services.sql.cleardb.ClearDbService;
-import brooklyn.entity.cloudfoundry.webapp.CloudFoundryWebApp;
-import brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp;
-import brooklyn.entity.proxying.EntitySpec;
-import brooklyn.entity.trait.Startable;
-import brooklyn.location.cloudfoundry.PaasLocationConfig;
-import brooklyn.test.Asserts;
+import org.apache.brooklyn.entity.cloudfoundry.services.CloudFoundryService;
+import org.apache.brooklyn.entity.cloudfoundry.services.sql.cleardb.ClearDbService;
+import org.apache.brooklyn.entity.cloudfoundry.webapp.CloudFoundryWebApp;
+import org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp;
+import org.apache.brooklyn.location.cloudfoundry.PaasLocationConfig;
 import com.google.common.collect.ImmutableList;
+import org.apache.brooklyn.api.entity.Entity;
+import org.apache.brooklyn.api.entity.EntitySpec;
+import org.apache.brooklyn.core.entity.Attributes;
+import org.apache.brooklyn.core.entity.trait.Startable;
+import org.apache.brooklyn.test.Asserts;
+import org.apache.brooklyn.util.exceptions.PropagatedRuntimeException;
 import org.testng.annotations.Test;
 
 import java.util.LinkedList;
@@ -54,6 +55,7 @@ public class JavaWebAndServiceCloudFoundryLiveTest extends AbstractCloudFoundryP
     private final String SERVICE_TYPE_ID = "cleardb";
     private final String SERVICE_PLAN = "spark";
 
+    @Test(groups = {"Live"})
     protected void deployAppWithServicesTest() throws Exception {
 
         //List<String> servicesToBind=new LinkedList<String>();
@@ -103,7 +105,7 @@ public class JavaWebAndServiceCloudFoundryLiveTest extends AbstractCloudFoundryP
         });
     }
 
-    @Test(expectedExceptions = brooklyn.util.exceptions.PropagatedRuntimeException.class)
+    @Test(expectedExceptions = PropagatedRuntimeException.class)
     protected void deployAppWithNotAvailableServicesEntityTest() throws Exception {
         List<String> servicesToBind=new LinkedList<String>();
 

@@ -23,18 +23,19 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
-import brooklyn.entity.Application;
-import brooklyn.entity.Entity;
-import brooklyn.entity.basic.Attributes;
-import brooklyn.entity.cloudfoundry.services.CloudFoundryService;
-import brooklyn.entity.cloudfoundry.webapp.CloudFoundryWebApp;
-import brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp;
-import brooklyn.entity.trait.Startable;
-import brooklyn.event.AttributeSensor;
-import brooklyn.launcher.camp.SimpleYamlLauncher;
-import brooklyn.location.cloudfoundry.PaasLocationConfig;
-import brooklyn.test.Asserts;
-import brooklyn.util.text.Strings;
+import org.apache.brooklyn.entity.cloudfoundry.services.CloudFoundryService;
+import org.apache.brooklyn.entity.cloudfoundry.webapp.CloudFoundryWebApp;
+import org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp;
+
+import org.apache.brooklyn.location.cloudfoundry.PaasLocationConfig;
+import org.apache.brooklyn.api.entity.Application;
+import org.apache.brooklyn.api.entity.Entity;
+import org.apache.brooklyn.api.sensor.AttributeSensor;
+import org.apache.brooklyn.core.entity.Attributes;
+import org.apache.brooklyn.core.entity.trait.Startable;
+import org.apache.brooklyn.launcher.camp.SimpleYamlLauncher;
+import org.apache.brooklyn.test.Asserts;
+import org.apache.brooklyn.util.text.Strings;
 import org.testng.annotations.Test;
 
 @Test( groups={"Live"} )

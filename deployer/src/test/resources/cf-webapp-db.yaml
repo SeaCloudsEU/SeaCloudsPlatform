@@ -1,6 +1,6 @@
 name: CF - appserver-w-db
 services:
-- type: brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
+- type: org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
   name: AppServer HelloWorld
   id: webapp
   location: cloudfoundry-instance
@@ -16,7 +16,7 @@ services:
       myDbPassword: $brooklyn:component("db").attributeWhenReady("test-brooklyn-app-from-yaml.credentials.password")
       myDbPort: $brooklyn:component("db").attributeWhenReady("test-brooklyn-app-from-yaml.credentials.port")
 
-- type: brooklyn.entity.cloudfoundry.services.sql.cleardb.ClearDbService
+- type: org.apache.brooklyn.entity.cloudfoundry.services.sql.cleardb.ClearDbService
   id: db
   name: DB HelloWorld Visitors
   location: cloudfoundry-instance

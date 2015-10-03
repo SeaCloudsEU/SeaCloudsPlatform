@@ -18,14 +18,14 @@ package eu.seaclouds.location.cloudfoundry;
 
 import static org.testng.Assert.assertTrue;
 
-import brooklyn.entity.cloudfoundry.services.user.UserProvidedService;
-import brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp;
-import brooklyn.entity.proxying.EntitySpec;
-import brooklyn.entity.trait.Startable;
-import brooklyn.event.AttributeSensor;
-import brooklyn.test.Asserts;
+import org.apache.brooklyn.entity.cloudfoundry.services.user.UserProvidedService;
+import org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.apache.brooklyn.api.entity.EntitySpec;
+import org.apache.brooklyn.api.sensor.AttributeSensor;
+import org.apache.brooklyn.core.entity.trait.Startable;
+import org.apache.brooklyn.test.Asserts;
 import org.testng.annotations.Test;
 
 public class UserProvidedServiceTest extends AbstractCloudFoundryPaasLocationLiveTest {
