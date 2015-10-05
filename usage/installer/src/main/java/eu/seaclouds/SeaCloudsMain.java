@@ -23,13 +23,13 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import brooklyn.cli.Main;
+import org.apache.brooklyn.cli.Main;
 
 /**
  * This class provides a static main entry point for launching a custom Brooklyn-based app.
  * <p>
- * It inherits the standard Brooklyn CLI options from {@link brooklyn.cli.Main}, plus adds a few more shortcuts for
- * favourite blueprints to the {@link brooklyn.cli.Main.LaunchCommand}.
+ * It inherits the standard Brooklyn CLI options from {@link org.apache.brooklyn.cli.Main}, plus adds a few more shortcuts for
+ * favourite blueprints to the {@link org.apache.brooklyn.cli.Main.LaunchCommand}.
  */
 public class SeaCloudsMain extends Main {
 

@@ -20,18 +20,18 @@ package eu.seaclouds.modaclouds.manager;
 
 import static org.testng.Assert.assertFalse;
 
+import org.apache.brooklyn.core.test.entity.TestApplication;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.google.common.collect.ImmutableList;
 
-import brooklyn.entity.basic.Entities;
-import brooklyn.entity.proxying.EntitySpec;
-import brooklyn.entity.trait.Startable;
-import brooklyn.location.basic.LocalhostMachineProvisioningLocation;
-import brooklyn.test.EntityTestUtils;
-import brooklyn.test.entity.TestApplication;
+import org.apache.brooklyn.core.entity.Entities;
+import org.apache.brooklyn.api.entity.EntitySpec;
+import org.apache.brooklyn.core.entity.trait.Startable;
+import org.apache.brooklyn.location.localhost.LocalhostMachineProvisioningLocation;
+import org.apache.brooklyn.test.EntityTestUtils;
 
 public class MODACloudsMonitoringManagerIntegrationTest {
 

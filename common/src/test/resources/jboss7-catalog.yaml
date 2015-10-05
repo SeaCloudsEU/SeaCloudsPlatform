@@ -13,6 +13,6 @@ brooklyn.catalog:
       brooklyn.config:
         childSpec:
           $brooklyn:entitySpec:
-            type: brooklyn.entity.webapp.jboss.JBoss7Server
+            type: org.apache.brooklyn.entity.webapp.jboss.JBoss7Server
             id: childid
             name: JBoss 7 Server

@@ -16,7 +16,7 @@
  */
 package eu.seaclouds.dashboard;
 
-import brooklyn.entity.java.JavaSoftwareProcessDriver;
+import org.apache.brooklyn.entity.java.JavaSoftwareProcessDriver;
 
 public interface SeacloudsDashboardDriver extends JavaSoftwareProcessDriver {
     Integer getPort();

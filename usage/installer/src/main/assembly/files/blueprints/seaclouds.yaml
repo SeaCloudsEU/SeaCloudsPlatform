@@ -12,12 +12,11 @@ services:
   id: monitoring-manager
   brooklyn.config:
     modaclouds.dda.ip: $brooklyn:component("monitoring-dda").attributeWhenReady("host.address")
-- serviceType: "classpath://brooklyn/entity/brooklynnode/brooklyn-node.yaml"
+- serviceType: "classpath://org/apache/brooklyn/entity/brooklynnode/brooklyn-node.yaml"
   id: deployer
   name: Deployer
   brooklyn.config:
     brooklynnode.webconsole.nosecurity: true
-    brooklynnode.download.archive.subpath: brooklyn-dist-0.7.0-incubating/
     brooklynnode.classpath:
       - classpath://deployer-0.8.0-SNAPSHOT.jar
 
@@ -45,7 +44,7 @@ services:
   brooklyn.config:
       planner.install.version: "0.8.0-20150918.142713-9"
 
-- serviceType: brooklyn.entity.webapp.tomcat.TomcatServer
+- serviceType: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
   name: SLA Core
   id: sla-core
   brooklyn.config:
@@ -57,7 +56,7 @@ services:
         SLA_URL: $brooklyn:formatString("http://%s:%s", component("sla-core").attributeWhenReady("host.address"), component("sla-core").attributeWhenReady("http.port"))
   war: https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=sla-service&v=LATEST&e=war
 
-- serviceType: brooklyn.entity.database.mysql.MySqlNode
+- serviceType: org.apache.brooklyn.entity.database.mysql.MySqlNode
   id: sla-db
   name: SLA Db
   brooklyn.config:

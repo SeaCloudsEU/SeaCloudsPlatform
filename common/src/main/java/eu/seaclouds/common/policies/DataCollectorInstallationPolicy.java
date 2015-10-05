@@ -27,22 +27,22 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-import brooklyn.config.ConfigKey;
-import brooklyn.entity.basic.AbstractEntity;
-import brooklyn.entity.basic.ConfigKeys;
-import brooklyn.entity.basic.EntityLocal;
-import brooklyn.event.SensorEvent;
-import brooklyn.event.SensorEventListener;
-import brooklyn.location.Location;
-import brooklyn.location.OsDetails;
-import brooklyn.location.basic.Locations;
-import brooklyn.location.basic.SshMachineLocation;
-import brooklyn.policy.basic.AbstractPolicy;
-import brooklyn.util.collections.MutableMap;
-import brooklyn.util.config.ConfigBag;
-import brooklyn.util.flags.SetFromFlag;
-import brooklyn.util.internal.ssh.SshTool;
-import brooklyn.util.ssh.BashCommands;
+import org.apache.brooklyn.config.ConfigKey;
+import org.apache.brooklyn.core.entity.AbstractEntity;
+import org.apache.brooklyn.core.config.ConfigKeys;
+import org.apache.brooklyn.api.entity.EntityLocal;
+import org.apache.brooklyn.api.sensor.SensorEvent;
+import org.apache.brooklyn.api.sensor.SensorEventListener;
+import org.apache.brooklyn.api.location.Location;
+import org.apache.brooklyn.api.location.OsDetails;
+import org.apache.brooklyn.core.location.Locations;
+import org.apache.brooklyn.location.ssh.SshMachineLocation;
+import org.apache.brooklyn.core.policy.AbstractPolicy;
+import org.apache.brooklyn.util.collections.MutableMap;
+import org.apache.brooklyn.util.core.config.ConfigBag;
+import org.apache.brooklyn.util.core.flags.SetFromFlag;
+import org.apache.brooklyn.util.core.internal.ssh.SshTool;
+import org.apache.brooklyn.util.ssh.BashCommands;
 import eu.seaclouds.common.apps.SeaCloudsApp;
 
 /**

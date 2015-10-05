@@ -2,7 +2,7 @@ name: MODAClouds server localhost
 location: localhost
 
 services:
-- serviceType: brooklyn.entity.basic.SameServerEntity
+- serviceType: org.apache.brooklyn.entity.software.base.SameServerEntity
   name: server
   brooklyn.children:
 

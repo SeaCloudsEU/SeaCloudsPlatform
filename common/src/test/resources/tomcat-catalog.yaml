@@ -13,6 +13,6 @@ brooklyn.catalog:
       brooklyn.config:
         childSpec:
           $brooklyn:entitySpec:
-            type: brooklyn.entity.webapp.tomcat.TomcatServer
+            type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
             id: childid
             name: Tomcat Server

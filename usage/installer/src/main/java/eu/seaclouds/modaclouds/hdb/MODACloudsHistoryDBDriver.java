@@ -18,7 +18,7 @@
  */
 package eu.seaclouds.modaclouds.hdb;
 
-import brooklyn.entity.java.JavaSoftwareProcessDriver;
+import org.apache.brooklyn.entity.java.JavaSoftwareProcessDriver;
 
 public interface MODACloudsHistoryDBDriver extends JavaSoftwareProcessDriver {
 

@@ -20,10 +20,10 @@ import org.testng.annotations.Test;
 
 import com.google.common.collect.ImmutableMap;
 
-import brooklyn.entity.database.mysql.MySqlNode;
-import brooklyn.entity.webapp.jboss.JBoss6Server;
-import brooklyn.entity.webapp.jboss.JBoss7Server;
-import brooklyn.entity.webapp.tomcat.TomcatServer;
+import org.apache.brooklyn.entity.database.mysql.MySqlNode;
+import org.apache.brooklyn.entity.webapp.jboss.JBoss6Server;
+import org.apache.brooklyn.entity.webapp.jboss.JBoss7Server;
+import org.apache.brooklyn.entity.webapp.tomcat.TomcatServer;
 
 @Test(groups = { "Live" })
 public class SeaCloudsAppEc2LiveTest extends AbstractSeaCloudsAppTest {
