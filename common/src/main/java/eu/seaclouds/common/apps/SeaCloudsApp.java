@@ -27,21 +27,21 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 
-import brooklyn.config.ConfigKey;
-import brooklyn.entity.Entity;
-import brooklyn.entity.basic.AbstractApplication;
-import brooklyn.entity.basic.ConfigKeys;
-import brooklyn.entity.basic.Entities;
-import brooklyn.entity.basic.MethodEffector;
-import brooklyn.entity.basic.SoftwareProcess;
-import brooklyn.entity.proxying.EntitySpec;
-import brooklyn.location.Location;
-import brooklyn.management.internal.CollectionChangeListener;
-import brooklyn.management.internal.ManagementContextInternal;
-import brooklyn.policy.PolicySpec;
-import brooklyn.policy.basic.AbstractPolicy;
-import brooklyn.util.flags.SetFromFlag;
-import brooklyn.util.text.Strings;
+import org.apache.brooklyn.config.ConfigKey;
+import org.apache.brooklyn.api.entity.Entity;
+import org.apache.brooklyn.core.entity.AbstractApplication;
+import org.apache.brooklyn.core.config.ConfigKeys;
+import org.apache.brooklyn.core.entity.Entities;
+import org.apache.brooklyn.core.effector.MethodEffector;
+import org.apache.brooklyn.entity.software.base.SoftwareProcess;
+import org.apache.brooklyn.api.entity.EntitySpec;
+import org.apache.brooklyn.api.location.Location;
+import org.apache.brooklyn.core.mgmt.internal.CollectionChangeListener;
+import org.apache.brooklyn.core.mgmt.internal.ManagementContextInternal;
+import org.apache.brooklyn.api.policy.PolicySpec;
+import org.apache.brooklyn.core.policy.AbstractPolicy;
+import org.apache.brooklyn.util.core.flags.SetFromFlag;
+import org.apache.brooklyn.util.text.Strings;
 import eu.seaclouds.common.policies.DataCollectorInstallationPolicy;
 
 public class SeaCloudsApp extends AbstractApplication {

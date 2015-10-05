@@ -18,11 +18,11 @@
  */
 package eu.seaclouds.location.cloudfoundry;
 
-import brooklyn.entity.cloudfoundry.services.CloudFoundryService;
-import brooklyn.entity.cloudfoundry.services.generic.GenericService;
-import brooklyn.entity.proxying.EntitySpec;
-import brooklyn.test.Asserts;
+import org.apache.brooklyn.entity.cloudfoundry.services.CloudFoundryService;
+import org.apache.brooklyn.entity.cloudfoundry.services.generic.GenericService;
 import com.google.common.collect.ImmutableList;
+import org.apache.brooklyn.api.entity.EntitySpec;
+import org.apache.brooklyn.test.Asserts;
 import org.cloudfoundry.client.lib.domain.CloudServiceInstance;
 import org.cloudfoundry.client.lib.domain.CloudServiceOffering;
 import org.cloudfoundry.client.lib.domain.CloudServicePlan;

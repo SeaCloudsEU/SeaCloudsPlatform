@@ -18,7 +18,7 @@
  */
 package eu.seaclouds.modaclouds.manager;
 
-import brooklyn.entity.basic.SoftwareProcessImpl;
+import org.apache.brooklyn.entity.software.base.SoftwareProcessImpl;
 
 public class MODACloudsMonitoringManagerImpl extends SoftwareProcessImpl implements MODACloudsMonitoringManager {
 

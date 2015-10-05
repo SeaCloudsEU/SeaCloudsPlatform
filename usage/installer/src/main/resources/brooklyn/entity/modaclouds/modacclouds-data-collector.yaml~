@@ -2,7 +2,7 @@ name: MODAClouds data collector
 location: byon:(hosts="vagrant@192.168.33.10")
 
 services:
-- type: brooklyn.entity.basic.VanillaSoftwareProcess
+- type: org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess
   name: Data collector
   id: data collector
   provisioning.properties:

@@ -16,7 +16,7 @@
  */
 package eu.seaclouds.dashboard;
 
-import brooklyn.entity.basic.SoftwareProcessImpl;
+import org.apache.brooklyn.entity.software.base.SoftwareProcessImpl;
 
 public class SeacloudsDashboardImpl extends SoftwareProcessImpl implements SeacloudsDashboard {
 

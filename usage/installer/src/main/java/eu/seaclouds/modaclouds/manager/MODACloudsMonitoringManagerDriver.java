@@ -18,7 +18,7 @@
  */
 package eu.seaclouds.modaclouds.manager;
 
-import brooklyn.entity.java.JavaSoftwareProcessDriver;
+import org.apache.brooklyn.entity.java.JavaSoftwareProcessDriver;
 
 public interface MODACloudsMonitoringManagerDriver extends JavaSoftwareProcessDriver {
 

@@ -17,17 +17,17 @@
 
 package eu.seaclouds.dashboard;
 
-import brooklyn.entity.Application;
-import brooklyn.entity.Entity;
-import brooklyn.entity.basic.Entities;
-import brooklyn.entity.proxying.EntitySpec;
-import brooklyn.entity.trait.Startable;
-import brooklyn.launcher.camp.SimpleYamlLauncher;
-import brooklyn.location.basic.LocalhostMachineProvisioningLocation;
-import brooklyn.test.Asserts;
-import brooklyn.test.EntityTestUtils;
-import brooklyn.test.entity.TestApplication;
 import com.google.common.collect.ImmutableList;
+import org.apache.brooklyn.api.entity.Application;
+import org.apache.brooklyn.api.entity.Entity;
+import org.apache.brooklyn.api.entity.EntitySpec;
+import org.apache.brooklyn.core.entity.Entities;
+import org.apache.brooklyn.core.entity.trait.Startable;
+import org.apache.brooklyn.core.test.entity.TestApplication;
+import org.apache.brooklyn.launcher.camp.SimpleYamlLauncher;
+import org.apache.brooklyn.location.localhost.LocalhostMachineProvisioningLocation;
+import org.apache.brooklyn.test.Asserts;
+import org.apache.brooklyn.test.EntityTestUtils;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;

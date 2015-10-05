@@ -1,7 +1,7 @@
 name: SeaClouds Planner Rest Service
 location: localhost
 services:
-- type: brooklyn.entity.basic.VanillaSoftwareProcess
+- type: org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess
   name: Rest Service
 
   brooklyn.config:

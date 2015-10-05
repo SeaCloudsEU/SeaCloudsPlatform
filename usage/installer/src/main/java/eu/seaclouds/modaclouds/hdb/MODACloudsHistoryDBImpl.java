@@ -18,7 +18,7 @@
  */
 package eu.seaclouds.modaclouds.hdb;
 
-import brooklyn.entity.basic.SoftwareProcessImpl;
+import org.apache.brooklyn.entity.software.base.SoftwareProcessImpl;
 
 public class MODACloudsHistoryDBImpl extends SoftwareProcessImpl implements MODACloudsHistoryDB {
    @Override

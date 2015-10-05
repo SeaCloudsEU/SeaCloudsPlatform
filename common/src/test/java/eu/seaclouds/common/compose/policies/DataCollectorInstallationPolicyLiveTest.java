@@ -25,11 +25,11 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
-import brooklyn.entity.Entity;
-import brooklyn.entity.webapp.tomcat.TomcatServer;
-import brooklyn.location.Location;
-import brooklyn.location.basic.SshMachineLocation;
-import brooklyn.test.Asserts;
+import org.apache.brooklyn.api.entity.Entity;
+import org.apache.brooklyn.entity.webapp.tomcat.TomcatServer;
+import org.apache.brooklyn.api.location.Location;
+import org.apache.brooklyn.location.ssh.SshMachineLocation;
+import org.apache.brooklyn.test.Asserts;
 import eu.seaclouds.common.compose.apps.AbstractSeaCloudsAppTest;
 
 @Test(groups = { "Live" })
