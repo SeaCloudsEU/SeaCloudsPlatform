@@ -18,11 +18,13 @@
 package eu.seaclouds.platform.dashboard;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import eu.seaclouds.platform.dashboard.config.DeployerFactory;
 import eu.seaclouds.platform.dashboard.config.MonitorFactory;
 import eu.seaclouds.platform.dashboard.config.PlannerFactory;
 import eu.seaclouds.platform.dashboard.config.SlaFactory;
 import io.dropwizard.Configuration;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
