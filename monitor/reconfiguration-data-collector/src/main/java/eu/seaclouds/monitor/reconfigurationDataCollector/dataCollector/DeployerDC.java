@@ -17,7 +17,6 @@
 package eu.seaclouds.monitor.reconfigurationDataCollector.dataCollector;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
@@ -43,153 +42,117 @@ import eu.seaclouds.monitor.reconfigurationDataCollector.exception.Configuration
 
 public class DeployerDC implements Observer {
 
-      private Logger logger = LoggerFactory.getLogger(DeployerDC.class);
+    private Logger logger = LoggerFactory.getLogger(DeployerDC.class);
 
-      public void startMonitor(EnvironmentReader config) throws ConfigurationException {
+    private static DCAgent dcAgent;
 
+    public void startMonitor() throws ConfigurationException {
 
-            logger.info("Start collecting app status from the Deployer sensors data...");
-            
-            String username;
-            String password;
-            String deployerIp;
-            String deployerPort;
-            
+        EnvironmentReader config = EnvironmentReader.getInstance();
+        logger.info("Start collecting app status from the Deployer sensors data...");
 
-            DCAgent dcAgent = new DCAgent(new ManagerAPI(config.getMmIP(),
-                        config.getMmPort()));
-            
-            DCDescriptor dcDescriptor = new DCDescriptor();
-            
-            if (config.getInternalComponentId() != null) {
-                  dcDescriptor.addResource(buildInternalComponent(config));
-                  dcDescriptor.addMonitoredResource(getApplicationMetrics(),
-                              buildInternalComponent(config));
-            }
-            if (config.getVmId() != null) {
-                  dcDescriptor.addResource(buildExternalComponent(config));
-            }
-            dcDescriptor.addResources(buildRelatedResources(config));
-            dcDescriptor.setConfigSyncPeriod(config.getDcSyncPeriod());
-            dcDescriptor.setKeepAlive(config.getResourcesKeepAlivePeriod());
-            dcAgent.setDCDescriptor(dcDescriptor);
-            dcAgent.addObserver(this);
-            dcAgent.start();
-            
-            String monitoredTargetId=EnvironmentReader
-            .getInstance().getInternalComponentId();
-            String monitoredTargetType=EnvironmentReader.getInstance()
-                    .getInternalComponentType();
+        dcAgent = new DCAgent(new ManagerAPI(config.getMmIP(),
+                config.getMmPort()));
 
+        DCDescriptor dcDescriptor = new DCDescriptor();
 
-            while (true) {
-                  try {
+        if (config.getInternalComponentId() != null) {
+            dcDescriptor.addResource(buildInternalComponent(config));
+            dcDescriptor.addMonitoredResource(getApplicationMetrics(),
+                    buildInternalComponent(config));
+        }
+        if (config.getVmId() != null) {
+            dcDescriptor.addResource(buildExternalComponent(config));
+        }
+        dcDescriptor.addResources(buildRelatedResources(config));
+        dcDescriptor.setConfigSyncPeriod(config.getDcSyncPeriod());
+        dcDescriptor.setKeepAlive(config.getResourcesKeepAlivePeriod());
+        dcAgent.setDCDescriptor(dcDescriptor);
+        dcAgent.addObserver(this);
+        dcAgent.start();
 
-                        for (String metric : getApplicationMetrics()) {
-                              if (dcAgent.shouldMonitor(new InternalComponent(
-                                          monitoredTargetType, monitoredTargetId),
-                                          metric)) {
-                                
-                                    username = dcAgent.getParameters(metric)
-                                                .get("userName");
-                                    password = dcAgent.getParameters(metric)
-                                                .get("password");
-                                    deployerIp = dcAgent.getParameters(metric)
-                                                .get("deployerIp");
-                                    deployerPort = dcAgent.getParameters(metric)
-                                                .get("deployerPort");
-                                    
-                                    
-                                    BrooklynApi deployer=new BrooklynApi("http://"+deployerIp+":" + deployerPort + "/",
-                                            username, password);
-                                    
-                                    List<ApplicationSummary> apps = deployer.getApplicationApi().list(null);
-                                    
-                                    
-                                    
-                                    for(ApplicationSummary app: apps){
-                                    
-                                        Set<String> loc=app.getSpec().getLocations();
-                                        String providers="";
-                                        
-                                        for(String l:loc){
-                                           providers=providers+"-"+deployer.getLocationApi().get(l, "").getName();
-                                        }
-                                        
-                                        if(app.getId().equals(monitoredTargetType)){
-                                            dcAgent.send(new InternalComponent(monitoredTargetType,monitoredTargetId), metric,app.getId()+","+app.getStatus()+","+providers);         
-                                        }
-                                    }
-                         
-                                    Thread.sleep(Integer.parseInt(dcAgent.getParameters(
-                                                metric).get("samplingTime")) * 1000);
-                              }
+        Thread t;
+        MetricCollector c;
+        for (String metric : MetricManager.getApplicationMetrics()) {
+            c = new MetricCollector();
+            c.setMonitoredMetric(metric);
+            c.setSamplingTime(Integer.parseInt(dcAgent.getParameters(metric)
+                    .get("samplingTime")));
+            t = new Thread(c);
+            t.start();
+        }
 
-                        }
+    }
 
-                  } catch (InterruptedException e) {
-                   logger.debug("Data collector interrupeted while waiting to sample a new datum!");;
-                   e.printStackTrace();
-                  } 
-            }
+    public static boolean shouldMonitor(String metric,
+            ApplicationSummary application) {
 
-      }
+        InternalComponent module = new InternalComponent();
+        module.setType(application.getId());
+        return dcAgent.shouldMonitor(module, metric);
+    }
 
-      private static Set<Resource> buildRelatedResources(EnvironmentReader config) {
-            Set<Resource> relatedResources = new HashSet<Resource>();
-            if (config.getCloudProviderId() != null) {
-                  relatedResources.add(new CloudProvider(config
-                              .getCloudProviderType(), config.getCloudProviderId()));
-            }
-            if (config.getLocationId() != null) {
-                  relatedResources.add(new Location(config.getLocationtype(), config
-                              .getLocationId()));
-            }
-            return relatedResources;
-      }
+    public static void send(String metric, String application, Object value) {
 
-      private static Resource buildExternalComponent(EnvironmentReader config)
-                  throws ConfigurationException {
-            ExternalComponent externalComponent;
-            if (config.getVmId() != null) {
-                  externalComponent = new VM();
-                  externalComponent.setId(config.getVmId());
-                  externalComponent.setType(config.getVmType());
-            } else if (config.getPaasServiceId() != null) {
-                  externalComponent = new PaaSService();
-                  externalComponent.setId(config.getPaasServiceId());
-                  externalComponent.setType(config.getPaasServiceType());
-            } else {
-                  throw new ConfigurationException(
-                              "Neither VM nor PaaS service were specified");
-            }
-            if (config.getCloudProviderId() != null)
-                  externalComponent.setCloudProvider(config.getCloudProviderId());
-            if (config.getLocationId() != null)
-                  externalComponent.setLocation(config.getLocationId());
-            return externalComponent;
-      }
+        InternalComponent module = new InternalComponent();
+        module.setType(application);
+        dcAgent.send(module, metric, value);
+    }
 
-      private static Resource buildInternalComponent(EnvironmentReader config) {
-            InternalComponent internalComponent = new InternalComponent(
-                        config.getInternalComponentType(),
-                        config.getInternalComponentId());
-            if (config.getVmId() != null)
-                  internalComponent.addRequiredComponent(config.getVmId());
-            return internalComponent;
-      }
+    private static Set<Resource> buildRelatedResources(EnvironmentReader config) {
+        Set<Resource> relatedResources = new HashSet<Resource>();
+        if (config.getCloudProviderId() != null) {
+            relatedResources.add(new CloudProvider(config
+                    .getCloudProviderType(), config.getCloudProviderId()));
+        }
+        if (config.getLocationId() != null) {
+            relatedResources.add(new Location(config.getLocationtype(), config
+                    .getLocationId()));
+        }
+        return relatedResources;
+    }
 
-      public void update(Observable arg0, Object arg1) {
-            // not used
-      }
-      
-      public Set<String> getApplicationMetrics() {
+    private static Resource buildExternalComponent(EnvironmentReader config)
+            throws ConfigurationException {
+        ExternalComponent externalComponent;
+        if (config.getVmId() != null) {
+            externalComponent = new VM();
+            externalComponent.setId(config.getVmId());
+            externalComponent.setType(config.getVmType());
+        } else if (config.getPaasServiceId() != null) {
+            externalComponent = new PaaSService();
+            externalComponent.setId(config.getPaasServiceId());
+            externalComponent.setType(config.getPaasServiceType());
+        } else {
+            throw new ConfigurationException(
+                    "Neither VM nor PaaS service were specified");
+        }
+        if (config.getCloudProviderId() != null)
+            externalComponent.setCloudProvider(config.getCloudProviderId());
+        if (config.getLocationId() != null)
+            externalComponent.setLocation(config.getLocationId());
+        return externalComponent;
+    }
 
-          Set<String> metrics = new HashSet<String>();
-          metrics.add(Metrics.IS_APP_ON_FIRE);
-          
+    private static Resource buildInternalComponent(EnvironmentReader config) {
+        InternalComponent internalComponent = new InternalComponent(
+                config.getInternalComponentType(),
+                config.getInternalComponentId());
+        if (config.getVmId() != null)
+            internalComponent.addRequiredComponent(config.getVmId());
+        return internalComponent;
+    }
 
-          return metrics;
+    public void update(Observable arg0, Object arg1) {
+        // not used
+    }
+
+    public Set<String> getApplicationMetrics() {
+
+        Set<String> metrics = new HashSet<String>();
+        metrics.add(Metrics.IS_APP_ON_FIRE);
+
+        return metrics;
     }
 
 }

@@ -14,7 +14,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package it.seaclouds.NURO_dc;
+package eu.seaclouds.monitor.nuroDataCollector.tests;
 
 import java.io.IOException;
 
@@ -30,12 +30,7 @@ import eu.seaclouds.monitor.nuroDataCollector.dataCollector.Metrics;
 import eu.seaclouds.monitor.nuroDataCollector.dataCollector.NuroApplicationDC;
 import eu.seaclouds.monitor.nuroDataCollector.exception.MetricNotAvailableException;
 
-
-
-/**
- * Unit test for simple App.
- */
-public class NuroDCTest 
+public class MetricManagerTest 
 {
     private Logger logger = LoggerFactory.getLogger(NuroApplicationDC.class);
 	
@@ -93,11 +88,11 @@ public class NuroDCTest
 				}
 			}
 		} catch (MetricNotAvailableException e) {
-			logger.debug(e.getMessage());
-			e.printStackTrace();
+            logger.warn(e.getMessage());
+            throw new IllegalStateException(e.getMessage(), e.getCause());
 		}  catch (IOException e) {
-			logger.debug("There were some problems getting the test input example.");
-			e.printStackTrace();
+            logger.warn("There were some problems getting the test input example.");
+            throw new IllegalStateException("There were some problems getting the test input example.", e.getCause());
 		}
     }
   

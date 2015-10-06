@@ -27,73 +27,72 @@ import eu.seaclouds.monitor.nuroDataCollector.exception.MetricNotAvailableExcept
 
 public class MetricManager {
 
-      private Logger logger = LoggerFactory.getLogger(NuroApplicationDC.class);
-      private static final int TEN_SECONDS = 10;
-      private static final int MINUTE = 60;
-      
-      public Set<String> getApplicationMetrics() {
+    private Logger logger = LoggerFactory.getLogger(MetricManager.class);
+    private static final int TEN_SECONDS = 10;
+    private static final int MINUTE = 60;
 
-            Set<String> metrics = new HashSet<String>();
-            
-            metrics.add(Metrics.NURO_LAST_TEN_SECONDS_AVERAGE_RESPONSE_TIME);
-            metrics.add(Metrics.NURO_LAST_MINUTE_AVERAGE_RESPONSE_TIME);
-            metrics.add(Metrics.NURO_LAST_TEN_SECONDS_PLAYER_COUNT);
-            metrics.add(Metrics.NURO_LAST_MINUTE_PLAYER_COUNT);
-            metrics.add(Metrics.NURO_LAST_TEN_SECONDS_REQUEST_COUNT);
-            metrics.add(Metrics.NURO_LAST_MINUTE_REQUEST_COUNT);
-            metrics.add(Metrics.NURO_LAST_TEN_SECONDS_THROUGHPUT);
-            metrics.add(Metrics.NURO_LAST_MINUTE_THROUGHPUT);
+    public static Set<String> getApplicationMetrics() {
 
-            return metrics;
-      }
+        Set<String> metrics = new HashSet<String>();
 
-      public Object getMetricValue(String metric, JsonNode actualObj)
-                  throws MetricNotAvailableException {
+        metrics.add(Metrics.NURO_LAST_TEN_SECONDS_AVERAGE_RESPONSE_TIME);
+        metrics.add(Metrics.NURO_LAST_MINUTE_AVERAGE_RESPONSE_TIME);
+        metrics.add(Metrics.NURO_LAST_TEN_SECONDS_PLAYER_COUNT);
+        metrics.add(Metrics.NURO_LAST_MINUTE_PLAYER_COUNT);
+        metrics.add(Metrics.NURO_LAST_TEN_SECONDS_REQUEST_COUNT);
+        metrics.add(Metrics.NURO_LAST_MINUTE_REQUEST_COUNT);
+        metrics.add(Metrics.NURO_LAST_TEN_SECONDS_THROUGHPUT);
+        metrics.add(Metrics.NURO_LAST_MINUTE_THROUGHPUT);
 
-            String value;
-            logger.info("Collecting current value for metric {}",metric);
+        return metrics;
+    }
 
+    public Object getMetricValue(String metric, JsonNode actualObj)
+            throws MetricNotAvailableException {
 
-            switch (metric) {
-            case Metrics.NURO_LAST_TEN_SECONDS_AVERAGE_RESPONSE_TIME:
-                  value = actualObj.get("request_analytics").get("10seconds")
-                              .get("avg_run_time").toString();
-                  return Double.parseDouble(value.substring(1, value.length() - 1));
-            case Metrics.NURO_LAST_MINUTE_AVERAGE_RESPONSE_TIME:
-                  value = actualObj.get("request_analytics").get("minute")
-                              .get("avg_run_time").toString();
-                  return Double.parseDouble(value.substring(1, value.length() - 1));
-            case Metrics.NURO_LAST_TEN_SECONDS_PLAYER_COUNT:
-                  value = actualObj.get("request_analytics").get("10seconds")
-                              .get("player_count").toString();
-                  return Integer.parseInt(value.substring(1, value.length() - 1));
-            case Metrics.NURO_LAST_MINUTE_PLAYER_COUNT:
-                  value = actualObj.get("request_analytics").get("minute")
-                              .get("player_count").toString();
-                  return Integer.parseInt(value.substring(1, value.length() - 1));
-            case Metrics.NURO_LAST_TEN_SECONDS_REQUEST_COUNT:
-                  value = actualObj.get("request_analytics").get("10seconds")
-                              .get("request_count").toString();
-                  return Integer.parseInt(value.substring(1, value.length() - 1));
-            case Metrics.NURO_LAST_MINUTE_REQUEST_COUNT:
-                  value = actualObj.get("request_analytics").get("minute")
-                              .get("request_count").toString();
-                  return Integer.parseInt(value.substring(1, value.length() - 1));
-            case Metrics.NURO_LAST_TEN_SECONDS_THROUGHPUT:
-                  value = actualObj.get("request_analytics").get("10seconds")
-                              .get("request_count").toString();
-                  return Double.parseDouble(value.substring(1, value.length() - 1))
-                              / TEN_SECONDS;
-            case Metrics.NURO_LAST_MINUTE_THROUGHPUT:
-                  value = actualObj.get("request_analytics").get("minute")
-                              .get("request_count").toString();
-                  return Double.parseDouble(value.substring(1, value.length() - 1))
-                              / MINUTE;
-            default:
-                  throw new MetricNotAvailableException(
-                              "The specified metric is not available from NURO sensors");
+        String value;
+        logger.info("Collecting current value for metric {}", metric);
 
-            }
+        switch (metric) {
+        case Metrics.NURO_LAST_TEN_SECONDS_AVERAGE_RESPONSE_TIME:
+            value = actualObj.get("request_analytics").get("10seconds")
+                    .get("avg_run_time").toString();
+            return Double.parseDouble(value.substring(1, value.length() - 1));
+        case Metrics.NURO_LAST_MINUTE_AVERAGE_RESPONSE_TIME:
+            value = actualObj.get("request_analytics").get("minute")
+                    .get("avg_run_time").toString();
+            return Double.parseDouble(value.substring(1, value.length() - 1));
+        case Metrics.NURO_LAST_TEN_SECONDS_PLAYER_COUNT:
+            value = actualObj.get("request_analytics").get("10seconds")
+                    .get("player_count").toString();
+            return Integer.parseInt(value.substring(1, value.length() - 1));
+        case Metrics.NURO_LAST_MINUTE_PLAYER_COUNT:
+            value = actualObj.get("request_analytics").get("minute")
+                    .get("player_count").toString();
+            return Integer.parseInt(value.substring(1, value.length() - 1));
+        case Metrics.NURO_LAST_TEN_SECONDS_REQUEST_COUNT:
+            value = actualObj.get("request_analytics").get("10seconds")
+                    .get("request_count").toString();
+            return Integer.parseInt(value.substring(1, value.length() - 1));
+        case Metrics.NURO_LAST_MINUTE_REQUEST_COUNT:
+            value = actualObj.get("request_analytics").get("minute")
+                    .get("request_count").toString();
+            return Integer.parseInt(value.substring(1, value.length() - 1));
+        case Metrics.NURO_LAST_TEN_SECONDS_THROUGHPUT:
+            value = actualObj.get("request_analytics").get("10seconds")
+                    .get("request_count").toString();
+            return Double.parseDouble(value.substring(1, value.length() - 1))
+                    / TEN_SECONDS;
+        case Metrics.NURO_LAST_MINUTE_THROUGHPUT:
+            value = actualObj.get("request_analytics").get("minute")
+                    .get("request_count").toString();
+            return Double.parseDouble(value.substring(1, value.length() - 1))
+                    / MINUTE;
+        default:
+            throw new MetricNotAvailableException(
+                    "The specified metric is not available from NURO sensors");
 
-      }
+        }
+
+    }
 }

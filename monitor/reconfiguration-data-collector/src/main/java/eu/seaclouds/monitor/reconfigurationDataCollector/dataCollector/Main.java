@@ -16,25 +16,39 @@
  */
 package eu.seaclouds.monitor.reconfigurationDataCollector.dataCollector;
 
-import eu.seaclouds.monitor.reconfigurationDataCollector.config.EnvironmentReader;
+import java.util.List;
+
+import brooklyn.rest.client.BrooklynApi;
+import brooklyn.rest.domain.ApplicationSummary;
 import eu.seaclouds.monitor.reconfigurationDataCollector.exception.ConfigurationException;
+import eu.seaclouds.monitor.reconfigurationDataCollector.exception.MetricNotAvailableException;
 
-public class Main 
-{
-    public static void main( String[] args )
-    {
-          DeployerDC dc=new DeployerDC();
-          try {
-                EnvironmentReader config = EnvironmentReader.getInstance();
+public class Main {
+    public static void main(String[] args) {
 
-                  dc.startMonitor(config);
-            } catch (ConfigurationException e) {
-                  e.printStackTrace();
-            }
+        BrooklynApi deployer=new BrooklynApi("http://127.0.0.1:8081/", "",
+                "");
+        
+        List<ApplicationSummary> apps = deployer.getApplicationApi().list(
+                null);
+        for (ApplicationSummary app : apps) {
+
+           System.out.println(app.getId());
+           System.out.println(app.getStatus());
+        }
+        
+        /*
+        DeployerDC dc = new DeployerDC();
+        
+
+        try {
+
+            dc.startMonitor();
+        } catch (ConfigurationException e) {
+            e.printStackTrace();
+        }
+        */
 
     }
 
-  
-            
-    
 }

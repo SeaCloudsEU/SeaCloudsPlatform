@@ -19,23 +19,15 @@ package eu.seaclouds.monitor.nuroDataCollector.dataCollector;
 import eu.seaclouds.monitor.nuroDataCollector.config.EnvironmentReader;
 import eu.seaclouds.monitor.nuroDataCollector.exception.ConfigurationException;
 
+public class Main {
+    public static void main(String[] args) {
+        NuroApplicationDC dc = new NuroApplicationDC();
 
-public class Main 
-{
-    public static void main( String[] args )
-    {
-          NuroApplicationDC dc=new NuroApplicationDC();
-
-          try {
-                EnvironmentReader config = EnvironmentReader.getInstance();
-
-                  dc.startMonitor(config);
-            } catch (ConfigurationException e) {
-                  e.printStackTrace();
-            }
+        try {
+            dc.startMonitor();
+        } catch (ConfigurationException e) {
+            e.printStackTrace();
+        }
     }
 
-  
-            
-    
 }
