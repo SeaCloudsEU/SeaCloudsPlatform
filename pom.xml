@@ -23,13 +23,11 @@
     <version>0.8.0-SNAPSHOT</version>
     <modules>
         <module>common</module>
-        <!--module>monitor</module-->
         <module>deployer</module>
         <module>planner</module>
 		<module>discoverer</module>
         <module>dashboard</module>
         <module>sla</module>
-        <module>usage/installer</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -92,7 +90,7 @@
 
         <includedTestGroups />
         <excludedTestGroups>Integration,Live</excludedTestGroups>
-        
+
         <!-- Dependencies -->
         <guava.version>18.0</guava.version>
         <javatuples.version>1.2</javatuples.version>
@@ -432,7 +430,7 @@
                 <artifactId>jackson-datatype-joda</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
@@ -518,7 +516,7 @@
                 <artifactId>jaxb-impl</artifactId>
                 <version>${jaxb.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>it.polimi.modaclouds.qos-models</groupId>
                 <artifactId>qos-models</artifactId>
@@ -563,7 +561,7 @@
                 <artifactId>validation-api</artifactId>
                 <version>${validation-api.version}</version>
             </dependency>
-            
+
             <!-- Spring -->
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -625,7 +623,7 @@
                 <artifactId>spring-oxm</artifactId>
                 <version>${spring.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
@@ -651,7 +649,7 @@
                 <artifactId>commons-httpclient</artifactId>
                 <version>${commons-httpclient.version}</version>
             </dependency>
-            
+
             <!-- Test dependencies -->
             <dependency>
                 <groupId>org.testng</groupId>
@@ -726,7 +724,7 @@
                 <scope>test</scope>
                 <classifier>tests</classifier>
             </dependency>
-            
+
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
