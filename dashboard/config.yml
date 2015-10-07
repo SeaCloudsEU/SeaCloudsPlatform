@@ -16,6 +16,10 @@ deployer:
 monitor:
   host: ${MONITOR_HOST}
   port: ${MONITOR_PORT}
+  graphiteHost: ${GRAPHITE_HOST}
+  graphitePort: ${GRAPHITE_PORT}
+  grafanaHost: ${GRAFANA_HOST}
+  grafanaPort: ${GRAFANA_PORT}
 sla:
   host: ${SLA_HOST}
   port: ${SLA_PORT}

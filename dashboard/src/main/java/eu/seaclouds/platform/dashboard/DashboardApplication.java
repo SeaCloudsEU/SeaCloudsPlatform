@@ -17,11 +17,7 @@
 
 package eu.seaclouds.platform.dashboard;
 
-import eu.seaclouds.platform.dashboard.resources.AamWriterResource;
-import eu.seaclouds.platform.dashboard.resources.DeployerResource;
-import eu.seaclouds.platform.dashboard.resources.MonitorResource;
-import eu.seaclouds.platform.dashboard.resources.PlannerResource;
-import eu.seaclouds.platform.dashboard.resources.SlaResource;
+import eu.seaclouds.platform.dashboard.resources.*;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
@@ -46,13 +42,17 @@ public class DashboardApplication extends Application<DashboardConfiguration> {
 
         // Routing static assets files
         bootstrap.addBundle(new AssetsBundle("/webapp", "/", "index.html"));
-        
+
     }
 
     @Override
     public void run(DashboardConfiguration configuration, Environment environment) throws Exception {
         ((DefaultServerFactory) configuration.getServerFactory()).setJerseyRootPath("/api/*");
 
+
+        environment.jersey().register(new CoreResource(configuration.getDeployerFactory(),
+                configuration.getMonitorFactory(), configuration.getPlannerFactory(),
+                configuration.getSlaFactory()));
         environment.jersey().register(new DeployerResource(configuration.getDeployerFactory()));
         environment.jersey().register(new MonitorResource(configuration.getMonitorFactory()));
         environment.jersey().register(new PlannerResource(configuration.getPlannerFactory()));
