@@ -181,7 +181,7 @@ brooklyn.catalog:
         onExistingProperties: do_not_use
         brooklynnode.webconsole.nosecurity: true
         brooklynnode.classpath:
-          - https://oss.sonatype.org/content/repositories/snapshots/eu/seaclouds-project/deployer/0.8.0-SNAPSHOT/deployer-0.8.0-20151005.161407-31.jar
+          - https://s3-eu-west-1.amazonaws.com/seaclouds-deployer/deployer-0.8.0-20151007.193920-32.jar
       brooklyn.enrichers:
         - enricherType: org.apache.brooklyn.enricher.stock.Transformer
           brooklyn.config:
