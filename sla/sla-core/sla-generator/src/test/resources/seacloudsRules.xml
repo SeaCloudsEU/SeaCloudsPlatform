@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns5:monitoringRules xmlns="http://www.modaclouds.eu/xsd/2.0/aggregate_functions_schema" xmlns:ns2="http://www.modaclouds.eu/xsd/1.0/metrics_schema" xmlns:ns3="http://www.modaclouds.eu/xsd/2.0/actions_schema" xmlns:ns4="http://www.modaclouds.eu/xsd/2.0/grouping_categories_schema" xmlns:ns5="http://www.modaclouds.eu/xsd/1.0/monitoring_rules_schema">
+    <ns5:monitoringRule id="cpuRule_tomcat_server" timeStep="10" timeWindow="10">
+        <ns5:monitoredTargets>
+            <ns5:monitoredTarget type="tomcat_server_VM" class="VM"/>
+        </ns5:monitoredTargets>
+        <ns5:collectedMetric metricName="CPUUtilization">
+            <ns5:parameter name="samplingTime">1</ns5:parameter>
+            <ns5:parameter name="samplingProbability">1</ns5:parameter>
+        </ns5:collectedMetric>
+        <ns5:metricAggregation groupingClass="VM" aggregateFunction="Average"/>
+        <ns5:actions>
+            <ns5:action name="OutputMetric">
+                <ns5:parameter name="metric">AverageCpuUtilization_tomcat_server</ns5:parameter>
+                <ns5:parameter name="value">METRIC</ns5:parameter>
+                <ns5:parameter name="resourceId">ID</ns5:parameter>
+            </ns5:action>
+        </ns5:actions>
+    </ns5:monitoringRule>
+    <ns5:monitoringRule id="ramRule_tomcat_server" timeStep="10" timeWindow="10">
+        <ns5:monitoredTargets>
+            <ns5:monitoredTarget type="tomcat_server_VM" class="VM"/>
+        </ns5:monitoredTargets>
+        <ns5:collectedMetric metricName="MemUsed">
+            <ns5:parameter name="samplingTime">1</ns5:parameter>
+            <ns5:parameter name="samplingProbability">1</ns5:parameter>
+        </ns5:collectedMetric>
+        <ns5:metricAggregation groupingClass="VM" aggregateFunction="Average"/>
+        <ns5:actions>
+            <ns5:action name="OutputMetric">
+                <ns5:parameter name="metric">AverageRamUtilization_tomcat_server</ns5:parameter>
+                <ns5:parameter name="value">METRIC</ns5:parameter>
+                <ns5:parameter name="resourceId">ID</ns5:parameter>
+            </ns5:action>
+        </ns5:actions>
+    </ns5:monitoringRule>
+    <ns5:monitoringRule id="respTimeRule_tomcat_server" timeStep="10" timeWindow="10">
+        <ns5:monitoredTargets>
+            <ns5:monitoredTarget type="tomcat_server" class="InternalComponent"/>
+        </ns5:monitoredTargets>
+        <ns5:collectedMetric metricName="AvarageResponseTimeInternalComponent"/>
+        <ns5:actions>
+            <ns5:action name="OutputMetric">
+                <ns5:parameter name="metric">AvarageResponseTime_tomcat_server</ns5:parameter>
+                <ns5:parameter name="value">METRIC</ns5:parameter>
+                <ns5:parameter name="resourceId">ID</ns5:parameter>
+            </ns5:action>
+        </ns5:actions>
+    </ns5:monitoringRule>
+    <ns5:monitoringRule id="respTimeRule_InternalComponent" timeStep="10" timeWindow="10">
+        <ns5:monitoredTargets>
+            <ns5:monitoredTarget class="Method"/>
+        </ns5:monitoredTargets>
+        <ns5:collectedMetric metricName="EffectiveResponseTime">
+            <ns5:parameter name="samplingProbability">1</ns5:parameter>
+        </ns5:collectedMetric>
+        <ns5:actions>
+            <ns5:action name="OutputMetric">
+                <ns5:parameter name="metric">AvarageResponseTimeInternalComponent</ns5:parameter>
+                <ns5:parameter name="value">METRIC</ns5:parameter>
+                <ns5:parameter name="resourceId">ID</ns5:parameter>
+            </ns5:action>
+        </ns5:actions>
+    </ns5:monitoringRule>
+    <ns5:monitoringRule id="respTimeSLARule_tomcat_server" timeStep="10" timeWindow="10">
+        <ns5:monitoredTargets>
+            <ns5:monitoredTarget type="tomcat_server" class="InternalComponent"/>
+        </ns5:monitoredTargets>
+        <ns5:collectedMetric metricName="AvarageResponseTimeInternalComponent"/>
+        <ns5:condition>METRIC &gt; 2.0</ns5:condition>
+        <ns5:actions>
+            <ns5:action name="OutputMetric">
+                <ns5:parameter name="metric">AvarageResponseTime_tomcat_server_Violation</ns5:parameter>
+                <ns5:parameter name="value">METRIC</ns5:parameter>
+                <ns5:parameter name="resourceId">ID</ns5:parameter>
+            </ns5:action>
+        </ns5:actions>
+    </ns5:monitoringRule>
+    <ns5:monitoringRule id="vmAvailableSLARule_tomcat_server" timeStep="2" timeWindow="2">
+        <ns5:monitoredTargets>
+            <ns5:monitoredTarget type="tomcat_server" class="InternalComponent"/>
+        </ns5:monitoredTargets>
+        <ns5:collectedMetric metricName="AppAvailable"/>
+        <ns5:metricAggregation groupingClass="InternalComponent" aggregateFunction="Average"/>
+        <ns5:condition>METRIC &lt; 0.998</ns5:condition>
+        <ns5:actions>
+            <ns5:action name="OutputMetric">
+                <ns5:parameter name="metric">AvarageAppAvailability_tomcat_server_Violation</ns5:parameter>
+                <ns5:parameter name="value">METRIC</ns5:parameter>
+                <ns5:parameter name="resourceId">ID</ns5:parameter>
+            </ns5:action>
+        </ns5:actions>
+    </ns5:monitoringRule>
+</ns5:monitoringRules>

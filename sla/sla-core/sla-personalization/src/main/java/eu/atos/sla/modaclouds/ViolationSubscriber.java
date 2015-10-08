@@ -16,10 +16,10 @@
  */
 package eu.atos.sla.modaclouds;
 
-import it.polimi.modaclouds.qos_models.schema.Action;
-import it.polimi.modaclouds.qos_models.schema.Actions;
-import it.polimi.modaclouds.qos_models.schema.MonitoringRule;
-import it.polimi.modaclouds.qos_models.schema.Parameter;
+import it.polimi.tower4clouds.rules.Action;
+import it.polimi.tower4clouds.rules.Actions;
+import it.polimi.tower4clouds.rules.MonitoringRule;
+import it.polimi.tower4clouds.rules.Parameter;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;

@@ -16,7 +16,9 @@
  */
 package eu.atos.sla.service.rest;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
@@ -29,6 +31,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,26 +40,39 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import com.sun.jersey.core.spi.factory.ResponseBuilderImpl;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
 
 import eu.atos.sla.dao.IAgreementDAO;
 import eu.atos.sla.dao.IProviderDAO;
+import eu.atos.sla.dao.ITemplateDAO;
 import eu.atos.sla.datamodel.IAgreement;
 import eu.atos.sla.datamodel.IProvider;
+import eu.atos.sla.datamodel.ITemplate;
 import eu.atos.sla.datamodel.bean.Provider;
 import eu.atos.sla.enforcement.IEnforcementService;
 import eu.atos.sla.modaclouds.ViolationSubscriber;
 import eu.atos.sla.parser.IParser;
 import eu.atos.sla.parser.ParserException;
 import eu.atos.sla.parser.data.wsag.Agreement;
+import eu.atos.sla.parser.data.wsag.Template;
 import eu.atos.sla.service.rest.exception.InternalException;
 import eu.atos.sla.service.rest.helpers.AgreementHelperE;
+import eu.atos.sla.service.rest.helpers.TemplateHelperE;
 import eu.atos.sla.service.rest.helpers.exception.DBExistsHelperException;
 import eu.atos.sla.service.rest.helpers.exception.DBMissingHelperException;
 import eu.atos.sla.service.rest.helpers.exception.InternalHelperException;
 import eu.atos.sla.service.rest.helpers.exception.ParserHelperException;
+import eu.seaclouds.platform.sla.generator.AgreementGenerator;
+import eu.seaclouds.platform.sla.generator.JaxbUtils;
+import eu.seaclouds.platform.sla.generator.RulesExtractor;
+import eu.seaclouds.platform.sla.generator.SlaGeneratorException;
+import eu.seaclouds.platform.sla.generator.SlaInfo;
+import eu.seaclouds.platform.sla.generator.TemplateGenerator;
+import eu.seaclouds.platform.sla.generator.SlaInfo.SlaInfoBuilder;
 
 @Path("seaclouds")
 @Component
@@ -65,6 +81,8 @@ public class SeacloudsRest extends AbstractSLARest {
 
     private static Logger logger = LoggerFactory.getLogger(SeacloudsRest.class);
 
+    private SlaInfoBuilder slaInfoBuilder = new SlaInfoBuilder(new RulesExtractor());
+    
     /*
      * Base of monitoring manager /metrics endpoint. Something like http://localhost:8170/v1/metrics
      */
@@ -81,13 +99,22 @@ public class SeacloudsRest extends AbstractSLARest {
     private AgreementHelperE agreementHelper;
     
     @Autowired
+    private TemplateHelperE templateHelper;
+    
+    @Autowired
     private IProviderDAO providerDAO;
     
     @Autowired
     private IAgreementDAO agreementDAO;
+    
+    @Autowired
+    private ITemplateDAO templateDAO;
 
     @Resource(name="agreementXmlParser")
-    IParser<Agreement> xmlParser;
+    IParser<Agreement> agreementParser;
+    
+    @Resource(name="templateXmlParser")
+    IParser<Template> templateParser;
     
     @Autowired
     private IEnforcementService enforcementService;
@@ -117,6 +144,60 @@ public class SeacloudsRest extends AbstractSLARest {
     }
     
     @POST
+    @Path("templates")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createTemplate(@Context UriInfo uriInfo, @RequestBody String dam) throws InternalException {
+        try {
+            
+            logger.info("\nPOST /seaclouds/templates\n{}", dam);
+            
+            SlaInfo slaInfo = slaInfoBuilder.build(dam);
+            
+            String id = createTemplate(slaInfo, true);
+            String location = buildResourceLocation(uriInfo.getAbsolutePath().toString(), id);
+            
+            Map<String, String> map = Collections.singletonMap("id", id);
+            
+            ResponseBuilderImpl builder = new ResponseBuilderImpl();
+            builder.header("location", location);
+            builder.status(HttpStatus.CREATED.value());
+            builder.entity(map);
+            return builder.build();
+            
+        } catch (DBMissingHelperException e) {
+            throw new InternalException(e.getMessage(), e);
+        } catch (DBExistsHelperException e) {
+            throw new InternalException(e.getMessage(), e);
+        } catch (InternalHelperException e) {
+            throw new InternalException(e.getMessage(), e);
+        } catch (ParserHelperException e) {
+            throw new InternalException(e.getMessage(), e);
+        } catch (JAXBException e) {
+            throw new InternalException(e.getMessage(), e);
+        }
+    }
+
+    public String createTemplate(SlaInfo slaInfo, boolean persist) throws JAXBException,
+            DBMissingHelperException, DBExistsHelperException,
+            InternalHelperException, ParserHelperException {
+        
+        TemplateGenerator g = new TemplateGenerator(slaInfo);
+        Template wsagTemplate = g.generate();
+
+        String providerUuid = wsagTemplate.getContext().getAgreementResponder();
+        
+        String wsagSerialized = JaxbUtils.toString(wsagTemplate);
+        String id = "<random-uuid>";
+
+        if (persist) {
+            
+            getOrCreateProvider(providerUuid);
+            id = templateHelper.createTemplate(wsagTemplate, wsagSerialized);
+        }
+        return id;
+    }
+    
+    @POST
     @Path("agreements")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response createAgreement(@Context UriInfo uriInfo, FormDataMultiPart form,
@@ -126,11 +207,9 @@ public class SeacloudsRest extends AbstractSLARest {
         FormDataBodyPart slaPart = form.getField("sla");
         String slaPayload = slaPart.getValueAs(String.class);
 
-        FormDataBodyPart rulesPart = form.getField("rules");
-        
         String id;
         String location = null;
-        Agreement a = xmlParser.getWsagObject(slaPayload);
+        Agreement a = agreementParser.getWsagObject(slaPayload);
         try {
             String providerUuid = a.getContext().getAgreementResponder();
             IProvider provider = providerDAO.getByUUID(providerUuid);
@@ -161,7 +240,7 @@ public class SeacloudsRest extends AbstractSLARest {
     
     @POST
     @Path("commands/rulesready")
-    public String rulesReady(@Context UriInfo uriInfo) {
+    public String rulesReady(@Context UriInfo uriInfo, @QueryParam("agreementId") String agreementId) {
         String slaUrl = getSlaUrl(this.slaUrl, uriInfo);
         String metricsUrl = getMetricsBaseUrl("", this.metricsUrl);
         /*
@@ -169,7 +248,12 @@ public class SeacloudsRest extends AbstractSLARest {
          */
         String slaMetricsUrl = getSlaMetricsUrl(slaUrl);
         
-        List<IAgreement> agreements = agreementDAO.getAll();
+        if (agreementId == null) {
+            agreementId = "";
+        }
+        
+        List<IAgreement> agreements = "".equals(agreementId)? agreementDAO.getAll() :
+            Collections.singletonList(agreementDAO.getByAgreementId(agreementId));
 
         ViolationSubscriber subscriber = new ViolationSubscriber(metricsUrl, slaMetricsUrl);
         for (IAgreement agreement : agreements) {
@@ -177,6 +261,27 @@ public class SeacloudsRest extends AbstractSLARest {
             enforcementService.startEnforcement(agreement.getAgreementId());
         }
         return "";
+    }
+    
+    @GET
+    @Path("commands/fromtemplate")
+    @Produces(MediaType.APPLICATION_XML)
+    public Response generateAgreementFromTemplate(@QueryParam("templateId") String templateId) throws JAXBException {
+        ITemplate template = templateDAO.getByUuid(templateId);
+
+        Template wsagTemplate;
+        try {
+            wsagTemplate = templateParser.getWsagObject(template.getText());
+        } catch (ParserException e) {
+            throw new SlaGeneratorException(e.getMessage(), e);
+        }
+        Agreement wsagAgreement = new AgreementGenerator(wsagTemplate).generate();
+        logger.debug(JaxbUtils.toString(wsagAgreement));
+        
+        /*
+         * TODO: Finish 
+         */
+        return null;
     }
     
     /**
@@ -215,4 +320,15 @@ public class SeacloudsRest extends AbstractSLARest {
         return slaUrl + "/metrics";
     }
     
+    private IProvider getOrCreateProvider(String providerUuid) {
+        
+        IProvider provider = providerDAO.getByUUID(providerUuid);
+        if (provider == null) {
+            provider = new Provider();
+            provider.setUuid(providerUuid);
+            provider.setName(providerUuid);
+            provider = providerDAO.save(provider);
+        }
+        return provider;
+    }
 }

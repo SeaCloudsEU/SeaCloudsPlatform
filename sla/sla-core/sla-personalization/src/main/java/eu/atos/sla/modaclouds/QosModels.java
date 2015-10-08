@@ -23,12 +23,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.polimi.modaclouds.qos_models.schema.Action;
-import it.polimi.modaclouds.qos_models.schema.Actions;
-import it.polimi.modaclouds.qos_models.schema.Constraint;
-import it.polimi.modaclouds.qos_models.schema.MonitoringRule;
-import it.polimi.modaclouds.qos_models.schema.MonitoringRules;
-import it.polimi.modaclouds.qos_models.schema.Parameter;
+import it.polimi.tower4clouds.rules.Action;
+import it.polimi.tower4clouds.rules.Actions;
+import it.polimi.tower4clouds.rules.MonitoringRule;
+import it.polimi.tower4clouds.rules.Parameter;
 
 /**
  * Functions and vocabulary related to QosConstraints and MonitoringRules
@@ -106,27 +104,6 @@ public class QosModels {
             result = rule.getActions().getActions();
         } else {
             result = Collections.<Action> emptyList();
-        }
-        return result;
-    }
-
-    /**
-     * Returns the rule associated to a constraint; NOT_FOUND_RULE if not found.
-     */
-    public static MonitoringRule getRelatedRule(Constraint constraint,
-            MonitoringRules rules) {
-        MonitoringRule result = NOT_FOUND_RULE;
-
-        String constraintId = constraint.getId();
-        if (constraintId == null) {
-            logger.warn("Not valid constraint: id is null");
-        } else {
-            for (MonitoringRule rule : rules.getMonitoringRules()) {
-                if (constraintId.equals(rule.getRelatedQosConstraintId())) {
-                    result = rule;
-                    break;
-                }
-            }
         }
         return result;
     }
