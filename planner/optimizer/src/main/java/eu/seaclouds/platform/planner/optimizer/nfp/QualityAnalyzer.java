@@ -35,15 +35,14 @@ import eu.seaclouds.platform.planner.optimizer.TopologyElementCalled;
 
 public class QualityAnalyzer {
 
-   private final boolean      IS_DEBUG;
-   private boolean            defaultDebug = false;
-   static Logger              log          = LoggerFactory
-                                                 .getLogger(QualityAnalyzer.class);
+   private final boolean IS_DEBUG;
+   private boolean defaultDebug = false;
+   static Logger log = LoggerFactory.getLogger(QualityAnalyzer.class);
 
-   private QualityInformation properties   = null;
+   private QualityInformation properties = null;
 
-   private final double       MAX_TIMES_WORKLOAD_FOR_THRESHOLDS;
-   private final double       WORKLOAD_INCREMENT_FOR_SEARCH;
+   private final double MAX_TIMES_WORKLOAD_FOR_THRESHOLDS;
+   private final double WORKLOAD_INCREMENT_FOR_SEARCH;
 
    public QualityAnalyzer() {
 
@@ -85,8 +84,7 @@ public class QualityAnalyzer {
       IS_DEBUG = defaultDebug;
    }
 
-   public QualityAnalyzer(double maxWorkload, double workloadIncrement,
-         boolean debug) {
+   public QualityAnalyzer(double maxWorkload, double workloadIncrement, boolean debug) {
 
       properties = new QualityInformation();
       MAX_TIMES_WORKLOAD_FOR_THRESHOLDS = maxWorkload;
@@ -106,8 +104,7 @@ public class QualityAnalyzer {
    // routing matrix with the OpProfile (the item in 0 is the mainly called)
    private double[][] routes = null;
 
-   public QualityInformation computePerformance(Solution bestSol,
-         Topology topology, double workload,
+   public QualityInformation computePerformance(Solution bestSol, Topology topology, double workload,
          SuitableOptions cloudCharacteristics) {
 
       if (routes == null) {
@@ -119,43 +116,37 @@ public class QualityAnalyzer {
       // calculate the workload received by each core of a module: consider both
       // number of cores
       // of a cloud offer and number of instances for such module
-      double[] workloadsModulesByCoresAndNumInstances = weightModuleWorkloadByCoresAndNumInstances(
-            workloadsModules, topology, bestSol, cloudCharacteristics);
+      double[] workloadsModulesByCoresAndNumInstances = weightModuleWorkloadByCoresAndNumInstances(workloadsModules,
+            topology, bestSol, cloudCharacteristics);
 
-      double[] mus = getMusOfSelectedCloudOffers(bestSol, topology,
-            cloudCharacteristics);
+      double[] mus = getMusOfSelectedCloudOffers(bestSol, topology, cloudCharacteristics);
 
       if (IS_DEBUG) {
          log.debug("Solution to check the mus is: " + bestSol.toString());
          log.debug("Mus of servers are: " + Arrays.toString(mus));
          log.debug("Num visits modules is: " + Arrays.toString(numVisitsModule));
-         log.debug("Workload received of modules: "
-               + Arrays.toString(workloadsModules));
+         log.debug("Workload received of modules: " + Arrays.toString(workloadsModules));
          log.debug("Workload received of each execution unit by its numberOfInstances and Cores: "
                + Arrays.toString(workloadsModulesByCoresAndNumInstances));
       }
-      double respTime = getSystemRespTime(numVisitsModule,
-            workloadsModulesByCoresAndNumInstances, mus);
+      double respTime = getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances, mus);
 
       if (IS_DEBUG) {
-         log.debug("calculated response time of the solution "
-               + bestSol.toString() + " without considering latencies is: "
-               + respTime);
+         log.debug("calculated response time of the solution " + bestSol.toString()
+               + " without considering latencies is: " + respTime);
       }
-      respTime += addNetworkDelays(bestSol, topology, numVisitsModule,
-            cloudCharacteristics);
+      respTime += addNetworkDelays(bestSol, topology, numVisitsModule, cloudCharacteristics);
       if (IS_DEBUG) {
-         log.debug("calculated response time of the solution"
-               + bestSol.toString() + " is: " + respTime);
+         log.debug("calculated response time of the solution" + bestSol.toString() + " is: " + respTime);
       }
       // after computing, save the performance info in properties.performance
-      properties.setResponseTime(respTime);
+      properties.setResponseTimeSecs(respTime);
 
       return properties;
    }
 
-   private double addNetworkDelays(Solution bestSol, Topology topology,
-         double[] numVisitsModule, SuitableOptions cloudCharacteristics) {
+   private double addNetworkDelays(Solution bestSol, Topology topology, double[] numVisitsModule,
+         SuitableOptions cloudCharacteristics) {
 
       double networkDelay = 0.0;
 
@@ -165,15 +156,12 @@ public class QualityAnalyzer {
          double sumOfDelaysSingleModule = 0.0;
 
          for (TopologyElementCalled elementCalled : element) {
-            sumOfDelaysSingleModule += elementCalled.getProbCall()
-                  * latencyBetweenElements(bestSol, element.getName(),
-                        elementCalled.getElement().getName(),
-                        cloudCharacteristics);
+            sumOfDelaysSingleModule += elementCalled.getProbCall() * latencyBetweenElements(bestSol, element.getName(),
+                  elementCalled.getElement().getName(), cloudCharacteristics);
          }
 
          if (IS_DEBUG) {
-            log.debug("calculated network delay for module " + i
-                  + " in solution " + bestSol.toString()
+            log.debug("calculated network delay for module " + i + " in solution " + bestSol.toString()
                   + " is (numVisitsModule[i] * sumOfDelaysSingleModule): "
                   + numVisitsModule[i] * sumOfDelaysSingleModule);
          }
@@ -185,21 +173,17 @@ public class QualityAnalyzer {
 
    }
 
-   private double latencyBetweenElements(Solution bestSol,
-         String callingModuleName, String calledModuleName,
+   private double latencyBetweenElements(Solution bestSol, String callingModuleName, String calledModuleName,
          SuitableOptions cloudCharacteristics) {
 
-      String cloudOfferCallingElement = bestSol
-            .getCloudProviderNameForModule(callingModuleName);
-      String cloudOfferCalledElement = bestSol
-            .getCloudProviderNameForModule(calledModuleName);
+      String cloudOfferCallingElement = bestSol.getCloudProviderNameForModule(callingModuleName);
+      String cloudOfferCalledElement = bestSol.getCloudProviderNameForModule(calledModuleName);
 
-      if (CloudOffer.providerNameOfCloudOffer(cloudOfferCallingElement).equals(
-            CloudOffer.providerNameOfCloudOffer(cloudOfferCalledElement))) {
+      if (CloudOffer.providerNameOfCloudOffer(cloudOfferCallingElement)
+            .equals(CloudOffer.providerNameOfCloudOffer(cloudOfferCalledElement))) {
 
          if (IS_DEBUG) {
-            log.debug("latency between modules " + callingModuleName + " and "
-                  + calledModuleName + " is "
+            log.debug("latency between modules " + callingModuleName + " and " + calledModuleName + " is "
                   + cloudCharacteristics.getLatencyIntraDatacenterSec());
          }
 
@@ -208,8 +192,7 @@ public class QualityAnalyzer {
       } else {
 
          if (IS_DEBUG) {
-            log.debug("latency between modules " + callingModuleName + " and "
-                  + calledModuleName + " is "
+            log.debug("latency between modules " + callingModuleName + " and " + calledModuleName + " is "
                   + cloudCharacteristics.getLatencyInterCloudSec());
          }
 
@@ -218,15 +201,14 @@ public class QualityAnalyzer {
 
    }
 
-   private double getSystemRespTime(double[] numVisitsModule,
-         double[] workloadsModulesByCoresAndNumInstances, double[] mus) {
+   private double getSystemRespTime(double[] numVisitsModule, double[] workloadsModulesByCoresAndNumInstances,
+         double[] mus) {
 
       double respTime = 0;
 
       for (int i = 0; i < numVisitsModule.length; i++) {
 
-         respTime += calculateRespTimeModule(numVisitsModule[i],
-               workloadsModulesByCoresAndNumInstances[i], mus[i]);
+         respTime += calculateRespTimeModule(numVisitsModule[i], workloadsModulesByCoresAndNumInstances[i], mus[i]);
 
       }
 
@@ -236,8 +218,7 @@ public class QualityAnalyzer {
    /*
     * Here they are used the Queueing Network theory basics.
     */
-   private double calculateRespTimeModule(double visits, double lambda,
-         double mu) {
+   private double calculateRespTimeModule(double visits, double lambda, double mu) {
 
       double utilization = lambda / mu;
       if (utilization > 1.0) {
@@ -260,32 +241,23 @@ public class QualityAnalyzer {
       return numVisits;
    }
 
-   private double[] getMusOfSelectedCloudOffers(Solution bestSol,
-         Topology topology, SuitableOptions cloudCharacteristics) {
+   private double[] getMusOfSelectedCloudOffers(Solution bestSol, Topology topology,
+         SuitableOptions cloudCharacteristics) {
 
       double[] mus = new double[topology.size()];
       for (int i = 0; i < mus.length; i++) {
 
          String moduleName = topology.getElementIndex(i).getName();
-         String cloudChosenForModule = bestSol
-               .getCloudOfferNameForModule(moduleName);
-         mus[i] = cloudCharacteristics.getCloudCharacteristics(moduleName,
-               cloudChosenForModule).getPerformance()
+         String cloudChosenForModule = bestSol.getCloudOfferNameForModule(moduleName);
+         mus[i] = cloudCharacteristics.getCloudCharacteristics(moduleName, cloudChosenForModule).getPerformance()
                / topology.getElementIndex(i).getDefaultExecutionTime();
 
          if (IS_DEBUG) {
-            log.debug("Default execution time of module "
-                  + i
-                  + " with name "
-                  + topology.getElementIndex(i).getName()
-                  + " is "
-                  + topology.getElementIndex(i).getDefaultExecutionTime()
-                  + " and using cloud option "
-                  + bestSol.getCloudOfferNameForModule(moduleName)
-                  + " with performance "
-                  + cloudCharacteristics.getCloudCharacteristics(moduleName,
-                        cloudChosenForModule).getPerformance() + " its Mu is "
-                  + mus[i]);
+            log.debug("Default execution time of module " + i + " with name " + topology.getElementIndex(i).getName()
+                  + " is " + topology.getElementIndex(i).getDefaultExecutionTime() + " and using cloud option "
+                  + bestSol.getCloudOfferNameForModule(moduleName) + " with performance "
+                  + cloudCharacteristics.getCloudCharacteristics(moduleName, cloudChosenForModule).getPerformance()
+                  + " its Mu is " + mus[i]);
          }
       }
 
@@ -293,27 +265,27 @@ public class QualityAnalyzer {
 
    }
 
-   private double[] weightModuleWorkloadByCoresAndNumInstances(
-         double[] workloadsModules, Topology topology, Solution bestSol,
-         SuitableOptions cloudCharacteristics) {
+   private double[] weightModuleWorkloadByCoresAndNumInstances(double[] workloadsModules, Topology topology,
+         Solution bestSol, SuitableOptions cloudCharacteristics) {
       double[] ponderatedWorkloads = new double[workloadsModules.length];
       for (int i = 0; i < workloadsModules.length; i++) {
 
          String moduleName = topology.getElementIndex(i).getName();
-         double numInstances = bestSol.getCloudInstancesForModule(moduleName);
+         double numInstances = -1;
+         try {
+            numInstances = bestSol.getCloudInstancesForModule(moduleName);
+         } catch (Exception E) {// nothing to do
 
-         String cloudChosenForModule = bestSol
-               .getCloudOfferNameForModule(moduleName);
+         }
 
-         double numCores = cloudCharacteristics.getCloudCharacteristics(
-               moduleName, cloudChosenForModule).getNumCores();
-         ponderatedWorkloads[i] = workloadsModules[i]
-               / (numInstances * numCores);
+         String cloudChosenForModule = bestSol.getCloudOfferNameForModule(moduleName);
+
+         double numCores = cloudCharacteristics.getCloudCharacteristics(moduleName, cloudChosenForModule).getNumCores();
+         ponderatedWorkloads[i] = workloadsModules[i] / (numInstances * numCores);
 
          if (IS_DEBUG) {
-            log.debug("Number of instances used for module " + moduleName
-                  + " is : " + numInstances + " and num Cores of the offer is"
-                  + numCores);
+            log.debug("Number of instances used for module " + moduleName + " is : " + numInstances
+                  + " and num Cores of the offer is" + numCores);
          }
       }
 
@@ -332,8 +304,7 @@ public class QualityAnalyzer {
          for (int i = 0; i < routing.length; i++) {
 
             // If module i can be calculated (and was not calculate previously)
-            if ((workloadsReceived[i] == 0.0)
-                  && (workloadCanBeCalculated(routing, workloadsReceived, i))) {
+            if ((workloadsReceived[i] == 0.0) && (workloadCanBeCalculated(routing, workloadsReceived, i))) {
 
                // Calculating the received workload of Module i
                // The first case; i.e,. the one that receive requests directly,
@@ -344,8 +315,7 @@ public class QualityAnalyzer {
                }
 
                for (int callingIndex = 0; callingIndex < routing.length; callingIndex++) {
-                  workloadsReceived[i] += routing[callingIndex][i]
-                        * workloadsReceived[callingIndex];
+                  workloadsReceived[i] += routing[callingIndex][i] * workloadsReceived[callingIndex];
                }
             }
          }
@@ -356,8 +326,7 @@ public class QualityAnalyzer {
 
    }
 
-   private boolean workloadCanBeCalculated(double[][] routing,
-         double[] workloads, int indexCol) {
+   private boolean workloadCanBeCalculated(double[][] routing, double[] workloads, int indexCol) {
 
       for (int row = 0; row < routing.length; row++) {
          if ((routing[row][indexCol] != 0) && (workloads[row] == 0.0)) {
@@ -406,8 +375,7 @@ public class QualityAnalyzer {
          // allowed operation initialElement.getDependences() breaks the
          // encapsulation of data by TopologyElement class
          for (TopologyElementCalled c : e.getDependences()) {
-            routing[topology.indexOf(e)][topology.indexOf(c.getElement())] = c
-                  .getProbCall();
+            routing[topology.indexOf(e)][topology.indexOf(c.getElement())] = c.getProbCall();
          }
       }
 
@@ -431,8 +399,7 @@ public class QualityAnalyzer {
     *         modules it requests. It will not work if there are cycles in the
     *         topology
     */
-   public double computeAvailability(Solution bestSol, Topology topology,
-         SuitableOptions cloudCharacteristics) {
+   public double computeAvailability(Solution bestSol, Topology topology, SuitableOptions cloudCharacteristics) {
 
       visited = new HashSet<String>();
 
@@ -440,82 +407,80 @@ public class QualityAnalyzer {
 
       visited.add(initialElement.getName());
 
-      String cloudUsedInitialElement = bestSol
-            .getCloudOfferNameForModule(initialElement.getName());
-      double instancesUsedInitialElement = bestSol
-            .getCloudInstancesForModule(initialElement.getName());
+      String cloudUsedInitialElement = bestSol.getCloudOfferNameForModule(initialElement.getName());
+      double instancesUsedInitialElement = -1;
+      try {
+         instancesUsedInitialElement = bestSol.getCloudInstancesForModule(initialElement.getName());
+      } catch (Exception E) {// nothing to do
+      }
       double availabilityInitialElementInstance = cloudCharacteristics
-            .getCloudCharacteristics(initialElement.getName(),
-                  cloudUsedInitialElement).getAvailability();
+            .getCloudCharacteristics(initialElement.getName(), cloudUsedInitialElement).getAvailability();
 
-      double unavailabilityInitialElement = Math.pow(
-            (1.0 - availabilityInitialElementInstance),
+      double unavailabilityInitialElement = Math.pow((1.0 - availabilityInitialElementInstance),
             instancesUsedInitialElement);
       double availabilityInitialElement = 1.0 - unavailabilityInitialElement;
 
       double systemAvailability = availabilityInitialElement;
 
-      for (TopologyElementCalled c : topology.getInitialElement()
-            .getDependences()) {
+      for (TopologyElementCalled c : topology.getInitialElement().getDependences()) {
          systemAvailability = systemAvailability
-               * calculateAvailabilityRecursive(c, bestSol, topology,
-                     cloudCharacteristics);
+               * calculateAvailabilityRecursive(c, bestSol, topology, cloudCharacteristics);
       }
 
+      if (IS_DEBUG) {
+         log.debug("Finished calculation of availability of solution: " + bestSol.toString());
+      }
       // after computing, save the availability info in properties.availability
       properties.setAvailability(systemAvailability);
 
       return systemAvailability;
    }
 
-   private double calculateAvailabilityRecursive(TopologyElementCalled c,
-         Solution bestSol, Topology topology,
+   private double calculateAvailabilityRecursive(TopologyElementCalled c, Solution bestSol, Topology topology,
          SuitableOptions cloudCharacteristics) {
 
-      if (visited.contains(c.getElement().getName())) {
-         log.warn("Availability evaluation: Revisting the availability of a module which was already visited. Expect weird behaviors or infinite loops");
-         return 1;
-      }
 
       visited.add(c.getElement().getName());
 
-      String cloudUsedForElement = bestSol.getCloudOfferNameForModule(c
-            .getElement().getName());
-      double instancesUsedForElement = bestSol.getCloudInstancesForModule(c
-            .getElement().getName());
+      String cloudUsedForElement = bestSol.getCloudOfferNameForModule(c.getElement().getName());
+      double instancesUsedForElement = -1;
+      try {
+         instancesUsedForElement = bestSol.getCloudInstancesForModule(c.getElement().getName());
+      } catch (Exception E) {// nothing to do
+
+      }
       double availabilityElementInstance = cloudCharacteristics
-            .getCloudCharacteristics(c.getElement().getName(),
-                  cloudUsedForElement).getAvailability();
-      double unavailabilityElement = Math.pow(
-            (1.0 - availabilityElementInstance), instancesUsedForElement);
+            .getCloudCharacteristics(c.getElement().getName(), cloudUsedForElement).getAvailability();
+      double unavailabilityElement = Math.pow((1.0 - availabilityElementInstance), instancesUsedForElement);
 
       double availabilityElement = 1.0 - unavailabilityElement;
 
       for (TopologyElementCalled cc : c.getElement().getDependences()) {
          availabilityElement = availabilityElement
-               * calculateAvailabilityRecursive(cc, bestSol, topology,
-                     cloudCharacteristics);
+               * calculateAvailabilityRecursive(cc, bestSol, topology, cloudCharacteristics);
       }
 
-      double callAvailability = c.getProbCall() * availabilityElement
-            + (1.0 - c.getProbCall());
+      double callAvailability = c.getProbCall() * availabilityElement + (1.0 - c.getProbCall());
 
       return callAvailability;
    }
 
-   public double computeCost(Solution bestSol,
-         SuitableOptions cloudCharacteristics) {
+   public double computeCost(Solution bestSol, SuitableOptions cloudCharacteristics) {
 
       double cost = 0.0;
 
       for (String moduleName : bestSol) {
 
-         String cloudUsedForElement = bestSol
-               .getCloudOfferNameForModule(moduleName);
-         double instancesUsedForElement = bestSol
-               .getCloudInstancesForModule(moduleName);
-         double costElementInstance = cloudCharacteristics
-               .getCloudCharacteristics(moduleName, cloudUsedForElement)
+         String cloudUsedForElement = bestSol.getCloudOfferNameForModule(moduleName);
+
+         double instancesUsedForElement = -1;
+         try {
+            instancesUsedForElement = bestSol.getCloudInstancesForModule(moduleName);
+         } catch (Exception E) {// Nothing to do
+
+         }
+
+         double costElementInstance = cloudCharacteristics.getCloudCharacteristics(moduleName, cloudUsedForElement)
                .getCost();
 
          cost += (instancesUsedForElement * costElementInstance);
@@ -528,48 +493,44 @@ public class QualityAnalyzer {
 
    }
 
-   public HashMap<String, ArrayList<Double>> computeThresholds(
-         Solution solInput, Topology topology, QualityInformation requirements,
-         SuitableOptions cloudCharacteristics) {
+   public HashMap<String, ArrayList<Double>> computeThresholds(Solution solInput, Topology topology,
+         QualityInformation requirements, SuitableOptions cloudCharacteristics) {
 
       HashMap<String, ArrayList<Double>> thresholds = new HashMap<String, ArrayList<Double>>();
 
       Solution modifSol = solInput.clone();
       double workload = 0;
-      if ((requirements.hasValidWorkload())
-            && (requirements.existResponseTimeRequirement())) {
+      if ((requirements.hasValidWorkload()) && (requirements.existResponseTimeRequirement())) {
 
          workload = requirements.getWorkload();
       } else {// If no valid workload is specified, there cannot be created the
               // thresholds
-         log.debug("Reconfiguration Thresholds not created because Response Time requirement or expected workload was not found.");
+         log.debug(
+               "Reconfiguration Thresholds not created because Response Time requirement or expected workload was not found.");
          return null;
       }
 
-      double[] mus = getMusOfSelectedCloudOffers(modifSol, topology,
-            cloudCharacteristics);
+      double[] mus = getMusOfSelectedCloudOffers(modifSol, topology, cloudCharacteristics);
 
       double limitWorkload = workload;
       boolean existModulesToScaleOut = true;
-      while (continueGeneratingThresholds(limitWorkload, workload, modifSol,
-            requirements, cloudCharacteristics, existModulesToScaleOut)) {
+      while (continueGeneratingThresholds(limitWorkload, workload, modifSol, requirements, cloudCharacteristics,
+            existModulesToScaleOut)) {
          // Stop condition is the highest allowed cost or, if cost is not
          // specified, ten times the expected worklaod
 
          if (IS_DEBUG) {
             log.debug("Creating threshold for workload above " + limitWorkload);
          }
-         limitWorkload = findWorkloadForWhichRespTimeIsExceeded(
-               requirements.getResponseTime(), limitWorkload, mus, modifSol,
-               topology, cloudCharacteristics);
+         limitWorkload = findWorkloadForWhichRespTimeIsExceeded(requirements.getResponseTime(), limitWorkload, mus,
+               modifSol, topology, cloudCharacteristics);
          // get highest utilization
-         String moduleWithHighestUtilization = findHighestUtilizationModuleThatCanScale(
-               limitWorkload, mus, modifSol, topology, cloudCharacteristics);
+         String moduleWithHighestUtilization = findHighestUtilizationModuleThatCanScale(limitWorkload, mus, modifSol,
+               topology, cloudCharacteristics);
 
          // put the value in the hashMap. "moduleWithHighestUtilization" may be
          // null
-         addThresholdToThresholds(thresholds, limitWorkload,
-               moduleWithHighestUtilization);
+         addThresholdToThresholds(thresholds, limitWorkload, moduleWithHighestUtilization);
 
          // modify the solution to use a resource more of the currently
          // specified. "moduleWithHighestUtilization" may be null
@@ -586,15 +547,17 @@ public class QualityAnalyzer {
       return thresholds;
    }
 
-   private void addResourceToSolution(Solution sol,
-         String moduleWithHighestUtilization) {
-      sol.modifyNumInstancesOfModule(moduleWithHighestUtilization,
-            sol.getCloudInstancesForModule(moduleWithHighestUtilization) + 1);
+   private void addResourceToSolution(Solution sol, String moduleWithHighestUtilization) {
 
+      try {
+         sol.modifyNumInstancesOfModule(moduleWithHighestUtilization,
+               sol.getCloudInstancesForModule(moduleWithHighestUtilization) + 1);
+      } catch (Exception E) {
+         sol.modifyNumInstancesOfModule(moduleWithHighestUtilization, 0);
+      }
    }
 
-   private void addThresholdToThresholds(
-         HashMap<String, ArrayList<Double>> thresholds, double limitWorkload,
+   private void addThresholdToThresholds(HashMap<String, ArrayList<Double>> thresholds, double limitWorkload,
          String moduleName) {
 
       if (moduleName == null) {
@@ -622,21 +585,19 @@ public class QualityAnalyzer {
     *         topology are in the same order (which should happen if no bugs
     *         were included programming)
     */
-   private String findHighestUtilizationModuleThatCanScale(
-         double limitWorkload, double[] mus, Solution sol, Topology topology,
-         SuitableOptions cloudCharacteristics) {
+   private String findHighestUtilizationModuleThatCanScale(double limitWorkload, double[] mus, Solution sol,
+         Topology topology, SuitableOptions cloudCharacteristics) {
 
       double[] workloadsModules = getWorkloadsArray(routes, limitWorkload);
 
       // calculate the workload received by each core of a module: consider both
       // number of cores
       // of a cloud offer and number of instances for such module
-      double[] workloadsModulesByCoresAndNumInstances = weightModuleWorkloadByCoresAndNumInstances(
-            workloadsModules, topology, sol, cloudCharacteristics);
+      double[] workloadsModulesByCoresAndNumInstances = weightModuleWorkloadByCoresAndNumInstances(workloadsModules,
+            topology, sol, cloudCharacteristics);
 
       // find upper value
-      double[] utilizations = utilizationOfEachModule(
-            workloadsModulesByCoresAndNumInstances, mus);
+      double[] utilizations = utilizationOfEachModule(workloadsModulesByCoresAndNumInstances, mus);
 
       int maxUtilizationIndex = -1;
       for (int i = 0; i < utilizations.length; i++) {
@@ -664,8 +625,7 @@ public class QualityAnalyzer {
       }
    }
 
-   private double[] utilizationOfEachModule(
-         double[] workloadsModulesByCoresAndNumInstances, double[] mus) {
+   private double[] utilizationOfEachModule(double[] workloadsModulesByCoresAndNumInstances, double[] mus) {
 
       double[] utilizations = new double[mus.length];
       for (int i = 0; i < utilizations.length; i++) {
@@ -678,21 +638,35 @@ public class QualityAnalyzer {
    /*
     * Condition to stop generating thresholds
     */
-   private boolean continueGeneratingThresholds(double limitWorkload,
-         double workload, Solution sol, QualityInformation requirements,
-         SuitableOptions cloudCharacteristics, boolean existModulesToScaleOut) {
+   private boolean continueGeneratingThresholds(double limitWorkload, double workload, Solution sol,
+         QualityInformation requirements, SuitableOptions cloudCharacteristics, boolean existModulesToScaleOut) {
       // Stop if the maximum number of scalings for every module has been
       // reached.
       // Stop also if the highest allowed cost or, if cost is not specified, ten
       // times the expected workload
 
+      if (IS_DEBUG) {
+         log.debug("checking if continue generating thresholds for: ");
+      }
+
       if (!existModulesToScaleOut) {
          return false;
       }
       if (requirements.existCostRequirement()) {
-         return computeCost(sol, cloudCharacteristics) <= requirements
-               .getCostHour();
+
+         if (IS_DEBUG) {
+            log.debug("  current cost: " + computeCost(sol, cloudCharacteristics) + " cost limit: "
+                  + requirements.getCostHour());
+         }
+
+         return computeCost(sol, cloudCharacteristics) <= requirements.getCostHour();
       }
+
+      if (IS_DEBUG) {
+         log.debug("  limitWorkload: " + limitWorkload + " current workload "
+               + (MAX_TIMES_WORKLOAD_FOR_THRESHOLDS * workload));
+      }
+
       return limitWorkload <= (MAX_TIMES_WORKLOAD_FOR_THRESHOLDS * workload);
 
    }
@@ -707,55 +681,45 @@ public class QualityAnalyzer {
     * @return the first workload value for which the requirement of response
     *         time is not satisfied
     */
-   private double findWorkloadForWhichRespTimeIsExceeded(
-         double respTimeRequirement, double workload, double[] mus,
+   private double findWorkloadForWhichRespTimeIsExceeded(double respTimeRequirement, double workload, double[] mus,
          Solution sol, Topology topology, SuitableOptions cloudCharacteristics) {
 
       double incWorkload = WORKLOAD_INCREMENT_FOR_SEARCH;
 
-      double[] workloadsModules = getWorkloadsArray(routes, workload
-            + incWorkload);
-      double[] numVisitsModule = getNumVisitsArray(workloadsModules, workload
-            + incWorkload);
+      double[] workloadsModules = getWorkloadsArray(routes, workload + incWorkload);
+      double[] numVisitsModule = getNumVisitsArray(workloadsModules, workload + incWorkload);
 
       // calculate the workload received by each core of a module: consider both
       // number of cores
       // of a cloud offer and number of instances for such module
-      double[] workloadsModulesByCoresAndNumInstances = weightModuleWorkloadByCoresAndNumInstances(
-            workloadsModules, topology, sol, cloudCharacteristics);
+      double[] workloadsModulesByCoresAndNumInstances = weightModuleWorkloadByCoresAndNumInstances(workloadsModules,
+            topology, sol, cloudCharacteristics);
 
       if (IS_DEBUG) {
-         log.debug("Response time is: "
-               + getSystemRespTime(numVisitsModule,
-                     workloadsModulesByCoresAndNumInstances, mus) + " and "
-               + "the performance requirement is " + respTimeRequirement);
+         log.debug(
+               "Response time is: " + getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances, mus)
+                     + " and " + "the performance requirement is " + respTimeRequirement);
       }
       // find upper value. TODO: It may not stop if there are only delay centers
       // (not considered yet in the requirements).
-      while (isValidRespTime(
-            getSystemRespTime(numVisitsModule,
-                  workloadsModulesByCoresAndNumInstances, mus),
+      while (isValidRespTime(getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances, mus),
             respTimeRequirement)) {
 
          if (IS_DEBUG) {
-            log.debug("Response time for workload "
-                  + (workload + incWorkload)
-                  + " is: "
-                  + getSystemRespTime(numVisitsModule,
-                        workloadsModulesByCoresAndNumInstances, mus) + " and "
+            log.debug("Response time for workload " + (workload + incWorkload) + " is: "
+                  + getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances, mus) + " and "
                   + "the performance requirement is " + respTimeRequirement);
          }
          incWorkload = incWorkload * 2.0;
 
          workloadsModules = getWorkloadsArray(routes, workload + incWorkload);
-         numVisitsModule = getNumVisitsArray(workloadsModules, workload
-               + incWorkload);
+         numVisitsModule = getNumVisitsArray(workloadsModules, workload + incWorkload);
 
          // calculate the workload received by each core of a module: consider
          // both number of cores
          // of a cloud offer and number of instances for such module
-         workloadsModulesByCoresAndNumInstances = weightModuleWorkloadByCoresAndNumInstances(
-               workloadsModules, topology, sol, cloudCharacteristics);
+         workloadsModulesByCoresAndNumInstances = weightModuleWorkloadByCoresAndNumInstances(workloadsModules, topology,
+               sol, cloudCharacteristics);
 
       }
 
@@ -781,15 +745,13 @@ public class QualityAnalyzer {
          // calculate the workload received by each core of a module: consider
          // both number of cores
          // of a cloud offer and number of instances for such module
-         workloadsModulesByCoresAndNumInstances = weightModuleWorkloadByCoresAndNumInstances(
-               workloadsModules, topology, sol, cloudCharacteristics);
+         workloadsModulesByCoresAndNumInstances = weightModuleWorkloadByCoresAndNumInstances(workloadsModules, topology,
+               sol, cloudCharacteristics);
 
          // Set upper or lower limit according to binary search.
-         double currentRespTime = getSystemRespTime(numVisitsModule,
-               workloadsModulesByCoresAndNumInstances, mus);
+         double currentRespTime = getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances, mus);
          if (IS_DEBUG) {
-            log.debug("Response time for workload " + workloadToCheck + " is: "
-                  + currentRespTime + " and "
+            log.debug("Response time for workload " + workloadToCheck + " is: " + currentRespTime + " and "
                   + "the performance requirement is " + respTimeRequirement);
          }
          if (isValidRespTime(currentRespTime, respTimeRequirement)) {

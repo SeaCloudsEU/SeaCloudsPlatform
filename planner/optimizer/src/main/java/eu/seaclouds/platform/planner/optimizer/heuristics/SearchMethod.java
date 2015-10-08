@@ -17,10 +17,11 @@
 
 package eu.seaclouds.platform.planner.optimizer.heuristics;
 
-import java.util.Map;
 
+import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.Topology;
+import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 
 public interface SearchMethod {
 
@@ -33,8 +34,11 @@ public interface SearchMethod {
     * @param numPlansToGenerate
     * @return
     */
-   public Map<String, Object>[] computeOptimizationProblem(
-         SuitableOptions cloudOffers, Map<String, Object> applicationMap,
+   
+   public Solution[] computeOptimizationProblem(
+         SuitableOptions cloudOffers, QualityInformation requirements,
          Topology topology, int numPlansToGenerate);
+   
+   public void checkQualityAttachedToSolutions(Solution[] solutions);
 
 }

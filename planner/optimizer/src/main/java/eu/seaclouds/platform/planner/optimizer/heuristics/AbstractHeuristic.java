@@ -17,11 +17,10 @@
 
 package eu.seaclouds.platform.planner.optimizer.heuristics;
 
-import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,6 @@ import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.Topology;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
-import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
 public abstract class AbstractHeuristic {
 
@@ -69,11 +67,11 @@ public abstract class AbstractHeuristic {
     * @return the fitness value of the solution. If the solution does not
     *         satisfy the requirements, it returns -infty
     */
-   public double fitness(Solution bestSol, Map<String, Object> applicationMap,
+   public double fitness(Solution bestSol, QualityInformation qosRequirements,
          Topology topology, SuitableOptions cloudCharacteristics) {
 
       if (requirements == null) {
-         loadQualityRequirements(applicationMap);
+         requirements=qosRequirements;
       }
       QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
 
@@ -132,28 +130,46 @@ public abstract class AbstractHeuristic {
          // between 0 and 1/numExistingRequirements
          double partialFitness = 0.0;
          double numExistingRequirements = 0.0;
+         double numSatisfiedRequirements=0.0;
          if (requirements.existResponseTimeRequirement()) {
-            partialFitness += Math.min(MAX_TIMES_IMPROVE_REQUIREMENT,
-                  perfGoodness);
             numExistingRequirements++;
+            if(perfGoodness >= 1){
+               numSatisfiedRequirements++;
+            }
+            else{
+               partialFitness += perfGoodness;
+            }
          }
          if (requirements.existAvailabilityRequirement()) {
-            partialFitness += Math.min(MAX_TIMES_IMPROVE_REQUIREMENT,
-                  availGoodness);
+            
             numExistingRequirements++;
+            if(availGoodness>=1){
+               numSatisfiedRequirements++;
+            }
+            else{
+               partialFitness +=  availGoodness;
+            }
          }
          if (requirements.existCostRequirement()) {
-            partialFitness += Math.min(MAX_TIMES_IMPROVE_REQUIREMENT,
-                  costGoodness);
+            
             numExistingRequirements++;
+            if(costGoodness>=1){
+               numSatisfiedRequirements++;
+            }
+            else{
+               partialFitness += costGoodness;
+            }
          }
 
          if (qualityAnalyzer.getAllComputedQualities() == null) {
             log.warn("something werid is happening because quality values are null");
          }
 
-         fitness = partialFitness
-               / (MAX_TIMES_IMPROVE_REQUIREMENT * numExistingRequirements++);
+         //satisfied reqs fill at maximum their slot. 
+         //The rest of slots are filled by the proportion of global closeness to the solution
+         fitness = numSatisfiedRequirements/numExistingRequirements + 
+               (partialFitness*(1.0-numSatisfiedRequirements/numExistingRequirements))/(numExistingRequirements-numSatisfiedRequirements);
+               
       }
 
       bestSol.setSolutionQuality(qualityAnalyzer.getAllComputedQualities());
@@ -161,116 +177,7 @@ public abstract class AbstractHeuristic {
 
    }
 
-   /**
-    * @param sol
-    * @param applicationMap
-    * @param topology
-    * @param cloudCharacteristics
-    *           This method uses performance evaluation techniques to propose
-    *           the thresholds to reconfigure modules of the system until
-    *           expiring the cost
-    */
-   public HashMap<String, ArrayList<Double>> createReconfigurationThresholds(
-         Solution sol, Map<String, Object> applicationMap, Topology topology,
-         SuitableOptions cloudCharacteristics) {
 
-      if (IS_DEBUG) {
-         log.debug("Starting the creation of reconfiguration thresholds");
-      }
-
-      loadQualityRequirements(applicationMap);
-      QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
-
-      // if the solution does not satisfy the performance requirements, nothing
-      // to do
-      if (IS_DEBUG) {
-         log.debug("Create reconfiguration Thresholds method is going to call the compute Performance");
-      }
-      double perfGoodness = requirements.getResponseTime()
-            / qualityAnalyzer.computePerformance(sol, topology,
-                  requirements.getWorkload(), cloudCharacteristics)
-                  .getResponseTime();
-
-      if ((requirements.existResponseTimeRequirement())
-            && (perfGoodness >= 1.0)) {// response time requirements are
-                                       // satisfied if perfGoodness>=1.0
-
-         // A HashMap with all the keys of module names, and associated an
-         // arraylist with the thresholds for reconfigurations.
-         HashMap<String, ArrayList<Double>> thresholds = new HashMap<String, ArrayList<Double>>();
-
-         thresholds = qualityAnalyzer.computeThresholds(sol, topology,
-               requirements, cloudCharacteristics);
-
-         if (IS_DEBUG) {
-            log.debug("Finishing the creation of reconfiguration thresholds");
-         }
-         return thresholds;
-      } else {// There are not performance requirements, so no thresholds are
-              // created.
-         log.debug("Finishing the creation of reconfiguration thresholds because there "
-               + "were not performance requirements or solution could not satisfy performance. Solution: "
-               + sol.toString()
-               + " quality attributes: "
-               + sol.getSolutionQuality().toString());
-         return null;
-      }
-
-   }
-
-   private void loadQualityRequirements(Map<String, Object> applicationMap) {
-      if (requirements == null) {
-         requirements = YAMLoptimizerParser
-               .getQualityRequirements(applicationMap);
-      }
-      // Maybe the previous operation did not work because Requirements could
-      // not be found in the YAML. Follow an ad-hoc solution to get some
-      // requirements
-      if (requirements == null) {
-         log.error("Quality requirements not found in the input document. Loading dummy quality requirements for testing purposes");
-         requirements = YAMLoptimizerParser.getQualityRequirementsForTesting();
-
-      }
-
-      if (requirements.existResponseTimeRequirement()) {
-         loadWorkload(applicationMap);
-      }
-
-   }
-
-   private void loadWorkload(Map<String, Object> applicationMap) {
-      if (requirements.getWorkload() <= 0.0) {
-         requirements.setWorkloadMinute(YAMLoptimizerParser
-               .getApplicationWorkload(applicationMap));
-      }
-      // Maybe the previous operation did not work correctly because the
-      // workload could not be found in the YAML. Follow an ad-hoc solution to
-      // get some requirements
-      if (!requirements.hasValidWorkload()) {
-         log.error("Valid workload information not found in the input document. Loading dummy quality requirements for testing purposes");
-         requirements.setWorkloadMinute(YAMLoptimizerParser
-               .getApplicationWorkloadTest());
-      }
-
-   }
-
-   public void addSolutionToAppMap(Solution currentSol,
-         Map<String, Object> applicationMap) {
-
-      for (String solkey : currentSol) {
-
-         YAMLoptimizerParser
-               .CleanSuitableOfferForModule(solkey, applicationMap);
-
-         YAMLoptimizerParser.AddSuitableOfferForModule(solkey,
-               currentSol.getCloudOfferNameForModule(solkey),
-               currentSol.getCloudInstancesForModule(solkey), applicationMap);
-
-         YAMLoptimizerParser.AddQualityOfSolution(currentSol, applicationMap);
-
-      }
-
-   }
 
    protected Solution[] mergeBestSolutions(Solution[] sols1, Solution[] sols2,
          int numPlansToGenerate) {
@@ -316,11 +223,11 @@ public abstract class AbstractHeuristic {
    }
 
    protected void setFitnessOfSolutions(Solution[] bestSols,
-         Map<String, Object> applicationMap, Topology topology,
+         QualityInformation requirements, Topology topology,
          SuitableOptions cloudOffers) {
       for (int solindex = 0; solindex < bestSols.length; solindex++) {
          bestSols[solindex].setSolutionFitness(fitness(bestSols[solindex],
-               applicationMap, topology, cloudOffers));
+               requirements, topology, cloudOffers));
       }
    }
 
@@ -392,32 +299,7 @@ public abstract class AbstractHeuristic {
 
    }
 
-   protected Map<String, Object>[] hashMapOfFoundSolutionsWithThresholds(
-         Solution[] bestSols, Map<String, Object> applicMap, Topology topology,
-         SuitableOptions cloudOffers, int numPlansToGenerate) {
-
-      if (AbstractHeuristic.IS_DEBUG) {
-         checkQualityAttachedToSolutions(bestSols);
-      }
-      @SuppressWarnings("unchecked")
-      Map<String, Object>[] solutions = new HashMap[numPlansToGenerate];
-
-      for (int i = 0; i < bestSols.length; i++) {
-
-         Map<String, Object> baseAppMap = YAMLoptimizerParser
-               .cloneYAML(applicMap);
-
-         addSolutionToAppMap(bestSols[i], baseAppMap);
-
-         HashMap<String, ArrayList<Double>> thresholds = createReconfigurationThresholds(
-               bestSols[i], baseAppMap, topology, cloudOffers);
-         YAMLoptimizerParser.AddReconfigurationThresholds(thresholds,
-               baseAppMap);
-
-         solutions[i] = baseAppMap;
-      }
-      return solutions;
-   }
+   
 
    protected boolean solutionShouldBeIncluded(Solution sol, Solution[] sols) {
       return (sol.getSolutionFitness() > getMinimumFitnessOfSolutions(sols))
@@ -444,13 +326,26 @@ public abstract class AbstractHeuristic {
       return currentSolution;
    }
 
-   protected void checkQualityAttachedToSolutions(Solution[] bestSols) {
+   public void checkQualityAttachedToSolutions(Solution[] solutions) {
 
-      for (int i = 0; i < bestSols.length; i++) {
-         if (bestSols[i].getSolutionQuality() == null) {
-            log.info("Solution has its quality NULL" + bestSols[i].toString());
+      for (int i = 0; i < solutions.length; i++) {
+         if (solutions[i].getSolutionQuality() == null) {
+            log.debug("Solution has its quality NULL" + solutions[i].toString());
          }
       }
+
+   }
+   
+   protected Solution[] findInitialRandomSolutions(SuitableOptions cloudOffers, int numPlansToGenerate) {
+
+      Solution[] newSolutions = new Solution[numPlansToGenerate];
+
+      for (int newSolIndex = 0; newSolIndex < newSolutions.length; newSolIndex++) {
+
+         newSolutions[newSolIndex] = findRandomSolution(cloudOffers);
+      }
+
+      return newSolutions;
 
    }
 

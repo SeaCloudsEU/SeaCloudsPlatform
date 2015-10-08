@@ -1,0 +1,50 @@
+--- 
+- 
+  webservices: 
+    - 
+      hp_cloud_services.2xl: 
+        properties: 
+          availability: 0.98
+          cost: "0.928 usd_per_hour"
+          disk_size: 512
+          num_cpus: 8
+          performance: 543
+          resource_type: compute
+        type: seacluds.nodes.hp_cloud_services.2xl
+- 
+  db1: 
+    - 
+      db1ValidOffering: 
+        properties: 
+          availability: 0.99
+          cost: "0.928 usd_per_hour"
+          mysql_support: true
+          mysql_version: 5.4
+          performance: 62
+        type: seaclouds.nodes.db1ValidOffering
+- 
+  www: 
+    - 
+      wwwValidOffering: 
+        properties: 
+          availability: 0.965
+          cost: "0.928 usd_per_hour"
+          java_support: true
+          java_version: 7
+          mysql_support: true
+          performance: 175
+          resource_type: platform
+          tomcat_support: true
+        type: seaclouds.nodes.wwwValidOffering
+    - 
+      wwwValidOffering2: 
+        properties: 
+          availability: 0.985
+          cost: "0.928 usd_per_hour"
+          java_support: true
+          java_version: 8
+          mysql_support: true
+          performance: 645
+          resource_type: platform
+          tomcat_support: true
+        type: seaclouds.nodes.wwwValidOffering2

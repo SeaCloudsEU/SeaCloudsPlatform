@@ -35,17 +35,17 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
     * cloud in a Map of (moduleName, CloudOptionUsed)
     */
 
-   // "Note: this class has a natural ordering that is inconsistent with equals."
+   // "Note: this class has a natural ordering that is inconsistent with
+   // equals."
 
-   private static final double  COMPARATOR_LIMIT = 1000.0;
+   private static final double COMPARATOR_LIMIT = 1000.0;
 
-   static Logger                log              = LoggerFactory
-                                                       .getLogger(Solution.class);
+   static Logger log = LoggerFactory.getLogger(Solution.class);
 
-   private Map<String, String>  modName_ModOption;
+   private Map<String, String> modName_ModOption;
    private Map<String, Integer> modName_NumInstances;
-   private double               solutionFitness  = 0.0;
-   private QualityInformation   solutionQuality;
+   private double solutionFitness = 0.0;
+   private QualityInformation solutionQuality;
 
    public Solution() {
       modName_ModOption = new HashMap<String, String>();
@@ -75,12 +75,19 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
 
    // returns the provider name of the selected offer of a module
    public String getCloudProviderNameForModule(String calledElementName) {
-      return CloudOffer
-            .providerNameOfCloudOffer(getCloudOfferNameForModule(calledElementName));
+      return CloudOffer.providerNameOfCloudOffer(getCloudOfferNameForModule(calledElementName));
    }
 
    public int getCloudInstancesForModule(String key) {
-      return modName_NumInstances.get(key);
+      try {
+         return modName_NumInstances.get(key);
+      } catch (Exception E) {
+         log.debug("Looking for ModuleName " + key
+               + " unsuccessful. Forwarding the received exception. Modules to optimize their allocation are: "
+               + modName_NumInstances.toString());
+         throw E;
+      }
+
    }
 
    public double getSolutionFitness() {
@@ -126,8 +133,13 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
 
       Solution sol = new Solution();
       for (String key : this) {
-         sol.addItem(key, this.getCloudOfferNameForModule(key),
-               this.getCloudInstancesForModule(key));
+
+         try {
+            sol.addItem(key, this.getCloudOfferNameForModule(key), this.getCloudInstancesForModule(key));
+         } catch (Exception E) {
+            sol.addItem(key, this.getCloudOfferNameForModule(key), -1);
+         }
+
       }
 
       sol.solutionFitness = this.solutionFitness;
@@ -155,11 +167,15 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
          return false;
       }
       for (String modname : this) {
-         if (!(s.containsModuleName(modname)
-               && s.getCloudOfferNameForModule(modname).equals(
-                     this.getCloudOfferNameForModule(modname)) && (s
-                  .getCloudInstancesForModule(modname) == this
-               .getCloudInstancesForModule(modname)))) {
+         try {
+            if (!(s.containsModuleName(modname)
+                  && s.getCloudOfferNameForModule(modname).equals(this.getCloudOfferNameForModule(modname))
+                  && (s.getCloudInstancesForModule(modname) == this.getCloudInstancesForModule(modname)))) {
+               return false;
+            }
+         } catch (Exception E) {
+            //some comparison went wrong, but modname existed (given by the order of the AND)
+            //Solutions are not equal (one should be consistent and the other should not). 
             return false;
          }
       }
@@ -188,9 +204,8 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
    public Iterator<String> iterator() {
       Iterator<String> it = new Iterator<String>() {
 
-         private Set<Entry<String, String>> entries     = modName_ModOption
-                                                              .entrySet();
-         Iterator<Entry<String, String>>    iteratorSet = entries.iterator();
+         private Set<Entry<String, String>> entries = modName_ModOption.entrySet();
+         Iterator<Entry<String, String>> iteratorSet = entries.iterator();
 
          @Override
          public boolean hasNext() {
@@ -216,8 +231,8 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
    public String toString() {
       String out = "{";
       for (String modulename : this) {
-         out += modulename + ":" + modName_ModOption.get(modulename) + "-"
-               + modName_NumInstances.get(modulename) + "  ";
+         out += modulename + ":" + modName_ModOption.get(modulename) + "-" + modName_NumInstances.get(modulename)
+               + "  ";
       }
       out += "}";
       return out;

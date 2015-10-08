@@ -1,0 +1,75 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: WebChat application
+imports:
+- tosca-normative-types:1.0.0.wd03-SNAPSHOT
+topology_template:
+  node_templates:
+    Chat:
+      type: sc_req.Chat
+      artifacts:
+      - war: http://www.seaclouds.eu/artifacts/chat-webApplication.war
+        type: tosca.artifacts.File
+      requirements:
+      - endpoint: MessageDatabase
+    MessageDatabase:
+      type: sc_req.MessageDatabase
+      artifacts:
+      - db_create: http://www.seaclouds.eu/artifacts/create-message-database.sql
+        type: tosca.artifacts.File
+      properties:
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5.0'
+          - less_or_equal: '5.0'
+node_types:
+  sc_req.Chat:
+    derived_from: seaclouds.nodes.webapp.tomcat.TomcatServer
+    properties:
+      java_support:
+        constraints:
+        - equal: true
+      tomcat_support:
+        constraints:
+        - equal: true
+      java_version:
+        constraints:
+        - greater_or_equal: '6'
+      resource_type:
+        constraints:
+        - equal: platform
+  sc_req.MessageDatabase:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      disk_size:
+        constraints:
+        - greater_or_equal: '50'
+      resource_type:
+        constraints:
+        - equal: compute
+groups:
+  operation_Chat:
+    members:
+    - Chat
+    policies:
+    - QoSInfo:
+        execution_time: 50 ms
+        benchmark_platform: hp_cloud_services.2xl
+    - dependencies:
+        operation_MessageDatabase: '2'
+    - QoSRequirements:
+        response_time:
+          less_than: 2000.0 ms
+        availability:
+          greater_than: 0.998
+        cost:
+          less_or_equal: 200.0 euros_per_month
+        workload:
+          less_or_equal: 50.0 req_per_min
+  operation_MessageDatabase:
+    members:
+    - MessageDatabase
+    policies:
+    - QoSInfo:
+        execution_time: 30 ms
+        benchmark_platform: hp_cloud_services.2xl
+    - dependencies: {}

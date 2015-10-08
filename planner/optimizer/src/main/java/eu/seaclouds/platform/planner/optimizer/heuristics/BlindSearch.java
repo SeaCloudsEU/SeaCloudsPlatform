@@ -17,11 +17,11 @@
 
 package eu.seaclouds.platform.planner.optimizer.heuristics;
 
-import java.util.Map;
 
 import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.Topology;
+import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 
 public class BlindSearch extends AbstractHeuristic implements SearchMethod {
 
@@ -42,18 +42,17 @@ public class BlindSearch extends AbstractHeuristic implements SearchMethod {
     * (eu.seaclouds.platform.planner.optimizer.SuitableOptions, java.util.Map)
     */
    @Override
-   public Map<String, Object>[] computeOptimizationProblem(
-         SuitableOptions cloudOffers, Map<String, Object> applicationMap,
+   public Solution[] computeOptimizationProblem(
+         SuitableOptions cloudOffers, QualityInformation requirements,
          Topology topology, int numPlansToGenerate) {
 
       // To findSolution method, we pass an Empty solution instead of a null
       // value to or create a new method that does not consider the current one.
       // This way may help for replanning, when even the first attempt for
       // solution will be based on the current deployment
-      Solution[] bestSols = findSolutions(null, cloudOffers, applicationMap,
-            numPlansToGenerate);
+      Solution[] bestSols = findSolutions(null, cloudOffers,numPlansToGenerate);
 
-      super.setFitnessOfSolutions(bestSols, applicationMap, topology,
+      super.setFitnessOfSolutions(bestSols, requirements, topology,
             cloudOffers);
       super.sortSolutionsByFitness(bestSols);
 
@@ -63,7 +62,7 @@ public class BlindSearch extends AbstractHeuristic implements SearchMethod {
 
          currentSol[0] = super.findRandomSolution(cloudOffers);
          currentSol[0].setSolutionFitness(super.fitness(currentSol[0],
-               applicationMap, topology, cloudOffers));
+               requirements, topology, cloudOffers));
 
          if (AbstractHeuristic.IS_DEBUG) {
             log.debug("Start checking the presence of quality attached to solutions after generating a new random solution in BLIND. With sol= "
@@ -74,6 +73,9 @@ public class BlindSearch extends AbstractHeuristic implements SearchMethod {
                .getMinimumFitnessOfSolutions(bestSols)) {
             if (!currentSol[0].isContainedIn(bestSols)) {
                super.insertOrdered(bestSols, currentSol[0]);
+               if (AbstractHeuristic.IS_DEBUG) {
+                  log.debug("Better solution found after " + numItersNoImprovement + " iterations");
+               }
                numItersNoImprovement = 0;
             }
          }
@@ -81,14 +83,13 @@ public class BlindSearch extends AbstractHeuristic implements SearchMethod {
          numItersNoImprovement++;
       }
 
-      return super.hashMapOfFoundSolutionsWithThresholds(bestSols,
-            applicationMap, topology, cloudOffers, numPlansToGenerate);
+      
+      return bestSols;
 
    }
 
    private Solution[] findSolutions(Solution baseSolution,
-         SuitableOptions cloudOffers, Map<String, Object> applicationMap,
-         int numPlansToGenerate) {
+         SuitableOptions cloudOffers, int numPlansToGenerate) {
 
       Solution[] newSolutions = new Solution[numPlansToGenerate];
 
@@ -100,5 +101,7 @@ public class BlindSearch extends AbstractHeuristic implements SearchMethod {
       return newSolutions;
 
    }
+
+
 
 }

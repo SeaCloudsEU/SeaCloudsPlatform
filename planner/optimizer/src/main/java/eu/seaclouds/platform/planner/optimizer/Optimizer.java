@@ -24,8 +24,7 @@ import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 
 public class Optimizer {
 
-   private static Logger          log = LoggerFactory
-                                            .getLogger(Optimizer.class);
+   private static Logger          log = LoggerFactory.getLogger(Optimizer.class);
    private final int              NUMBER_OF_PLANS_GENERATED;
    private final SearchMethodName searchName;
 
@@ -58,29 +57,26 @@ public class Optimizer {
       outputPlans[0] = "Plan generation was not possible";
 
       if (previousPlans == null) {
-         OptimizerInitialDeployment initialOptimizer = new OptimizerInitialDeployment(
-               searchName);
+         OptimizerInitialDeployment initialOptimizer = new OptimizerInitialDeployment(searchName);
 
          try {
-            outputPlans = initialOptimizer.optimize(appModel,
-                  suitableCloudOffer, NUMBER_OF_PLANS_GENERATED);
+            outputPlans = initialOptimizer.optimize(appModel, suitableCloudOffer, NUMBER_OF_PLANS_GENERATED);
             previousPlans = outputPlans;
          } catch (Error E) {
             log.error("Error optimizing the initial deployment");
-
          }
       } else {
          Reoptimizer optimizerReplanning = new Reoptimizer(searchName);
 
-         try {
+         try{
             log.error("Calling a Replanning. The previously generated Plan will be used as a base");
-            outputPlans = optimizerReplanning.optimize(appModel,
-                  suitableCloudOffer, NUMBER_OF_PLANS_GENERATED);
+            outputPlans = optimizerReplanning.optimize(appModel, suitableCloudOffer, NUMBER_OF_PLANS_GENERATED);
             previousPlans = outputPlans;
          } catch (Error E) {
             log.error("Error optimizing the Replanning");
-
+            throw E;
          }
+
       }
       return outputPlans;
 
