@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
- 
+
 import eu.seaclouds.platform.planner.optimizer.Optimizer;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
@@ -43,17 +43,11 @@ public class OptimizerTOSCASeptember2015Test {
    private static String       appModel;
    private static String       suitableCloudOffer;
 
+   private static Logger log = LoggerFactory.getLogger(OptimizerTOSCASeptember2015Test.class);
 
-  
-   
-   static Logger               log;
 
 @BeforeClass
 public void createObjects() {
-
-   System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, TOSCAkeywords.LOG_LEVEL);
-   log                   = LoggerFactory
-         .getLogger(OptimizerTOSCASeptember2015Test.class);
 
    log.info("Starting TEST optimizer for the TOSCA syntax of July 2015");
 

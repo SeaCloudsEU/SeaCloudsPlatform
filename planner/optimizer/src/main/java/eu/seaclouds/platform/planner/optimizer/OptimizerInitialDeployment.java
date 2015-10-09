@@ -25,20 +25,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.seaclouds.platform.planner.optimizer.heuristics.Anneal;
-import eu.seaclouds.platform.planner.optimizer.heuristics.HillClimb;
 import eu.seaclouds.platform.planner.optimizer.heuristics.BlindSearch;
+import eu.seaclouds.platform.planner.optimizer.heuristics.HillClimb;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethod;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
-import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLmatchmakerToOptimizerParser;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
 public class OptimizerInitialDeployment {
 
    private SearchMethod engine;
-   static Logger log;
+   private static Logger log = LoggerFactory.getLogger(OptimizerInitialDeployment.class);
 
    private static final boolean IS_DEBUG = false;
 
@@ -48,9 +47,6 @@ public class OptimizerInitialDeployment {
    }
 
    public OptimizerInitialDeployment(SearchMethodName name) {
-
-      System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, TOSCAkeywords.LOG_LEVEL);
-      log = LoggerFactory.getLogger(OptimizerInitialDeployment.class);
 
       switch (name) {
       case BLINDSEARCH:

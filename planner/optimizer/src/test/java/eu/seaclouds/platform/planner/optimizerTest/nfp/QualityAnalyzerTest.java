@@ -34,21 +34,16 @@ import eu.seaclouds.platform.planner.optimizer.Topology;
 import eu.seaclouds.platform.planner.optimizer.TopologyElement;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
-import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
 import eu.seaclouds.platform.planner.optimizerTest.TestConstants;
 
 public class QualityAnalyzerTest {
 
    private static QualityAnalyzer analyzer;
 
-   static Logger log;
+   private static Logger log = LoggerFactory.getLogger(QualityAnalyzerTest.class);
 
    @BeforeClass
    public void createObjects() {
-
-      System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, TOSCAkeywords.LOG_LEVEL);
-
-      log = LoggerFactory.getLogger(QualityAnalyzerTest.class);
 
       log.info("Starting TEST quality analyzer");
       analyzer = new QualityAnalyzer();

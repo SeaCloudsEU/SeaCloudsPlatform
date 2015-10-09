@@ -29,7 +29,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLmatchmakerToOptimizerParser;
 
 public class MMoutputTest {
@@ -38,13 +37,10 @@ public class MMoutputTest {
 
    private static String appModel;
 
-   static Logger log;
+   private static Logger log = LoggerFactory.getLogger(MMoutputTest.class);
 
    @BeforeClass
    public void createObjects() {
-
-      System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, TOSCAkeywords.LOG_LEVEL);
-      log = LoggerFactory.getLogger(MMoutputTest.class);
 
       log.info("Starting TEST optimizer for the TOSCA syntax of September 2015 regarding MATCHMAKER output");
 
