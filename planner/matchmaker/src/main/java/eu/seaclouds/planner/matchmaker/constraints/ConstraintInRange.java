@@ -26,6 +26,12 @@ public class ConstraintInRange<Integer> extends Constraint {
     }
 
     public boolean checkConstraint(PropertyValue prop) {
-        throw new UnsupportedOperationException(); //TODO
+        try {
+            int[] range = (int[]) value;
+            int v = java.lang.Integer.parseInt((String) prop.getValue());
+            return v >= range[0] && v <= range[1];
+        }catch (Exception e){
+            return false;
+        }
     }
 }

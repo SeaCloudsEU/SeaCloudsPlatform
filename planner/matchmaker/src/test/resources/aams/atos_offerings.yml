@@ -1,0 +1,110 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+
+tosca_default_namespace:   # Optional. default namespace (schema, types version)
+template_name:             # Optional name of this service template
+template_author:           # Optional author of this service template
+template_version:          # Optional version of this service template
+
+description: AAM for SeaClouds Demo V2.0
+
+imports:
+  - tosca-normative-types:1.0.0.wd03-SNAPSHOT
+
+topology_template:
+ node_templates:
+
+    wwwValidOffering:
+      type: seaclouds.nodes.wwwValidOffering
+      properties:
+        java_support: true
+        tomcat_support: true
+        java_version: 7
+        resource_type: platform
+        mysql_support: true
+        availability: 0.965
+        cost: 0.928 usd_per_hour
+        performance: 175
+
+    wwwValidOffering2:
+      type: seaclouds.nodes.wwwValidOffering2
+      properties:
+        java_support: true
+        tomcat_support: true
+        java_version: 8
+        resource_type: platform
+        mysql_support: true
+        availability: 0.985
+        cost: 0.928 usd_per_hour
+        performance: 645
+
+    wwwInvalidOffering:
+      type: seaclouds.nodes.wwwInvalidOffering
+      properties:
+         java_support: true
+         tomcat_support: true
+         java_version: 5
+         resource_type: compute
+         mysql_support: true
+         availability: 0.995
+         cost: 0.928 usd_per_hour
+         performance: 43
+
+    wwwInvalidOffering:
+      type: seaclouds.nodes.wwwInvalidOffering2
+      properties:
+        tomcat_support: true
+        java_version: 5
+        mysql_support: true
+        availability: 0.98
+        cost: 0.928 usd_per_hour
+        performance: 543
+
+
+
+    webserviceValidOffering:
+      type: seacluds.nodes.webserviceValidOffering
+      properties:
+        num_cpus: 8
+        disk_size: 512
+        resource_type: compute
+        availability: 0.98
+        cost: 0.928 usd_per_hour
+        performance: 543
+
+    webserviceInvalidOffering:
+      type: seacluds.nodes.webserviceInvalidOffering
+      properties:
+        num_cpus: 2
+        disk_size: 512
+        resource_type: compute
+        availability: 0.98
+        cost: 0.928 usd_per_hour
+        performance: 123
+
+    webserviceInvalidOffering2:
+      type: seacluds.nodes.webserviceInvalidOffering2
+      properties:
+        num_cpus: 2
+        disk_size: 128
+        resource_type: compute
+        availability: 0.89
+        cost: 0.728 usd_per_hour
+        performance: 621
+
+    db1ValidOffering:
+      type: seaclouds.nodes.db1ValidOffering
+      properties:
+        mysql_support: true
+        mysql_version: 5.4
+        availability: 0.99
+        cost: 0.928 usd_per_hour
+        performance: 62
+
+    db1InvalidOffering2:
+      type: seaclouds.nodes.db1InvalidOffering2
+      properties:
+        mysql_support: true
+        mysql_version: 4.7
+        availability: 0.98
+        cost: 0.928 usd_per_hour
+        performance: 62

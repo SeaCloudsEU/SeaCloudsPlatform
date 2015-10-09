@@ -16,17 +16,24 @@
  */
 package eu.seaclouds.planner.matchmaker.constraints;
 
+import alien4cloud.model.components.constraints.ValidValuesConstraint;
 import eu.seaclouds.planner.matchmaker.PropertyValue;
 
 import java.util.Collection;
 
 public class ConstraintValidValues<T> extends Constraint {
 
+
     public ConstraintValidValues(String name, Collection<T> values) {
        super(name, ConstraintTypes.ValidValues, values);
     }
 
     public boolean checkConstraint(PropertyValue prop) {
-       throw new UnsupportedOperationException(); //TODO
+        Object o = prop.getValue();
+        Collection<Object> vvalues = (Collection<Object>) value;
+        for(Object i: vvalues)
+            if(i.equals(o)) return true;
+
+        return false;
     }
 }

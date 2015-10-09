@@ -39,8 +39,8 @@ import java.util.Scanner;
  * limitations under the License.
  */
 public class HttpHelper {
-    private static CloseableHttpClient httpclient;
-    private static String serviceURL;
+    private CloseableHttpClient httpclient;
+    private String serviceURL;
     private ObjectMapper mapper;
 
     /**
@@ -149,7 +149,7 @@ public class HttpHelper {
      */
     public <T> T getObjectFromJson(String jsonString, Class<T> type){
         try {
-            return (T) mapper.readTree(jsonString);
+            return mapper.readValue(jsonString, type);
         } catch (IOException e) {
             e.printStackTrace();
             return null;

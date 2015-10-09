@@ -40,4 +40,6 @@ topology_template:
       neo4j_support: true
       pivotalHD_support: true
       price: 0.03 $_perGB_per_h
+      mysql_version: 5.4
+
 
