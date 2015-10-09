@@ -32,9 +32,6 @@ public class PlannerConfiguration extends Configuration{
     @NotEmpty
     private String slaGeneratorURL;
 
-    @NotEmpty
-    private String credentialGeneratorURL;
-
     @JsonProperty("monitorGeneratorURL")
     public void setMonitorGeneratorURL(String monitorGeneratorURL) { this.monitorGeneratorURL = monitorGeneratorURL; }
 
@@ -46,12 +43,6 @@ public class PlannerConfiguration extends Configuration{
 
     @JsonProperty("slaGeneratorURL")
     public String getSlaGeneratorURL() { return this.slaGeneratorURL;}
-
-    @JsonProperty("credentialGeneratorURL")
-    public void setCredentialGeneratorURL(String credentialGeneratorURL) { this.credentialGeneratorURL = credentialGeneratorURL; }
-
-    @JsonProperty("credentialGeneratorURL")
-    public String getCredentialGeneratorURL() { return this.credentialGeneratorURL; }
 
     @JsonProperty("optimizerURL")
     public void setOptimizerURL(String optimizerURL) { this.optimizerURL = optimizerURL; }

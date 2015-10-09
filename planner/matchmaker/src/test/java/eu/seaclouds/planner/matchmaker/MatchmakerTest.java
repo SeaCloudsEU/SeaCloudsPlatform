@@ -30,6 +30,7 @@ import eu.seaclouds.common.tosca.ToscaParserSupplier;
 import org.testng.annotations.Test;
 
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -62,7 +63,30 @@ public class MatchmakerTest {
         assertTrue(true);
     }
 
-    //@Test
+
+    @Test
+    public void testMatchmakerOutput() throws Exception {
+        ToscaParser parser = new ToscaParserSupplier().get();
+        assertNotNull(parser);
+        ParsingResult<ArchiveRoot> aam = parser.parseFile(Paths.get(Resources.getResource("aams/atos_aam.yml").toURI()));
+
+        ParsingResult<ArchiveRoot> offerings = parser.parseFile(Paths.get(Resources.getResource("aams/atos_offerings.yml").toURI()));
+
+        Map<String, Pair<NodeTemplate, String>> offeringsToMatch = new HashMap<>();
+        Map<String, NodeTemplate> offeringsNt =  offerings.getResult().getTopology().getNodeTemplates();
+        for(String ntn : offeringsNt.keySet()){
+            offeringsToMatch.put(ntn, new Pair<NodeTemplate, String>(offeringsNt.get(ntn), ntn));
+        }
+
+        Map<String, HashSet<String>> res = new Matchmaker().match(aam, offeringsToMatch);
+
+        assertNotNull(res);
+        assertEquals(res.get("webservices").size(), 1);
+        assertEquals(res.get("db1").size(), 1);
+        assertEquals(res.get("www").size(), 2);
+    }
+
+    @Test
     public void testSimpleMatchingProp() throws Exception{
         ToscaParser parser = new ToscaParserSupplier().get();
         assertNotNull(parser);
@@ -91,19 +115,5 @@ public class MatchmakerTest {
         assertNotNull(reqProp);
     }
 
-    @Test
-    public void demoAAMTest() throws Exception {
-        ToscaParser parser = new ToscaParserSupplier().get();
-        assertNotNull(parser);
-        ParsingResult<ArchiveRoot> pr = parser.parseFile(Paths.get(Resources.getResource("aams/DemoAAM.yml").toURI()));
-
-        ParsingResult<ArchiveRoot> pr2 = parser.parseFile(Paths.get(Resources.getResource("aams/Offerings.yml").toURI()));
-
-        Map<String, HashSet<String>> res = new Matchmaker().match(pr, pr2.getResult().getTopology().getNodeTemplates());
-
-        assertNotNull(res);
-        assertEquals(1, res.get("java_ee_server").size());
-        assertEquals(1, res.get("db").size());
-    }
 
 }

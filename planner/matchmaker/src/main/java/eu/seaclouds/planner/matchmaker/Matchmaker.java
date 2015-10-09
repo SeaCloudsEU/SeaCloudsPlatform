@@ -64,24 +64,20 @@ public class Matchmaker {
             return new ConstraintValidValues<>(name, ((ValidValuesConstraint) c).getValidValuesTyped());
         }
         if(c instanceof InRangeConstraint){
-            //TODO
-            throw new UnsupportedOperationException();
+            InRangeConstraint rc = (InRangeConstraint) c;
+            return new ConstraintInRange<>(name, Integer.parseInt(rc.getRangeMinValue()), Integer.parseInt(rc.getRangeMaxValue()));
         }
         if(c instanceof LengthConstraint){
-            //TODO
-            throw new UnsupportedOperationException();
+            return new ConstraintLength<>(name, ((LengthConstraint) c).getLength());
         }
         if(c instanceof MaxLengthConstraint){
-            //TODO
-            throw new UnsupportedOperationException();
+            return new ConstraintMaxLength<>(name, ((MaxLengthConstraint) c).getMaxLength());
         }
         if(c instanceof MinLengthConstraint){
-            //TODO
-            throw new UnsupportedOperationException();
+           return new ConstraintMinLength<>(name, ((MinLengthConstraint) c).getMinLength());
         }
         if(c instanceof PatternConstraint){
-            //TODO
-            throw new UnsupportedOperationException();
+            return new ConstraintPattern<>(name, ((PatternConstraint) c).getCompiledPattern());
         }
 
         throw new UnsupportedOperationException("Unknown Constraint");
@@ -159,7 +155,7 @@ public class Matchmaker {
      * @param offerings
      * @return
      */
-    public Map<String, HashSet<String>> match(ParsingResult<ArchiveRoot> aam, Map<String, NodeTemplate> offerings){
+    public Map<String, HashSet<String>> match(ParsingResult<ArchiveRoot> aam, Map<String, Pair<NodeTemplate, String>> offerings){
         Map<String, HashSet<String>> matchingResult = new HashMap<>();
 
         Map<String, IndexedNodeType> aamTypes = aam.getResult().getNodeTypes();
@@ -174,7 +170,7 @@ public class Matchmaker {
                 HashSet<String> matchingOfferings = matchingResult.get(module);
 
                 for(String offerID: offerings.keySet()){
-                    NodeTemplate offerNt = offerings.get(offerID);
+                    NodeTemplate offerNt = offerings.get(offerID).first;
                     if(match(moduleType, offerNt)) matchingOfferings.add(offerID);
                 }
             }

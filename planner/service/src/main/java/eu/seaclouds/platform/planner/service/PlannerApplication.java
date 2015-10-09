@@ -30,8 +30,7 @@ public class PlannerApplication extends Application<PlannerConfiguration> {
         PlanResource pr = new PlanResource(plannerConfiguration.getDiscovererURL(), plannerConfiguration.getOptimizerURL());
         RePlanResource rpr = new RePlanResource(plannerConfiguration.getDiscovererURL(), plannerConfiguration.getOptimizerURL());
         DamGenResource dgr = new DamGenResource(plannerConfiguration.getMonitorGeneratorURL(),
-                                                plannerConfiguration.getSlaGeneratorURL(),
-                                                plannerConfiguration.getCredentialGeneratorURL());
+                                                plannerConfiguration.getSlaGeneratorURL());
 
         environment.jersey().register(pr);
         environment.jersey().register(rpr);

@@ -1,5 +1,11 @@
-discovererURL: unknown
-credentialGeneratorURL: unknown
-monitorGeneratorURL: unknown
-optimizerURL: unknown
-slaGeneratorURL: unknown
+server:
+  type: simple
+  applicationContextPath: /planner
+  adminContextPath: /admin
+  connector:
+    type: http
+    port: 1234
+discovererURL: undefined
+optimizerURL: undefined
+monitorGeneratorURL: undefined
+slaGeneratorURL: undefined

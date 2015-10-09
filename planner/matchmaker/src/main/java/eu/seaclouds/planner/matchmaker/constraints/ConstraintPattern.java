@@ -18,6 +18,7 @@ package eu.seaclouds.planner.matchmaker.constraints;
 
 import eu.seaclouds.planner.matchmaker.PropertyValue;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ConstraintPattern<Integer> extends Constraint {
@@ -27,6 +28,13 @@ public class ConstraintPattern<Integer> extends Constraint {
     }
 
     public boolean checkConstraint(PropertyValue prop) {
-        throw new UnsupportedOperationException(); //TODO
+        try {
+            String val = (String) prop.getValue();
+            Pattern p = (Pattern) value;
+            Matcher m = p.matcher(val);
+            return m.matches();
+        }catch(Exception e){
+            return false;
+        }
     }
 }

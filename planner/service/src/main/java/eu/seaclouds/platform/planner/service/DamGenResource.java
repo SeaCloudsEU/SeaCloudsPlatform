@@ -28,20 +28,16 @@ public class DamGenResource {
 
     private final String monitorGeneratorURL;
     private final String slaGeneratorURL;
-    private final String credentialGeneratorURL;
 
     private final String[] genURLs;
 
     public DamGenResource(String monitorGeneratorURL,
-                          String slaGeneratorURL,
-                          String credentialGeneratorURL) //TODO: add configuration url
+                          String slaGeneratorURL)
     {
         this.monitorGeneratorURL = monitorGeneratorURL;
-        this.credentialGeneratorURL = credentialGeneratorURL;
         this.slaGeneratorURL = slaGeneratorURL;
 
         this.genURLs = new String[] {
-                credentialGeneratorURL,
                 monitorGeneratorURL,
                 slaGeneratorURL,
         };
