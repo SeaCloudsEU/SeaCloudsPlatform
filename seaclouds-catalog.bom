@@ -14,7 +14,6 @@ brooklyn.catalog:
         planner.config.port: 1234
         planner.config.discoverer.url: undefined
         planner.config.optimizer.url: undefined
-        planner.config.credential_generator.url: undefined
         planner.config.monitor_generator.url: undefined
         planner.config.sla_generator.url: undefined
 
@@ -23,7 +22,6 @@ brooklyn.catalog:
         PLANNER_PORT: $brooklyn:config("planner.config.port")
         DISCOVERER_URL: $brooklyn:config("planner.config.discoverer.url")
         OPTIMIZER_URL: $brooklyn:config("planner.config.optimizer.url")
-        CREDENTIAL_GENERATOR_URL: $brooklyn:config("planner.config.credential_generator.url")
         MONITOR_GENERATOR_URL: $brooklyn:config("planner.config.monitor_generator.url")
         SLA_GENERATOR_URL: $brooklyn:config("planner.config.sla_generator.url")
 
@@ -43,7 +41,6 @@ brooklyn.catalog:
            port: ${PLANNER_PORT}
         discovererURL: ${DISCOVERER_URL}
         optimizerURL: ${OPTIMIZER_URL}
-        credentialGeneratorURL: ${CREDENTIAL_GENERATOR_URL}
         monitorGeneratorURL: ${MONITOR_GENERATOR_URL}
         slaGeneratorURL: ${SLA_GENERATOR_URL}
         EOF
