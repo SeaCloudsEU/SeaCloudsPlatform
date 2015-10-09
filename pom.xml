@@ -23,9 +23,10 @@
     <version>0.8.0-SNAPSHOT</version>
     <modules>
         <module>common</module>
+        <module>monitor</module>
         <module>deployer</module>
         <module>planner</module>
-		<module>discoverer</module>
+	<module>discoverer</module>
         <module>dashboard</module>
         <module>sla</module>
     </modules>
