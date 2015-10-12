@@ -54,87 +54,116 @@ public class MonitoringDamGenerator {
 
         logger.info("Request received.");
         try {
+
             StringWriter writer = new StringWriter();
             JSONArray output = new JSONArray();
+            VisualizationRulesGenerator vrg = new VisualizationRulesGenerator();
+            SLARulesGenerator srg = new SLARulesGenerator();
+            ReconfigurationRulesGenerator rrg = new ReconfigurationRulesGenerator();
+            NuroRulesGenerator nrg = new NuroRulesGenerator();
+            YAMLMonitorParser adpParser = new YAMLMonitorParser();
+            Yaml yaml = new Yaml();
+
+            Map<String, Object> moduleElement;
+            Map<String, Object> membersElement;
+            List<Map<String, Object>> policies;
+            Map<String, Object> rulesElement;
+            Map<String, Object> deploymentScriptsElement;
+            List<Map<String, String>> dataCollectorsDeploymentScripts;
+            Map<String, String> tempDeploymentScript;
+            List<String> members;
+            MonitoringRules result;
+            StringWriter sw;
+            JAXBContext context = JAXBContext
+                    .newInstance("it.polimi.tower4clouds.rules");
+            ;
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty("jaxb.formatted.output", Boolean.TRUE);
 
             IOUtils.copy(incomingData, writer);
-            String adp = writer.toString();
 
-            YAMLMonitorParser adpParser= new YAMLMonitorParser();
-            
-            List<Module> requirements = adpParser.getModuleRelevantInfoFromAdp(adp);
+            List<Module> requirements = adpParser
+                    .getModuleRelevantInfoFromAdp(writer.toString());
 
             for (Module module : requirements) {
-                
-                logger.info("Generating monitoring information for module "+module.getModuleName());
-                
-                VisualizationRulesGenerator vrg = new VisualizationRulesGenerator();
-                SLARulesGenerator srg = new SLARulesGenerator();
-                ReconfigurationRulesGenerator rrg = new ReconfigurationRulesGenerator();
-                NuroRulesGenerator nrg=new NuroRulesGenerator();
-                
-                Map<String, Object> moduleElement = new HashMap<String, Object>();
-                Map<String, Object> membersElement = new HashMap<String, Object>();
-                List<Map<String, Object>> policies = new ArrayList<Map<String, Object>>();
-                Map<String, Object> rulesElement = new HashMap<String, Object>();
-                Map<String, Object> deploymentScriptsElement = new HashMap<String, Object>();
 
-                MonitoringRules result = vrg.generateMonitoringRules(module);
+                moduleElement = new HashMap<String, Object>();
+                membersElement = new HashMap<String, Object>();
+                policies = new ArrayList<Map<String, Object>>();
+                rulesElement = new HashMap<String, Object>();
+                deploymentScriptsElement = new HashMap<String, Object>();
+                dataCollectorsDeploymentScripts = new ArrayList<Map<String, String>>();
+
+                logger.info("Generating monitoring information for module "
+                        + module.getModuleName());
+
+                result = vrg.generateMonitoringRules(module);
                 result.getMonitoringRules().addAll(
                         srg.generateMonitoringRules(module)
                                 .getMonitoringRules());
                 result.getMonitoringRules().addAll(
                         rrg.generateMonitoringRules(module)
                                 .getMonitoringRules());
-                result.getMonitoringRules().addAll(nrg.generateMonitoringRules(module).getMonitoringRules());
+                result.getMonitoringRules().addAll(
+                        nrg.generateMonitoringRules(module)
+                                .getMonitoringRules());
 
-
-                JAXBContext context;
-                context = JAXBContext
-                        .newInstance("it.polimi.tower4clouds.rules");
-                Marshaller marshaller = context.createMarshaller();
-                marshaller.setProperty("jaxb.formatted.output", Boolean.TRUE);
-                StringWriter sw = new StringWriter();
+                sw = new StringWriter();
                 marshaller.marshal(result, sw);
+                rulesElement.put("monitoringRules", sw.toString());
 
-                if(module.getDeploymentType().equals("compute")){
-                    
+                if (module.getDeploymentType().equals("compute")) {
+
                     MODACloudsDcDeploymentScriptGenerator modacloudsDcScriptGen = new MODACloudsDcDeploymentScriptGenerator();
                     String modacloudsDeploymentScript = modacloudsDcScriptGen
                             .generateDataCollectorDeploymentScript(module,
                                     monitoringManagerIp, monitoringManagerPort);
-                    deploymentScriptsElement.put("modacloudsDeploymentScript",
+                    tempDeploymentScript = new HashMap<String, String>();
+                    tempDeploymentScript.put("modacloudsDeploymentScript",
                             modacloudsDeploymentScript);
-                }
-                
-                if(module.isJavaApp()){
-                    
-                    JavaAppLevelDcDeploymentScriptGenerator javaDcScriptGen= new JavaAppLevelDcDeploymentScriptGenerator();
-                    String javaDcDeploymentScript = javaDcScriptGen.generateDataCollectorDeploymentScript(module, monitoringManagerIp, monitoringManagerPort);
-                    deploymentScriptsElement.put("javaAppLevelDcDeploymentScript", javaDcDeploymentScript);
-                }
-                
-                if(module.getModuleName().equals("NuroApp")){
-                    
-                    NuroDcDeploymentScriptGenerator nuroDcScriptGen= new NuroDcDeploymentScriptGenerator();
-                    String nuroDcDeploymentScript = nuroDcScriptGen.generateDataCollectorDeploymentScript(module, monitoringManagerIp, monitoringManagerPort);
-                    deploymentScriptsElement.put("nuroDcDeploymentScript", nuroDcDeploymentScript);
+                    dataCollectorsDeploymentScripts.add(tempDeploymentScript);
                 }
 
-                rulesElement.put("monitoringRules", sw.toString());
+                if (module.isJavaApp()) {
+
+                    JavaAppLevelDcDeploymentScriptGenerator javaDcScriptGen = new JavaAppLevelDcDeploymentScriptGenerator();
+                    String javaDcDeploymentScript = javaDcScriptGen
+                            .generateDataCollectorDeploymentScript(module,
+                                    monitoringManagerIp, monitoringManagerPort);
+                    tempDeploymentScript = new HashMap<String, String>();
+                    tempDeploymentScript.put("javaAppLevelDcDeploymentScript",
+                            javaDcDeploymentScript);
+                    dataCollectorsDeploymentScripts.add(tempDeploymentScript);
+                }
+
+                if (module.getModuleName().equals("NuroApp")) {
+
+                    NuroDcDeploymentScriptGenerator nuroDcScriptGen = new NuroDcDeploymentScriptGenerator();
+                    String nuroDcDeploymentScript = nuroDcScriptGen
+                            .generateDataCollectorDeploymentScript(module,
+                                    monitoringManagerIp, monitoringManagerPort);
+                    tempDeploymentScript = new HashMap<String, String>();
+                    tempDeploymentScript.put("nuroDcDeploymentScript",
+                            nuroDcDeploymentScript);
+                    dataCollectorsDeploymentScripts.add(tempDeploymentScript);
+                }
+
+                deploymentScriptsElement.put("dataCollectorsDeploymentScripts",
+                        dataCollectorsDeploymentScripts);
 
                 policies.add(rulesElement);
                 policies.add(deploymentScriptsElement);
 
                 membersElement.put("policies", policies);
 
-                List<String> members = new ArrayList<String>();
+                members = new ArrayList<String>();
                 members.add(module.getModuleName());
                 membersElement.put("members", members);
 
-                moduleElement.put("monitoringInformation_"+module.getModuleName(), membersElement);
+                moduleElement.put(
+                        "monitoringInformation_" + module.getModuleName(),
+                        membersElement);
 
-                Yaml yaml = new Yaml();
                 yaml.dump(moduleElement, writer);
                 output.put(yaml.dump(moduleElement));
 
@@ -145,7 +174,8 @@ public class MonitoringDamGenerator {
         } catch (IOException e) {
             logger.error("Error reading the incoming data.", e);
         } catch (JAXBException e) {
-            logger.error("Error unmarshalling the produced monitoring rules.", e);
+            logger.error("Error unmarshalling the produced monitoring rules.",
+                    e);
         } catch (ParsingException e) {
             logger.error("Error parsing the Abstract Deployment Model", e);
         }

@@ -1,10 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<parent>
+		<groupId>eu.seaclouds-project</groupId>
+		<artifactId>monitor</artifactId>
+		<version>0.8.0-SNAPSHOT</version>
+	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>eu.seaclouds-project.monitor</groupId>
 	<artifactId>monitoring-dam-generator</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>monitoring-dam-generator</name>
@@ -18,10 +22,6 @@
 		<repository>
 			<id>deib-polimi-releases</id>
 			<url>https://github.com/deib-polimi/deib-polimi-mvn-repo/raw/master/releases</url>
-		</repository>
-		<repository>
-			<id>deib-polimi-snapshots</id>
-			<url>https://github.com/deib-polimi/deib-polimi-mvn-repo/raw/master/snapshots</url>
 		</repository>
 	</repositories>
 
@@ -43,15 +43,12 @@
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
-			<version>6.9.4</version>
 			<scope>test</scope>
 		</dependency>
-
 
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20140107</version>
 		</dependency>
 
 		<dependency>
@@ -62,30 +59,14 @@
 		<dependency>
 			<groupId>it.polimi.tower4clouds</groupId>
 			<artifactId>rules</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0.2.3</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
-			<version>1.11</version>
 		</dependency>
 
 	</dependencies>
 
-	<build>
-
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-
-		</plugins>
-	</build>
 </project>

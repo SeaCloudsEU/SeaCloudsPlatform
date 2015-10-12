@@ -19,9 +19,10 @@ import it.polimi.tower4clouds.rules.Parameter;
 
 public class RuleSchemaGenerator {
 
-    public static final ObjectFactory factory = new ObjectFactory();
+    private static final ObjectFactory factory = new ObjectFactory();
     private static final Logger logger = LoggerFactory
             .getLogger(RuleSchemaGenerator.class);
+
 
     public static MonitoringRules fillMonitoringRuleSchema(String ruleId,
             String timestep, String timewindow, String targetClass,
@@ -58,7 +59,8 @@ public class RuleSchemaGenerator {
         resourceId = factory.createParameter();
 
         if (ruleId == null) {
-            logger.error("A rule must have an Id!", new RuntimeException("A rule must have an Id!"));
+            logger.error("A rule must have an Id!");
+            throw new RuntimeException("A valid ruleId must be specified");
         } else {
             rule.setId(ruleId);
         }
@@ -85,7 +87,8 @@ public class RuleSchemaGenerator {
         }
 
         if (targetType == null) {
-            logger.error("A valid target type must be specified", new RuntimeException("A valid target type must be specified"));
+            logger.error("A valid target type must be specified");
+            throw new RuntimeException("A valid target type must be specified");
         } else {
             monitoredTarget.setType(targetType);
         }
@@ -93,7 +96,8 @@ public class RuleSchemaGenerator {
         monitoredTargets.getMonitoredTargets().add(monitoredTarget);
 
         if (monitoredMetric == null) {
-            logger.error("A valid metric must be specified", new RuntimeException("A valid metric must be specified"));
+            logger.error("A valid metric must be specified");
+            throw new RuntimeException("A valid metric must be specified");
         } else {
             collectedMetric.setMetricName(monitoredMetric);
         }

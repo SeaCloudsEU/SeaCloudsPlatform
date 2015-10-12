@@ -8,7 +8,6 @@ public interface RulesGenerator {
 
     public static final ObjectFactory factory = new ObjectFactory();
 
-
     public MonitoringRules generateMonitoringRules(Module module);
 
 }

@@ -20,11 +20,11 @@ package eu.seaclouds.monitor.monitoringDamGenerator.core.adpParsing;
 public class Module {
 
     private static final double HOURS_IN_MONTH = 24 * 30;
-    private double respTime = 0; 
+    private double respTime = 0;
     private double availability = 0;
-    private double cost = 0; 
+    private double cost = 0;
     private double workload = 0;
-    private boolean isJavaApp = true;
+    private boolean isJavaApp;
     private String deploymentType;
     private String moduleName;
 
@@ -41,7 +41,7 @@ public class Module {
     }
 
     public void setResponseTimeMillis(Double resp) {
-        this.respTime=resp;
+        this.respTime = resp;
     }
 
     public boolean existResponseTimeRequirement() {

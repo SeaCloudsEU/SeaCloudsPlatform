@@ -2,7 +2,6 @@ package eu.seaclouds.monitor.monitoringDamGenerator.core.interfaces;
 
 import eu.seaclouds.monitor.monitoringDamGenerator.core.adpParsing.Module;
 
-
 public interface DataCollectorDeploymentScriptGenerator {
     public static final String MODACLOUDS_TOWER4CLOUDS_MANAGER_IP = "MODACLOUDS_TOWER4CLOUDS_MANAGER_IP";
     public static final String MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT = "MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT";
@@ -19,7 +18,6 @@ public interface DataCollectorDeploymentScriptGenerator {
     public static final String MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID = "MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID";
     public static final String MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE = "MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE";
 
-    public String generateDataCollectorDeploymentScript(
-            Module moduleInfo, String monitoringManagerIp,
-            String monitoringManagerPort);
+    public String generateDataCollectorDeploymentScript(Module moduleInfo,
+            String monitoringManagerIp, String monitoringManagerPort);
 }

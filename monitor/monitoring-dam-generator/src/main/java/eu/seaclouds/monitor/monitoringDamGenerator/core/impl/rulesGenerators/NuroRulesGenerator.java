@@ -15,16 +15,16 @@ public class NuroRulesGenerator implements RulesGenerator {
 
     private static final Logger logger = LoggerFactory
             .getLogger(NuroRulesGenerator.class);
-    
+
     @Override
     public MonitoringRules generateMonitoringRules(Module module) {
 
         MonitoringRules toReturn = factory.createMonitoringRules();
 
-        if(module.getModuleName().equals("NuroApplication")){
-            
+        if (module.getModuleName().equals("NuroApplication")) {
+
             logger.info("NuroApplication module found. Generating all the custom monitoring rules");
-            
+
             toReturn.getMonitoringRules().addAll(
                     this.generateThirtySecondsRuntimeRule(module)
                             .getMonitoringRules());
@@ -37,106 +37,74 @@ public class NuroRulesGenerator implements RulesGenerator {
             toReturn.getMonitoringRules().addAll(
                     this.generateThirtySecondsThroughputRule(module)
                             .getMonitoringRules());
-            toReturn.getMonitoringRules().addAll(this.generateNuroSlaRules(module).getMonitoringRules());
+            toReturn.getMonitoringRules().addAll(
+                    this.generateNuroSlaRules(module).getMonitoringRules());
         }
-
 
         return toReturn;
     }
-    
-    private MonitoringRules generateNuroSlaRules(Module module){
-        
-        
-        Map<String,String> parameters=new HashMap<String,String>();
+
+    private MonitoringRules generateNuroSlaRules(Module module) {
+
+        Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("samplingTime", "5");
-        return RuleSchemaGenerator.fillMonitoringRuleSchema("nuroThirtySecondsSlaRuntimeRule",
-                "30", 
-                "30", 
-                "InternalComponent",
-                "NuroApplication",
-                "NUROServerLastTenSecondsAverageRunTime",
-                parameters,
-                "Average",
-                "InternalComponent",
-                "METRIC > " + module.getResponseTime()/1000,
+        return RuleSchemaGenerator.fillMonitoringRuleSchema(
+                "nuroThirtySecondsSlaRuntimeRule", "30", "30",
+                "InternalComponent", "NuroApplication",
+                "NUROServerLastTenSecondsAverageRunTime", parameters,
+                "Average", "InternalComponent",
+                "METRIC > " + module.getResponseTime() / 1000,
                 "NUROServerLastThirtySecondsAverageRunTime_Violation");
-        
+
     }
 
-    private MonitoringRules generateThirtySecondsRuntimeRule(
-            Module module) {
+    private MonitoringRules generateThirtySecondsRuntimeRule(Module module) {
 
-        Map<String,String> parameters=new HashMap<String,String>();
+        Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("samplingTime", "5");
-        return RuleSchemaGenerator.fillMonitoringRuleSchema("nuroThirtySecondsRuntimeRule",
-                "30", 
-                "30", 
-                "InternalComponent",
-                "NuroApplication",
-                "NUROServerLastTenSecondsAverageRunTime",
-                parameters,
-                "Average",
-                "InternalComponent",
-                null,
+        return RuleSchemaGenerator.fillMonitoringRuleSchema(
+                "nuroThirtySecondsRuntimeRule", "30", "30",
+                "InternalComponent", "NuroApplication",
+                "NUROServerLastTenSecondsAverageRunTime", parameters,
+                "Average", "InternalComponent", null,
                 "NUROServerLastThirtySecondsAverageRunTime");
-        
+
     }
 
-    private MonitoringRules generateThirtySecondsPlayerCountRule(
-            Module module) {
+    private MonitoringRules generateThirtySecondsPlayerCountRule(Module module) {
 
-        Map<String,String> parameters=new HashMap<String,String>();
+        Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("samplingTime", "10");
-        return RuleSchemaGenerator.fillMonitoringRuleSchema("nuroThirtySecondsPlayerCountRule",
-                "30", 
-                "30", 
-                "InternalComponent",
-                "NuroApplication",
-                "NUROServerLastTenSecondsPlayerCount",
-                parameters,
-                "Sum",
-                "InternalComponent",
-                null,
+        return RuleSchemaGenerator.fillMonitoringRuleSchema(
+                "nuroThirtySecondsPlayerCountRule", "30", "30",
+                "InternalComponent", "NuroApplication",
+                "NUROServerLastTenSecondsPlayerCount", parameters, "Sum",
+                "InternalComponent", null,
                 "NUROServerLastThirtySecondsPlayerCount");
-        
+
     }
 
-    private MonitoringRules generateThirtySecondsRequestCountRule(
-            Module module) {
-        
-        Map<String,String> parameters=new HashMap<String,String>();
+    private MonitoringRules generateThirtySecondsRequestCountRule(Module module) {
+
+        Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("samplingTime", "10");
-        return RuleSchemaGenerator.fillMonitoringRuleSchema("nuroThirtySecondsRequestCountRule",
-                "30", 
-                "30", 
-                "InternalComponent",
-                "NuroApplication",
-                "NUROServerLastTenSecondsRequestCount",
-                parameters,
-                "Sum",
-                "InternalComponent",
-                null,
+        return RuleSchemaGenerator.fillMonitoringRuleSchema(
+                "nuroThirtySecondsRequestCountRule", "30", "30",
+                "InternalComponent", "NuroApplication",
+                "NUROServerLastTenSecondsRequestCount", parameters, "Sum",
+                "InternalComponent", null,
                 "NUROServerLastThirtySecondsRequestCount");
 
-       
     }
 
-    private MonitoringRules generateThirtySecondsThroughputRule(
-            Module module) {
-        
-        
-        Map<String,String> parameters=new HashMap<String,String>();
+    private MonitoringRules generateThirtySecondsThroughputRule(Module module) {
+
+        Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("samplingTime", "5");
-        return RuleSchemaGenerator.fillMonitoringRuleSchema("nuroThirtySecondsThroughput",
-                "30", 
-                "30", 
-                "InternalComponent",
-                "NuroApplication",
-                "NUROServerLastTenSecondsAverageThroughput",
-                parameters,
-                "Average",
-                "InternalComponent",
-                null,
+        return RuleSchemaGenerator.fillMonitoringRuleSchema(
+                "nuroThirtySecondsThroughput", "30", "30", "InternalComponent",
+                "NuroApplication", "NUROServerLastTenSecondsAverageThroughput",
+                parameters, "Average", "InternalComponent", null,
                 "NUROServerLastThirtySecondsAverageThroughput");
     }
 

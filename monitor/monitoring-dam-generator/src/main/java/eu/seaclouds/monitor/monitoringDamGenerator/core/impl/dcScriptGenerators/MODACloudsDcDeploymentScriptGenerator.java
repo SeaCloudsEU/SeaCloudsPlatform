@@ -8,8 +8,9 @@ import eu.seaclouds.monitor.monitoringDamGenerator.core.adpParsing.Module;
 
 public class MODACloudsDcDeploymentScriptGenerator implements
         DataCollectorDeploymentScriptGenerator {
-    
-    private static Logger logger = LoggerFactory.getLogger(MODACloudsDcDeploymentScriptGenerator.class);
+
+    private static Logger logger = LoggerFactory
+            .getLogger(MODACloudsDcDeploymentScriptGenerator.class);
 
     private static final String dataCollectorVersion = "2.0.4";
     private static final String dataCollectorArtifactURL = "https://github.com/imperial-modaclouds/modaclouds-data-collectors/releases/download/"
@@ -19,11 +20,9 @@ public class MODACloudsDcDeploymentScriptGenerator implements
             + ".jar";
     private static final String sigarDownloadUrl = "http://sourceforge.net/projects/sigar/files/sigar/1.6/hyperic-sigar-1.6.4.zip/download?use_mirror=switch";
 
-    public String generateDataCollectorDeploymentScript(
-            Module moduleInfo, String monitoringManagerIp,
-            String monitoringManagerPort) {
+    public String generateDataCollectorDeploymentScript(Module moduleInfo,
+            String monitoringManagerIp, String monitoringManagerPort) {
 
-        
         logger.info("Generating required deployment script for the MODAClouds Data Collector.");
 
         StringBuilder sb = new StringBuilder();
