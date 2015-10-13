@@ -25,6 +25,7 @@
         <module>common</module>
         <module>deployer</module>
         <module>planner</module>
+        <module>monitor</module>
 		<module>discoverer</module>
         <module>dashboard</module>
         <module>sla</module>
