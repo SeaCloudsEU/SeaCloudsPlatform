@@ -1,0 +1,58 @@
+[ {
+  "webservices" : [ {
+    "hp_cloud_services.2xl" : {
+      "type" : "seacluds.nodes.hp_cloud_services.2xl",
+      "properties" : {
+        "num_cpus" : 8,
+        "disk_size" : 512,
+        "resource_type" : "compute",
+        "availability" : 0.98,
+        "cost" : "0.928 usd_per_hour",
+        "performance" : 543
+      }
+    }
+  } ]
+}, {
+  "db1" : [ {
+    "db1ValidOffering" : {
+      "type" : "seaclouds.nodes.db1ValidOffering",
+      "properties" : {
+        "mysql_support" : true,
+        "mysql_version" : 5.4,
+        "availability" : 0.99,
+        "cost" : "0.928 usd_per_hour",
+        "performance" : 62
+      }
+    }
+  } ]
+}, {
+  "www" : [ {
+    "wwwValidOffering" : {
+      "type" : "seaclouds.nodes.wwwValidOffering",
+      "properties" : {
+        "java_support" : true,
+        "tomcat_support" : true,
+        "java_version" : 7,
+        "resource_type" : "platform",
+        "mysql_support" : true,
+        "availability" : 0.965,
+        "cost" : "0.928 usd_per_hour",
+        "performance" : 175
+      }
+    }
+  }, {
+    "wwwValidOffering2" : {
+      "type" : "seaclouds.nodes.wwwValidOffering2",
+      "properties" : {
+        "java_support" : true,
+        "tomcat_support" : true,
+        "java_version" : 8,
+        "resource_type" : "platform",
+        "mysql_support" : true,
+        "availability" : 0.985,
+        "cost" : "0.928 usd_per_hour",
+        "performance" : 645
+      }
+    }
+  } ]
+} ]

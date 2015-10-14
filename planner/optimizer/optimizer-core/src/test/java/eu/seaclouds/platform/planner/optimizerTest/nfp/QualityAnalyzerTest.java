@@ -34,10 +34,7 @@ import eu.seaclouds.platform.planner.optimizer.Topology;
 import eu.seaclouds.platform.planner.optimizer.TopologyElement;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
-import eu.seaclouds.platform.planner.optimizerTest.TestConstants;
-
 import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
-
 import eu.seaclouds.platform.planner.optimizerTest.TestConstants;
 
 public class QualityAnalyzerTest {
