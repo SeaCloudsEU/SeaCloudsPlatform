@@ -43,11 +43,17 @@ public class OptimizerTOSCASeptember2015Test {
    private static String       appModel;
    private static String       suitableCloudOffer;
 
-   private static Logger log = LoggerFactory.getLogger(OptimizerTOSCASeptember2015Test.class);
+   
+   static Logger               log;
+
 
 
 @BeforeClass
 public void createObjects() {
+
+   System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, TOSCAkeywords.LOG_LEVEL);
+   log                   = LoggerFactory
+         .getLogger(OptimizerTOSCASeptember2015Test.class);
 
    log.info("Starting TEST optimizer for the TOSCA syntax of July 2015");
 
