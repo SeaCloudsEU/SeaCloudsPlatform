@@ -24,7 +24,7 @@ angular.module('seacloudsDashboard.projects', ['ngRoute', 'ngFitText',
             templateUrl: 'projects/projects.html'
         })
     }])
-    .controller('ProjectsCtrl', function ($scope, $interval) {
+    .controller('ProjectsCtrl', function ($scope, $interval, notificationService) {
 
         $scope.isViewActive = function (route) {
             return $location.path().startsWith(route);

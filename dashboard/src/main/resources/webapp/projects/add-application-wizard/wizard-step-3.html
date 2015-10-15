@@ -21,10 +21,10 @@
                 <small>Abstract Application Model</small>
             </h3>
             <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="editorOptionsInput"
-                           ng-model="$parent.matchmakerInput"></ui-codemirror>
+                           ng-model="applicationWizardData.matchmakerInput"></ui-codemirror>
         </div>
         <div class="col-lg-2 col-centered">
-                <div  ngf-select class="btn btn-default btn-primary"  ngf-multiple="false" ng-model="matchmakerInputFile"><- Load file</div>
+                <div  ngf-select class="btn btn-default btn-primary"  ngf-multiple="false" ng-model="applicationWizardData.matchmakerInputFile"><- Load file</div>
                 <hr>
                 <button class="btn btn-default btn-primary" ng-click="processAAM()"> Process -></button>
             </div>
@@ -33,7 +33,7 @@
                 <small>Abstract Deployment Plan</small>
             </h3>
             <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="editorOptionsOutput"
-                           ng-model="$parent.matchmakerResult" disabled></ui-codemirror>
+                           ng-model="applicationWizardData.matchmakerResult" disabled></ui-codemirror>
         </div>
     </div>
 
@@ -45,10 +45,10 @@
                 <small>Optimizer ADP</small>
             </h3>
             <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="editorOptionsInput"
-                           ng-model="$parent.optimizerInput"></ui-codemirror>
+                           ng-model="applicationWizardData.optimizerInput"></ui-codemirror>
         </div>
         <div class="col-lg-2 col-centered">
-                <div  ngf-select class="btn btn-default btn-primary"  ngf-multiple="false" ng-model="optimizerInputFile"><- Load file</div>
+                <div  ngf-select class="btn btn-default btn-primary"  ngf-multiple="false" ng-model="applicationWizardData.optimizerInputFile"><- Load file</div>
                 <hr>
                 <button class="btn btn-default btn-primary" ng-click="processADP()"> Process -></button>
         </div>
@@ -57,7 +57,7 @@
                 <small>Deployment Application Model Candidates</small>
             </h3>
             <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="editorOptionsOutput"
-                           ng-model="$parent.optimizerResult" disabled></ui-codemirror>
+                           ng-model="applicationWizardData.optimizerResult" disabled></ui-codemirror>
         </div>
     </div>
 </div>

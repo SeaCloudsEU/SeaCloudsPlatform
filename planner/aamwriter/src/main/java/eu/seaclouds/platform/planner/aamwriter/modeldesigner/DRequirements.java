@@ -44,8 +44,8 @@ public class DRequirements {
         this.workload = parseDouble(jnode, Attributes.WORKLOAD);
     }
     
-    private double parseDouble(JSONObject jnode, Object value) {
-        double result = Double.parseDouble((String)jnode.get(value));
+    private double parseDouble(JSONObject jnode, String key) {
+        double result = Double.parseDouble(jnode.get(key).toString());
         
         return result;
     }

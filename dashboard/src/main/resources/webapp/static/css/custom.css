@@ -201,9 +201,17 @@
     cursor:default;
 }
 
+input.form-control.ng-untouched {
+    border-color: #fadba8;
+}
 
+input.form-control.ng-invalid.ng-touched {
+    border-color: #fa4d45;
+}
 
-
+input.form-control.ng-valid.ng-touched {
+    border-color: #C6E4CA;
+}
 
 .chart-container {
     height: 300px;

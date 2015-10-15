@@ -1,14 +1,15 @@
 /**
  * This is a proof of concept of topology editor using Graph.Node objects.
- * 
+ *
  *
  * The following prefixes in variables are used:
  *   j_ : jquery selections
  *   d3_ : d3 selections
  *   g_ : Graph.* nodes (or children)
- * 
+ *
  * @author roman.sosa@atos.net
  */
+"use strict";
 
 var Editor = (function() {
 
@@ -16,7 +17,10 @@ var Editor = (function() {
 
     var LOCATION_STATIC = "STATIC";
     var LOCATION_DYNAMIC = "DYNAMIC";
-    
+
+    var INFRASTRUCTURE_IAAS = "IAAS";
+    var INFRASTRUCTURE_PAAS = "PAAS";
+
     var language_options = {
         "": "",
         "JAVA": "Java",
@@ -25,41 +29,66 @@ var Editor = (function() {
         ".NET": ".Net",
         "PHP": "Php",
     };
-    
+
     var language_version_options = {
-        "": [ "" ], 
+        "": [ "" ],
         "JAVA": [ 4, 5, 6, 7, 8],
         "PYTHON": [2, 3],
         "RUBY": [1, 2],
         ".NET": [1, 2, 3, 4],
         "PHP": [5.1, 5.2, 5.3, 5.4, 5.5]
     };
-    
+
+    var language_container_options = {
+        "": { "": "" },
+        "JAVA": {
+                "": "",
+                "webapp.jboss.JBoss6Server": "JBoss 6",
+                "webapp.jboss.JBoss7Server": "JBoss 7",
+                "webapp.jetty.Jetty6Server": "Jetty 6",
+                "webapp.tomcat.TomcatServer": "Tomcat",
+                "webapp.tomcat.Tomcat8Server": "Tomcat 8"
+            },
+        "PYTHON": {
+                "": ""
+            },
+        "RUBY": {
+                "": ""
+            },
+        ".NET": {
+                "": ""
+            },
+        "PHP": {
+                "": ""
+            }
+    }
+
     var database_options = {
-        "MYSQL": "MySql",
-        "ORACLE": "Oracle",
-        "POSTGRESQL": "PostgreSQL",
-        "MONGODB": "MongoDB",
-        "REDIS": "Redis",
+        "database.mysql.MySqlNode": "MySql",
+        "database.mariadb.MariaDbNode": "mariadb",
+        "database.postgresql.PostgreSqlNode": "PostgreSQL",
+        "nosql.mongodb.MongoDBServer": "MongoDB",
+        "nosql.redis.RedisStore": "Redis",
     };
-    
-    
-    var cost_options = {
-        "": "",
-        "GOLD": "Gold",
-        "SILVER": "Silver",
-        "BRONZE": "Bronze",
+
+    var database_version_options = {
+        "": [ "" ],
+        "database.mysql.MySqlNode": [ 5.0, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6 ],
+        "database.mariadb.MariaDbNode": [5.0, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6 ],
+        "database.postgresql.PostgreSqlNode": [ 8, 9.0, 9.1, 9.2, 9.3, 9.4 ],
+        "nosql.mongodb.MongoDBServer": [ 1, 2, 3 ],
+        "nosql.redis.RedisStore": [ 1, 2, 3 ]
     };
-    
-    
+
+
     var location_static_options = {
         "": "",
         "EUROPE": "Europe",
         "AMERICA": "America",
         "ASIA": "Asia"
     };
-    
-    
+
+
     var location_dynamic_options = {
         "": "",
         "FOLLOW_SUN": "Follow the sun",
@@ -67,50 +96,55 @@ var Editor = (function() {
         "FOLLOW_WIND": "Follow the wind",
         "FOLLOW_KILOWATT": "Follow the kilowatt",
     };
-    
+
     var qos_operators = {
         "": "",
-        "LT": "<",
-        "LE": "<=",
-        "EQ": "=",
-        "GE": ">=",
-        "GT": ">",
-        "BETWEEN": "between",
+        "less_than": "<",
+        "less_or_equal": "<=",
+        "equal": "=",
+        "greater_or_equal": ">=",
+        "greater_than": ">",
+        "in_range": "between",
+    };
+
+    var benchmark_platforms = {
+        "": "",
+        "hp_cloud_services.2xl": "hp_cloud_services.2xl"
     };
 
     /*
      * Override some Link and Node methods regarding Canvas.
      */
-    
+
     Graph.Link.popovertitle = function(i) {
-        return " " + 
-            '<button type="button" class="popover-edit" data-action="edit" data-linkindex="' + i + '">' + 
+        return " " +
+            '<button type="button" class="popover-edit" data-action="edit" data-linkindex="' + i + '">' +
             '<span aria-hidden="true" class="fa fa-edit"></span></button>' +
-            '<button type="button" class="popover-edit" data-action="delete" data-linkindex="' + i + '">' + 
+            '<button type="button" class="popover-edit" data-action="delete" data-linkindex="' + i + '">' +
             '<span aria-hidden="true" class="fa fa-remove"></span></button>';
     };
-    
+
     Graph.Link.popovercontent = function(i) {
-        
+
         var content = "";
         content += item("operations", this.properties.operations);
         return "<dl>" + content + "</dl>";
     };
-    
+
     Graph.Node.popovertitle = function(i) {
         return this.name + "&nbsp;&nbsp;&nbsp;" +
-            '<button type="button" class="popover-edit" data-action="edit" data-nodeindex="' + i + '">' + 
+            '<button type="button" class="popover-edit" data-action="edit" data-nodeindex="' + i + '">' +
             '<span aria-hidden="true" class="fa fa-edit"></span></button>' +
-            '<button type="button" class="popover-edit" data-action="delete" data-nodeindex="' + i + '">' + 
+            '<button type="button" class="popover-edit" data-action="delete" data-nodeindex="' + i + '">' +
             '<span aria-hidden="true" class="fa fa-remove"></span></button>';
     };
-    
+
     Graph.Node.popovercontent = function(i) {
         var location = this.location;
         if (location !== undefined && location !== "") {
             location = location + " - " + this.location_option;
         }
-        
+
         var terms = [
             [ "Type", this.type],
             [ "Name", this.name],
@@ -123,7 +157,7 @@ var Editor = (function() {
             [ "QoS", this.qos],
             [ "Infrastructure", this.infrastructure]
         ];
-        
+
         var content = "";
         for (var i = 0; i < terms.length; i++) {
             var term = terms[i];
@@ -131,21 +165,21 @@ var Editor = (function() {
         }
         return "<dl>" + content + "</dl>";
     };
-    
+
     function item(key, value) {
         var result = "";
         if (value !== undefined && value !== "") {
             if (Array.isArray(value)) {
-                aux = "<ul>";
+                var aux = "<ul>";
                 for (var i = 0; i < value.length; i++) {
-                    o = value[i];
+                    var o = value[i];
                     aux += "<li>";
                     if (key == "QoS") {
                         aux += o.metric + " " + o.operator + " " + o.threshold;
                     }
                     else if (key == "operations") {
-                        aux += o["source-operation-name"] + "->" 
-                            + o["target-operation-name"] 
+                        aux += o["source-operation-name"] + "->"
+                            + o["target-operation-name"]
                             + ": " + o["operation-calls"] + " calls";
                     }
                     else {
@@ -176,22 +210,22 @@ var Editor = (function() {
          */
         $('body').on('click', '.popover button[data-nodeindex]', function () {
             var index = this.getAttribute("data-nodeindex");
-            
+
             if (index === undefined) {
                 return;
             };
             var node = index !== undefined? canvas.getnode(index) : undefined;
             var action = this.getAttribute("data-action");
-    
-            log.debug("Popover button click: action=" + action + 
+
+            log.debug("Popover button click: action=" + action +
                 " nodeid=" + index +
                 " node=" + node.toString());
-    
+
             /*
-             * hide all popovers 
+             * hide all popovers
              */
             $('[data-popover]').popover('hide');
-            
+
             if (action == "edit") {
                 /*
                  * and load form
@@ -208,28 +242,28 @@ var Editor = (function() {
                 canvas.removenode(node);
             }
         });
-        
+
         /*
          * Edit/delete link
          */
         $('body').on('click', '.popover button[data-linkindex]', function () {
             var index = this.getAttribute("data-linkindex");
-            
+
             if (index === undefined) {
                 return;
             }
             var link = canvas.getlink(index);
             var action = this.getAttribute("data-action");
-    
-            log.debug("Popover link click: action=" + action + 
+
+            log.debug("Popover link click: action=" + action +
                 " linkid=" + index +
                 " link=" + link.toString());
-                
+
             /*
-             * hide all popovers 
+             * hide all popovers
              */
             $('[data-popover]').popover('hide');
-    
+
             if (action == "delete") {
                 canvas.removelink(link);
             }
@@ -242,16 +276,16 @@ var Editor = (function() {
                     canvas.firechange();
                 });
             }
-        });
+                });
 
         $("#add-buttons- [data-type]").on("click", function() {
             var datatype = this.getAttribute("data-type");
             if (datatype === undefined) {
                 log.warn("Button " + this.id + " does not have data-type attribute");
             }
-    
+
             $("[aria-describedby]").popover('hide');
-            
+
             activeform = buttonform_map[datatype];
             activeform.reset();
             activeform.show(function(node) {
@@ -259,7 +293,7 @@ var Editor = (function() {
                 canvas.restart();
             });
         });
-        
+
         /*
          * Main "Add..." button behaviour
          */
@@ -268,12 +302,12 @@ var Editor = (function() {
             if (datatype === undefined) {
                 log.warn("Button " + this.id + " does not have data-type attribute");
             }
-    
-            /* 
+
+            /*
              * Hide popovers TODO: Change
              */
             $("[aria-describedby]").popover('hide');
-            
+
             activeform = buttonform_map[datatype];
             activeform.reset();
             activeform.show(function(node) {
@@ -281,7 +315,7 @@ var Editor = (function() {
                 canvas.restart();
             });
         });
-        
+
         /*
          * In form "Create node" button behaviour (assigned externally because
          * button is shared among forms).
@@ -291,17 +325,17 @@ var Editor = (function() {
             activeform.createnode();
             activeform = undefined;
         });
-        
-    }    
-    
-    
+
+    }
+
+
     function addlinkcallback(canvas, link, accept) {
         /*
-         * check if is a valid link 
+         * check if is a valid link
          */
         if (canvas.getlinkbynodes(link.source, link.target) ||
             canvas.getlinkbynodes(link.target, link.source) ||
-            link.source.type === Types.Database.type || 
+            link.source.type === Types.Database.type ||
             link.target.type === Types.Cloud.type) {
             return undefined;
         }
@@ -313,16 +347,16 @@ var Editor = (function() {
             accept();
         });
     }
-    
-    var qos_table;
-    var link_operations_table;
-    
+
+    //var qos_table;
+    //var link_operations_table;
+
     var activeform = undefined;
     var webappform = Object.create(Forms.Form);
     var databaseform = Object.create(Forms.Form);
     var restform = Object.create(Forms.Form);
     var linkform = Object.create(Forms.Form);
-    
+
     var commonset = Object.create(Forms.Fieldset);
     var codetechset = Object.create(Forms.Fieldset);
     var databasetechset = Object.create(Forms.Fieldset);
@@ -332,96 +366,245 @@ var Editor = (function() {
 
     var buttonform_map;
 
+    commonset.commonset = function(fieldsetid) {
+        this.setup(fieldsetid);
+
+        return this;
+    }
+
     commonset.load = function(node) {
         $("#name").val(node.name);
         $("#label").val(node.label);
     };
-    
+
     commonset.store = function(node) {
         node.name = $("#name").val();
-        node.label = $("#label").val();
     };
-    
+
+    codetechset.codetechset = function(fieldsetid) {
+        this.setup(fieldsetid);
+        Forms.populate_select($("#code-language"), language_options);
+
+        $('#code-language').change(function() {
+            Forms.populate_select_from_array(
+                $('#code-min-version'),
+                language_version_options[$('#code-language').val()]
+            );
+            Forms.populate_select_from_array(
+                $('#code-max-version'),
+                language_version_options[$('#code-language').val()]
+            );
+            Forms.populate_select(
+                $('#code-container'),
+                language_container_options[$('#code-language').val()]
+            );
+        });
+
+        return this;
+    }
+
     codetechset.load = function(node) {
         $("#code-language").val(node.properties.language);
         $("#code-artifact").val(node.properties.artifact);
+
         Forms.populate_select_from_array(
-            $('#code-version'),
+            $('#code-min-version'),
             language_version_options[node.properties.language] || ""
         );
-        $("#code-version").val(node.properties.versions);
+        Forms.populate_select_from_array(
+            $('#code-max-version'),
+            language_version_options[node.properties.language] || ""
+        );
+        $("#code-min-version").val(node.properties.min_version);
+        $("#code-max-version").val(node.properties.max_version);
+
+        Forms.populate_select(
+            $('#code-container'),
+            language_container_options[node.properties.language] || ""
+        );
+        $("#code-container").val(node.properties.container);
     };
-    
+
     codetechset.store = function(node) {
         node.properties.language = $("#code-language").val();
         node.properties.artifact = $("#code-artifact").val();
         node.properties.versions = $("#code-version").val();
+        node.properties.min_version = $("#code-min-version").val();
+        node.properties.max_version = $("#code-max-version").val();
+        node.properties.container = $("#code-container").val();
     };
-    
+
+    databasetechset.databasetechset = function(fieldsetid) {
+        this.setup(fieldsetid);
+        Forms.populate_select($("#database-category"), database_options);
+
+        $('#database-category').change(function() {
+            Forms.populate_select_from_array(
+                $('#database-min-version'),
+                database_version_options[$('#database-category').val()]
+            );
+            Forms.populate_select_from_array(
+                $('#database-max-version'),
+                database_version_options[$('#database-category').val()]
+            );
+        });
+        return this;
+    }
+
     databasetechset.load = function(node) {
         $("#database-category").val(node.properties.category);
         $("#database-artifact").val(node.properties.artifact);
+        Forms.populate_select_from_array(
+            $('#database-min-version'),
+            database_version_options[node.properties.category] || ""
+        );
+        Forms.populate_select_from_array(
+            $('#database-max-version'),
+            database_version_options[node.properties.category] || ""
+        );
+        $("#database-min-version").val(node.properties.min_version);
+        $("#database-max-version").val(node.properties.max_version);
+
     };
-    
+
     databasetechset.store = function(node) {
         node.properties.category = $("#database-category").val();
         node.properties.artifact = $("#database-artifact").val();
+        node.properties.min_version = $("#database-min-version").val();
+        node.properties.max_version = $("#database-max-version").val();
     };
-    
+
+    nonfunctionalset.nonfunctionalset = function(fieldsetid) {
+        this.setup(fieldsetid);
+        Forms.populate_select($("#nf-qos-operator"), qos_operators);
+        Forms.populate_select($("#nf-benchmark-platform"), benchmark_platforms);
+        /*
+         * Important: populate selects in table before creating DynamicTable
+         */
+        this.qos_table = Object.create(Forms.DynamicTable).setup("nf-qos");
+
+        return this;
+    }
+
     nonfunctionalset.load = function(node) {
-        $("#nf-cost").val(node.properties.cost);
-        this.radioval("nf-location", node.properties.location);
-        if(node.location == LOCATION_STATIC) {
-            $("#nf-location-static-options").val(node.properties.location_option);
-        }
-        else if (node.location == LOCATION_DYNAMIC) {
-            $("#nf-location-dynamic-options").val(node.properties.location_option);
-        }
-        qos_table.load(node.properties.qos);
+        this.qos_table.load(node.properties.qos);
+        $("#nf-benchmark-responsetime").val(node.properties.benchmark_rt);
+        $("#nf-benchmark-platform").val(node.properties.benchmark_platform);
     };
-    
+
     nonfunctionalset.store = function(node) {
-        node.properties.cost = $("#nf-cost").val();
+        node.properties.qos = this.qos_table.serialize();
+        node.properties.benchmark_rt = $("#nf-benchmark-responsetime").val();
+        node.properties.benchmark_platform = $("#nf-benchmark-platform").val();
+    };
+
+
+    infrastructureset.infrastructureset = function(fieldsetid) {
+        this.setup(fieldsetid);
+
+        var self = this;
+        $('input[type=radio][name=infrastructure]').change(function() {
+            self.showproperties(true);
+        });
+
+        Forms.populate_select($("#nf-location-static-options"), location_static_options);
+        Forms.populate_select($("#nf-location-dynamic-options"), location_dynamic_options);
+        $('input[type=radio][name=nf-location]').change(function() {
+            self.showlocation(true);
+        });
+
+        return this;
+    }
+
+    infrastructureset.store = function(node) {
+        node.properties.infrastructure = this.getinfrastructure();
         node.properties.location = this.getlocation();
+
+        if (node.properties.infrastructure == INFRASTRUCTURE_IAAS) {
+            node.properties.num_cpus = $("#infrastructure-num-cpus").val();
+            node.properties.disk_size = $("#infrastructure-disk-size").val();
+        }
         if (node.properties.location == LOCATION_STATIC) {
             node.properties.location_option = $("#nf-location-static-options").val();
         }
-        else if (node.location == LOCATION_DYNAMIC) {
+        else if (node.properties.location == LOCATION_DYNAMIC) {
             node.properties.location_option = $("#nf-location-dynamic-options").val();
         }
-        node.properties.qos = qos_table.serialize();
     };
-    
-    nonfunctionalset.expand = function(toexpand) {
+
+    infrastructureset.load = function(node) {
+        this.radioval("infrastructure", node.properties.infrastructure);
+        this.radioval("nf-location", node.properties.location);
+        if (node.properties.infrastructure == INFRASTRUCTURE_IAAS) {
+            $("#infrastructure-num-cpus").val(node.properties.num_cpus);
+            $("#infrastructure-disk-size").val(node.properties.disk_size);
+        }
+        if(node.properties.location == LOCATION_STATIC) {
+            $("#nf-location-static-options").val(node.properties.location_option);
+        }
+        else if (node.properties.location == LOCATION_DYNAMIC) {
+            $("#nf-location-dynamic-options").val(node.properties.location_option);
+        }
+    };
+
+    infrastructureset.expand = function(toexpand) {
         if (!toexpand) {
             this.expand_impl(false);
             return;
         }
-        /* 
+        /*
          * expand manually
          */
-        var filterlocationdivs = function () {
-            var result = 
-                this.id != "nf-location-static-div" && 
-                this.id != "nf-location-dynamic-div";
+        var filterdivs = function () {
+            var result =
+                this.id != "nf-location-static-div" &&
+                this.id != "nf-location-dynamic-div" &&
+                this.id != "infrastructure-iaas-div";
             return result;
         };
-        this.$legend.siblings().filter(filterlocationdivs).show(Forms.DURATION);
-        
+        this.$legend.siblings().filter(filterdivs).show(Forms.DURATION);
+
+        this.showproperties();
         this.showlocation();
     };
-    
-    nonfunctionalset.getlocation = function() {
+
+    infrastructureset.showproperties = function (toanimate) {
+        var infrastructuretype = this.radioval("infrastructure");
+        log.debug("showproperties(" + toanimate + ") - infrastructuretype = " +
+            infrastructuretype);
+
+        var duration = toanimate? Forms.DURATION : 0;
+
+        var toggle = function ($item, toshow) {
+            if (toshow) {
+                $item.show(duration);
+            }
+            else {
+                $item.hide(duration);
+            }
+        };
+        toggle(
+            $("#infrastructure-iaas-div"),
+            infrastructuretype == INFRASTRUCTURE_IAAS
+        );
+    };
+
+    infrastructureset.getlocation = function() {
         var locationvalue = this.radioval("nf-location");
         return locationvalue;
     };
-    
-    nonfunctionalset.showlocation = function (toanimate) {
-        var locationvalue = this.getlocation();
+
+    infrastructureset.getinfrastructure = function() {
+        var value = this.radioval("infrastructure");
+        return value;
+    };
+
+    infrastructureset.showlocation = function (toanimate) {
+        var locationvalue = this.radioval("nf-location");
         log.debug("showlocation(" + toanimate + ") - locationvalue = " + locationvalue);
-        
+
         var duration = toanimate? Forms.DURATION : 0;
-        
+
         var togglelocation = function ($item, toshow) {
             if (toshow) {
                 $item.show(duration);
@@ -431,65 +614,55 @@ var Editor = (function() {
             }
         };
         togglelocation(
-            $("#nf-location-static-div"), 
+            $("#nf-location-static-div"),
             locationvalue == LOCATION_STATIC
         );
         togglelocation(
-            $("#nf-location-dynamic-div"), 
+            $("#nf-location-dynamic-div"),
             locationvalue == LOCATION_DYNAMIC
         );
     };
-    
-    infrastructureset.store = function(node) {
-        node.properties.infrastructure = this.radioval("infrastructure");
-    };
-    
-    infrastructureset.load = function(node) {
-        this.radioval("infrastructure", node.properties.infrastructure);
-    };
-    
+
+
+    operationsset.operationsset = function(fieldsetid) {
+        this.setup(fieldsetid);
+
+        return this;
+    }
+
     operationsset.load = function(link) {
-        link_operations_table.load(link.properties.operations);
+        $("#operations-calls").val(link.properties.calls);
     };
-    
+
     operationsset.store = function(link) {
-        link.properties.operations = link_operations_table.serialize();
+        link.properties.calls = $("#operation-calls").val();
     };
-    
-    fromjson = function(json) {
+
+    var fromjson = function(json) {
         /*
          * Autogenerate typemap
          */
-        typemap = {};
+        var typemap = {};
         for (var i in Types) {
             typemap[i] =  Types[i];
         }
-        
+
         this.canvas.fromjson(json, typemap);
     };
-    
+
     function populate_controls() {
-        Forms.populate_select($("#code-language"), language_options);
-        Forms.populate_select($("#database-category"), database_options);
-        Forms.populate_select($("#nf-cost"), cost_options);
-        Forms.populate_select($("#nf-location-static-options"), location_static_options);
-        Forms.populate_select($("#nf-location-dynamic-options"), location_dynamic_options);
-        Forms.populate_select($("#nf-qos-operator"), qos_operators);
     }
-    
+
     function initialize_fieldssets() {
-        commonset.setup("set-common");
-        codetechset.setup("set-code-tech");
-        databasetechset.setup("set-database-tech");
-        nonfunctionalset.setup("set-nonfunctional");
-        infrastructureset.setup("set-infrastructure");
-        operationsset.setup("set-operations");
-    
-        qos_table = Object.create(Forms.DynamicTable).setup("nf-qos");
-        link_operations_table = Object.create(Forms.DynamicTable)
-            .setup("link-operations");
+        commonset.commonset("set-common");
+        codetechset.codetechset("set-code-tech");
+        databasetechset.databasetechset("set-database-tech");
+        nonfunctionalset.nonfunctionalset("set-nonfunctional");
+        infrastructureset.infrastructureset("set-infrastructure");
+        operationsset.operationsset("set-operations");
+
     }
-    
+
     function initialize_forms() {
         webappform.setup(
             Types.WebApplication,
@@ -510,8 +683,8 @@ var Editor = (function() {
             document.getElementById("add-form"),
             "REST service",
             [commonset, codetechset, nonfunctionalset, infrastructureset],
-            ["set-common", "set-code-tech", "set-nonfunctional", "set-infrastructure"]);
-        
+            ["set-common", "set-code-tech", "set-nonfunctional", "set-infrastructure"]
+        );
         linkform.setup(
             Graph.Link,
             document.getElementById("update-link-form"),
@@ -527,21 +700,8 @@ var Editor = (function() {
             "Database": databaseform,
             "RestService": restform,
         };
-        /*
-         * Additional behaviour
-         */
-        $('input[type=radio][name=nf-location]').change(function() {
-            nonfunctionalset.showlocation(true);
-        });
-        
-        $('#code-language').change(function() {
-            Forms.populate_select_from_array(
-                $('#code-version'),
-                language_version_options[$('#code-language').val()]
-            );
-        });
     }
-    
+
     return {
         init : init,
         addlinkcallback: addlinkcallback,

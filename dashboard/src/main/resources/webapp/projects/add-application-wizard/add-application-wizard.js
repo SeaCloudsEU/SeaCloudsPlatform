@@ -24,39 +24,41 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
         })
     }])
     .controller('AddApplicationWizardCtrl', function ($scope, notificationService) {
+        $scope.applicationWizardData = {
+            name: "",
+            application_requirements: {
+                response_time: undefined,
+                availability: undefined,
+                cost: undefined,
+                workload: undefined
+            },
+            matchmakerInput: "Please load your file here...",
+            matchmakerResult: "Please click the button to get results",
+            optimizerInput: "Please load your file here...",
+            optimizerResult: "Please click the button to get results",
+            damInput: "Please load your file here...",
+            monitoringModelInput: "Please load your file here...",
+            monitoringRulesInput: "Please load your file here...",
+            slaInput: "Please load your file here...",
+            wizardLog: "",
+            matchmakerInputFile: undefined,
+            optimizerInputFile: undefined,
+            damInputFile: undefined,
+            monitoringModelInputFile: undefined,
+            monitoringRulesInputFile: undefined,
+            slaInputFile: undefined,
+            topology: {
+                "nodes": [],
+                "links": []
+            }
+        }
 
-        // Wizard data
-        $scope.applicationName ="";
-        $scope.matchmakerInput = "Please load your file here...";
-        $scope.matchmakerResult = "Please click the button to get results";
-        $scope.optimizerInput = "Please load your file here...";
-        $scope.optimizerResult = "Please click the button to get results";
-        $scope.damInput = "Please load your file here...";
-        $scope.monitoringModelInput = "Please load your file here...";
-        $scope.monitoringRulesInput = "Please load your file here...";
-        $scope.slaInput = "Please load your file here...";
-        $scope.wizardLog = "";
-
-
-        // File uploader
-        $scope.matchmakerInputFile = undefined;
-        $scope.optimizerInputFile = undefined;
-        $scope.damInputFile = undefined;
-        $scope.monitoringModelInputFile = undefined;
-        $scope.monitoringRulesInputFile = undefined;
-        $scope.slaInputFile = undefined;
-
-        //TODO: Link topology with the editor
-        $scope.topology = {
-            "nodes": [],
-            "links": []
-        };
 
         $scope.processAAM = function () {
-            if (isValidYAML($scope.matchmakerInput)) {
-                $scope.SeaCloudsApi.matchmake($scope.matchmakerInput).
+            if (isValidYAML($scope.applicationWizardData.matchmakerInput)) {
+                $scope.SeaCloudsApi.matchmake($scope.applicationWizardData.matchmakerInput).
                     success(function (adp) {
-                        $scope.matchmakerResult = JSON.stringify(adp);
+                        $scope.applicationWizardData.matchmakerResult = JSON.stringify(adp);
                         notificationService.success('The matchmaking process finished succesfully');
                     })
                     .error(function () {
@@ -69,10 +71,10 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
         }
 
         $scope.processADP = function () {
-            if (isValidYAML($scope.optimizerInput)) {
-                $scope.SeaCloudsApi.optimize($scope.optimizerInput)
+            if (isValidYAML($scope.applicationWizardData.optimizerInput)) {
+                $scope.SeaCloudsApi.optimize($scope.applicationWizardData.optimizerInput)
                     .success(function (dam) {
-                        $scope.optimizerResult = JSON.stringify(dam);
+                        $scope.applicationWizardData.optimizerResult = JSON.stringify(dam);
                         notificationService.success('The optimization process finished succesfully');
                     })
                     .error(function () {
@@ -88,53 +90,51 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
         $scope.deployApplication = function () {
 
             var damSuccessCb = function () {
-                $scope.wizardLog += "Starting the deployment process...";
-                $scope.wizardLog += "\t Done. \n";
+                $scope.applicationWizardData.wizardLog += "Starting the deployment process...";
+                $scope.applicationWizardData.wizardLog += "\t Done. \n";
             }
 
             var damFailCb = function () {
-                $scope.wizardLog += "Starting the deployment process...";
-                $scope.wizardLog += "\t ERROR. \n";
+                $scope.applicationWizardData.wizardLog += "Starting the deployment process...";
+                $scope.applicationWizardData.wizardLog += "\t ERROR. \n";
             }
-            
+
 
             var rulesSuccessCb = function () {
-                $scope.wizardLog += "Installing Monitoring Rules...";
-                $scope.wizardLog += "\t Done. \n";
+                $scope.applicationWizardData.wizardLog += "Installing Monitoring Rules...";
+                $scope.applicationWizardData.wizardLog += "\t Done. \n";
             }
 
             var rulesFailCb = function () {
-                $scope.wizardLog += "Installing Monitoring Rules...";
-                $scope.wizardLog += "\t ERROR. \n";
+                $scope.applicationWizardData.wizardLog += "Installing Monitoring Rules...";
+                $scope.applicationWizardData.wizardLog += "\t ERROR. \n";
             }
 
             var agreementSuccessCb = function () {
-                $scope.wizardLog += "Installing Service Level Agreements...";
-                $scope.wizardLog += "\t Done. \n";
+                $scope.applicationWizardData.wizardLog += "Installing Service Level Agreements...";
+                $scope.applicationWizardData.wizardLog += "\t Done. \n";
             }
 
             var agreementFailCb = function () {
-                $scope.wizardLog += "Installing Service Level Agreements...";
-                $scope.wizardLog += "\t ERROR. \n";
+                $scope.applicationWizardData.wizardLog += "Installing Service Level Agreements...";
+                $scope.applicationWizardData.wizardLog += "\t ERROR. \n";
             }
 
 
-            $scope.SeaCloudsApi.addProject($scope.damInput, damSuccessCb, damFailCb, $scope.monitoringModelInput, $scope.monitoringRulesInput, rulesSuccessCb, rulesFailCb,
+            $scope.SeaCloudsApi.addProject($scope.damInput, damSuccessCb, damFailCb, $scope.applicationWizardData.monitoringModelInput, $scope.applicationWizardData.monitoringRulesInput, rulesSuccessCb, rulesFailCb,
                 $scope.slaInput, agreementSuccessCb, agreementFailCb).
                 success(function (data) {
-                    $scope.wizardLog += "\n\n";
-                    $scope.wizardLog += "The application deployment process was triggered succesfully*. \n";
-                    $scope.wizardLog += "* Please notice that although the wizard finished the application runtime" +
-                    "failures could happen please go to the status view in order to verify " +
-                    "that everything is running properly"
-                    $scope.$apply()
+                    $scope.applicationWizardData.wizardLog += "\n\n";
+                    $scope.applicationWizardData.wizardLog += "The application deployment process was triggered succesfully*. \n";
+                    $scope.applicationWizardData.wizardLog += "* Please notice that although the wizard finished the application runtime" +
+                        "failures could happen please go to the status view in order to verify " +
+                        "that everything is running properly"
                 }).
                 error(function (data) {
-                    $scope.wizardLog += "\n\n";
-                    $scope.wizardLog += "Something wrong happened!\n";
-                    $scope.wizardLog += "Please restart the process and try again\n";
-                    $scope.wizardLog += "All the changes were reverted.\n";
-                    $scope.$apply()
+                    $scope.applicationWizardData.wizardLog += "\n\n";
+                    $scope.applicationWizardData.wizardLog += "Something wrong happened!\n";
+                    $scope.applicationWizardData.wizardLog += "Please restart the process and try again\n";
+                    $scope.applicationWizardData.wizardLog += "All the changes were reverted.\n";
                 })
 
 
@@ -160,19 +160,32 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
         $scope.nextStep = function () {
             switch ($scope.currentStep) {
                 case 1:
+                    $scope.currentStep++;
+                    break;
                 case 2:
+                    $scope.applicationWizardData.topology.name = $scope.applicationWizardData.name;
+                    $scope.applicationWizardData.topology.application_requirements = $scope.applicationWizardData.application_requirements;
+                    $scope.SeaCloudsApi.getAamFromDesigner($scope.applicationWizardData.topology).
+                        success(function (aam) {
+                            $scope.applicationWizardData.matchmakerInput = aam;
+                            $scope.currentStep++;
+                        }).
+                        error(function () {
+                            notificationService.error('The AMM Writer failed while processing the topology');
+                        })
+                    break;
                 case 3:
+                    $scope.currentStep++;
                     break;
                 case 4:
-                    $scope.deployApplication();
+                    $scope.deployApplication()
+                    $scope.currentStep++;
+                    break;
                 case 5:
                 default:
                     break;
             }
 
-            if ($scope.currentStep != $scope.getStepCount()) {
-                $scope.currentStep++;
-            }
 
         };
 
@@ -191,14 +204,16 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
         $scope.wizardCanContinue = function () {
             switch ($scope.currentStep) {
                 case 1:
-                    return true;
+                    return $scope.applicationWizardData.name && $scope.applicationWizardData.application_requirements.availability &&
+                        $scope.applicationWizardData.application_requirements.cost && $scope.applicationWizardData.application_requirements.response_time &&
+                        $scope.applicationWizardData.application_requirements.workload;
                 case 2:
                     return true;
                 case 3:
-                    return isValidJSON($scope.matchmakerResult) && isValidJSON($scope.optimizerResult)
+                    return isValidJSON($scope.applicationWizardData.matchmakerResult) && isValidJSON($scope.applicationWizardData.optimizerResult)
                 case 4:
-                    return isValidYAML($scope.damInput)
-                        && isValidXML($scope.monitoringRulesInput) && isValidXML($scope.slaInput)
+                    return isValidYAML($scope.applicationWizardData.damInput)
+                        && isValidXML($scope.applicationWizardData.monitoringRulesInput) && isValidXML($scope.applicationWizardData.slaInput)
                 case 5:
                     return true;
             }
@@ -216,14 +231,16 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
     .directive('wizardStep1', function () {
         return {
             restrict: 'E',
-            templateUrl: 'projects/add-application-wizard/wizard-step-1.html'
+            templateUrl: 'projects/add-application-wizard/wizard-step-1.html',
+            scope: true
             //controller: 'AddApplicationWizardCtrl'
         };
     })
     .directive('wizardStep2', function () {
         return {
             restrict: 'E',
-            templateUrl: 'projects/add-application-wizard/wizard-step-2.html'
+            templateUrl: 'projects/add-application-wizard/wizard-step-2.html',
+            scope: true,
             //controller: 'AddApplicationWizardCtrl'
         };
     })
@@ -231,6 +248,7 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
         return {
             restrict: 'E',
             templateUrl: 'projects/add-application-wizard/wizard-step-3.html',
+            scope: true,
             link: function (scope, elem, attrs) {
                 scope.editorOptionsInput = {
                     mode: 'application/json',
@@ -247,9 +265,9 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
                     if (scope.matchmakerInputFile) {
                         var r = new FileReader();
                         r.onload = function (e) {
-                            scope.$parent.matchmakerInput = e.target.result;
+                            scope.applicationWizardData.matchmakerInput = e.target.result;
                         }
-                        r.readAsText(scope.matchmakerInputFile[0]);
+                        r.readAsText(scope.applicationWizardData.matchmakerInputFile[0]);
                     }
                 });
 
@@ -257,9 +275,9 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
                     if (scope.optimizerInputFile) {
                         var r = new FileReader();
                         r.onload = function (e) {
-                            scope.$parent.optimizerInput = e.target.result;
+                            scope.applicationWizardData.optimizerInput = e.target.result;
                         }
-                        r.readAsText(scope.optimizerInputFile[0]);
+                        r.readAsText(scope.applicationWizardData.optimizerInputFile[0]);
                     }
                 });
 
@@ -271,6 +289,7 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
         return {
             restrict: 'E',
             templateUrl: 'projects/add-application-wizard/wizard-step-4.html',
+            scope: true,
             link: function (scope, elem, attrs) {
                 scope.editorOptionsDam = {
                     mode: 'yaml',
@@ -296,9 +315,9 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
                     if (scope.damInputFile) {
                         var r = new FileReader();
                         r.onload = function (e) {
-                            scope.$parent.damInput = e.target.result;
+                            scope.applicationWizardData.damInput = e.target.result;
                         }
-                        r.readAsText(scope.damInputFile[0]);
+                        r.readAsText(scope.applicationWizardData.damInputFile[0]);
                     }
                 });
 
@@ -306,9 +325,9 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
                     if (scope.monitoringModelInputFile) {
                         var r = new FileReader();
                         r.onload = function (e) {
-                            scope.$parent.monitoringModelInput = e.target.result;
+                            scope.applicationWizardData.monitoringModelInput = e.target.result;
                         }
-                        r.readAsText(scope.monitoringModelInputFile[0]);
+                        r.readAsText(scope.applicationWizardData.monitoringModelInputFile[0]);
                     }
                 });
 
@@ -316,9 +335,9 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
                     if (scope.monitoringRulesInputFile) {
                         var r = new FileReader();
                         r.onload = function (e) {
-                            scope.$parent.monitoringRulesInput = e.target.result;
+                            scope.applicationWizardData.monitoringRulesInput = e.target.result;
                         }
-                        r.readAsText(scope.monitoringRulesInputFile[0]);
+                        r.readAsText(scope.applicationWizardData.monitoringRulesInputFile[0]);
                     }
                 });
 
@@ -326,9 +345,9 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
                     if (scope.slaInputFile) {
                         var r = new FileReader();
                         r.onload = function (e) {
-                            scope.$parent.slaInput = e.target.result;
+                            scope.applicationWizardData.slaInput = e.target.result;
                         }
-                        r.readAsText(scope.slaInputFile[0]);
+                        r.readAsText(scope.applicationWizardData.slaInputFile[0]);
                     }
                 });
 

@@ -75,7 +75,7 @@
     ],
     "application_requirements": {
         "response_time": "2000",
-        "availability": "0.98",
+        "availability": 0.98,
         "cost": "200",
         "workload": "50"
     }

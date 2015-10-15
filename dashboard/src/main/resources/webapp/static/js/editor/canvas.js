@@ -21,7 +21,7 @@
  *       },
  *       changehandler : function(newmodel) {
  *           console.log("model has changed");
- *       } 
+ *       }
  *   });
  * 
  * To update the canvas when nodes are added/modified/removed: Canvas.restart()
@@ -67,7 +67,7 @@ Graph.Link.popovercontent = function(i) {
 };
 
 Graph.Node.decorate = function(dom_element, i) {
-    d3_element = d3.select(dom_element);
+    var d3_element = d3.select(dom_element);
     d3_element.append("svg:text")
         .attr("x", 0)
         .attr("y", 9)
