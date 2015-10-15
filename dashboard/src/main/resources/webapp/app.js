@@ -377,6 +377,28 @@ seacloudsDashboard.factory('SeaCloudsApi', function ($http) {
             }
 
             return promise;
+        },
+        getAamFromDesigner: function (designerTopology) {
+            var promise = new Promise(function (resolve, reject) {
+                $http.post("/api/aamwriter/translate", designerTopology).
+                    success(function (value) {
+                        resolve(value);
+                    }).
+                    error(function (err) {
+                        reject(Error(err));
+                    })
+            });
+            promise.success = function (fn) {
+                promise.then(fn);
+                return promise;
+            }
+
+            promise.error = function (fn) {
+                promise.then(null, fn);
+                return promise;
+            }
+
+            return promise;
         }
 
     };

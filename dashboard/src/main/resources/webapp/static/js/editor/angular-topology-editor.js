@@ -19,72 +19,67 @@
 
     angular.module('angularTopologyEditor', [])
 
-        .directive('topologyEditor', function ($window) {
+        .directive('topologyEditor', function ($window, $timeout) {
             return {
                 restrict: 'E',
-                scope: {topology: '='},
+                scope: {topology: '=bind'},
+                templateUrl: 'static/js/editor/angular-topology-editor.html',
+                controller: function ($scope) {
+                    var randLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+
+                    $scope.randomId = randLetter + Date.now();
+
+                },
                 link: function (scope, elem, attrs) {
-
-                    var drawCanvas = function(){
-                        var randLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
-                        var uniqid = randLetter + Date.now();
-                        elem.html('<div id="' + uniqid + '" class="topology-editor"></div>');
-
+                    scope.drawCanvas = function () {
                         var canvasOptions = {
                             addlinkcallback: Editor.addlinkcallback,
-                            changehandler: function(model) {
-                                console.log("New model is " + model);
+                            changehandler: function (model) {
+                                scope.topology = model;
                             }
                         };
 
-                        canvasOptions.height = (!attrs.height)? 450 : attrs.height;
-                        canvasOptions.width = (!attrs.width)? $window.innerWidth : attrs.width;
+                        canvasOptions.height = (!attrs.height) ? 450 : attrs.height;
+                        canvasOptions.width = (!attrs.width) ? $window.innerWidth : attrs.width;
 
                         var canvas = Canvas();
-                        canvas.init(uniqid, canvasOptions);
+                        canvas.init(scope.randomId, canvasOptions);
 
                         Editor.init(canvas);
                         Editor.fromjson(scope.topology);
                         canvas.restart();
                     };
 
-                    // Resize watcher
-                    angular.element($window).bind('resize', function () {
-                        scope.windowHeight = $window.innerHeight;
-                        scope.windowWidth = $window.innerWidth;
-                        //TODO: Fix resize
 
-                        scope.$apply();
+                    $timeout(function() {
+                        scope.drawCanvas();
                     });
 
-                    // Visibility watcher
-                    scope.visible = (typeof scope.visible == 'undefined')? true : scope.visible;
-
-                    drawCanvas();
                 }
             };
         })
         .directive('topologyStatus', function ($window) {
             return {
                 restrict: 'E',
-                scope: {topology: '='},
+                scope: {topology: '=bind'},
+                replace: true,
                 link: function (scope, elem, attrs) {
 
-                    var drawCanvas = function(){
+                    var drawCanvas = function () {
                         var randLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
                         var uniqid = randLetter + Date.now();
                         elem.html('<div id="' + uniqid + '" class="topology-config"></div>');
 
                         var canvasOptions = {
                             addlinkcallback: Editor.addlinkcallback,
-                            changehandler: function(model) {
-                                console.log("New model is " + model);
+                            changehandler: function (model) {
+                                scope.topology = model;
                             }
                         };
 
-                        canvasOptions.height = (!attrs.height)? 450 : attrs.height;
-                        canvasOptions.width = (!attrs.width)? $window.innerWidth : attrs.width;
-                        
+                        canvasOptions.height = (!attrs.height) ? 450 : attrs.height;
+                        canvasOptions.width = (!attrs.width) ? $window.innerWidth : attrs.width;
+
 
                         var canvas = Canvas();
                         canvas.init(uniqid, canvasOptions);
@@ -93,18 +88,6 @@
                         Status.fromjson(scope.topology);
                         canvas.restart();
                     };
-
-                    // Resize watcher
-                    angular.element($window).bind('resize', function () {
-                        scope.windowHeight = $window.innerHeight;
-                        scope.windowWidth = $window.innerWidth;
-                        //TODO: Fix resize
-
-                        scope.$apply();
-                    });
-
-                    // Visibility watcher
-                    scope.visible = (typeof scope.visible == 'undefined')? true : scope.visible;
 
                     drawCanvas();
                 }

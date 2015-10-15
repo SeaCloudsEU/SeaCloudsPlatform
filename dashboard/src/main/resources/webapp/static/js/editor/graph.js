@@ -32,23 +32,27 @@ var Graph = (function () {
     var Link = {
         source: undefined,
         target: undefined,
+        type: undefined,
         properties: undefined,
-        setup: function(source, target) {
+        setup: function(source, target, type) {
             this.source = source;
             this.target = target;
+            this.type = type;
             this.properties = {};
             return this;
         },
         toString: function() {
-            return format("Link(source='{}',label='{}')",
+            return format("Link(source='{}',label='{}',type='{}')",
                 this.source.label,
-                this.target.label
+                this.target.label,
+                this.type
             );
         },
         toJson: function(args) {
             return {
                 source: this.source.name,
                 target: this.target.name,
+                type: this.type,
                 properties: this.properties,
             };
         }
