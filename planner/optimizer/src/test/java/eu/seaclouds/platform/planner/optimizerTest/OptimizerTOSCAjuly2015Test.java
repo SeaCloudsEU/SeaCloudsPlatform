@@ -17,6 +17,9 @@
 
 package eu.seaclouds.platform.planner.optimizerTest;
 
+
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -50,10 +53,16 @@ public class OptimizerTOSCAjuly2015Test {
 
    private static final int NUM_PLANS_TO_GENERATE = 5;
 
-   private static Logger log = LoggerFactory.getLogger(OptimizerTOSCAjuly2015Test.class);
+   static Logger log;
+
+
 
    @BeforeClass
    public void createObjects() {
+
+      System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, TOSCAkeywords.LOG_LEVEL);
+      log = LoggerFactory.getLogger(OptimizerTOSCAjuly2015Test.class);
+
 
       log.info("Starting TEST optimizer for the TOSCA syntax of July 2015");
 
