@@ -26,6 +26,7 @@
         <module>deployer</module>
         <module>planner</module>
 		<module>discoverer</module>
+	<module>monitor</module>
         <module>dashboard</module>
         <module>sla</module>
     </modules>
