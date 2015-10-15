@@ -63,6 +63,10 @@ brooklyn.catalog:
         sla.port: 1234
         monitor.manager.host: 127.0.0.1
         monitor.manager.port: 8170
+        monitor.graphite.host: 127.0.0.1
+        monitor.graphite.port: 80
+        monitor.grafana.host: 127.0.0.1
+        monitor.grafana.host: 3000
         planner.host: 127.0.0.1
         planner.port: 1234
 
@@ -78,10 +82,10 @@ brooklyn.catalog:
         MONITOR_PORT: $brooklyn:config("monitor.manager.port")
         PLANNER_HOST: $brooklyn:config("planner.host")
         PLANNER_PORT: $brooklyn:config("planner.port")
-        GRAPHITE_HOST: undefined
-        GRAPHITE_PORT: 1
-        GRAFANA_HOST: undefined
-        GRAFANA_PORT: 1
+        GRAPHITE_HOST: $brooklyn:config("monitor.graphite.host")
+        GRAPHITE_PORT: $brooklyn:config("monitor.graphite.port")
+        GRAFANA_HOST: $brooklyn:config("monitor.grafana.host")
+        GRAFANA_PORT: $brooklyn:config("monitor.grafana.host")
       provisioning.properties:
         osFamily: ubuntu
 
@@ -240,14 +244,14 @@ brooklyn.catalog:
         brooklyn.children:
           - type: seaclouds-dashboard
             brooklyn.config:
-              deployerHost: $brooklyn:component("deployer").attributeWhenReady("host.address")
-              deployerPort: $brooklyn:component("deployer").attributeWhenReady("brooklynnode.webconsole.httpPort")
-              slaHost: $brooklyn:component("sla-core").attributeWhenReady("host.address")
-              slaPort: $brooklyn:component("sla-core").attributeWhenReady("http.port")
-              monitorHost: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
-              monitorPort: $brooklyn:component("monitor-manager").config("monitor.manager.port")
-              plannerHost: $brooklyn:component("planner").attributeWhenReady("host.address")
-              plannerPort: $brooklyn:component("planner").config("planner.config.port")
+              deployer.host: $brooklyn:component("deployer").attributeWhenReady("host.address")
+              deployer.port: $brooklyn:component("deployer").attributeWhenReady("brooklynnode.webconsole.httpPort")
+              sla.host: $brooklyn:component("sla-core").attributeWhenReady("host.address")
+              sla.port: $brooklyn:component("sla-core").attributeWhenReady("http.port")
+              monitor.manager.host: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
+              monitor.manager.port: $brooklyn:component("monitor-manager").config("monitor.manager.port")
+              planner.host: $brooklyn:component("planner").attributeWhenReady("host.address")
+              planner.port: $brooklyn:component("planner").config("planner.config.port")
             install.latch: $brooklyn:component("planner").attributeWhenReady("service.isUp")
           - type: seaclouds-planner
             install.latch: $brooklyn:component("sla-core").attributeWhenReady("service.isUp")
@@ -292,14 +296,14 @@ brooklyn.catalog:
           monitor.dda.port: $brooklyn:component("monitor-dda").config("monitor.dda.port")
       - type: seaclouds-dashboard
         brooklyn.config:
-          deployerHost: $brooklyn:component("deployer").attributeWhenReady("host.address")
-          deployerPort: $brooklyn:component("deployer").attributeWhenReady("brooklynnode.webconsole.httpPort")
-          slaHost: $brooklyn:component("sla-core").attributeWhenReady("host.address")
-          slaPort: $brooklyn:component("sla-core").attributeWhenReady("http.port")
-          monitorHost: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
-          monitorPort: $brooklyn:component("monitor-manager").config("monitor.manager.port")
-          plannerHost: $brooklyn:component("planner").attributeWhenReady("host.address")
-          plannerPort: $brooklyn:component("planner").config("planner.config.port")
+          deployer.host: $brooklyn:component("deployer").attributeWhenReady("host.address")
+          deployer.port: $brooklyn:component("deployer").attributeWhenReady("brooklynnode.webconsole.httpPort")
+          sla.host: $brooklyn:component("sla-core").attributeWhenReady("host.address")
+          sla.port: $brooklyn:component("sla-core").attributeWhenReady("http.port")
+          monitor.manager.host: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
+          monitor.manager.port: $brooklyn:component("monitor-manager").config("monitor.manager.port")
+          planner.host: $brooklyn:component("planner").attributeWhenReady("host.address")
+          planner.port: $brooklyn:component("planner").config("planner.config.port")
         launch.latch: $brooklyn:component("planner").attributeWhenReady("service.isUp")
       - type: seaclouds-planner
       - type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
