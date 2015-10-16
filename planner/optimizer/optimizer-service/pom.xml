@@ -27,18 +27,9 @@ limitations under the License.
 	</parent>
 	<artifactId>optimizer-service</artifactId>
 	<name>optimizer-service</name>
-	<url>http://maven.apache.org</url>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>maven2-repository.dev.java.net</id>
-			<name>Java.net Repository for Maven</name>
-			<url>http://download.java.net/maven/glassfish/</url>
-		</pluginRepository>
-	</pluginRepositories>
-	<build>
+    <packaging>war</packaging>
+
+    <build>
 		<plugins>
 
 			<plugin>
@@ -117,7 +108,6 @@ limitations under the License.
 			<groupId>eu.seaclouds-project</groupId>
 			<artifactId>optimizer-core</artifactId>
 			<version>0.8.0-SNAPSHOT</version>
-			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
@@ -152,12 +142,7 @@ limitations under the License.
 			<artifactId>jersey-container-servlet</artifactId>
 			<version>2.22.1</version>
 		</dependency>
-
-
-
-
 	</dependencies>
 
-	<packaging>war</packaging>
 </project>
 
