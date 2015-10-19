@@ -2,6 +2,8 @@ package eu.seaclouds.monitor.nuroDc;
 
 public final class DCProperties {
 
+    public static final String MANAGER_IP = "MANAGER_IP";
+    public static final String MANAGER_PORT = "MANAGER_PORT";
     public static final String NURO_INSTANCE_IP = "NURO_INSTANCE_IP";
     public static final String NURO_INSTANCE_PORT = "NURO_INSTANCE_PORT";
     public static final String NURO_INSTANCE_USERNAME = "NURO_INSTANCE_USERNAME";

@@ -10,31 +10,21 @@ import org.slf4j.LoggerFactory;
 public class MainDc {
     private static final Logger logger = LoggerFactory.getLogger(MainDc.class);
 
-    public String managerIp = null;
-
-    public String managerPort = null;
-
     public String configFilePath = null;
 
-    private static final String DEFAULT_MANAGER_IP = "localhost";
-    private static final String DEFAULT_MANAGER_PORT = "8170";
-    private static final String DEFAULT_CONFIG_FILE_PATH = "config.properties";
-
-    private static final String ENV_VAR_MANAGER_IP = "MANAGER_IP";
-    private static final String ENV_VAR_MANAGER_PORT = "MANAGER_PORT";
-    private static final String ENV_VAR_URL_CONFIG_FILE = "DEPLOYERDC_CONFIG_FILE";
+    private static final String CONFIG_FILE_PATH = "resources/config.properties";
 
     public static void main(String[] args) throws Exception {
 
         MainDc mainInstance = new MainDc();
 
+        if (args.length > 0) {
+            mainInstance.configFilePath = args[0];
+        } else {
+            mainInstance.configFilePath = CONFIG_FILE_PATH;
+        }
+
         Properties deployerDCProp = new Properties();
-
-        // load default values
-        mainInstance.loadDefaultValues();
-
-        // try to load from environment variables
-        mainInstance.loadFromEnrivonmentVariables();
 
         // load properties from the config file
         try {
@@ -49,37 +39,8 @@ public class MainDc {
             throw new RuntimeException("Error while parsing properties file");
         }
 
-        int port;
-
-        // convert manager port
-        try {
-            port = Integer.parseInt(mainInstance.managerPort);
-        } catch (NumberFormatException ex) {
-            logger.error("Error while converting manager port - must be an integer");
-            throw new RuntimeException("Error while parsing properties file");
-        }
-
-        Registry.initialize(mainInstance.managerIp, port, deployerDCProp);
+        Registry.initialize(deployerDCProp);
         Registry.startMonitoring();
-    }
-
-    private void loadDefaultValues() {
-        managerIp = DEFAULT_MANAGER_IP;
-        managerPort = DEFAULT_MANAGER_PORT;
-        configFilePath = DEFAULT_CONFIG_FILE_PATH;
-    }
-
-    private void loadFromEnrivonmentVariables() {
-
-        if (System.getenv(ENV_VAR_MANAGER_IP) != null)
-            managerIp = System.getenv(ENV_VAR_MANAGER_IP);
-
-        if (System.getenv(ENV_VAR_MANAGER_PORT) != null)
-            managerPort = System.getenv(ENV_VAR_MANAGER_PORT);
-
-        if (System.getenv(ENV_VAR_URL_CONFIG_FILE) != null)
-            configFilePath = System.getenv(ENV_VAR_URL_CONFIG_FILE);
-
     }
 
 }

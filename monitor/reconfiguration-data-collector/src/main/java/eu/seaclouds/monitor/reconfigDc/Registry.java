@@ -2,16 +2,19 @@ package eu.seaclouds.monitor.reconfigDc;
 
 import it.polimi.tower4clouds.data_collector_library.DCAgent;
 import it.polimi.tower4clouds.manager.api.ManagerAPI;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
 import org.apache.brooklyn.rest.client.BrooklynApi;
 import org.apache.brooklyn.rest.domain.ApplicationSummary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import eu.seaclouds.monitor.reconfigDc.metrics.IsAppOnFire;
 import it.polimi.tower4clouds.model.data_collectors.DCDescriptor;
 import it.polimi.tower4clouds.model.ontology.InternalComponent;
@@ -42,7 +45,7 @@ public class Registry {
     protected Registry() {
     }
 
-    public void init(String managerIP, int managerPort, Properties dcProperties) {
+    public void init(Properties dcProperties) {
 
         if (registryInitialized)
             throw new RuntimeException("Registry was already initialized");
@@ -65,7 +68,10 @@ public class Registry {
         applicationMetrics = buildDeployerMetrics();
 
         // Build the DCAgent
-        dcAgent = new DCAgent(new ManagerAPI(managerIP, managerPort));
+        dcAgent = new DCAgent(new ManagerAPI(this.dcProperties.get(
+                DCProperties.MANAGER_IP).toString(),
+                Integer.parseInt(this.dcProperties.get(
+                        DCProperties.MANAGER_PORT).toString())));
 
         // Add observers of metrics to the DCAgent
         for (Metric metric : applicationMetrics) {
@@ -197,9 +203,8 @@ public class Registry {
         return new HashSet<Resource>(resourceById.values());
     }
 
-    public static void initialize(String managerIP, int managerPort,
-            Properties dcProperties) {
-        _INSTANCE.init(managerIP, managerPort, dcProperties);
+    public static void initialize(Properties dcProperties) {
+        _INSTANCE.init(dcProperties);
     }
 
     public static void startMonitoring() {

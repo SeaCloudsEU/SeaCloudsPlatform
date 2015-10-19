@@ -2,11 +2,14 @@ package eu.seaclouds.monitor.nuroDc;
 
 import it.polimi.tower4clouds.data_collector_library.DCAgent;
 import it.polimi.tower4clouds.manager.api.ManagerAPI;
+
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import eu.seaclouds.monitor.nuroDc.metrics.NUROServerLastMinuteAverageRunTime;
 import eu.seaclouds.monitor.nuroDc.metrics.NUROServerLastMinuteAverageThroughput;
 import eu.seaclouds.monitor.nuroDc.metrics.NUROServerLastMinutePlayerCount;
@@ -42,7 +45,7 @@ public class Registry {
     protected Registry() {
     }
 
-    public void init(String managerIP, int managerPort, Properties dcProperties) {
+    public void init(Properties dcProperties) {
 
         if (registryInitialized)
             throw new RuntimeException("Registry was already initialized");
@@ -63,7 +66,10 @@ public class Registry {
         nuroMetrics = buildNuroMetrics();
 
         // Build the DCAgent
-        dcAgent = new DCAgent(new ManagerAPI(managerIP, managerPort));
+        dcAgent = new DCAgent(new ManagerAPI(this.dcProperties.get(
+                DCProperties.MANAGER_IP).toString(),
+                Integer.parseInt(this.dcProperties.get(
+                        DCProperties.MANAGER_PORT).toString())));
 
         // Add observers of metrics to the DCAgent
         for (Metric metric : nuroMetrics) {
@@ -182,9 +188,8 @@ public class Registry {
         return toReturn;
     }
 
-    public static void initialize(String managerIP, int managerPort,
-            Properties dcProperties) {
-        _INSTANCE.init(managerIP, managerPort, dcProperties);
+    public static void initialize(Properties dcProperties) {
+        _INSTANCE.init(dcProperties);
     }
 
     public static void startMonitoring() {
