@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 VAGRANTFILE_API_VERSION = "2" # Vagrantfile version
-NODE_COUNT = 2 # Number of SeaClouds nodes to start
+NODE_COUNT = 1 # Number of SeaClouds nodes to start
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Setup VirtualBox VMs
