@@ -45,13 +45,16 @@ var Forms = (function() {
     var Form = {
         /*
          * nodeprototype: prototype of the node that this form creates
+         * behaviour: object with behaviour to delegate Graph.Node and
+         *   Graph.Link functions (popovercontent, popovertitle...)
          * div: DOM modal div containing form
          * title: string to show as header of form
          * fieldsets: array of Fieldset objects that comprise the form
          */
-        setup: function(nodeprototype, div, title, fieldsets) {
+        setup: function(nodeprototype, behaviour, div, title, fieldsets) {
             var self = this;
             this.nodeprototype = nodeprototype;
+            this.behaviour = behaviour;
             this.div = div;
             this.title = title;
             this.fieldsets = fieldsets;
@@ -110,7 +113,8 @@ var Forms = (function() {
             var n = isnewnode?
                 Object.create(this.nodeprototype).init({
                     name: name,
-                    label: label}):
+                    label: label,
+                    behaviour: this.behaviour}):
                 this.node;
             this.ok_impl(n, isnewnode);
         }
@@ -317,7 +321,7 @@ var Forms = (function() {
     };
 
     var populate_select = function($select, options) {
-        var id = $select[0]? $select[0].id : undefined; 
+        var id = $select[0]? $select[0].id : undefined;
         log.debug("populate_select(" + id + ")")
         if ($select.length == 0) {
             log.warn("populate_select " + id + ": empty set");
