@@ -208,7 +208,6 @@ var Editor = (function() {
     function init(canvas) {
         this.canvas = canvas;
 
-        populate_controls();
         initialize_fieldssets();
         initialize_forms();
 
