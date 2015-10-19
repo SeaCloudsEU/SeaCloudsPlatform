@@ -1,13 +1,22 @@
-<div class="btn-group pull-right">
-  <div id="add-buttons-">
-    <button class="btn btn-default" type="button" data-type="Database">Database</button>
-    <button class="btn btn-default" type="button" data-type="RestService">Rest</button>
-    <button class="btn btn-default" type="button" data-type="WebApplication">Web application</button>
+<div class="row">
+  <div class="col-lg-10">
+    <div id={{randomId}} class="topology-editor" ng-cloack></div>
   </div>
+
+  <div class="col-lg-2">
+    <strong>Available Modules</strong>
+    <hr>
+    <div  id="add-buttons-">
+      <button type="button" class="btn btn-link btn-lg btn-block" data-type="Database">Database</button>
+      <button type="button" class="btn btn-link btn-lg btn-block" data-type="WebApplication">Web application</button>
+    </div>
+
+
+  </div>
+
 
 </div>
 
-<div id={{randomId}} class="topology-editor" ng-cloack></div>
 
 <div class="modal fade" id="add-form">
   <div class="modal-dialog">
