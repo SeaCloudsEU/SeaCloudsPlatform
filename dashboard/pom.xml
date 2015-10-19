@@ -33,12 +33,6 @@
     <dependencies>
         <dependency>
             <groupId>eu.seaclouds-project</groupId>
-            <artifactId>optimizer</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>eu.seaclouds-project</groupId>
             <artifactId>aamwriter</artifactId>
             <version>${project.version}</version>
         </dependency>
