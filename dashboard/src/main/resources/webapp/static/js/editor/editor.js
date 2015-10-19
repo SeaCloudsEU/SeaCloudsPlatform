@@ -116,54 +116,61 @@ var Editor = (function() {
      * Override some Link and Node methods regarding Canvas.
      */
 
-    Graph.Link.popovertitle = function(i) {
-        return " " +
-            '<button type="button" class="popover-edit" data-action="edit" data-linkindex="' + i + '">' +
-            '<span aria-hidden="true" class="fa fa-edit"></span></button>' +
-            '<button type="button" class="popover-edit" data-action="delete" data-linkindex="' + i + '">' +
-            '<span aria-hidden="true" class="fa fa-remove"></span></button>';
-    };
+    var LinkBehaviour = {
 
-    Graph.Link.popovercontent = function(i) {
+        popovertitle: function(i) {
+            return " " +
+                '<button type="button" class="popover-edit" data-action="edit" data-linkindex="' + i + '">' +
+                '<span aria-hidden="true" class="fa fa-edit"></span></button>' +
+                '<button type="button" class="popover-edit" data-action="delete" data-linkindex="' + i + '">' +
+                '<span aria-hidden="true" class="fa fa-remove"></span></button>';
+        },
 
-        var content = "";
-        content += item("operations", this.properties.operations);
-        return "<dl>" + content + "</dl>";
-    };
+        popovercontent: function(i) {
 
-    Graph.Node.popovertitle = function(i) {
-        return this.name + "&nbsp;&nbsp;&nbsp;" +
-            '<button type="button" class="popover-edit" data-action="edit" data-nodeindex="' + i + '">' +
-            '<span aria-hidden="true" class="fa fa-edit"></span></button>' +
-            '<button type="button" class="popover-edit" data-action="delete" data-nodeindex="' + i + '">' +
-            '<span aria-hidden="true" class="fa fa-remove"></span></button>';
-    };
-
-    Graph.Node.popovercontent = function(i) {
-        var location = this.location;
-        if (location !== undefined && location !== "") {
-            location = location + " - " + this.location_option;
+            var content = "";
+            content += item("operations", this.properties.calls);
+            return "<dl>" + content + "</dl>";
         }
+    };
 
-        var terms = [
-            [ "Type", this.type],
-            [ "Name", this.name],
-            [ "Category", this.category],
-            [ "Language", this.language],
-            [ "Versions", this.versions],
-            [ "Artifact", this.artifact],
-            [ "Cost", this.cost],
-            [ "Location", location],
-            [ "QoS", this.qos],
-            [ "Infrastructure", this.infrastructure]
-        ];
+    var NodeBehaviour = {
 
-        var content = "";
-        for (var i = 0; i < terms.length; i++) {
-            var term = terms[i];
-            content += item(term[0], term[1]);
+        popovertitle : function (i) {
+             return this.name + "&nbsp;&nbsp;&nbsp;" +
+                 '<button type="button" class="popover-edit" data-action="edit" data-nodeindex="' + i + '">' +
+                 '<span aria-hidden="true" class="fa fa-edit"></span></button>' +
+                 '<button type="button" class="popover-edit" data-action="delete" data-nodeindex="' + i + '">' +
+                 '<span aria-hidden="true" class="fa fa-remove"></span></button>';
+        },
+
+        popovercontent: function(i) {
+            var location = this.location;
+            if (location !== undefined && location !== "") {
+                location = location + " - " + this.location_option;
+            }
+
+            var terms = [
+                [ "Type", this.type],
+                [ "Name", this.name],
+                [ "Category", this.properties.category],
+                [ "Language", this.properties.language],
+                [ "Min version", this.properties.min_version],
+                [ "Max version", this.properties.max_version],
+                [ "Artifact", this.artifact],
+                [ "Cost", this.cost],
+                [ "Location", location],
+                [ "QoS", this.qos],
+                [ "Infrastructure", this.infrastructure]
+            ];
+
+            var content = "";
+            for (var i = 0; i < terms.length; i++) {
+                var term = terms[i];
+                content += item(term[0], term[1]);
+            }
+            return "<dl>" + content + "</dl>";
         }
-        return "<dl>" + content + "</dl>";
     };
 
     function item(key, value) {
@@ -631,7 +638,7 @@ var Editor = (function() {
     }
 
     operationsset.load = function(link) {
-        $("#operations-calls").val(link.properties.calls);
+        $("#operation-calls").val(link.properties.calls);
     };
 
     operationsset.store = function(link) {
@@ -647,11 +654,16 @@ var Editor = (function() {
             typemap[i] =  Types[i];
         }
 
+        for (var i = 0; i < json.nodes.length; i++) {
+            json.nodes[i].behaviour = NodeBehaviour;
+        }
+
+        for (var i = 0; i < json.links.length; i++) {
+            json.links[i].behaviour = LinkBehaviour;
+        }
+
         this.canvas.fromjson(json, typemap);
     };
-
-    function populate_controls() {
-    }
 
     function initialize_fieldssets() {
         commonset.commonset("set-common");
@@ -666,6 +678,7 @@ var Editor = (function() {
     function initialize_forms() {
         webappform.setup(
             Types.WebApplication,
+            NodeBehaviour,
             document.getElementById("add-form"),
             "Web application",
             [commonset, codetechset, nonfunctionalset, infrastructureset],
@@ -673,6 +686,7 @@ var Editor = (function() {
         );
         databaseform.setup(
             Types.Database,
+            NodeBehaviour,
             document.getElementById("add-form"),
             "Database",
             [commonset, databasetechset, nonfunctionalset, infrastructureset],
@@ -680,6 +694,7 @@ var Editor = (function() {
         );
         restform.setup(
             Types.RestService,
+            NodeBehaviour,
             document.getElementById("add-form"),
             "REST service",
             [commonset, codetechset, nonfunctionalset, infrastructureset],
@@ -687,6 +702,7 @@ var Editor = (function() {
         );
         linkform.setup(
             Graph.Link,
+            LinkBehaviour,
             document.getElementById("update-link-form"),
             "Link",
             [operationsset],
@@ -706,5 +722,7 @@ var Editor = (function() {
         init : init,
         addlinkcallback: addlinkcallback,
         fromjson: fromjson,
+        NodeBehaviour: NodeBehaviour,
+        LinkBehaviour: LinkBehaviour,
     };
 })();
