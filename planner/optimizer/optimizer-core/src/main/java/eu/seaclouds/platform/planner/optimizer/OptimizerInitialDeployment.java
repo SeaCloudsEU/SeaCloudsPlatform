@@ -36,7 +36,7 @@ import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
 public class OptimizerInitialDeployment {
 
-   private static final String NL = System.getProperty("line.separator");
+   private static final String NL = System.lineSeparator();
 
    private SearchMethod engine;
 
