@@ -42,7 +42,6 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 //Version of September 2015
 public class YAMLoptimizerParser {
 
-   private static final boolean IS_DEBUG = false;
 
    static Logger log = LoggerFactory.getLogger(YAMLoptimizerParser.class);
 
@@ -56,7 +55,7 @@ public class YAMLoptimizerParser {
 
       }
 
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug("Found list of suitable services: " + suitableOptions.toString() + " Removing it");
       }
 
@@ -85,7 +84,7 @@ public class YAMLoptimizerParser {
 
       // If module found, go deeper to find for its suitable Options
       if (modulename.equals(entry.getKey())) {
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("Found module " + modulename + " cleaning the potential options");
          }
          return getListOfSuitableOptionsForAlreadyFoundModule(entry.getValue());
@@ -197,7 +196,7 @@ public class YAMLoptimizerParser {
          Map<String, Object> applicationMap) {
 
       Map<String, Object> hostInfo = setUpHostInfoForModule(moduleName, applicationMap);
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug(
                "Adding selected offer " + solutionName + " to module " + moduleName + " and instances " + instances);
       }
@@ -209,7 +208,7 @@ public class YAMLoptimizerParser {
    private static Map<String, Object> setUpHostInfoForModule(String moduleName, Map<String, Object> applicationMap) {
       Map<String, Object> templates = null;
       try {
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("Opening TOSCA for obtaining modules");
          }
          applicationMap = (Map<String, Object>) applicationMap.get(TOSCAkeywords.TOPOLOGY_TEMPLATE);
@@ -290,7 +289,7 @@ public class YAMLoptimizerParser {
 
       Map<String, Object> templates;
       try {
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("Opening TOSCA for obtaining modules");
          }
          appMap = (Map<String, Object>) appMap.get(TOSCAkeywords.TOPOLOGY_TEMPLATE);
@@ -351,7 +350,7 @@ public class YAMLoptimizerParser {
       for (Map.Entry<String, Object> entry : groupsMap.entrySet()) {
          String potentialGroupName = entry.getKey();
 
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("checking if group '" + potentialGroupName + "' is an element which has quality requirements");
          }
          // If it has requirements but nobody requires it..
@@ -395,7 +394,7 @@ public class YAMLoptimizerParser {
       for (Map.Entry<String, Object> entry : groupsMap.entrySet()) {
          String potentialGroupName = entry.getKey();
 
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("checking if group '" + potentialGroupName + "' is an element which receceives user requests");
          }
          // If it has requirements but nobody requires it..
@@ -423,7 +422,7 @@ public class YAMLoptimizerParser {
             (Map<String, Object>) initialElement.getValue(), topology,
             YAMLoptimizerParser.getModuleMapFromAppMap(appMap), YAMLoptimizerParser.getGroupMapFromAppMap(appMap),
             appInfoSuitableOptions);
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug("Reading topology. Next step: replace the module name by the name of the host");
       }
       // TODO: study these two lines and uncomment them if necessary. It may be required in the future (it was in previous
@@ -601,7 +600,7 @@ public class YAMLoptimizerParser {
       for (Map.Entry<String, Object> entry : groupsMap.entrySet()) {
          String potentialGroupName = entry.getKey();
 
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("checking if group '" + potentialGroupName + "' is an element which receceives user requests");
          }
          // If it has requirements but nobody requires it..
@@ -636,7 +635,7 @@ public class YAMLoptimizerParser {
       for (Map.Entry<String, Object> entry : groupsMap.entrySet()) {
          String potentialGroupName = entry.getKey();
 
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("checking if group '" + potentialGroupName + "' is an element which receceives user requests");
          }
          // If it has requirements but nobody requires it..
@@ -659,7 +658,7 @@ public class YAMLoptimizerParser {
       if (modulesMap.containsKey(moduleName)) {
          for (Map.Entry<String, Object> entry : modulesMap.entrySet()) {
             if (entry.getKey().equals(moduleName)) {
-               if (IS_DEBUG) {
+               if (log.isDebugEnabled()) {
                   log.debug("return entry that describes module with name '" + entry.getKey() + "'");
                }
                return entry;
@@ -675,7 +674,7 @@ public class YAMLoptimizerParser {
 
       Map<String, Object> modulesMap;
       try {
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("Opening TOSCA for obtaining modules");
          }
          modulesMap = (Map<String, Object>) appMap.get(TOSCAkeywords.TOPOLOGY_TEMPLATE);
@@ -692,7 +691,7 @@ public class YAMLoptimizerParser {
    private static Map<String, Object> getGroupMapFromAppMap(Map<String, Object> appMap) {
       Map<String, Object> groupsMap;
       try {
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("Opening TOSCA for obtaining groups");
          }
          groupsMap = (Map<String, Object>) appMap.get(TOSCAkeywords.GROUP_ELEMENT_TAG);
@@ -718,7 +717,7 @@ public class YAMLoptimizerParser {
    public static void addNodeTemplate(String key, Map<String, Object> value, Map<String, Object> appMap) {
       Map<String, Object> modulesMap;
       try {
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("Opening TOSCA for obtaining modules");
          }
          modulesMap = (Map<String, Object>) appMap.get(TOSCAkeywords.TOPOLOGY_TEMPLATE);

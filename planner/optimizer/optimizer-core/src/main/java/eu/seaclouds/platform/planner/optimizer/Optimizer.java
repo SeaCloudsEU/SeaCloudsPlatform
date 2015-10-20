@@ -61,12 +61,14 @@ public class Optimizer {
          OptimizerInitialDeployment initialOptimizer = new OptimizerInitialDeployment(searchName);
 
          try {
-            outputPlans = initialOptimizer.optimize(appModel, suitableCloudOffer, NUMBER_OF_PLANS_GENERATED);
-            previousPlans = outputPlans;
-         } catch (Exception exc) {
-            log.info("Optimizer did not work in its standard input. Trying transformed Input ");
             outputPlans = initialOptimizer.optimize(appModel,
                   MMtoOptModelTransformer.transformModel(suitableCloudOffer), NUMBER_OF_PLANS_GENERATED);
+            previousPlans = outputPlans;
+
+         } catch (Exception exc) {
+            log.info(
+                  "Optimizer did not work in its expected input. Trying with the assumption of former versions of Input ");
+            outputPlans = initialOptimizer.optimize(appModel, suitableCloudOffer, NUMBER_OF_PLANS_GENERATED);
             previousPlans = outputPlans;
          } catch (Error E) {
             log.error("Error optimizing the initial deployment");

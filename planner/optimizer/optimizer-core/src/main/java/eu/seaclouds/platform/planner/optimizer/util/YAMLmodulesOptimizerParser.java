@@ -29,7 +29,6 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 //Version of September 2015
 public class YAMLmodulesOptimizerParser {
 
-   private static final boolean IS_DEBUG = false;
    static Logger                log      = LoggerFactory.getLogger(YAMLmodulesOptimizerParser.class);
 
 
@@ -40,7 +39,7 @@ public class YAMLmodulesOptimizerParser {
             .getDependenciesInfoOfMemberName(moduleName, groups);
 
       if (dependeciesInfoOfGroupOfModule == null) {
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("There has not been found info of dependencies for module called " + moduleName);
          }
          return false;
@@ -50,7 +49,7 @@ public class YAMLmodulesOptimizerParser {
          return true;
       }
 
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug("Module'" + moduleName + "' had dependencies but it id not contain information of other modules");
       }
 
@@ -155,7 +154,7 @@ public class YAMLmodulesOptimizerParser {
       Map<String, Object> qoSinfoOfGroupOfModule = YAMLgroupsOptimizerParser.getQoSinfoOfMemberName(moduleName, groups);
 
       if (qoSinfoOfGroupOfModule == null) {
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("There has not been found info of QoS for module called " + moduleName);
          }
          return null;
@@ -167,7 +166,7 @@ public class YAMLmodulesOptimizerParser {
 
       // not found There were qos properties but not the information of teh
       // machine tested
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug("Module had qos info but it did not contain information of the platform where it was executed");
       }
       return null;
@@ -180,14 +179,14 @@ public class YAMLmodulesOptimizerParser {
       Map<String, Object> qoSinfoOfGroupOfModule = YAMLgroupsOptimizerParser.getQoSinfoOfMemberName(moduleName, groups);
 
       if (qoSinfoOfGroupOfModule == null) {
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("There has not been found info of QoS for module called " + moduleName);
          }
          return 0.0;
       }
 
       if (qoSinfoOfGroupOfModule.containsKey(TOSCAkeywords.GROUP_ELEMENT_QOS_BENCHMARK_PLATFORM)) {
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("Found that module " + moduleName + " takes "
                   + YAMLmodulesOptimizerParser
                         .castToDouble(qoSinfoOfGroupOfModule.get(TOSCAkeywords.GROUP_ELEMENT_QOS_EXECUTIONTIME))
@@ -200,7 +199,7 @@ public class YAMLmodulesOptimizerParser {
       // not found There were qos properties but not the information of the
       // execution time
       // machine tested
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug("Module had qos info but it did not contain information of the time it took to execute in isolation");
       }
 

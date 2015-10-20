@@ -3,6 +3,7 @@ package eu.seaclouds.platform.planner.optimizerTest;
 public class TestConstants {
 
    public static final boolean EnabledTest = true;
+   public static final boolean EnabledTestOpenShift = false;
    
    public static final String APP_MODEL_FILENAME    = "./src/test/resources/aam_atos_case_study.yml";
    public static final String APP_MODEL_FILENAME_OPENSHIFT    = "./src/test/resources/aam_atos_case_study20Oct.yml";

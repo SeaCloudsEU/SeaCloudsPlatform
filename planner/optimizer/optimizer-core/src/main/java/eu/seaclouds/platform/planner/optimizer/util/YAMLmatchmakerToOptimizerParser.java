@@ -40,14 +40,13 @@ public class YAMLmatchmakerToOptimizerParser {
    // Reducing verbosity . If somebody knows a better approach for doing this (I
    // could not set dynamically the level of the logging) it should be changed
    private static int           BeeingTooVerboseWithLackOfInformationInCloudOffers = 3;
-   private static final boolean IS_DEBUG = false;
 
    static Logger log = LoggerFactory.getLogger(YAMLmatchmakerToOptimizerParser.class);
 
    @SuppressWarnings("unchecked")
    public static List<Object> getListofOptions(String appModel) {
       Yaml yamlApp = new Yaml();
-      if(IS_DEBUG){
+      if(log.isDebugEnabled()){
       log.debug("Loading String to a YAML using sknakeyaml.Yaml");
       }
       return (List<Object>) yamlApp.load(appModel);
@@ -94,14 +93,14 @@ public class YAMLmatchmakerToOptimizerParser {
             // the value is a list of suitable options
             try{
                //This method relies on the fact that a concrete map is always iterated in the same order (whathever it was)
-               if(IS_DEBUG){
+               if(log.isDebugEnabled()){
                   log.debug("exploring the options for module" + moduleEntry.getKey());
                }
                List<String> listOfferNames =  YAMLmatchmakerToOptimizerParser.getNamesOfSuitableOptions((List<Map<String,Object>>)moduleEntry.getValue());
                options.addSuitableOptions(moduleEntry.getKey(), listOfferNames,
                   YAMLmatchmakerToOptimizerParser.getSuitableOffersOfModule((List<Map<String,Object>>)moduleEntry.getValue(),listOfferNames));
             
-            if (IS_DEBUG) {
+            if (log.isDebugEnabled()) {
                log.debug("Found module in suitable options '" + moduleEntry.getKey() + "' whose cloud options are: "
                      + YAMLmatchmakerToOptimizerParser.getStringOfAmodule(options, moduleEntry.getKey()));
             }
@@ -122,7 +121,7 @@ public class YAMLmatchmakerToOptimizerParser {
       for(String offerName : listOfferNames){
          CloudOffer offer = getAllCharacteristicsOfCloudOffer(offerName, listOptions);
          if(offer!=null){
-            if(IS_DEBUG){
+            if(log.isDebugEnabled()){
             log.debug("Found cloud offer with info:" +offer.toString() );
             }
             listOffers.add(offer);
@@ -144,7 +143,7 @@ public class YAMLmatchmakerToOptimizerParser {
          
          for(Map.Entry<String, Object> offerEntry : offer.entrySet()){
             listNamesOffers.add(offerEntry.getKey());
-            if(IS_DEBUG){
+            if (log.isDebugEnabled()){
                log.debug("Found option called " + offerEntry.getKey());
             }
          }

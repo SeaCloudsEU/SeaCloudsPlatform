@@ -17,10 +17,8 @@
 
 package eu.seaclouds.platform.planner.optimizer.heuristics;
 
-
 import java.util.Arrays;
 import java.util.Collections;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +31,11 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 
 public abstract class AbstractHeuristic {
 
-   static Logger                  log                           = LoggerFactory
-                                                                      .getLogger(AbstractHeuristic.class);
+   static Logger log = LoggerFactory.getLogger(AbstractHeuristic.class);
 
-   private int                    MAX_ITER_NO_IMPROVE           = 200;                                    // 200;
-   private double                 MAX_TIMES_IMPROVE_REQUIREMENT = 20;
-   private static final int       DEFAULT_MAX_NUM_INSTANCES     = 10;
-   protected static final boolean IS_DEBUG                      = false;
+   private int MAX_ITER_NO_IMPROVE = 200; // 200;
+   private double MAX_TIMES_IMPROVE_REQUIREMENT = 20;
+   private static final int DEFAULT_MAX_NUM_INSTANCES = 10;
 
    public AbstractHeuristic(int maxIter) {
       MAX_ITER_NO_IMPROVE = maxIter;
@@ -67,11 +63,11 @@ public abstract class AbstractHeuristic {
     * @return the fitness value of the solution. If the solution does not
     *         satisfy the requirements, it returns -infty
     */
-   public double fitness(Solution bestSol, QualityInformation qosRequirements,
-         Topology topology, SuitableOptions cloudCharacteristics) {
+   public double fitness(Solution bestSol, QualityInformation qosRequirements, Topology topology,
+         SuitableOptions cloudCharacteristics) {
 
       if (requirements == null) {
-         requirements=qosRequirements;
+         requirements = qosRequirements;
       }
       QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
 
@@ -82,18 +78,14 @@ public abstract class AbstractHeuristic {
       double perfGoodness = 1;
       if (requirements.existResponseTimeRequirement()) {
 
-         double computedPerformance = qualityAnalyzer.computePerformance(
-               bestSol, topology, requirements.getWorkload(),
-               cloudCharacteristics).getResponseTime();
+         double computedPerformance = qualityAnalyzer
+               .computePerformance(bestSol, topology, requirements.getWorkload(), cloudCharacteristics)
+               .getResponseTime();
          perfGoodness = requirements.getResponseTime() / computedPerformance;
 
-         if (IS_DEBUG) {
-            log.debug("Candidate Solution " + bestSol.toString()
-                  + " evaluated gave a response time of " + computedPerformance
-                  + " while the requirements were "
-                  + requirements.getResponseTime() + " and the workload was "
-                  + requirements.getWorkload());
-         }
+         log.debug("Candidate Solution " + bestSol.toString() + " evaluated gave a response time of "
+               + computedPerformance + " while the requirements were " + requirements.getResponseTime()
+               + " and the workload was " + requirements.getWorkload());
 
       }
 
@@ -102,15 +94,13 @@ public abstract class AbstractHeuristic {
       double availGoodness = 1;
       if (requirements.existAvailabilityRequirement()) {
          availGoodness = (1.0 - requirements.getAvailability())
-               / (1.0 - qualityAnalyzer.computeAvailability(bestSol, topology,
-                     cloudCharacteristics));
+               / (1.0 - qualityAnalyzer.computeAvailability(bestSol, topology, cloudCharacteristics));
       }
 
       // calculates how well it satisfies cost reuquirement, if it exists
       double costGoodness = 1;
       if (requirements.existCostRequirement()) {
-         costGoodness = requirements.getCostHour()
-               / qualityAnalyzer.computeCost(bestSol, cloudCharacteristics);
+         costGoodness = requirements.getCostHour() / qualityAnalyzer.computeCost(bestSol, cloudCharacteristics);
       }
 
       double fitness = 0.0;
@@ -130,33 +120,30 @@ public abstract class AbstractHeuristic {
          // between 0 and 1/numExistingRequirements
          double partialFitness = 0.0;
          double numExistingRequirements = 0.0;
-         double numSatisfiedRequirements=0.0;
+         double numSatisfiedRequirements = 0.0;
          if (requirements.existResponseTimeRequirement()) {
             numExistingRequirements++;
-            if(perfGoodness >= 1){
+            if (perfGoodness >= 1) {
                numSatisfiedRequirements++;
-            }
-            else{
+            } else {
                partialFitness += perfGoodness;
             }
          }
          if (requirements.existAvailabilityRequirement()) {
-            
+
             numExistingRequirements++;
-            if(availGoodness>=1){
+            if (availGoodness >= 1) {
                numSatisfiedRequirements++;
-            }
-            else{
-               partialFitness +=  availGoodness;
+            } else {
+               partialFitness += availGoodness;
             }
          }
          if (requirements.existCostRequirement()) {
-            
+
             numExistingRequirements++;
-            if(costGoodness>=1){
+            if (costGoodness >= 1) {
                numSatisfiedRequirements++;
-            }
-            else{
+            } else {
                partialFitness += costGoodness;
             }
          }
@@ -165,11 +152,13 @@ public abstract class AbstractHeuristic {
             log.warn("something werid is happening because quality values are null");
          }
 
-         //satisfied reqs fill at maximum their slot. 
-         //The rest of slots are filled by the proportion of global closeness to the solution
-         fitness = numSatisfiedRequirements/numExistingRequirements + 
-               (partialFitness*(1.0-numSatisfiedRequirements/numExistingRequirements))/(numExistingRequirements-numSatisfiedRequirements);
-               
+         // satisfied reqs fill at maximum their slot.
+         // The rest of slots are filled by the proportion of global closeness
+         // to the solution
+         fitness = numSatisfiedRequirements / numExistingRequirements
+               + (partialFitness * (1.0 - numSatisfiedRequirements / numExistingRequirements))
+                     / (numExistingRequirements - numSatisfiedRequirements);
+
       }
 
       bestSol.setSolutionQuality(qualityAnalyzer.getAllComputedQualities());
@@ -177,10 +166,7 @@ public abstract class AbstractHeuristic {
 
    }
 
-
-
-   protected Solution[] mergeBestSolutions(Solution[] sols1, Solution[] sols2,
-         int numPlansToGenerate) {
+   protected Solution[] mergeBestSolutions(Solution[] sols1, Solution[] sols2, int numPlansToGenerate) {
       // TODO: this method has never been tested
 
       sortSolutionsByFitness(sols1);
@@ -194,8 +180,7 @@ public abstract class AbstractHeuristic {
       for (int i = 0; i < merged.length; i++) {
 
          if ((index1 < sols1.length) && (index2 < sols2.length)) {
-            if (sols1[index1].getSolutionFitness() >= sols2[index2]
-                  .getSolutionFitness()) {
+            if (sols1[index1].getSolutionFitness() >= sols2[index2].getSolutionFitness()) {
                merged[i] = sols1[index1].clone();
                index1++;
             } else {
@@ -222,12 +207,10 @@ public abstract class AbstractHeuristic {
       Arrays.sort(bestSols, Collections.reverseOrder());
    }
 
-   protected void setFitnessOfSolutions(Solution[] bestSols,
-         QualityInformation requirements, Topology topology,
+   protected void setFitnessOfSolutions(Solution[] bestSols, QualityInformation requirements, Topology topology,
          SuitableOptions cloudOffers) {
       for (int solindex = 0; solindex < bestSols.length; solindex++) {
-         bestSols[solindex].setSolutionFitness(fitness(bestSols[solindex],
-               requirements, topology, cloudOffers));
+         bestSols[solindex].setSolutionFitness(fitness(bestSols[solindex], requirements, topology, cloudOffers));
       }
    }
 
@@ -282,15 +265,12 @@ public abstract class AbstractHeuristic {
 
    protected void insertOrdered(Solution[] bestSols, Solution solution) {
 
-      if (solution.getSolutionFitness() < bestSols[bestSols.length - 1]
-            .getSolutionFitness()) {
+      if (solution.getSolutionFitness() < bestSols[bestSols.length - 1].getSolutionFitness()) {
          return;
       }
 
       int currentPos = bestSols.length - 1;
-      while ((currentPos > 0)
-            && (bestSols[currentPos - 1].getSolutionFitness() <= solution
-                  .getSolutionFitness())) {
+      while ((currentPos > 0) && (bestSols[currentPos - 1].getSolutionFitness() <= solution.getSolutionFitness())) {
          bestSols[currentPos] = bestSols[currentPos - 1];
          currentPos--;
       }
@@ -299,11 +279,8 @@ public abstract class AbstractHeuristic {
 
    }
 
-   
-
    protected boolean solutionShouldBeIncluded(Solution sol, Solution[] sols) {
-      return (sol.getSolutionFitness() > getMinimumFitnessOfSolutions(sols))
-            && (!sol.isContainedIn(sols));
+      return (sol.getSolutionFitness() > getMinimumFitnessOfSolutions(sols)) && (!sol.isContainedIn(sols));
    }
 
    protected Solution findRandomSolution(SuitableOptions cloudOffers) {
@@ -311,15 +288,12 @@ public abstract class AbstractHeuristic {
       for (String modName : cloudOffers.getStringIterator()) {
 
          // element to use
-         int itemToUse = (int) Math.floor(Math.random()
-               * (double) cloudOffers.getSizeOfSuitableOptions(modName));
+         int itemToUse = (int) Math.floor(Math.random() * (double) cloudOffers.getSizeOfSuitableOptions(modName));
 
          // number of instances
-         int numInstances = ((int) Math.floor(Math.random()
-               * ((double) DEFAULT_MAX_NUM_INSTANCES))) + 1;
+         int numInstances = ((int) Math.floor(Math.random() * ((double) DEFAULT_MAX_NUM_INSTANCES))) + 1;
 
-         currentSolution.addItem(modName, cloudOffers
-               .getIthSuitableOptionForModuleName(modName, itemToUse),
+         currentSolution.addItem(modName, cloudOffers.getIthSuitableOptionForModuleName(modName, itemToUse),
                numInstances);
       }
 
@@ -335,7 +309,7 @@ public abstract class AbstractHeuristic {
       }
 
    }
-   
+
    protected Solution[] findInitialRandomSolutions(SuitableOptions cloudOffers, int numPlansToGenerate) {
 
       Solution[] newSolutions = new Solution[numPlansToGenerate];

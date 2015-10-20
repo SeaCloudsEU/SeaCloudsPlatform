@@ -43,6 +43,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.io.IOUtils;
 
+@Test(enabled = TestConstants.EnabledTestOpenShift)
 public class OptimizerServiceOpenShiftTest {
 
   
@@ -86,7 +87,7 @@ public class OptimizerServiceOpenShiftTest {
       return new String(encoded, StandardCharsets.UTF_8);
    }
 
-   @Test(enabled = TestConstants.EnabledTest)
+   @Test(enabled = TestConstants.EnabledTestOpenShift) //check also if the class is enabled
    public void testPresenceSolutionBlind() {
 
       log.info("=== TEST for SOLUTION GENERATION of BLIND optimizer service DEPLOYED IN OPENSHIFT STARTED ===");
@@ -106,7 +107,7 @@ public class OptimizerServiceOpenShiftTest {
 
    }
    
-   @Test(enabled = TestConstants.EnabledTest)
+   @Test(enabled = TestConstants.EnabledTestOpenShift)
    public void testPresenceSolutionHill() {
 
       log.info("=== TEST for SOLUTION GENERATION of HILLCLIMB optimizer service DEPLOYED IN OPENSHIFT STARTED ===");
@@ -125,7 +126,7 @@ public class OptimizerServiceOpenShiftTest {
 
    }
    
-   @Test(enabled = TestConstants.EnabledTest)
+   @Test(enabled = TestConstants.EnabledTestOpenShift)
    public void testPresenceSolutionAnneal() {
 
       log.info("=== TEST for SOLUTION GENERATION of ANNEAL optimizer service STARTED ===");
@@ -176,7 +177,7 @@ public class OptimizerServiceOpenShiftTest {
       log.debug("Complete output is: " + completeOutput);
    }
 
-   @Test(enabled = TestConstants.EnabledTest)
+   @Test(enabled = TestConstants.EnabledTestOpenShift)
    public void testPresenceHeartbeat() {
 
       log.info("=== TEST for presence of OPTIMIZER service heartbeat in " + BASE_URL +"===");

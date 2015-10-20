@@ -42,8 +42,6 @@ public class OptimizerInitialDeployment {
 
    static Logger log;
 
-   private static final boolean IS_DEBUG = false;
-
    public OptimizerInitialDeployment() {
       engine = new BlindSearch();
 
@@ -76,16 +74,13 @@ public class OptimizerInitialDeployment {
       Map<String, Object> appMap = YAMLoptimizerParser.getMAPofAPP(appModel);
 
       // Get cloud offers
-      if (IS_DEBUG) {
-         log.debug("Getting cloud optoins and characteristics");
-      }
+
+      log.debug("Getting cloud optoins and characteristics");
 
       SuitableOptions appInfoSuitableOptions = YAMLmatchmakerToOptimizerParser
             .getSuitableCloudOptionsAndCharacteristicsForModules(appModel, suitableCloudOffer);
 
-      if (IS_DEBUG) {
-         log.debug("Getting application Topology");
-      }
+      log.debug("Getting application Topology");
 
       Topology topology = null;
       try {
@@ -104,14 +99,12 @@ public class OptimizerInitialDeployment {
       }
 
       // Read the quality requirements of the application
-      if (IS_DEBUG) {
-         log.debug("Getting application Requirements");
-      }
-      QualityInformation requirements = loadQualityRequirements(appMap);
-      if (IS_DEBUG) {
-         log.debug("following requirements found: " + requirements.toString());
 
-      }
+      log.debug("Getting application Requirements");
+
+      QualityInformation requirements = loadQualityRequirements(appMap);
+
+      log.debug("following requirements found: " + requirements.toString());
 
       // Create the skeleton of the numPlansToGenerate solutions to fill
       // This is only to avoid using the appMap or call to the TOSCA parser
@@ -128,9 +121,7 @@ public class OptimizerInitialDeployment {
       Map<String, Object>[] appMapSolutions = hashMapOfFoundSolutionsWithThresholds(solutions, appMap, topology,
             appInfoSuitableOptions, numPlansToGenerate, requirements, suitableCloudOffer);
 
-      if (IS_DEBUG) {
-         log.debug("Before ReplaceSuitableServiceByHost");
-      }
+      log.debug("Before ReplaceSuitableServiceByHost");
 
       String[] stringSolutions = new String[numPlansToGenerate];
       for (int i = 0; i < appMapSolutions.length; i++) {
@@ -145,7 +136,7 @@ public class OptimizerInitialDeployment {
          Map<String, Object> applicMap, Topology topology, SuitableOptions cloudOffers, int numPlansToGenerate,
          QualityInformation requirements, String suitableCloudOffer) {
 
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          engine.checkQualityAttachedToSolutions(bestSols);
       }
       @SuppressWarnings("unchecked")
@@ -154,25 +145,22 @@ public class OptimizerInitialDeployment {
       for (int i = 0; i < bestSols.length; i++) {
 
          Map<String, Object> baseAppMap = YAMLoptimizerParser.cloneYAML(applicMap);
-         if (IS_DEBUG) {
-            log.debug("Solution number " + i + " shape before addSolutionToAppMap:");
-            log.debug(YAMLoptimizerParser.fromMAPtoYAMLstring(baseAppMap));
-         }
+
+         log.debug("Solution number " + i + " shape before addSolutionToAppMap:");
+         log.debug(YAMLoptimizerParser.fromMAPtoYAMLstring(baseAppMap));
+
          addSolutionToAppMap(bestSols[i], baseAppMap, suitableCloudOffer);
 
-         if (IS_DEBUG) {
-            log.debug("Solution number" + i + " shape after addSolutionToAppMap:");
-            log.debug(YAMLoptimizerParser.fromMAPtoYAMLstring(baseAppMap));
-            log.debug("Before creating reconfiguration thesholds");
-         }
+         log.debug("Solution number" + i + " shape after addSolutionToAppMap:");
+         log.debug(YAMLoptimizerParser.fromMAPtoYAMLstring(baseAppMap));
+         log.debug("Before creating reconfiguration thesholds");
 
          HashMap<String, ArrayList<Double>> thresholds = createReconfigurationThresholds(bestSols[i], baseAppMap,
                topology, cloudOffers, requirements);
 
-         if (IS_DEBUG) {
-            log.debug("Before adding the reconfiguration thesholds to the map. Thresholds found are: ");
-            log.debug(showThresholds(thresholds));
-         }
+         log.debug("Before adding the reconfiguration thesholds to the map. Thresholds found are: ");
+         log.debug(showThresholds(thresholds));
+
          YAMLoptimizerParser.addReconfigurationThresholds(thresholds, baseAppMap);
 
          solutions[i] = baseAppMap;
@@ -199,22 +187,19 @@ public class OptimizerInitialDeployment {
    private void addSolutionToAppMap(Solution currentSol, Map<String, Object> applicationMap,
          String suitableCloudOffer) {
 
-      if (IS_DEBUG) {
-         log.debug("Adding solution" + currentSol.toString() + "to MAP ");
-      }
+      log.debug("Adding solution" + currentSol.toString() + "to MAP ");
+
       for (String solkey : currentSol) {
 
-         if (IS_DEBUG) {
-            String instances = "";
-            try {
-               instances = String.valueOf(currentSol.getCloudInstancesForModule(solkey));
-            } catch (Exception E) {
-               instances = "Exception!";
-            }
-            log.debug("Before adding instances to '" + solkey + "': cloudOffer="
-                  + currentSol.getCloudOfferNameForModule(solkey) + " instances=" + instances);
-
+         String instances = "";
+         try {
+            instances = String.valueOf(currentSol.getCloudInstancesForModule(solkey));
+         } catch (Exception E) {
+            instances = "Exception!";
          }
+         log.debug("Before adding instances to '" + solkey + "': cloudOffer="
+               + currentSol.getCloudOfferNameForModule(solkey) + " instances=" + instances);
+
          try {
             YAMLoptimizerParser.addSuitableOfferForModule(solkey, currentSol.getCloudOfferNameForModule(solkey),
                   currentSol.getCloudInstancesForModule(solkey), applicationMap);
@@ -222,20 +207,17 @@ public class OptimizerInitialDeployment {
             YAMLoptimizerParser.addSuitableOfferForModule(solkey, currentSol.getCloudOfferNameForModule(solkey), -1,
                   applicationMap);
          }
-         if (IS_DEBUG) {
-            log.debug("Added '" + solkey + "' to solution");
-         }
+
+         log.debug("Added '" + solkey + "' to solution");
 
          Map<String, Object> cloudInfo = YAMLmatchmakerToOptimizerParser.getOfferInformationOfModule(solkey,
                currentSol.getCloudOfferNameForModule(solkey), suitableCloudOffer);
          YAMLoptimizerParser.addNodeTemplate(currentSol.getCloudOfferNameForModule(solkey), cloudInfo, applicationMap);
       }
 
-      if (IS_DEBUG) {
-         log.debug("Solution number shape after adding the host and befor adding the quality addSolutionToAppMap:");
-         log.debug(YAMLoptimizerParser.fromMAPtoYAMLstring(applicationMap));
-         log.debug("Adding the quality of the solution to the group of the intial element");
-      }
+      log.debug("Solution number shape after adding the host and befor adding the quality addSolutionToAppMap:");
+      log.debug(YAMLoptimizerParser.fromMAPtoYAMLstring(applicationMap));
+      log.debug("Adding the quality of the solution to the group of the intial element");
 
       YAMLoptimizerParser.addQualityOfSolution(currentSol, applicationMap);
 
@@ -254,9 +236,7 @@ public class OptimizerInitialDeployment {
          Map<String, Object> applicationMap, Topology topology, SuitableOptions cloudCharacteristics,
          QualityInformation requirements) {
 
-      if (IS_DEBUG) {
-         log.debug("Starting the creation of reconfiguration thresholds");
-      }
+      log.debug("Starting the creation of reconfiguration thresholds");
 
       loadQualityRequirements(applicationMap);
       QualityAnalyzer qualityAnalyzer = new QualityAnalyzer();
@@ -264,15 +244,12 @@ public class OptimizerInitialDeployment {
       // if the solution does not satisfy the performance requirements,
       // nothing
       // to do
-      if (IS_DEBUG) {
-         log.debug("Create reconfiguration Thresholds method is going to call the compute Performance");
-      }
+      log.debug("Create reconfiguration Thresholds method is going to call the compute Performance");
+
       double perfGoodness = requirements.getResponseTime() / qualityAnalyzer
             .computePerformance(sol, topology, requirements.getWorkload(), cloudCharacteristics).getResponseTime();
 
-      if (IS_DEBUG) {
-         log.debug("Create reconfiguration Thresholds method has finished its call to compute Performance");
-      }
+      log.debug("Create reconfiguration Thresholds method has finished its call to compute Performance");
 
       if ((requirements.existResponseTimeRequirement()) && (perfGoodness >= 1.0)) {// response
          // time
@@ -286,17 +263,15 @@ public class OptimizerInitialDeployment {
          // arraylist with the thresholds for reconfigurations.
          HashMap<String, ArrayList<Double>> thresholds = new HashMap<String, ArrayList<Double>>();
 
-         if (IS_DEBUG) {
-            log.debug("Starting teh computation of reconfiguration thresholds");
-         }
+         log.debug("Starting teh computation of reconfiguration thresholds");
+
          thresholds = qualityAnalyzer.computeThresholds(sol, topology, requirements, cloudCharacteristics);
 
-         if (IS_DEBUG) {
-            log.debug("Finishing the creation of reconfiguration thresholds");
-            if (thresholds == null || thresholds.isEmpty()) {
-               log.debug("Set of thresholds is empty");
-            }
+         log.debug("Finishing the creation of reconfiguration thresholds");
+         if (thresholds == null || thresholds.isEmpty()) {
+            log.debug("Set of thresholds is empty");
          }
+
          return thresholds;
       } else {// There are not performance requirements, so no thresholds are
               // created.

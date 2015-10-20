@@ -30,9 +30,6 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 
 public class HillClimb extends AbstractHeuristic implements SearchMethod {
 
-   @SuppressWarnings("hiding")
-   private static boolean IS_DEBUG = AbstractHeuristic.IS_DEBUG || false;
-
    static Logger logHill = LoggerFactory.getLogger(HillClimb.class);
 
    public HillClimb() {
@@ -63,7 +60,7 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
       cloudOffers.sortDescendingPerformance();
       Solution[] bestSols = super.findInitialRandomSolutions(cloudOffers, numPlansToGenerate);
       super.setFitnessOfSolutions(bestSols, requirements, topology, cloudOffers);
-      if (IS_DEBUG) {
+      if (logHill.isDebugEnabled()) {
          logHill.debug(
                "Start checking the presence of quality attached to solutions after the first generation HILLCLIMB");
          super.checkQualityAttachedToSolutions(bestSols);
@@ -83,22 +80,22 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
          int pathLengthTraversed = 0;
          while (neighborsImprove) {
             Solution[] candidates = findNeighbors(currentSol, cloudOffers, topology);
-            if (IS_DEBUG) {
-               logHill.debug(
-                     "Found " + candidates.length + " neighbors of the solution: Are " + Arrays.toString(candidates));
-            }
+
+            logHill.debug(
+                  "Found " + candidates.length + " neighbors of the solution: Are " + Arrays.toString(candidates));
+
             super.setFitnessOfSolutions(candidates, requirements, topology, cloudOffers);
             Solution bestCandidate = super.getSolutionWithMaximumFitness(candidates);
             if (bestCandidate.getSolutionFitness() > currentSol.getSolutionFitness()) {
                currentSol = bestCandidate;
                pathLengthTraversed++;
-               if (IS_DEBUG) {
-                  if (pathLengthTraversed > 100) {
-                     logHill.debug("Something weird is happening, iteration: " + pathLengthTraversed
-                           + "without finding local maxima: Fitness: " + currentSol.getSolutionFitness() + " Solution: "
-                           + currentSol.toString());
-                  }
+
+               if (pathLengthTraversed > 100) {
+                  logHill.debug("Something weird is happening, iteration: " + pathLengthTraversed
+                        + "without finding local maxima: Fitness: " + currentSol.getSolutionFitness() + " Solution: "
+                        + currentSol.toString());
                }
+
             } else {// there is not any better neighbor. See if this solution
                     // can be included among the set of best solutions
                neighborsImprove = false;
@@ -110,32 +107,30 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
          // the previous maxima.
          if (super.solutionShouldBeIncluded(currentSol, bestSols)) {
 
-            if (IS_DEBUG) {
-               logHill.debug("After " + numItersNoImprovement
-                     + " iterations we have found a local maxima solution that is going to be included: "
-                     + currentSol.toString());
-            }
+            logHill.debug("After " + numItersNoImprovement
+                  + " iterations we have found a local maxima solution that is going to be included: "
+                  + currentSol.toString());
+
             super.insertOrdered(bestSols, currentSol);
             numItersNoImprovement = 0;
 
-            if (IS_DEBUG) {
+            if (logHill.isDebugEnabled()) {
                logHill.debug(
                      "Start checking the presence of quality attached to solutions after adding a solution in HILLCLIMB");
                super.checkQualityAttachedToSolutions(bestSols);
             }
 
          } else {
-            if (IS_DEBUG) {
-               logHill.debug("After " + numItersNoImprovement
-                     + " iterations we have found a local maxima, but it will not be included: "
-                     + currentSol.toString());
-            }
+
+            logHill.debug("After " + numItersNoImprovement
+                  + " iterations we have found a local maxima, but it will not be included: " + currentSol.toString());
+
             numItersNoImprovement++;
          }
 
       }
 
-      if (IS_DEBUG) {
+      if (logHill.isDebugEnabled()) {
          logHill.debug(
                "Start checking the presence of quality attached to solutions after adding a solution in HILLCLIMB");
          super.checkQualityAttachedToSolutions(bestSols);
@@ -242,11 +237,11 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
       // out.
       if (topology.getModule(modulename).canScale()) {
          neighborSol = currentSol.clone();
-         try{
-         neighborSol.modifyNumInstancesOfModule(modulename, currentSol.getCloudInstancesForModule(modulename) + 1);
+         try {
+            neighborSol.modifyNumInstancesOfModule(modulename, currentSol.getCloudInstancesForModule(modulename) + 1);
          } catch (Exception E) {
             neighborSol.modifyNumInstancesOfModule(modulename, 0);
-            
+
          }
          neighbors.add(neighborSol);
       }
