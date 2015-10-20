@@ -2,6 +2,7 @@ package eu.seaclouds.monitor.nuroDc;
 
 import it.polimi.tower4clouds.data_collector_library.DCAgent;
 import it.polimi.tower4clouds.model.ontology.Resource;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +13,8 @@ import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -21,6 +24,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public abstract class Metric implements Observer {
 
@@ -130,11 +135,7 @@ public abstract class Metric implements Observer {
                 } catch (Exception ex) {
                     logger.warn("Unable to get sample (ID:" + resource.getId()
                             + " - " + ex.getMessage());
-                    try {
-                        Thread.sleep(200);
-                    } catch (Exception ex1) {
-                        logger.error(ex.getMessage());
-                    }
+                    Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
                 }
             } while (!sampleRetrieved);
 

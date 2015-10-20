@@ -43,6 +43,11 @@
 			<artifactId>data-collector-library</artifactId>
 			<version>0.3.1</version>
 		</dependency>
+		
+		<dependency>
+	        <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>	
 
 		<dependency>
 			<groupId>org.testng</groupId>

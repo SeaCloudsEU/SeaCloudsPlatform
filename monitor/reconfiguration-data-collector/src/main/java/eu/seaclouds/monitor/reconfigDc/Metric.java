@@ -9,9 +9,12 @@ import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public abstract class Metric implements Observer {
 
@@ -119,11 +122,8 @@ public abstract class Metric implements Observer {
                 } catch (Exception ex) {
                     logger.warn("Unable to get sample (ID:" + resource.getId()
                             + " - " + ex.getMessage());
-                    try {
-                        Thread.sleep(200);
-                    } catch (Exception ex1) {
-                        logger.error(ex.getMessage());
-                    }
+                    Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+
                 }
             } while (!sampleRetrieved);
 
