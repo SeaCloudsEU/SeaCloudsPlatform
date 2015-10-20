@@ -30,6 +30,8 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>nuro-data-collector</module>
+    <module>reconfiguration-data-collector</module>
   </modules>
 
   <groupId>eu.seaclouds-project.monitor</groupId>

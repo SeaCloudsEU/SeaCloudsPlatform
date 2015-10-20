@@ -10,14 +10,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.seaclouds.monitor.nuroDc.metrics.NUROServerLastMinuteAverageRunTime;
-import eu.seaclouds.monitor.nuroDc.metrics.NUROServerLastMinuteAverageThroughput;
-import eu.seaclouds.monitor.nuroDc.metrics.NUROServerLastMinutePlayerCount;
-import eu.seaclouds.monitor.nuroDc.metrics.NUROServerLastMinuteRequestCount;
-import eu.seaclouds.monitor.nuroDc.metrics.NUROServerLastTenSecondsAverageRunTime;
-import eu.seaclouds.monitor.nuroDc.metrics.NUROServerLastTenSecondsAverageThroughput;
-import eu.seaclouds.monitor.nuroDc.metrics.NUROServerLastTenSecondsPlayerCount;
-import eu.seaclouds.monitor.nuroDc.metrics.NUROServerLastTenSecondsRequestCount;
+import eu.seaclouds.monitor.nuroDc.metrics.NuroMetric;
 import it.polimi.tower4clouds.model.data_collectors.DCDescriptor;
 import it.polimi.tower4clouds.model.ontology.InternalComponent;
 import it.polimi.tower4clouds.model.ontology.Resource;
@@ -74,7 +67,7 @@ public class Registry {
         // Add observers of metrics to the DCAgent
         for (Metric metric : nuroMetrics) {
             logger.debug("Added metric {} as observer of dcagent",
-                    metric.getName());
+                    metric.getMonitoredMetric());
             dcAgent.addObserver(metric);
         }
 
@@ -138,7 +131,7 @@ public class Registry {
 
         Set<String> metricsNames = new HashSet<String>();
         for (Metric metric : nuroMetrics) {
-            metricsNames.add(metric.getName());
+            metricsNames.add(metric.getMonitoredMetric());
         }
 
         return metricsNames;
@@ -147,23 +140,39 @@ public class Registry {
     private Set<Metric> buildNuroMetrics() {
 
         Set<Metric> metrics = new HashSet<Metric>();
+        Metric toAdd;
 
-        Metric lastMinuteAvgRuntime = new NUROServerLastMinuteAverageRunTime();
-        metrics.add(lastMinuteAvgRuntime);
-        Metric lastMinuteAvgThr = new NUROServerLastMinuteAverageThroughput();
-        metrics.add(lastMinuteAvgThr);
-        Metric lastMinutePlayerCount = new NUROServerLastMinutePlayerCount();
-        metrics.add(lastMinutePlayerCount);
-        Metric lastMinuteRequestCount = new NUROServerLastMinuteRequestCount();
-        metrics.add(lastMinuteRequestCount);
-        Metric lastTenSecondsAvgRuntime = new NUROServerLastTenSecondsAverageRunTime();
-        metrics.add(lastTenSecondsAvgRuntime);
-        Metric lastTenSecondsAvgThr = new NUROServerLastTenSecondsAverageThroughput();
-        metrics.add(lastTenSecondsAvgThr);
-        Metric lastTenSecondsPlayerCount = new NUROServerLastTenSecondsPlayerCount();
-        metrics.add(lastTenSecondsPlayerCount);
-        Metric lastTenSecondsRequestCount = new NUROServerLastTenSecondsRequestCount();
-        metrics.add(lastTenSecondsRequestCount);
+        toAdd = new NuroMetric();
+        toAdd.setMonitoredMetric("NUROServerLastMinuteAverageRunTime");
+        metrics.add(toAdd);
+        
+        toAdd = new NuroMetric();
+        toAdd.setMonitoredMetric("NUROServerLastMinuteAverageThroughput");
+        metrics.add(toAdd);
+        
+        toAdd = new NuroMetric();
+        toAdd.setMonitoredMetric("NUROServerLastMinutePlayerCount");
+        metrics.add(toAdd);
+        
+        toAdd = new NuroMetric();
+        toAdd.setMonitoredMetric("NUROServerLastMinuteRequestCount");
+        metrics.add(toAdd);
+        
+        toAdd = new NuroMetric();
+        toAdd.setMonitoredMetric("NUROServerLastTenSecondsAverageRunTime");
+        metrics.add(toAdd);
+        
+        toAdd = new NuroMetric();
+        toAdd.setMonitoredMetric("NUROServerLastTenSecondsAverageThroughput");
+        metrics.add(toAdd);
+        
+        toAdd = new NuroMetric();
+        toAdd.setMonitoredMetric("NUROServerLastTenSecondsPlayerCount");
+        metrics.add(toAdd);
+        
+        toAdd = new NuroMetric();
+        toAdd.setMonitoredMetric("NUROServerLastTenSecondsRequestCount");
+        metrics.add(toAdd);
 
         for (Metric m : metrics) {
             m.setNuroInstanceIp((String) dcProperties

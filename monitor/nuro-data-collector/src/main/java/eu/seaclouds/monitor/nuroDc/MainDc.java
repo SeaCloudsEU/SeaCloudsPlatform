@@ -20,7 +20,6 @@ public class MainDc {
         MainDc mainInstance = new MainDc();
 
         if (args.length > 0) {
-            System.out.println(args[0]);
             mainInstance.configFilePath = args[0];
         } else {
             mainInstance.configFilePath = CONFIG_FILE_PATH;

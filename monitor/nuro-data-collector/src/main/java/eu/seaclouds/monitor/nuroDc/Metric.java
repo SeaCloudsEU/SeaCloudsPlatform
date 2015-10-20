@@ -40,21 +40,19 @@ public abstract class Metric implements Observer {
     private String nuroUser;
 
     private String nuroPassword;
-
+    
+    private String monitoredMetric;
+    
     private String response;
-
+    
     private final Map<String, Timer> timerPerResourceId = new ConcurrentHashMap<String, Timer>();
     private final Map<String, Integer> samplingTimePerResourceId = new ConcurrentHashMap<String, Integer>();
 
     private static final int DEFAULT_SAMPLING_TIME = 5;
 
-    protected String getName() {
-        return getClass().getSimpleName();
-    }
-
     protected void send(Number value, Resource resource) {
         if (dcAgent != null) {
-            dcAgent.send(resource, getName(), value);
+            dcAgent.send(resource, this.getMonitoredMetric(), value);
         } else {
             logger.warn("Monitoring is not required, data won't be sent");
         }
@@ -65,7 +63,7 @@ public abstract class Metric implements Observer {
             logger.error("{}: DCAgent was null", this.toString());
             return false;
         }
-        return dcAgent.shouldMonitor(resource, getName());
+        return dcAgent.shouldMonitor(resource, this.getMonitoredMetric());
     }
 
     @Override
@@ -159,6 +157,7 @@ public abstract class Metric implements Observer {
 
             HttpGet httpget = new HttpGet("http://" + getNuroInstanceIp() + ":"
                     + getNuroInstancePort() + "/sensor.php");
+                       
             httpget.addHeader("Authorization", "Basic " + encodedAuth);
 
             try {
@@ -195,10 +194,10 @@ public abstract class Metric implements Observer {
     }
 
     public abstract Number getSample(Resource resource) throws Exception;
-
+    
     protected Map<String, String> getParameters(Resource resource) {
         if (this.dcAgent != null)
-            return this.dcAgent.getParameters(resource, getName());
+            return this.dcAgent.getParameters(resource, this.getMonitoredMetric());
         return null;
     }
 
@@ -232,5 +231,13 @@ public abstract class Metric implements Observer {
 
     public void setNuroPassword(String nuroPassword) {
         this.nuroPassword = nuroPassword;
+    }
+
+    public String getMonitoredMetric() {
+        return monitoredMetric;
+    }
+
+    public void setMonitoredMetric(String monitoredMetric) {
+        this.monitoredMetric = monitoredMetric;
     }
 }
