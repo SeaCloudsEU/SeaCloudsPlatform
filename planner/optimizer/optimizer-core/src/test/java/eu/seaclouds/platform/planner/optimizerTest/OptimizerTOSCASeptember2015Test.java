@@ -68,7 +68,7 @@ public void createObjects() {
    }
 
    try {
-      suitableCloudOffer = filenameToString(TestConstants.CLOUD_OFFER_FILENAME);
+      suitableCloudOffer = filenameToString(TestConstants.CLOUD_OFFER_FILENAME_IN_JSON);
    } catch (IOException e) {
       log.error("File for Cloud Offers not found");
       e.printStackTrace();
