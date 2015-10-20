@@ -715,4 +715,21 @@ public class YAMLoptimizerParser {
       return false;
    }
 
+   public static void addNodeTemplate(String key, Map<String, Object> value, Map<String, Object> appMap) {
+      Map<String, Object> modulesMap;
+      try {
+         if (IS_DEBUG) {
+            log.debug("Opening TOSCA for obtaining modules");
+         }
+         modulesMap = (Map<String, Object>) appMap.get(TOSCAkeywords.TOPOLOGY_TEMPLATE);
+         modulesMap = (Map<String, Object>) modulesMap.get(TOSCAkeywords.NODE_TEMPLATE);
+      } catch (NullPointerException E) {
+         log.error("It was not found '" + TOSCAkeywords.TOPOLOGY_TEMPLATE + "' or '" + TOSCAkeywords.NODE_TEMPLATE
+               + "' in the TOSCA model");
+         return;
+      }
+      modulesMap.put(key, value);
+      
+   }
+
 }

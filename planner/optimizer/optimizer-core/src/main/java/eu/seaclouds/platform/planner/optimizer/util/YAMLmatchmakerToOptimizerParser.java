@@ -241,6 +241,27 @@ private static CloudOffer getAllCharacteristicsOfCloudOffer(String offerName,
       return valueOfProperty;
 
    }
+
+   public static Map<String, Object> getOfferInformationOfModule(String moduleName, String cloudOfferNameForModule, String suitableCloudOffer) {
+      List<Object> listCompleteOffers = YAMLmatchmakerToOptimizerParser.getListofOptions(suitableCloudOffer);
+     
+      // FOR EACH OF THE APP MODULES
+      for (Object moduleObject : listCompleteOffers) {
+
+         // There is a map of one element.
+         Map<String, Object> module = (Map<String, Object>) moduleObject;
+
+         for (Map.Entry<String, Object> moduleEntry : module.entrySet()) {
+         // the key is the name of the module
+         // the value is a list of suitable options
+            if(moduleEntry.getKey().equals(moduleName)){
+              return getCloudOfferInfoMapFromCloudOfferListByName((List<Map<String,Object>>)moduleEntry.getValue(),cloudOfferNameForModule);
+            }
+         }
+      } 
+      
+      return null;
+   }
    
  
    

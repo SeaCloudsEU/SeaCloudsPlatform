@@ -329,7 +329,7 @@ public class YAMLgroupsOptimizerParser {
          groupInfo.put(TOSCAkeywords.GROUP_ELEMENT_POLICY_TAG, policies);
       }
 
-      policies.add(groupInfo);
+      policies.add(expectedQuality);
 
    }
 
