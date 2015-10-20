@@ -169,7 +169,14 @@ public class OptimizerInitialDeployment {
    }
 
    private String showThresholds(HashMap<String, ArrayList<Double>> thresholds) {
+      
       String out = "";
+      if(thresholds==null){
+         out+="Thresholds was null (meaning that it WAS NOT an empty set, but pointed to null)";
+         return out;
+      }
+      
+      
       for (Map.Entry<String, ArrayList<Double>> threshold : thresholds.entrySet()) {
          out += threshold.getKey() + ": {";
          ArrayList<Double> list = threshold.getValue();
