@@ -182,6 +182,7 @@ public class OptimizerTest {
       PrintWriter out = null;
       try {
          File file = new File(outputFilename);
+         log.debug("Created file: " + outputFilename);
          if (!file.exists()) {
             file.getParentFile().mkdirs();
             file.createNewFile();
