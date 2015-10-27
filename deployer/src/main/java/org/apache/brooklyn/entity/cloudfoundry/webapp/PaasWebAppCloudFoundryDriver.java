@@ -81,9 +81,14 @@ public abstract class PaasWebAppCloudFoundryDriver extends PaasEntityCloudFoundr
 
     @Override
     public boolean isRunning() {
-        CloudApplication app = getClient().getApplication(applicationName);
-        return (app != null)
-                && app.getState().equals(CloudApplication.AppState.STARTED);
+        try {
+            CloudApplication app = getClient().getApplication(applicationName);
+            return (app != null)
+                    && app.getState().equals(CloudApplication.AppState.STARTED);
+        } catch (Exception e) {
+            //log.debug("Application - {} is not available for now", applicationName);
+            return false;
+        }
     }
 
     @Override
@@ -216,6 +221,9 @@ public abstract class PaasWebAppCloudFoundryDriver extends PaasEntityCloudFoundr
     }
 
     public void postLaunch() {
+        //TODO: we should use TASK for avoid wait methods.
+        getEntity().waitForEntityStart();
+
         CloudApplication application = getClient().getApplication(applicationName);
         String domainUri = "http://"+application.getUris().get(0);
         getEntity().setAttribute(Attributes.MAIN_URI, URI.create(domainUri));
