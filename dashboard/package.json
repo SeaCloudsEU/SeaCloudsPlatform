@@ -1,0 +1,31 @@
+{
+  "name": "seaclouds-dashboard",
+  "version": "0.8.0-SNAPSHOT",
+  "description": "A AngularJS based Dashboard for SeaClouds Platform",
+  "private": true,
+  "devDependencies": {
+    "bower": "^1.6.3",
+    "grunt": "^0.4.5",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-copy": "^0.8.2",
+    "grunt-contrib-cssmin": "^0.14.0",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-nodeunit": "~0.4.1",
+    "grunt-contrib-uglify": "^0.9.2",
+    "grunt-usemin": "^3.1.1",
+    "grunt-wiredep": "^2.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SeaCloudsEU/SeaCloudsPlatform"
+  },
+  "keywords": [
+    "SeaClouds"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/SeaCloudsEU/SeaCloudsPlatform/issues"
+  },
+  "homepage": "https://github.com/SeaCloudsEU/SeaCloudsPlatform"
+}

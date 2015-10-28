@@ -75,7 +75,7 @@ var Status = (function() {
         /*
          * Autogenerate typemap
          */
-        typemap = {};
+        var typemap = {};
         for (var i in Types) {
             typemap[i] =  Types[i];
         }

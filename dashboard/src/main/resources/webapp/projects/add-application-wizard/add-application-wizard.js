@@ -55,7 +55,7 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
 
 
         $scope.processAAM = function () {
-            if (isValidYAML($scope.applicationWizardData.matchmakerInput)) {
+            if (FormatValidator.validateYAML($scope.applicationWizardData.matchmakerInput)) {
                 $scope.SeaCloudsApi.matchmake($scope.applicationWizardData.matchmakerInput).
                     success(function (adp) {
                         $scope.applicationWizardData.matchmakerResult = JSON.stringify(adp);
@@ -71,7 +71,7 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
         }
 
         $scope.processADP = function () {
-            if (isValidYAML($scope.applicationWizardData.optimizerInput)) {
+            if (FormatValidator.validateYAML($scope.applicationWizardData.optimizerInput)) {
                 $scope.SeaCloudsApi.optimize($scope.applicationWizardData.optimizerInput)
                     .success(function (dam) {
                         $scope.applicationWizardData.optimizerResult = JSON.stringify(dam);
@@ -121,7 +121,8 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
             }
 
 
-            $scope.SeaCloudsApi.addProject($scope.damInput, damSuccessCb, damFailCb, $scope.applicationWizardData.monitoringModelInput, $scope.applicationWizardData.monitoringRulesInput, rulesSuccessCb, rulesFailCb,
+            $scope.SeaCloudsApi.addProject($scope.applicationWizardData.damInput, damSuccessCb, damFailCb,
+                $scope.applicationWizardData.monitoringRulesInput, rulesSuccessCb, rulesFailCb,
                 $scope.slaInput, agreementSuccessCb, agreementFailCb).
                 success(function (data) {
                     $scope.applicationWizardData.wizardLog += "\n\n";
@@ -210,10 +211,10 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
                 case 2:
                     return true;
                 case 3:
-                    return isValidJSON($scope.applicationWizardData.matchmakerResult) && isValidJSON($scope.applicationWizardData.optimizerResult)
+                    return FormatValidator.validateJSON($scope.applicationWizardData.matchmakerResult) && FormatValidator.validateJSON($scope.applicationWizardData.optimizerResult)
                 case 4:
-                    return isValidYAML($scope.applicationWizardData.damInput)
-                        && isValidXML($scope.applicationWizardData.monitoringRulesInput) && isValidXML($scope.applicationWizardData.slaInput)
+                    return FormatValidator.validateYAML($scope.applicationWizardData.damInput)
+                        && FormatValidator.validateXML($scope.applicationWizardData.monitoringRulesInput) && FormatValidator.validateXML($scope.applicationWizardData.slaInput)
                 case 5:
                     return true;
             }
@@ -252,7 +253,7 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
             link: function (scope, elem, attrs) {
                 scope.editorOptionsInput = {
                     mode: 'application/json',
-                    lineNumbers: true,
+                    lineNumbers: true
                 };
 
                 scope.editorOptionsOutput = {
