@@ -1,5 +1,5 @@
 /**
- * This is a proof of concept of topology editor using Graph.Node objects.
+ * This is a proof of concept of topoLOGy editor using Graph.Node objects.
  *
  * Nodes and links can be added to the canvas.
  * Nodes can be moved. Nodes can be linked with other nodes.
@@ -16,11 +16,11 @@
  *       height: 400,
  *       linkbydefault: true,
  *       addlinkcallback : function(link) {
- *           log.debug(link);
+ *           LOG.debug(link);
  *           return link;
  *       },
  *       changehandler : function(newmodel) {
- *           console.log("model has changed");
+ *           console.LOG("model has changed");
  *       }
  *   });
  *

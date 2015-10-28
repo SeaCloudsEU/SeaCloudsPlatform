@@ -23,7 +23,7 @@
             return {
                 restrict: 'E',
                 scope: {topology: '=bind'},
-                templateUrl: 'static/js/editor/angular-topology-editor.html',
+                templateUrl: 'static/lib/angular-topology-editor/editor-view.html',
                 controller: function ($scope) {
                     var randLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
 
