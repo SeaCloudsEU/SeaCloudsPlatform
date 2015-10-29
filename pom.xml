@@ -118,7 +118,7 @@
         <toscamodel.version>1.0.0</toscamodel.version>
         <hsqldb.version>2.3.0</hsqldb.version>
         <mysql-connector.version>5.1.27</mysql-connector.version>
-        <modaclouds.version>2.4</modaclouds.version>
+        <tower4clouds.version>0.2.3</tower4clouds.version>
         <jaxb.version>2.2.6</jaxb.version>
         <castor.version>1.2</castor.version>
         <cloudfloundry.client.version>1.1.2</cloudfloundry.client.version>
@@ -517,11 +517,10 @@
                 <artifactId>jaxb-impl</artifactId>
                 <version>${jaxb.version}</version>
             </dependency>
-
             <dependency>
-                <groupId>it.polimi.modaclouds.qos-models</groupId>
-                <artifactId>qos-models</artifactId>
-                <version>${modaclouds.version}</version>
+                <groupId>it.polimi.tower4clouds</groupId>
+                <artifactId>rules</artifactId>
+                <version>${tower4clouds.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.castor</groupId>

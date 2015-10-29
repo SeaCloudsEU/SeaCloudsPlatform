@@ -1,0 +1,289 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+
+description: AAM for SeaClouds Demo V2.0
+
+imports:
+  - tosca-normative-types:1.0.0.wd03-SNAPSHOT
+
+topology_template:
+ node_templates:
+   java_ee_server:
+    type: seaclouds.nodes.Compute.Amazon
+    properties:
+      location: aws-ec2:us-west-2
+
+   db:
+    type: seaclouds.nodes.Platform.Pivotal
+    properties:
+      location: pivotal
+
+   mysql_server:
+    type: seaclouds.nodes.Deploy.MySQL
+    properties:
+       name: some_name
+       user: some_user
+       password: some_password
+       version: 5.5.37
+    artifacts:
+      - db_create: files/db_create.sql
+        type: tosca.artifacts.File
+    requirements:
+      - host: db
+
+   tomcat_server:
+    type: seaclouds.nodes.deploy.tomcatServer
+    properties:
+       version: 7.0.53
+    artifacts:
+       - war: chat-webApplication.war
+    requirements:
+       - host: java_ee_server
+
+   aws-ec2:us-west-2:
+        type: seaclouds.nodes.Compute.Amazon
+        properties:
+          type: compute
+          num_cpus: 4
+          availability: 0.98
+          cost: 0.928 usd_per_hour
+          performance: 62 ecb
+
+   pivotal:
+        type: seaclouds.nodes.Platform.Pivotal
+        properties:
+          type: platform
+          go_support: true
+          java_support: true
+          node_support: true
+          php_support: true
+          python_support: true
+          ruby_support: true
+          mysql_support: true
+          postgresql_support: true
+          mongoDB_support: true
+          redis_support: true
+          riak_support: true
+          dataStax_support: true
+          neo4j_support: true
+          pivotalHD_support: true
+          price: 0.03 $_perGB_per_h
+
+groups:
+  db_query:
+    members: [db]
+    policies:
+      - QoSInfo:
+          execution_time: 30 ms
+          benchmark_platform: hp_cloud_services.2xl
+      - dependencies:
+          other_modules: []
+
+  java_ee_server_operation:
+    members: [java_ee_server]
+    policies:
+      - QoSInfo:
+          execution_time: 50 ms
+          benchmark_platform: hp_cloud_services.2xl
+      - QoSRequirements:
+          response_time: { less_than: 2 sec }
+          availability: { greater_than: 0.998 }
+          cost: { less_or_equal: 200 euros_per_month }
+          workload: { less_or_equal: 50 req_per_mins }
+      - dependencies:
+          other_modules: [ db_query ]
+  sla_get_info:
+    members: [application]
+    policies:
+    - {id: '123'}
+  monitoringStuffModule1:
+    members: [java_ee_server]
+    policies:
+    - monitoringRules: |
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <ns3:monitoringRules xmlns:ns2="http://www.modaclouds.eu/xsd/2.0/grouping_categories_schema" xmlns="http://www.modaclouds.eu/xsd/2.0/aggregate_functions_schema" xmlns:ns4="http://www.modaclouds.eu/xsd/2.0/actions_schema" xmlns:ns3="http://www.modaclouds.eu/xsd/1.0/monitoring_rules_schema" xmlns:ns5="http://www.modaclouds.eu/xsd/1.0/metrics_schema">
+            <ns3:monitoringRule id="cpuRule_Chat" timeStep="10" timeWindow="10">
+                <ns3:monitoredTargets>
+                    <ns3:monitoredTarget type="Chat_VM" class="VM"/>
+                </ns3:monitoredTargets>
+                <ns3:collectedMetric metricName="CPUUtilization">
+                    <ns3:parameter name="samplingTime">1</ns3:parameter>
+                    <ns3:parameter name="samplingProbability">1</ns3:parameter>
+                </ns3:collectedMetric>
+                <ns3:metricAggregation groupingClass="VM" aggregateFunction="Average"/>
+                <ns3:actions>
+                    <ns3:action name="OutputMetric">
+                        <ns3:parameter name="metric">AverageCpuUtilization_Chat</ns3:parameter>
+                        <ns3:parameter name="value">METRIC</ns3:parameter>
+                        <ns3:parameter name="resourceId">ID</ns3:parameter>
+                    </ns3:action>
+                </ns3:actions>
+            </ns3:monitoringRule>
+            <ns3:monitoringRule id="ramRule_Chat" timeStep="10" timeWindow="10">
+                <ns3:monitoredTargets>
+                    <ns3:monitoredTarget type="Chat_VM" class="VM"/>
+                </ns3:monitoredTargets>
+                <ns3:collectedMetric metricName="MemUsed">
+                    <ns3:parameter name="samplingTime">1</ns3:parameter>
+                    <ns3:parameter name="samplingProbability">1</ns3:parameter>
+                </ns3:collectedMetric>
+                <ns3:metricAggregation groupingClass="VM" aggregateFunction="Average"/>
+                <ns3:actions>
+                    <ns3:action name="OutputMetric">
+                        <ns3:parameter name="metric">AverageRamUtilization_Chat</ns3:parameter>
+                        <ns3:parameter name="value">METRIC</ns3:parameter>
+                        <ns3:parameter name="resourceId">ID</ns3:parameter>
+                    </ns3:action>
+                </ns3:actions>
+            </ns3:monitoringRule>
+            <ns3:monitoringRule id="respTimeRule_Chat" timeStep="10" timeWindow="10">
+                <ns3:monitoredTargets>
+                    <ns3:monitoredTarget type="Chat" class="InternalComponent"/>
+                </ns3:monitoredTargets>
+                <ns3:collectedMetric metricName="AvarageResponseTimeInternalComponent"/>
+                <ns3:actions>
+                    <ns3:action name="OutputMetric">
+                        <ns3:parameter name="metric">AvarageResponseTime_Chat</ns3:parameter>
+                        <ns3:parameter name="value">METRIC</ns3:parameter>
+                        <ns3:parameter name="resourceId">ID</ns3:parameter>
+                    </ns3:action>
+                </ns3:actions>
+            </ns3:monitoringRule>
+            <ns3:monitoringRule id="respTimeRule_InternalComponent" timeStep="10" timeWindow="10">
+                <ns3:monitoredTargets>
+                    <ns3:monitoredTarget class="Method"/>
+                </ns3:monitoredTargets>
+                <ns3:collectedMetric metricName="EffectiveResponseTime">
+                    <ns3:parameter name="samplingProbability">1</ns3:parameter>
+                </ns3:collectedMetric>
+                <ns3:actions>
+                    <ns3:action name="OutputMetric">
+                        <ns3:parameter name="metric">AvarageResponseTimeInternalComponent</ns3:parameter>
+                        <ns3:parameter name="value">METRIC</ns3:parameter>
+                        <ns3:parameter name="resourceId">ID</ns3:parameter>
+                    </ns3:action>
+                </ns3:actions>
+            </ns3:monitoringRule>
+            <ns3:monitoringRule id="respTimeSLARule_Chat" timeStep="10" timeWindow="10">
+                <ns3:monitoredTargets>
+                    <ns3:monitoredTarget type="Chat" class="InternalComponent"/>
+                </ns3:monitoredTargets>
+                <ns3:collectedMetric metricName="AvarageResponseTimeInternalComponent"/>
+                <ns3:condition>METRIC &gt; 2000.0</ns3:condition>
+                <ns3:actions>
+                    <ns3:action name="OutputMetric">
+                        <ns3:parameter name="metric">AvarageResponseTime_Chat_Violation</ns3:parameter>
+                        <ns3:parameter name="value">METRIC</ns3:parameter>
+                        <ns3:parameter name="resourceId">ID</ns3:parameter>
+                    </ns3:action>
+                </ns3:actions>
+            </ns3:monitoringRule>
+            <ns3:monitoringRule id="vmAvailableSLARule_Chat" timeStep="2" timeWindow="2">
+                <ns3:monitoredTargets>
+                    <ns3:monitoredTarget type="Chat" class="InternalComponent"/>
+                </ns3:monitoredTargets>
+                <ns3:collectedMetric metricName="AppAvailable"/>
+                <ns3:metricAggregation groupingClass="InternalComponent" aggregateFunction="Average"/>
+                <ns3:condition>METRIC &lt; 0.998</ns3:condition>
+                <ns3:actions>
+                    <ns3:action name="OutputMetric">
+                        <ns3:parameter name="metric">AvarageAppAvailability_Chat_Violation</ns3:parameter>
+                        <ns3:parameter name="value">METRIC</ns3:parameter>
+                        <ns3:parameter name="resourceId">ID</ns3:parameter>
+                    </ns3:action>
+                </ns3:actions>
+            </ns3:monitoringRule>
+        </ns3:monitoringRules>
+    - dataCollectorDeploymentScript: |
+        export MODACLOUDS_TOWER4CLOUDS_MANAGER_IP=127.0.0.1
+        export MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT=8170
+        export MODACLOUDS_TOWER4CLOUDS_DC_SYNC_PERIOD=10
+        export MODACLOUDS_TOWER4CLOUDS_RESOURCES_KEEP_ALIVE_PERIOD=25
+        export MODACLOUDS_TOWER4CLOUDS_VM_TYPE=Chat_VM
+        export MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE=Chat
+        export MODACLOUDS_TOWER4CLOUDS_VM_ID=$brooklyn:formatString("%s%s", Chat_VM,$brooklyn:component("Chat").attributeWhenReady("host.address"))export MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID=$brooklyn:formatString("%s%s", Chat,$brooklyn:component("Chat").attributeWhenReady("host.address"))wget -O modaclouds-data-collector.jar https://github.com/imperial-modaclouds/modaclouds-data-collectors/releases/download/2.0.4/data-collector-22.0.4.jar
+        wget -O hyperic-sigar-1.6.4.zip http://sourceforge.net/projects/sigar/files/sigar/1.6/hyperic-sigar-1.6.4.zip/download?use_mirror=switch
+        unzip hyperic-sigar-1.6.4.zip
+        nohup java -Djava.library.path=./hyperic-sigar-1.6.4/sigar-bin/lib/ -jar modaclouds-data-collector.jar tower4clouds > dc.out 2>&1 &
+        echo $! > $PID_FILE
+  monitoringStuffModule2:
+    members: [db]
+    policies:
+    - monitoringRules: |
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <ns3:monitoringRules xmlns:ns2="http://www.modaclouds.eu/xsd/2.0/grouping_categories_schema" xmlns="http://www.modaclouds.eu/xsd/2.0/aggregate_functions_schema" xmlns:ns4="http://www.modaclouds.eu/xsd/2.0/actions_schema" xmlns:ns3="http://www.modaclouds.eu/xsd/1.0/monitoring_rules_schema" xmlns:ns5="http://www.modaclouds.eu/xsd/1.0/metrics_schema">
+            <ns3:monitoringRule id="cpuRule_Chat" timeStep="10" timeWindow="10">
+                <ns3:monitoredTargets>
+                    <ns3:monitoredTarget type="Chat_VM" class="VM"/>
+                </ns3:monitoredTargets>
+                <ns3:collectedMetric metricName="CPUUtilization">
+                    <ns3:parameter name="samplingTime">1</ns3:parameter>
+                    <ns3:parameter name="samplingProbability">1</ns3:parameter>
+                </ns3:collectedMetric>
+                <ns3:metricAggregation groupingClass="VM" aggregateFunction="Average"/>
+                <ns3:actions>
+                    <ns3:action name="OutputMetric">
+                        <ns3:parameter name="metric">AverageCpuUtilization_Chat</ns3:parameter>
+                        <ns3:parameter name="value">METRIC</ns3:parameter>
+                        <ns3:parameter name="resourceId">ID</ns3:parameter>
+                    </ns3:action>
+                </ns3:actions>
+            </ns3:monitoringRule>
+            <ns3:monitoringRule id="ramRule_Chat" timeStep="10" timeWindow="10">
+                <ns3:monitoredTargets>
+                    <ns3:monitoredTarget type="Chat_VM" class="VM"/>
+                </ns3:monitoredTargets>
+                <ns3:collectedMetric metricName="MemUsed">
+                    <ns3:parameter name="samplingTime">1</ns3:parameter>
+                    <ns3:parameter name="samplingProbability">1</ns3:parameter>
+                </ns3:collectedMetric>
+                <ns3:metricAggregation groupingClass="VM" aggregateFunction="Average"/>
+                <ns3:actions>
+                    <ns3:action name="OutputMetric">
+                        <ns3:parameter name="metric">AverageRamUtilization_Chat</ns3:parameter>
+                        <ns3:parameter name="value">METRIC</ns3:parameter>
+                        <ns3:parameter name="resourceId">ID</ns3:parameter>
+                    </ns3:action>
+                </ns3:actions>
+            </ns3:monitoringRule>
+            <ns3:monitoringRule id="respTimeRule_Chat" timeStep="10" timeWindow="10">
+                <ns3:monitoredTargets>
+                    <ns3:monitoredTarget type="Chat" class="InternalComponent"/>
+                </ns3:monitoredTargets>
+                <ns3:collectedMetric metricName="AvarageResponseTimeInternalComponent"/>
+                <ns3:actions>
+                    <ns3:action name="OutputMetric">
+                        <ns3:parameter name="metric">AvarageResponseTime_Chat</ns3:parameter>
+                        <ns3:parameter name="value">METRIC</ns3:parameter>
+                        <ns3:parameter name="resourceId">ID</ns3:parameter>
+                    </ns3:action>
+                </ns3:actions>
+            </ns3:monitoringRule>
+            <ns3:monitoringRule id="respTimeRule_InternalComponent" timeStep="10" timeWindow="10">
+                <ns3:monitoredTargets>
+                    <ns3:monitoredTarget class="Method"/>
+                </ns3:monitoredTargets>
+                <ns3:collectedMetric metricName="EffectiveResponseTime">
+                    <ns3:parameter name="samplingProbability">1</ns3:parameter>
+                </ns3:collectedMetric>
+                <ns3:actions>
+                    <ns3:action name="OutputMetric">
+                        <ns3:parameter name="metric">AvarageResponseTimeInternalComponent</ns3:parameter>
+                        <ns3:parameter name="value">METRIC</ns3:parameter>
+                        <ns3:parameter name="resourceId">ID</ns3:parameter>
+                    </ns3:action>
+                </ns3:actions>
+            </ns3:monitoringRule>
+        </ns3:monitoringRules>
+    - dataCollectorDeploymentScript: |
+        export MODACLOUDS_TOWER4CLOUDS_MANAGER_IP=127.0.0.1
+        export MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT=8170
+        export MODACLOUDS_TOWER4CLOUDS_DC_SYNC_PERIOD=10
+        export MODACLOUDS_TOWER4CLOUDS_RESOURCES_KEEP_ALIVE_PERIOD=25
+        export MODACLOUDS_TOWER4CLOUDS_VM_TYPE=Chat_VM
+        export MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE=Chat
+        export MODACLOUDS_TOWER4CLOUDS_VM_ID=$brooklyn:formatString("%s%s", Chat_VM,$brooklyn:component("Chat").attributeWhenReady("host.address"))export MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID=$brooklyn:formatString("%s%s", Chat,$brooklyn:component("Chat").attributeWhenReady("host.address"))wget -O modaclouds-data-collector.jar https://github.com/imperial-modaclouds/modaclouds-data-collectors/releases/download/2.0.4/data-collector-22.0.4.jar
+        wget -O hyperic-sigar-1.6.4.zip http://sourceforge.net/projects/sigar/files/sigar/1.6/hyperic-sigar-1.6.4.zip/download?use_mirror=switch
+        unzip hyperic-sigar-1.6.4.zip
+        nohup java -Djava.library.path=./hyperic-sigar-1.6.4/sigar-bin/lib/ -jar modaclouds-data-collector.jar tower4clouds > dc.out 2>&1 &
+        echo $! > $PID_FILE
+
