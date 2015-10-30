@@ -221,7 +221,7 @@ public class SuitableOptions { // implements Iterable<List<String>
       // if it is not found, there will probably be an error later. Now advise.
       // We cannot repair the situation here, just be aware.
       if (!found) {
-         log.warn("Module in topology has not been found as module with some suitable optoins. ERROR ahead!");
+         log.warn("Module in topology named '"+moduleName+"'  has not been found as module with some suitable optoins. ERROR ahead!");
       }
 
       found = false;

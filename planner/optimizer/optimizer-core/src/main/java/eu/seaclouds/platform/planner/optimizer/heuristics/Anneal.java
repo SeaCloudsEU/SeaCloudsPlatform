@@ -76,12 +76,19 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
 
          double temperature = INITIAL_TEMPERATURE;
          while (iterationsWithoutChangeState < MAX_ITERATIONS_NOT_CHANGE_STATE) {
-
+            if (IS_DEBUG) {
+               logAnneal.debug("iterationsWithoutchange=" + iterationsWithoutChangeState + " and numItersNoImprovement="
+                     + numItersNoImprovement);
+            }
             Solution neighbor = getRandomNeighbour(currentSol, cloudOffers, topology);
             neighbor.setSolutionFitness(super.fitness(neighbor, requirements, topology, cloudOffers));
 
             if (neighbourShouldBeSelected(currentSol.getSolutionFitness(), neighbor.getSolutionFitness(),
                   temperature)) {
+               if (IS_DEBUG) {
+                  logAnneal.debug("Changing from solution: " + currentSol.toString());
+                  logAnneal.debug(" to solution: " + neighbor.toString());
+               }
                currentSol = neighbor;
                if (currentSol.getSolutionFitness() > bestSolSoFar.getSolutionFitness()) {
                   bestSolSoFar = currentSol;
@@ -136,15 +143,42 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
    }
 
    protected boolean neighbourShouldBeSelected(double currentFitness, double neighborFitness, double temperature) {
-
-      if (neighborFitness > currentFitness) {
+      if (IS_DEBUG) {
+         logAnneal.debug("Evaluating whether to choose a neighbor. CurrentFitness=" + currentFitness
+               + " neighbourfitness=" + neighborFitness);
+      }
+      // if neighbour Is Not Only Marginally Better . The marginality has been
+      // set to 0.01 arbitrarily
+      if (neighborFitness > (currentFitness + 0.01)) {
          return true;
       }
 
-      // neighbor is worse than current, calculate an exponential distribution
-      double probability = Math.expm1(-1.0 * (currentFitness - neighborFitness) / temperature) + 1.0;
       double random = Math.random();
+
+      double probability = calculateProbabilityExponential(currentFitness, neighborFitness, temperature);
+      if (IS_DEBUG) {
+         logAnneal.debug(
+               "probability of change=" + probability + " randomNumber=" + random + " temperature=" + temperature);
+      }
+      probability = calculateProbabilityExponentialMaxAHalf(currentFitness, neighborFitness, temperature);
+      if (IS_DEBUG) {
+         logAnneal.debug("probability of change method2=" + probability + " randomNumber=" + random + " temperature="
+               + temperature);
+      }
+
       return probability > random;
+
+   }
+
+   private double calculateProbabilityExponentialMaxAHalf(double currentFitness, double neighborFitness,
+         double temperature) {
+      // The 0.01 is to accommodate the previous marginality
+      return 1.0 / (1.0 + (1.0 / calculateProbabilityExponential(currentFitness + 0.01, neighborFitness, temperature)));
+   }
+
+   private double calculateProbabilityExponential(double currentFitness, double neighborFitness, double temperature) {
+      // neighbor is worse than current, calculate an exponential distribution.
+      return Math.expm1(-1.0 * (currentFitness - neighborFitness) / temperature) + 1.0;
 
    }
 

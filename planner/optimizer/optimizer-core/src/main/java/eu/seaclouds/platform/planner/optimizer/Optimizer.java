@@ -21,11 +21,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
+import eu.seaclouds.platform.planner.optimizer.util.MMtoOptModelTransformer;
 
 public class Optimizer {
 
-   private static Logger          log = LoggerFactory.getLogger(Optimizer.class);
-   private final int              NUMBER_OF_PLANS_GENERATED;
+   private static Logger log = LoggerFactory.getLogger(Optimizer.class);
+   private final int NUMBER_OF_PLANS_GENERATED;
    private final SearchMethodName searchName;
 
    public Optimizer() {
@@ -62,14 +63,20 @@ public class Optimizer {
          try {
             outputPlans = initialOptimizer.optimize(appModel, suitableCloudOffer, NUMBER_OF_PLANS_GENERATED);
             previousPlans = outputPlans;
+         } catch (Exception exc) {
+            log.info("Optimizer did not work in its standard input. Trying transformed Input ");
+            outputPlans = initialOptimizer.optimize(appModel,
+                  MMtoOptModelTransformer.transformModel(suitableCloudOffer), NUMBER_OF_PLANS_GENERATED);
+            previousPlans = outputPlans;
          } catch (Error E) {
             log.error("Error optimizing the initial deployment");
             E.printStackTrace();
          }
+
       } else {
          Reoptimizer optimizerReplanning = new Reoptimizer(searchName);
 
-         try{
+         try {
             log.error("Calling a Replanning. The previously generated Plan will be used as a base");
             outputPlans = optimizerReplanning.optimize(appModel, suitableCloudOffer, NUMBER_OF_PLANS_GENERATED);
             previousPlans = outputPlans;

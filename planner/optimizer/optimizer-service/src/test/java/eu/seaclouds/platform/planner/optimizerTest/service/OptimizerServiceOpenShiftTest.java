@@ -43,10 +43,10 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.io.IOUtils;
 
-public class OptimizerServiceTestIT {
+public class OptimizerServiceOpenShiftTest {
 
-   private static final String BASE_URL = "http://localhost:8080/optimizer/";
-   //private static final String BASE_URL = "http://planner-seacloudspolimi.rhcloud.com/optimizer0.8-oct2015/optimizer/";
+  
+   private static final String BASE_URL = "http://planner-seacloudspolimi.rhcloud.com/optimizer0.8-oct2015/optimizer/";
    private static String appModel;
    private static String suitableCloudOffer;
 
@@ -58,22 +58,22 @@ public class OptimizerServiceTestIT {
    public void createObjects() {
       
 
-      log = LoggerFactory.getLogger(OptimizerServiceTestIT.class);
+      log = LoggerFactory.getLogger(OptimizerServiceOpenShiftTest.class);
 
-      log.info("Starting TEST optimizer SERVICE");
+      log.info("Starting TEST optimizer SERVICE DEPLOYED IN OPENSHIFT");
 
       final String dir = System.getProperty("user.dir");
       log.debug("Trying to open files: current executino dir = " + dir);
 
       try {
-         appModel = filenameToString(dir+"/../optimizer-core/"+TestConstants.APP_MODEL_FILENAME);
+         appModel = filenameToString(dir+"/../optimizer-core/"+TestConstants.APP_MODEL_FILENAME_OPENSHIFT);
       } catch (IOException e) {
          log.error("File for APPmodel not found");
          e.printStackTrace();
       }
 
       try {
-         suitableCloudOffer = filenameToString(dir+"/../optimizer-core/"+TestConstants.CLOUD_OFFER_FILENAME);
+         suitableCloudOffer = filenameToString(dir+"/../optimizer-core/"+TestConstants.CLOUD_OFFER_FILENAME_OPENSHIFT);
       } catch (IOException e) {
          log.error("File for Cloud Offers not found");
          e.printStackTrace();
@@ -89,7 +89,7 @@ public class OptimizerServiceTestIT {
    @Test(enabled = TestConstants.EnabledTest)
    public void testPresenceSolutionBlind() {
 
-      log.info("=== TEST for SOLUTION GENERATION of BLIND optimizer service STARTED ===");
+      log.info("=== TEST for SOLUTION GENERATION of BLIND optimizer service DEPLOYED IN OPENSHIFT STARTED ===");
 
       String url = BASE_URL + "optimize";
 
@@ -98,18 +98,18 @@ public class OptimizerServiceTestIT {
 
       method.addParameter("aam", appModel);
       method.addParameter("offers", suitableCloudOffer);
-      method.addParameter("optmethod", "BLINDSEARCH");
+      method.addParameter("optmethod", SearchMethodName.BLINDSEARCH.toString());
 
-      executeAndCheck(client, method);
+      executeAndCheck(client, method, SearchMethodName.BLINDSEARCH.toString());
 
-      log.info("=== TEST for SOLUTION GENERATION of BLIND optimizer service FINISEHD ===");
+      log.info("=== TEST for SOLUTION GENERATION of BLIND optimizer service DEPLOYED IN OPENSHIFT FINISEHD ===");
 
    }
    
    @Test(enabled = TestConstants.EnabledTest)
    public void testPresenceSolutionHill() {
 
-      log.info("=== TEST for SOLUTION GENERATION of HILLCLIMB optimizer service STARTED ===");
+      log.info("=== TEST for SOLUTION GENERATION of HILLCLIMB optimizer service DEPLOYED IN OPENSHIFT STARTED ===");
 
       String url = BASE_URL + "optimize";
 
@@ -119,9 +119,9 @@ public class OptimizerServiceTestIT {
       method.addParameter("aam", appModel);
       method.addParameter("offers", suitableCloudOffer);
       method.addParameter("optmethod", SearchMethodName.HILLCLIMB.toString());
-      executeAndCheck(client, method);
+      executeAndCheck(client, method, SearchMethodName.HILLCLIMB.toString());
 
-      log.info("=== TEST for SOLUTION GENERATION of HILLCLIMB optimizer service FINISEHD ===");
+      log.info("=== TEST for SOLUTION GENERATION of HILLCLIMB optimizer service DEPLOYED IN OPENSHIFT FINISEHD ===");
 
    }
    
@@ -139,21 +139,21 @@ public class OptimizerServiceTestIT {
       method.addParameter("offers", suitableCloudOffer);
       method.addParameter("optmethod", SearchMethodName.ANNEAL.toString());
 
-      executeAndCheck(client, method);
+      executeAndCheck(client, method,  SearchMethodName.ANNEAL.toString());
 
-      log.info("=== TEST for SOLUTION GENERATION of ANNEAL optimizer service FINISEHD ===");
+      log.info("=== TEST for SOLUTION GENERATION of ANNEAL optimizer service DEPLOYED IN OPENSHIFT FINISEHD ===");
 
    }
    
 
-   private void executeAndCheck(HttpClient client, PostMethod method) {
+   private void executeAndCheck(HttpClient client, PostMethod method, String methodUsed) {
       InputStream in = null;
       int numOutputs = 0;
       String outputLine;
       String completeOutput = "";
       try {
          int statusCode = client.executeMethod(method);
-
+         log.info("StatusCode was: " + statusCode);
          if (statusCode != -1) {
             in = method.getResponseBodyAsStream();
          }
@@ -172,9 +172,8 @@ public class OptimizerServiceTestIT {
       }
 
       Assert.assertTrue(numOutputs == 5,
-            "Optimizer has not generated 5 output ADPs. The complete output is" + completeOutput);
+            "Optimizer has not generated 5 output ADPs for method "+ methodUsed + " . The complete output is" + completeOutput);
       log.debug("Complete output is: " + completeOutput);
-
    }
 
    @Test(enabled = TestConstants.EnabledTest)
@@ -222,20 +221,20 @@ public class OptimizerServiceTestIT {
    @Test(enabled = false)
    public void testPresenceHeartbeatSNAPSHOT() {
 
-      String urlstring="http://localhost:8080/optimizer-0.8.0-SNAPSHOT/optimizer/";
-      log.info("=== TEST for presence of OPTIMIZER service heartbeat in "+ urlstring +"===");
+
+      log.info("=== TEST for presence of OPTIMIZER service DEPLOYED IN OPENSHIFT heartbeat in "+ BASE_URL +" ===");
 
       String outputLine;
       String completeOutput = "";
 
       try {
 
-         URL url = new URL(urlstring + "heartbeat");
+         URL url = new URL(BASE_URL + "heartbeat");
          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
          conn.setRequestMethod("GET");
 
          Assert.assertTrue(conn.getResponseCode() == 200,
-               "Error requesting heartbeat in " + urlstring + " . Instead of 200 we have received code " + conn.getResponseCode());
+               "Error requesting heartbeat in " + BASE_URL + " . Instead of 200 we have received code " + conn.getResponseCode());
 
          BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
 
@@ -258,7 +257,7 @@ public class OptimizerServiceTestIT {
       Assert.assertTrue(completeOutput.contains("alive"),
             "Optimizer NOT alive. Response of heartbeat is: " + completeOutput);
 
-      log.info("=== TEST for presence of OPTIMIZER service heartbeatin "+ urlstring +" FINISHED ===");
+      log.info("=== TEST for presence of OPTIMIZER service heartbeat IN OPENSHIFT "+ BASE_URL +" FINISHED ===");
 
    }
    
@@ -266,7 +265,7 @@ public class OptimizerServiceTestIT {
    public void testPresenceHeartbeatDIRECT() {
 
       String urlstring="http://localhost:8080/optimizer/";
-      log.info("=== TEST for presence of OPTIMIZER service heartbeat in "+ "urlstring "+"===");
+      log.info("=== TEST for presence of OPTIMIZER service heartbeat IN OPENSHIFT "+ "urlstring "+"===");
 
       String outputLine;
       String completeOutput = "";
@@ -301,7 +300,7 @@ public class OptimizerServiceTestIT {
       Assert.assertTrue(completeOutput.contains("alive"),
             "Optimizer NOT alive. Response of heartbeat is: " + completeOutput);
 
-      log.info("=== TEST for presence of OPTIMIZER service heartbeatin "+ "urlstring "+" FINISHED ===");
+      log.info("=== TEST for presence of OPTIMIZER SERVICE DEPLOYED IN OPENSHIFT service heartbeatin "+ "urlstring "+" FINISHED ===");
 
    }
    
@@ -320,7 +319,7 @@ public class OptimizerServiceTestIT {
 
    @AfterClass
    public void testFinishced() {
-      log.info("=============Test optimizer service finished ==========");
+      log.info("=============Test optimizer service DEPLOYED IN OPENSHIFT finished ==========");
    }
 
 }

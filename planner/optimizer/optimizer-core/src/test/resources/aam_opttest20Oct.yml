@@ -1,0 +1,43 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: <description_not_set>
+imports:
+- tosca-normative-types:1.0.0.wd03-SNAPSHOT
+topology_template:
+  node_templates:
+    www:
+      type: sc_req.www
+
+
+
+node_types:
+    sc_req.www:
+      derived_from: seaclouds.nodes.SoftwareComponent
+      properties:
+        num_cpus:
+          constraints:
+          - greater_or_equal: '4'
+        disk_size:
+          constraints:
+          - greater_or_equal: '256'
+        resource_type:
+          constraints:
+          - equal: compute
+groups:
+    operation_www:
+      members:
+      - www
+      policies:
+      - QoSInfo:
+          execution_time: 200 ms
+          benchmark_platform: hp_cloud_services.2xl
+      - dependencies: {}
+
+      - QoSRequirements:
+          response_time:
+            less_than: 2000.0 ms
+          availability:
+            greater_than: 0.98
+          cost:
+            less_or_equal: 200.0 euros_per_month
+          workload:
+            less_or_equal: 50.0 req_per_min
