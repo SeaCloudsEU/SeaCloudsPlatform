@@ -345,6 +345,7 @@ var Editor = (function() {
             link.target.type === Types.Cloud.type) {
             return undefined;
         }
+        link.behaviour = LinkBehaviour
         activeform = linkform;
         activeform.reset();
         activeform.load(link);
