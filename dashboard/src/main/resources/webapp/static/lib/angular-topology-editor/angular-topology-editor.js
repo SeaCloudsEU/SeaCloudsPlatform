@@ -23,6 +23,7 @@
             return {
                 restrict: 'E',
                 scope: {topology: '=bind'},
+                replace: true,
                 templateUrl: 'static/lib/angular-topology-editor/editor-view.html',
                 controller: function ($scope) {
                     var randLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
@@ -39,8 +40,8 @@
                             }
                         };
 
-                        canvasOptions.height = (!attrs.height) ? 450 : attrs.height;
-                        canvasOptions.width = (!attrs.width) ? $window.innerWidth : attrs.width;
+                        canvasOptions.height = document.getElementById(scope.randomId).parentNode.offsetHeight
+                        canvasOptions.width = document.getElementById(scope.randomId).parentNode.offsetWidth
 
                         var canvas = Canvas();
                         canvas.init(scope.randomId, canvasOptions);
@@ -65,31 +66,23 @@
                 replace: true,
                 link: function (scope, elem, attrs) {
 
-                    scope.canvasInitialized = false;
 
                     scope.initCanvas = function () {
                         var randLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
                         var uniqid = randLetter + Date.now();
-                        elem.html('<div id="' + uniqid + '" class="topology-config"></div>');
+                        elem.html('<div class="canvas-container"><div id="' + uniqid + '"></div></div>');
 
                         var canvasOptions = {};
-
-                        canvasOptions.height = (!attrs.height) ? 450 : attrs.height;
-                        canvasOptions.width = (!attrs.width) ? $window.innerWidth : attrs.width;
-
+                        canvasOptions.height = elem.children()[0].offsetHeight
+                        canvasOptions.width = elem.children()[0].offsetWidth;
 
                         scope.canvas = Canvas();
                         scope.canvas.init(uniqid, canvasOptions);
                         Status.init(scope.canvas);
 
-
                         scope.$watch('topology', function (newValue) {
-                             Status.fromjson(scope.topology);
-
-                            if(!scope.canvasInitialized){
-                                scope.canvas.restart();
-                            }
-
+                            Status.fromjson(scope.topology);
+                            scope.canvas.restart();
                         });
                     }
 
