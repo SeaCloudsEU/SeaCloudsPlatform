@@ -43,21 +43,21 @@
             <wizard-step-5 ng-if="currentStep == 5"></wizard-step-5>
         </div>
         <div class="panel-footer wizard-footer ">
-            <button type="button" class="btn btn-default" ng-click='previousStep()'
+            <button type="button" class="btn btn-default btn-lg" ng-click='previousStep()'
                     ng-disabled="!wizardCanRollback()">Back
             </button>
-            <button type="button" class="btn btn-default btn-primary" ng-click='nextStep()'
+            <button type="button" class="btn btn-default btn-primary btn-lg" ng-click='nextStep()'
                     ng-disabled="!wizardCanContinue()" ng-if="currentStep < 4">Next
             </button>
-            <button type="button" class="btn btn-default btn-warning" ng-click='nextStep()' ng-if="currentStep == 3">Skip step
+            <button type="button" class="btn btn-default btn-warning btn-lg" ng-click='nextStep()'
+                    ng-if="currentStep == 3">Skip step
             </button>
-            <button type="button" class="btn btn-default btn-success" ng-click='nextStep()'
+            <button type="button" class="btn btn-default btn-success btn-lg" ng-click='nextStep()'
                     ng-disabled="!wizardCanContinue()" ng-if="currentStep == 4">Deploy
             </button>
-            <a  class="btn btn-default btn-info" ng-href="#/projects"
+            <a  class="btn btn-default btn-info btn-lg" ng-href="#/projects"
                 ng-if="currentStep == 5">View application list
             </a>
-            <div class="text-danger pull-right" style="padding-top: 10px;"> PROOF OF CONCEPT</div>
         </div>
     </div>
 </div>

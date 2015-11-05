@@ -113,8 +113,7 @@
 .project-panel {
     height: 150px;
     position: relative;
-    background-image : none;
-    background-color : #6CB3EF;
+    background: #6CB3EF none;
     border-color: transparent;
     color: white;
 }
@@ -225,7 +224,7 @@ input.form-control.ng-valid.ng-touched {
 }
 
 .wizard-body {
-    height: 100%;
+    height: 650px;
 }
 
 .wizard-footer{
@@ -305,4 +304,13 @@ input.form-control.ng-valid.ng-touched {
 
 .codemirror-height-lg .CodeMirror  {
     height : 500px;
+}
+
+.centered-progress-bar {
+    width: 80%;
+    margin: 10% auto auto;
+}
+
+.adp-box {
+    height: 650px !important;
 }
