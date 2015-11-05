@@ -159,6 +159,9 @@
                 <artifactId>grunt-maven-plugin</artifactId>
                 <version>1.5.0</version>
                 <configuration>
+                    <gruntOptions>
+                        <gruntOption>--verbose</gruntOption>
+                    </gruntOptions>
                     <excludedResources>
                         <excludedResource>node_modules/**/*</excludedResource>
                     </excludedResources>

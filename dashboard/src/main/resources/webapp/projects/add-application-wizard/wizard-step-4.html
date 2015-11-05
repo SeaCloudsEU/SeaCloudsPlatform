@@ -20,11 +20,8 @@
             <h3>
                 <small>Deployable Application Model</small>
             </h3>
-            <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="editorOptionsDam"
-                           ng-model="applicationWizardData.damInput"></ui-codemirror>
-            <div ngf-select class="btn btn-default btn-primary" ngf-multiple="false" ng-model="applicationWizardData.damInputFile">
-                Load file
-            </div>
+            <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="codemirrorDamOptions"
+                           ng-model="applicationWizardData.finalDam"></ui-codemirror>
         </div>
     </div>
 
@@ -32,21 +29,15 @@
         <h3>
             <small>Monitoring Rules</small>
         </h3>
-        <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="editorOptionsMonitoringRules"
-                       ng-model="applicationWizardData.monitoringRulesInput"></ui-codemirror>
-        <div ngf-select class="btn btn-default btn-primary" ngf-multiple="false" ng-model="applicationWizardData.monitoringRulesInputFile">
-            Load file
-        </div>
+        <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="codeMirrorMonitoringRulesOptions"
+                       ng-model="applicationWizardData.finalMonitoringRules"></ui-codemirror>
     </div>
 
     <div class="col-lg-6">
         <h3>
             <small>Service Level Agreements</small>
         </h3>
-        <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="editorOptionsSLA"
-                       ng-model="applicationWizardData.slaInput" disabled></ui-codemirror>
-        <div ngf-select class="btn btn-default btn-primary" ngf-multiple="false" ng-model="applicationWizardData.slaInputFile">
-            Load file
-        </div>
+        <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="codemirrorSlaRulesOptions"
+                       ng-model="applicationWizardData.finalSlaRules" disabled></ui-codemirror>
     </div>
 </div>

@@ -14,5 +14,12 @@
   ~      See the License for the specific language governing permissions and
   ~      limitations under the License.
   -->
+<div class="row">
+  <div class="col-lg-4">
+    <ui-codemirror class="codemirror-height-lg"  ng-model="applicationWizardData.wizardLog"></ui-codemirror>
+  </div>
 
-<ui-codemirror class="codemirror-height-lg"  ng-model="applicationWizardData.wizardLog"></ui-codemirror>
+  <div class="col-lg-8">
+    <topology-status bind="applicationWizardData.brooklynAppTopology"></topology-status>
+  </div>
+</div>

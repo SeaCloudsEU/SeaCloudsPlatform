@@ -51,45 +51,52 @@
                     };
 
 
-                    $timeout(function() {
+                    $timeout(function () {
                         scope.drawCanvas();
                     });
 
                 }
             };
         })
-        .directive('topologyStatus', function ($window) {
+        .directive('topologyStatus', function ($window, $timeout) {
             return {
                 restrict: 'E',
                 scope: {topology: '=bind'},
                 replace: true,
                 link: function (scope, elem, attrs) {
 
-                    var drawCanvas = function () {
+                    scope.canvasInitialized = false;
+
+                    scope.initCanvas = function () {
                         var randLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
                         var uniqid = randLetter + Date.now();
                         elem.html('<div id="' + uniqid + '" class="topology-config"></div>');
 
-                        var canvasOptions = {
-                            addlinkcallback: Editor.addlinkcallback,
-                            changehandler: function (model) {
-                                scope.topology = model;
-                            }
-                        };
+                        var canvasOptions = {};
 
                         canvasOptions.height = (!attrs.height) ? 450 : attrs.height;
                         canvasOptions.width = (!attrs.width) ? $window.innerWidth : attrs.width;
 
 
-                        var canvas = Canvas();
-                        canvas.init(uniqid, canvasOptions);
+                        scope.canvas = Canvas();
+                        scope.canvas.init(uniqid, canvasOptions);
+                        Status.init(scope.canvas);
 
-                        Status.init(canvas);
-                        Status.fromjson(scope.topology);
-                        canvas.restart();
-                    };
 
-                    drawCanvas();
+                        scope.$watch('topology', function (newValue) {
+                             Status.fromjson(scope.topology);
+
+                            if(!scope.canvasInitialized){
+                                scope.canvas.restart();
+                            }
+
+                        });
+                    }
+
+                    $timeout(function () {
+                        scope.initCanvas();
+                    });
+
                 }
             };
         });

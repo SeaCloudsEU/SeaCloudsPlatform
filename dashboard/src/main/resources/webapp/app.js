@@ -113,53 +113,7 @@ seacloudsDashboard.factory('SeaCloudsApi', function ($http) {
                               monitoringRules, monitoringRulesSuccessCallback, monitoringRulesErrorCallback,
                               agreements, agreementsSuccessCallback, agreementsErrorCallback) {
 
-            var generateMonitoringRulesId = function(monitoringRules, entityId){
-                var xmlParser = new DOMParser();
-                var xmlSerialzier = new XMLSerializer()
-                var rulesXml = xmlParser.parseFromString(monitoringRules, "text/xml");
-                var rules = rulesXml.getElementsByTagName("monitoringRule");
-                
-                for (var i = 0; i< rules.length; i++){
-                    var rule = rules[i];
-                    var oldId = rule.getAttribute("id");
-                    var oldLabel = rule.getAttribute("label");
-                    rule.setAttribute("id", oldId + "-" + entityId);
-                    rule.setAttribute("label", oldLabel + "-" + entityId);
 
-                    var actions = rule.getElementsByTagName("action");
-                    for (var i = 0; i < actions.length; i++){
-                        var action = actions[i];
-                        // TODO: Check if this substitution is really neccesary for each type of metric (eg. sth different to OutputMetric)
-                        var parameters = action.getElementsByTagName("parameter");
-                        if(action.getAttribute("name") == "OutputMetric"){
-                            for(var j = 0; j < parameters.length; j++){
-                                var parameter = parameters[j];
-                                if(parameter.getAttribute("name") == "metric"){
-                                    var oldId = parameter.firstChild.nodeValue;
-                                    parameter.firstChild.nodeValue = oldId + "-" + entityId;
-                                }
-                            }
-                        }
-
-                    }
-
-
-                }
-
-                return xmlSerialzier.serializeToString(rulesXml);
-            }
-            
-            var generateAgreementsId = function(agreements, entityId){
-                var xmlParser = new DOMParser();
-                var xmlSerialzier = new XMLSerializer()
-
-                var agreementsXml = xmlParser.parseFromString(agreements, "text/xml");
-                agreementsXml.documentElement.setAttribute("wsag:AgreementId", entityId)
-
-                return xmlSerialzier.serializeToString(agreementsXml);
-
-            }
-            
             var promise = new Promise(function (resolveParent, rejectParent) {
                 var deployerResponse;
 
@@ -169,20 +123,17 @@ seacloudsDashboard.factory('SeaCloudsApi', function ($http) {
                         deployerResponse = response;
                         damSuccessCallback(response)
 
-
-                        var futureEntityId = response.entityId;
-                
                         // Deploy monitor rules
-                        $http.post("/api/monitor/rules", generateMonitoringRulesId(monitoringRules, futureEntityId)).
+                        $http.post("/api/monitor/rules", monitoringRules).
                             success(function () {
                                 monitoringRulesSuccessCallback();
 
          
                                 $http.post("/api/sla/agreements", {
                                     rules: monitoringRules,
-                                    agreements: generateAgreementsId(agreements, futureEntityId)
+                                    agreements: agreements
                                 }).
-                                    success(function (err) {
+                                    success(function (data) {
                                         agreementsSuccessCallback();
                                         resolveParent(deployerResponse);
 
@@ -288,50 +239,6 @@ seacloudsDashboard.factory('SeaCloudsApi', function ($http) {
 
             return promise;
         },
-        matchmake: function (aam) {
-            var promise = new Promise(function (resolve, reject) {
-                $http.post("/api/planner/matchmake", aam)
-                    .success(function (value) {
-                        resolve(value);
-                    })
-                    .error(function (err) {
-                        reject(Error(err));
-                    });
-            });
-            promise.success = function (fn) {
-                promise.then(fn);
-                return promise;
-            }
-
-            promise.error = function (fn) {
-                promise.then(null, fn);
-                return promise;
-            }
-
-            return promise;
-        },
-        optimize: function (adp) {
-            var promise = new Promise(function (resolve, reject) {
-                $http.post("/api/planner/optimize", adp)
-                    .success(function (value) {
-                        resolve(value);
-                    })
-                    .error(function (err) {
-                        reject(Error(err));
-                    })
-            });
-            promise.success = function (fn) {
-                promise.then(fn);
-                return promise;
-            }
-
-            promise.error = function (fn) {
-                promise.then(null, fn);
-                return promise;
-            }
-
-            return promise;
-        },
         getAgreementStatus: function (applicationId) {
             var promise = new Promise(function (resolve, reject) {
                 $http.get("/api/sla/agreements/" + applicationId + "/status").
@@ -399,8 +306,36 @@ seacloudsDashboard.factory('SeaCloudsApi', function ($http) {
             }
 
             return promise;
-        }
+        },
+        getAdpList: function (aam) {
+            var promise = new Promise(function (resolve, reject) {
+                $http.post("/api/planner/plan", aam).
+                    success(function (result) {
+                        var adps = result.adps;
+                        if(adps){
+                            adps = adps.split("---");
+                            adps.pop(); // Remove last --- element
+                        }else{
+                            adps = [];
+                        }
+                        resolve(adps);
+                    }).
+                    error(function (err) {
+                        reject(Error(err));
+                    })
+            });
+            promise.success = function (fn) {
+                promise.then(fn);
+                return promise;
+            }
 
+            promise.error = function (fn) {
+                promise.then(null, fn);
+                return promise;
+            }
+
+            return promise;
+        }
     };
 });
 
