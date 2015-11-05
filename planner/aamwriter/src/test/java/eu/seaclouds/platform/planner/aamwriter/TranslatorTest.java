@@ -49,7 +49,8 @@ public class TranslatorTest {
     private Map<String, Object> t1;
     private Map<String, Object> t2;
     private Map<String, Object> t3;
-
+    private DGraph graph;
+    
     @BeforeMethod
     public void beforeMethod() {
     }
@@ -61,7 +62,7 @@ public class TranslatorTest {
         Yaml yaml = new Yaml(options);
 
         JSONObject root = (JSONObject) TestUtils.loadJson("/3tier.json");
-        DGraph graph = new DGraph(root);
+        graph = new DGraph(root);
 
         Aam aam = new Translator().translate(graph);
         String serializedYaml = yaml.dump(aam);
@@ -139,6 +140,45 @@ public class TranslatorTest {
     public void testConnections() {
         checkConnection(n1, N2);
         checkConnection(n2, N3);
+    }
+    
+    @Test
+    public void testLanguageIsPropertyOfNodeTemplate() {
+        checkProperty(n1, "language", "JAVA");
+        checkProperty(n2, "language", "JAVA");
+    }
+    
+    @Test
+    public void testPassThroughProperties() {
+        checkProperty(n1, "location", graph.getNode("www").getOtherProperties().get("location"));
+        checkProperty(n1, "location_option", graph.getNode("www").getOtherProperties().get("location_option"));
+
+        checkProperty(n2, "location", graph.getNode("webservices").getOtherProperties().get("location"));
+        checkProperty(n2, "location_option", graph.getNode("webservices").getOtherProperties().get("location_option"));
+    }
+    
+    @Test
+    public void testQosIsNotPropertyOfNodeTemplate() {
+        assertNull(getProperty(n1, "qos"));
+        assertNull(getProperty(n2, "qos"));
+        assertNull(getProperty(n3, "qos"));
+    }
+    
+    private Object getProperty(Map<String, Object> nodeTemplate, String propertyName) {
+        Map properties = (Map)nodeTemplate.get("properties");
+        Object actual = properties.get(propertyName);
+        return actual;
+    }
+
+    private void checkLanguage(String expected, Map<String, Object> actualNodeTemplate) {
+        
+        String language = (String) getProperty(actualNodeTemplate, "language");
+        assertEquals(expected, language);
+    }
+    
+    private void checkProperty(Map<String, Object> nodeTemplate, String propertyName, Object expected) {
+        Object actual = getProperty(nodeTemplate, propertyName);
+        assertEquals(expected, actual);
     }
 
     private void checkConnection(Map from, String to) {

@@ -58,6 +58,12 @@ public class NodeTemplate extends LinkedHashMap {
         this.setType(type.getName());
     }
     
+    public void addProperties(Map<String, Object> properties) {
+        for (Map.Entry<String, Object> entry : properties.entrySet()) {
+            properties().put(entry.getKey(), entry.getValue());
+        }
+    }
+    
     public void addProperty(String name, String value) {
         properties().put(name, value);
     }
