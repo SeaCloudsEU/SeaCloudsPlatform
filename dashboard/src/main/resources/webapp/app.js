@@ -128,7 +128,7 @@ seacloudsDashboard.factory('SeaCloudsApi', function ($http) {
                             success(function () {
                                 monitoringRulesSuccessCallback();
 
-         
+
                                 $http.post("/api/sla/agreements", {
                                     rules: monitoringRules,
                                     agreements: agreements
@@ -242,12 +242,12 @@ seacloudsDashboard.factory('SeaCloudsApi', function ($http) {
         getAgreementStatus: function (applicationId) {
             var promise = new Promise(function (resolve, reject) {
                 $http.get("/api/sla/agreements/" + applicationId + "/status").
-                 success(function (value) {
-                    resolve(value);
-                 }).
-                 error(function (err) {
-                    reject(Error(err));
-                 });
+                    success(function (value) {
+                        resolve(value);
+                    }).
+                    error(function (err) {
+                        reject(Error(err));
+                    });
 
 
             });
@@ -266,12 +266,12 @@ seacloudsDashboard.factory('SeaCloudsApi', function ($http) {
         getAgreements: function (applicationId) {
             var promise = new Promise(function (resolve, reject) {
                 $http.get("/api/sla/agreements/" + applicationId).
-                success(function (value) {
-                    resolve(value);
-                 }).
-                 error(function (err) {
-                    reject(Error(err));
-                 })
+                    success(function (value) {
+                        resolve(value);
+                    }).
+                    error(function (err) {
+                        reject(Error(err));
+                    })
             });
             promise.success = function (fn) {
                 promise.then(fn);
@@ -309,16 +309,31 @@ seacloudsDashboard.factory('SeaCloudsApi', function ($http) {
         },
         getAdpList: function (aam) {
             var promise = new Promise(function (resolve, reject) {
-                $http.post("/api/planner/plan", aam).
-                    success(function (result) {
-                        var adps = result.adps;
-                        if(adps){
-                            adps = adps.split("---");
-                            adps.pop(); // Remove last --- element
-                        }else{
-                            adps = [];
-                        }
+                $http.post("/api/planner/adps", aam).
+                    success(function (adps) {
                         resolve(adps);
+                    }).
+                    error(function (err) {
+                        reject(Error(err));
+                    })
+            });
+            promise.success = function (fn) {
+                promise.then(fn);
+                return promise;
+            }
+
+            promise.error = function (fn) {
+                promise.then(null, fn);
+                return promise;
+            }
+
+            return promise;
+        },
+        getDam: function (adp) {
+            var promise = new Promise(function (resolve, reject) {
+                $http.post("/api/planner/dam", adp).
+                    success(function (result) {
+                        resolve(result.dam);
                     }).
                     error(function (err) {
                         reject(Error(err));

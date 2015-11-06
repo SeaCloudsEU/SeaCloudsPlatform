@@ -47,6 +47,16 @@
         "dist/css/bootstrap.css",
         "dist/js/bootstrap.js"
       ]
+    },
+    "codemirror": {
+      "main": [
+        "lib/codemirror.js",
+        "lib/codemirror.css",
+        "mode/javascript/javascript.js",
+        "mode/yaml/yaml.js",
+        "mode/xml/xml.js"
+      ]
     }
+
   }
 }

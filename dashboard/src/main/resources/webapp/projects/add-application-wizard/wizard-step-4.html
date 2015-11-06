@@ -14,7 +14,16 @@
   ~      See the License for the specific language governing permissions and
   ~      limitations under the License.
   -->
-<div class="row">
+<div class="row" ng-if="!damGenerated">
+    <div class="progress progress-striped centered-progress-bar active">
+        <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
+             style="width: 100%;">
+        </div>
+    </div>
+    <p class="lead text-center"><strong>Please wait while the Planner generates the Deployable Application Model.</strong></p>
+
+</div>
+<div class="row" ng-if="damGenerated">
     <div class="row">
         <div class="col-lg-12">
             <h3>
