@@ -18,6 +18,10 @@
 package eu.seaclouds.platform.dashboard.resources;
 
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import eu.seaclouds.platform.dashboard.config.PlannerFactory;
 import eu.seaclouds.platform.dashboard.http.HttpGetRequestBuilder;
 import eu.seaclouds.platform.dashboard.http.HttpPostRequestBuilder;
@@ -47,8 +51,8 @@ public class PlannerResource {
 
 
     @POST
-    @Path("plan")
-    public Response getPlan(String aam) {
+    @Path("adps")
+    public Response getAdps(String aam) {
         try {
             if (aam == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
@@ -58,6 +62,42 @@ public class PlannerResource {
                         .entity(new StringEntity(aam))
                         .host(planner.getEndpoint())
                         .path("/planner/plan")
+                        .build();
+
+                JsonObject plannerObject = new JsonParser().parse(plannerResponse).getAsJsonObject();
+                JsonArray adpList = new JsonArray();
+
+                if (!plannerObject.get("adps").isJsonNull()) {
+                    String unparsedAdps = plannerObject.get("adps").getAsString();
+
+                    for (String adp : unparsedAdps.split("---")) {
+                        adpList.add(new JsonPrimitive(adp.trim()));
+                    }
+
+                    // Remove the last element because it's an empty string, due a bug on the adps list generation
+                    adpList.remove(adpList.size() -1);
+                }
+                return Response.ok(adpList.toString()).build();
+            }
+        } catch (IOException | URISyntaxException e) {
+            log.error(e.getMessage());
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+    }
+
+    @POST
+    @Path("dam")
+    public Response getDam(String adp) {
+        try {
+            if (adp == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            } else {
+
+                String plannerResponse = new HttpPostRequestBuilder()
+                        .entity(new StringEntity(adp))
+                        .host(planner.getEndpoint())
+                        .path("/planner/damgen")
                         .build();
 
                 return Response.ok(plannerResponse.toString()).build();
