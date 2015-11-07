@@ -668,10 +668,12 @@ var Canvas = (function() {
         };
         for (var i = 0; i < g_nodes.length; i++) {
             var node = g_nodes[i].toJson();
+            node.behaviour = g_nodes[i].behaviour;
             result.nodes.push(node);
         }
         for (var i = 0; i < links.length; i++) {
             var link = links[i].toJson();
+            link.behaviour = links[i].behaviour;
             result.links.push(link);
         }
         return result;
@@ -701,7 +703,7 @@ var Canvas = (function() {
         var node = Object.create(prototype);
         node.init( { name: json.name, label: json.label, type: json.type });
         node.properties = json.properties;
-
+        node.behaviour = json.behaviour;
         return node;
     };
 
@@ -718,6 +720,7 @@ var Canvas = (function() {
         }
         link.setup(source, target);
         link.properties = json.properties;
+        link.behaviour = json.behaviour;
 
         return link;
     };
