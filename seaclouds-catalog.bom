@@ -208,7 +208,7 @@ brooklyn.catalog:
 
       provisioning.properties:
         osFamily: ubuntu
-
+               
   - id: seaclouds-platform-on-byon
     name: "SeaClouds Platform on BYON"
     description: Seaclouds Platform deployed on Vagrant box(es)
@@ -239,7 +239,7 @@ brooklyn.catalog:
           - type: seaclouds-monitor-dda
 
       - type: org.apache.brooklyn.entity.software.base.SameServerEntity
-        name: SeaClouds Dashboard + Planner + SLA
+        name: SeaClouds Dashboard + Planner + SLA + Optimizer
         brooklyn.children:
           - type: seaclouds-dashboard
             brooklyn.config:
@@ -253,7 +253,9 @@ brooklyn.catalog:
               planner.port: $brooklyn:component("planner").config("planner.config.port")
             install.latch: $brooklyn:component("planner").attributeWhenReady("service.isUp")
           - type: seaclouds-planner
-            install.latch: $brooklyn:component("sla-core").attributeWhenReady("service.isUp")
+            brooklyn.config: 
+               planner.config.optimizer.url: $brooklyn:formatString("http://%s:%s", component("optimizer-service").attributeWhenReady("host.address"), component("optimizer-service").attributeWhenReady("http.port"))
+            install.latch: $brooklyn:component("optimizer-service").attributeWhenReady("service.isUp")
           - type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
             name: SLA service
             id: sla-core
@@ -266,6 +268,12 @@ brooklyn.catalog:
                   SLA_URL: $brooklyn:formatString("http://%s:%s", component("sla-core").attributeWhenReady("host.address"), component("sla-core").attributeWhenReady("http.port"))
             war: https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=sla-service&v=LATEST&e=war
             setup.latch: $brooklyn:component("sla-db").attributeWhenReady("service.isUp")
+              
+          - type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
+            name: Optimizer Service
+            id: optimizer-service
+            war: https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=optimizer-service&v=LATEST&e=war
+            install.latch: $brooklyn:component("sla-core").attributeWhenReady("service.isUp")
 
           - type: org.apache.brooklyn.entity.database.mysql.MySqlNode
             name: SLA service Db
