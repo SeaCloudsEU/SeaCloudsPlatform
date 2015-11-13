@@ -1,4 +1,4 @@
-sudo: required
+sudo: false
 services:
 - docker
 language: java
@@ -8,7 +8,6 @@ after_success:
 - ".buildscript/deploy_snapshot.sh"
 before_install:
 - git clone -b travis `git config --get remote.origin.url` target/travis
-- sudo service docker restart ; sleep 10
 - chmod 600 `pwd`/qa/src/main/resources/brooklyn.properties
 - docker build -q -t seacloudseu/base - < qa/Dockerfile > /dev/null 2>&1
 - docker run -d --name=host1 -e ROOT_PASS="root" seacloudseu/base
