@@ -13,17 +13,11 @@ before_install:
 - docker build -q -t seacloudseu/base - < qa/Dockerfile > /dev/null 2>&1
 - docker run -d --name=host1 -e ROOT_PASS="root" seacloudseu/base
 - docker run -d --name=host2 -e ROOT_PASS="root" seacloudseu/base
-- docker run -d --name=brooklyn --link host1 --link host2 -p 8081:8081 -v /home/travis/.m2/:/root/.m2 -v `pwd`/qa/src/main/resources/brooklyn.properties:/root/.brooklyn/brooklyn.properties -v `pwd`/seaclouds-catalog.bom:/root/seaclouds-catalog.bom --entrypoint bin/brooklyn.sh googlielmo/clocker launch --catalogAdd /root/seaclouds-catalog.bom
-- sudo apt-get update > /dev/null
-- sudo apt-get install -y python2.7 > /dev/null
-- sudo -H pip install awscli > /dev/null
-- mkdir -p /home/travis/.m2/repository
-- aws s3 sync s3://seaclouds-m2/repository/ /home/travis/.m2/repository/ --quiet
 install: true
 script:
 - travis_wait mvn -q clean install -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
+- docker run -d --name=brooklyn --link host1 --link host2 -p 8081:8081 -v `pwd`/.m2/:/root/.m2 -v `pwd`/qa/src/main/resources/brooklyn.properties:/root/.brooklyn/brooklyn.properties -v `pwd`/seaclouds-catalog.bom:/root/seaclouds-catalog.bom --entrypoint bin/brooklyn.sh googlielmo/clocker launch --catalogAdd /root/seaclouds-catalog.bom
 - travis_wait mvn -q integration-test -pl qa -DskipTests -Ptravis
-- aws s3 sync /home/travis/.m2/repository/ s3://seaclouds-m2/repository/ --quiet
 branches:
   except:
   - travis
