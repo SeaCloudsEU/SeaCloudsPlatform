@@ -1,26 +1,18 @@
-sudo: required
-services:
-- docker
+sudo: false
 language: java
 jdk:
 - oraclejdk7
 after_success:
 - ".buildscript/deploy_snapshot.sh"
-before_install:
-- git clone -b travis `git config --get remote.origin.url` target/travis
-- sudo service docker restart ; sleep 10
-- chmod 600 `pwd`/qa/src/main/resources/brooklyn.properties
-- docker build -q -t seacloudseu/base - < qa/Dockerfile > /dev/null 2>&1
-- docker run -d --name=host1 -e ROOT_PASS="root" seacloudseu/base
-- docker run -d --name=host2 -e ROOT_PASS="root" seacloudseu/base
 install: true
 script:
 - travis_wait mvn -q clean install -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
-- docker run -d --name=brooklyn --link host1 --link host2 -p 8081:8081 -v `pwd`/.m2/:/root/.m2 -v `pwd`/qa/src/main/resources/brooklyn.properties:/root/.brooklyn/brooklyn.properties -v `pwd`/seaclouds-catalog.bom:/root/seaclouds-catalog.bom --entrypoint bin/brooklyn.sh googlielmo/clocker launch --catalogAdd /root/seaclouds-catalog.bom
-- travis_wait mvn -q integration-test -pl qa -DskipTests -Ptravis
 branches:
   except:
   - travis
+cache:
+  directories:
+    - $HOME/.m2
 env:
   global:
   - secure: "q6oLIb4TpyVxy6jcauijVcGkkTr3xe5dfcII5yJs48r2FzcZeAYqPvifb9G9tlOiK5igXJrEa2GmNytlI9NijOIAt8BBV34xIovwkupwJ9qGAxG2E5hHbAjGiRaICTglkH+psgaPuPe4W8UgmWCSNt9bM12F1bVHsXXftWx/880="
