@@ -53,7 +53,6 @@ brooklyn.catalog:
       name: Dashboard
       brooklyn.config:
         dashboard.port: 8000
-        dashboard.admin.port: 8001
         deployer.host: 127.0.0.1
         deployer.port: 8081
         sla.host: 127.0.0.1
@@ -91,12 +90,12 @@ brooklyn.catalog:
         sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated tzdata openjdk-7-jdk wget curl
         tee ./conf.yml  <<EOF
         server:
-          applicationConnectors:
-          - type: http
+          type: simple
+          rootPath: /api/*
+          applicationContextPath: /
+          connector:
+            type: http
             port: ${DASHBOARD_PORT}
-          adminConnectors:
-          - type: http
-            port: ${DASHBOARD_ADMIN_PORT}
         deployer:
           host: ${DEPLOYER_HOST}
           port: ${DEPLOYER_PORT}

@@ -22,7 +22,6 @@ import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
-import io.dropwizard.server.DefaultServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
@@ -47,9 +46,6 @@ public class DashboardApplication extends Application<DashboardConfiguration> {
 
     @Override
     public void run(DashboardConfiguration configuration, Environment environment) throws Exception {
-        ((DefaultServerFactory) configuration.getServerFactory()).setJerseyRootPath("/api/*");
-
-
         environment.jersey().register(new CoreResource(configuration.getDeployerFactory(),
                 configuration.getMonitorFactory(), configuration.getPlannerFactory(),
                 configuration.getSlaFactory()));
