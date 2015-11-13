@@ -214,6 +214,7 @@ var Editor = (function() {
         /*
          * Edit/Delete node
          */
+        $('body').off('click', '.popover button[data-nodeindex]');
         $('body').on('click', '.popover button[data-nodeindex]', function () {
             var index = this.getAttribute("data-nodeindex");
 
@@ -252,6 +253,7 @@ var Editor = (function() {
         /*
          * Edit/delete link
          */
+        $('body').off('click', '.popover button[data-linkindex]');
         $('body').on('click', '.popover button[data-linkindex]', function () {
             var index = this.getAttribute("data-linkindex");
 
@@ -282,7 +284,7 @@ var Editor = (function() {
                     canvas.firechange();
                 });
             }
-                });
+        });
 
         $("#add-buttons- [data-type]").on("click", function() {
             var datatype = this.getAttribute("data-type");
