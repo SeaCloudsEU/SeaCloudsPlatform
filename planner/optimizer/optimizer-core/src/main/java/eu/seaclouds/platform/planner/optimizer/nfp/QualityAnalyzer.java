@@ -35,8 +35,6 @@ import eu.seaclouds.platform.planner.optimizer.TopologyElementCalled;
 
 public class QualityAnalyzer {
 
-   private final boolean IS_DEBUG;
-   private boolean defaultDebug = false;
    static Logger log = LoggerFactory.getLogger(QualityAnalyzer.class);
 
    private QualityInformation properties = null;
@@ -49,7 +47,7 @@ public class QualityAnalyzer {
       properties = new QualityInformation();
       MAX_TIMES_WORKLOAD_FOR_THRESHOLDS = 10.0;
       WORKLOAD_INCREMENT_FOR_SEARCH = 1.0;
-      IS_DEBUG = defaultDebug;
+
    }
 
    public QualityAnalyzer(boolean debug) {
@@ -57,7 +55,7 @@ public class QualityAnalyzer {
       properties = new QualityInformation();
       MAX_TIMES_WORKLOAD_FOR_THRESHOLDS = 10.0;
       WORKLOAD_INCREMENT_FOR_SEARCH = 1.0;
-      IS_DEBUG = debug;
+
    }
 
    public QualityAnalyzer(double maxWorkload) {
@@ -65,7 +63,7 @@ public class QualityAnalyzer {
       properties = new QualityInformation();
       MAX_TIMES_WORKLOAD_FOR_THRESHOLDS = maxWorkload;
       WORKLOAD_INCREMENT_FOR_SEARCH = 1.0;
-      IS_DEBUG = defaultDebug;
+
    }
 
    public QualityAnalyzer(double maxWorkload, boolean debug) {
@@ -73,7 +71,7 @@ public class QualityAnalyzer {
       properties = new QualityInformation();
       MAX_TIMES_WORKLOAD_FOR_THRESHOLDS = maxWorkload;
       WORKLOAD_INCREMENT_FOR_SEARCH = 1.0;
-      IS_DEBUG = debug;
+
    }
 
    public QualityAnalyzer(double maxWorkload, double workloadIncrement) {
@@ -81,7 +79,7 @@ public class QualityAnalyzer {
       properties = new QualityInformation();
       MAX_TIMES_WORKLOAD_FOR_THRESHOLDS = maxWorkload;
       WORKLOAD_INCREMENT_FOR_SEARCH = workloadIncrement;
-      IS_DEBUG = defaultDebug;
+
    }
 
    public QualityAnalyzer(double maxWorkload, double workloadIncrement, boolean debug) {
@@ -89,7 +87,7 @@ public class QualityAnalyzer {
       properties = new QualityInformation();
       MAX_TIMES_WORKLOAD_FOR_THRESHOLDS = maxWorkload;
       WORKLOAD_INCREMENT_FOR_SEARCH = workloadIncrement;
-      IS_DEBUG = debug;
+
    }
 
    /**
@@ -121,7 +119,7 @@ public class QualityAnalyzer {
 
       double[] mus = getMusOfSelectedCloudOffers(bestSol, topology, cloudCharacteristics);
 
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug("Solution to check the mus is: " + bestSol.toString());
          log.debug("Mus of servers are: " + Arrays.toString(mus));
          log.debug("Num visits modules is: " + Arrays.toString(numVisitsModule));
@@ -131,12 +129,12 @@ public class QualityAnalyzer {
       }
       double respTime = getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances, mus);
 
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug("calculated response time of the solution " + bestSol.toString()
                + " without considering latencies is: " + respTime);
       }
       respTime += addNetworkDelays(bestSol, topology, numVisitsModule, cloudCharacteristics);
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug("calculated response time of the solution" + bestSol.toString() + " is: " + respTime);
       }
       // after computing, save the performance info in properties.performance
@@ -160,7 +158,7 @@ public class QualityAnalyzer {
                   elementCalled.getElement().getName(), cloudCharacteristics);
          }
 
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("calculated network delay for module " + i + " in solution " + bestSol.toString()
                   + " is (numVisitsModule[i] * sumOfDelaysSingleModule): "
                   + numVisitsModule[i] * sumOfDelaysSingleModule);
@@ -182,7 +180,7 @@ public class QualityAnalyzer {
       if (CloudOffer.providerNameOfCloudOffer(cloudOfferCallingElement)
             .equals(CloudOffer.providerNameOfCloudOffer(cloudOfferCalledElement))) {
 
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("latency between modules " + callingModuleName + " and " + calledModuleName + " is "
                   + cloudCharacteristics.getLatencyIntraDatacenterSec());
          }
@@ -191,7 +189,7 @@ public class QualityAnalyzer {
 
       } else {
 
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("latency between modules " + callingModuleName + " and " + calledModuleName + " is "
                   + cloudCharacteristics.getLatencyInterCloudSec());
          }
@@ -252,7 +250,7 @@ public class QualityAnalyzer {
          mus[i] = cloudCharacteristics.getCloudCharacteristics(moduleName, cloudChosenForModule).getPerformance()
                / topology.getElementIndex(i).getDefaultExecutionTime();
 
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("Default execution time of module " + i + " with name " + topology.getElementIndex(i).getName()
                   + " is " + topology.getElementIndex(i).getDefaultExecutionTime() + " and using cloud option "
                   + bestSol.getCloudOfferNameForModule(moduleName) + " with performance "
@@ -283,7 +281,7 @@ public class QualityAnalyzer {
          double numCores = cloudCharacteristics.getCloudCharacteristics(moduleName, cloudChosenForModule).getNumCores();
          ponderatedWorkloads[i] = workloadsModules[i] / (numInstances * numCores);
 
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("Number of instances used for module " + moduleName + " is : " + numInstances
                   + " and num Cores of the offer is" + numCores);
          }
@@ -427,7 +425,7 @@ public class QualityAnalyzer {
                * calculateAvailabilityRecursive(c, bestSol, topology, cloudCharacteristics);
       }
 
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug("Finished calculation of availability of solution: " + bestSol.toString());
       }
       // after computing, save the availability info in properties.availability
@@ -438,7 +436,6 @@ public class QualityAnalyzer {
 
    private double calculateAvailabilityRecursive(TopologyElementCalled c, Solution bestSol, Topology topology,
          SuitableOptions cloudCharacteristics) {
-
 
       visited.add(c.getElement().getName());
 
@@ -519,7 +516,7 @@ public class QualityAnalyzer {
          // Stop condition is the highest allowed cost or, if cost is not
          // specified, ten times the expected worklaod
 
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("Creating threshold for workload above " + limitWorkload);
          }
          limitWorkload = findWorkloadForWhichRespTimeIsExceeded(requirements.getResponseTime(), limitWorkload, mus,
@@ -645,7 +642,7 @@ public class QualityAnalyzer {
       // Stop also if the highest allowed cost or, if cost is not specified, ten
       // times the expected workload
 
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug("checking if continue generating thresholds for: ");
       }
 
@@ -654,7 +651,7 @@ public class QualityAnalyzer {
       }
       if (requirements.existCostRequirement()) {
 
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("  current cost: " + computeCost(sol, cloudCharacteristics) + " cost limit: "
                   + requirements.getCostHour());
          }
@@ -662,7 +659,7 @@ public class QualityAnalyzer {
          return computeCost(sol, cloudCharacteristics) <= requirements.getCostHour();
       }
 
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug("  limitWorkload: " + limitWorkload + " current workload "
                + (MAX_TIMES_WORKLOAD_FOR_THRESHOLDS * workload));
       }
@@ -695,7 +692,7 @@ public class QualityAnalyzer {
       double[] workloadsModulesByCoresAndNumInstances = weightModuleWorkloadByCoresAndNumInstances(workloadsModules,
             topology, sol, cloudCharacteristics);
 
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug(
                "Response time is: " + getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances, mus)
                      + " and " + "the performance requirement is " + respTimeRequirement);
@@ -705,7 +702,7 @@ public class QualityAnalyzer {
       while (isValidRespTime(getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances, mus),
             respTimeRequirement)) {
 
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("Response time for workload " + (workload + incWorkload) + " is: "
                   + getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances, mus) + " and "
                   + "the performance requirement is " + respTimeRequirement);
@@ -750,7 +747,7 @@ public class QualityAnalyzer {
 
          // Set upper or lower limit according to binary search.
          double currentRespTime = getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances, mus);
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("Response time for workload " + workloadToCheck + " is: " + currentRespTime + " and "
                   + "the performance requirement is " + respTimeRequirement);
          }

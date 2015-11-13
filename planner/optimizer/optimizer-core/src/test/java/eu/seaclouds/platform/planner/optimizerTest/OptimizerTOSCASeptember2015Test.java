@@ -55,7 +55,7 @@ public void createObjects() {
    log                   = LoggerFactory
          .getLogger(OptimizerTOSCASeptember2015Test.class);
 
-   log.info("Starting TEST optimizer for the TOSCA syntax of July 2015");
+   log.info("Starting TEST optimizer for the TOSCA syntax of September 2015");
 
    final String dir = System.getProperty("user.dir");
    log.debug("Trying to open files: current executino dir = " + dir);

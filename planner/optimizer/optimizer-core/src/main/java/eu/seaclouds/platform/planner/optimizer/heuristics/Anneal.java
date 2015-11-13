@@ -34,9 +34,6 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
                                                            // convenience
    private static final double GEOM_TEMP_DECREMENT = 0.95;
 
-   @SuppressWarnings("hiding")
-   private static final boolean IS_DEBUG = AbstractHeuristic.IS_DEBUG || false;
-
    static Logger logAnneal = LoggerFactory.getLogger(Anneal.class);
 
    public Anneal(int maxIter) {
@@ -53,7 +50,7 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
       cloudOffers.sortDescendingPerformance();
       Solution[] bestSols = super.findInitialRandomSolutions(cloudOffers, numPlansToGenerate);
       super.setFitnessOfSolutions(bestSols, requirements, topology, cloudOffers);
-      if (IS_DEBUG) {
+      if (logAnneal.isDebugEnabled()) {
          logAnneal
                .debug("Start checking the presence of quality attached to solutions after the first generation ANNEAL");
          super.checkQualityAttachedToSolutions(bestSols);
@@ -76,19 +73,19 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
 
          double temperature = INITIAL_TEMPERATURE;
          while (iterationsWithoutChangeState < MAX_ITERATIONS_NOT_CHANGE_STATE) {
-            if (IS_DEBUG) {
-               logAnneal.debug("iterationsWithoutchange=" + iterationsWithoutChangeState + " and numItersNoImprovement="
-                     + numItersNoImprovement);
-            }
+
+            logAnneal.debug("iterationsWithoutchange=" + iterationsWithoutChangeState + " and numItersNoImprovement="
+                  + numItersNoImprovement);
+
             Solution neighbor = getRandomNeighbour(currentSol, cloudOffers, topology);
             neighbor.setSolutionFitness(super.fitness(neighbor, requirements, topology, cloudOffers));
 
             if (neighbourShouldBeSelected(currentSol.getSolutionFitness(), neighbor.getSolutionFitness(),
                   temperature)) {
-               if (IS_DEBUG) {
-                  logAnneal.debug("Changing from solution: " + currentSol.toString());
-                  logAnneal.debug(" to solution: " + neighbor.toString());
-               }
+
+               logAnneal.debug("Changing from solution: " + currentSol.toString());
+               logAnneal.debug(" to solution: " + neighbor.toString());
+
                currentSol = neighbor;
                if (currentSol.getSolutionFitness() > bestSolSoFar.getSolutionFitness()) {
                   bestSolSoFar = currentSol;
@@ -102,13 +99,9 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
             temperature = getTemperature(currentIterNum, INITIAL_TEMPERATURE, temperature);
          }
 
-         if (IS_DEBUG) {
-
-            logAnneal.debug("Solution do not find suitable neighbors for a while. Solution found is: "
-                  + bestSolSoFar.toString() + " with fitness " + bestSolSoFar.getSolutionFitness() + ". It took "
-                  + currentIterNum + " iterations to find it and finished with temperature=" + temperature);
-
-         }
+         logAnneal.debug("Solution do not find suitable neighbors for a while. Solution found is: "
+               + bestSolSoFar.toString() + " with fitness " + bestSolSoFar.getSolutionFitness() + ". It took "
+               + currentIterNum + " iterations to find it and finished with temperature=" + temperature);
 
          // Too many iterations without changing state. Try to include the the
          // best one found so far.
@@ -117,7 +110,7 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
             super.insertOrdered(bestSols, bestSolSoFar);
             numItersNoImprovement = 0;
 
-            if (IS_DEBUG) {
+            if (logAnneal.isDebugEnabled()) {
                logAnneal.debug("Found that solution " + bestSolSoFar.toString()
                      + " is to be included in the current list of solutions to return");
 
@@ -143,10 +136,10 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
    }
 
    protected boolean neighbourShouldBeSelected(double currentFitness, double neighborFitness, double temperature) {
-      if (IS_DEBUG) {
-         logAnneal.debug("Evaluating whether to choose a neighbor. CurrentFitness=" + currentFitness
-               + " neighbourfitness=" + neighborFitness);
-      }
+
+      logAnneal.debug("Evaluating whether to choose a neighbor. CurrentFitness=" + currentFitness + " neighbourfitness="
+            + neighborFitness);
+
       // if neighbour Is Not Only Marginally Better . The marginality has been
       // set to 0.01 arbitrarily
       if (neighborFitness > (currentFitness + 0.01)) {
@@ -156,15 +149,14 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
       double random = Math.random();
 
       double probability = calculateProbabilityExponential(currentFitness, neighborFitness, temperature);
-      if (IS_DEBUG) {
-         logAnneal.debug(
-               "probability of change=" + probability + " randomNumber=" + random + " temperature=" + temperature);
-      }
+
+      logAnneal
+            .debug("probability of change=" + probability + " randomNumber=" + random + " temperature=" + temperature);
+
       probability = calculateProbabilityExponentialMaxAHalf(currentFitness, neighborFitness, temperature);
-      if (IS_DEBUG) {
-         logAnneal.debug("probability of change method2=" + probability + " randomNumber=" + random + " temperature="
-               + temperature);
-      }
+
+      logAnneal.debug(
+            "probability of change method2=" + probability + " randomNumber=" + random + " temperature=" + temperature);
 
       return probability > random;
 

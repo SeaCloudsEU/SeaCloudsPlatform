@@ -31,7 +31,6 @@ import eu.seaclouds.platform.planner.optimizer.Solution;
 //Version of September 2015
 public class YAMLgroupsOptimizerParser {
 
-   public static final boolean IS_DEBUG = false;
 
    static Logger log = LoggerFactory.getLogger(YAMLgroupsOptimizerParser.class);
 
@@ -82,7 +81,7 @@ public class YAMLgroupsOptimizerParser {
          }
       }
 
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug("Module " + moduleName + " is not member of any group. Possible unexpected behavior");
       }
       return null;
@@ -96,7 +95,7 @@ public class YAMLgroupsOptimizerParser {
          }
       }
 
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug("Module " + moduleName
                + " is not member of any group. Found out while looking for the name of its group. Possible unexpected behavior.");
       }
@@ -138,13 +137,13 @@ public class YAMLgroupsOptimizerParser {
 
          if (mapEntryListElement.containsKey(infoToSearch)) {
             // found QoS requirements in a module
-            if (IS_DEBUG) {
+            if (log.isDebugEnabled()) {
                log.debug("  Check successful");
             }
             return (Map<String, Object>) mapEntryListElement.get(infoToSearch);
          }
       }
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug("  Check for '" + infoToSearch + "' was NOT successful");
       }
       return null;
@@ -164,14 +163,14 @@ public class YAMLgroupsOptimizerParser {
             .getDependenciesInfoOfMemberName(moduleName, groups);
 
       if (dependenciesInfoOfGroupOfModule == null) {
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug(
                   "There has not been found info of dependencies for module called " + moduleName + " returning null");
          }
          return null;
       }
       if (dependenciesInfoOfGroupOfModule.size() == 0) {
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug(
                   "There has been found EMPY info of dependencies for module called " + moduleName + " returning null");
          }
@@ -188,7 +187,7 @@ public class YAMLgroupsOptimizerParser {
       // not found There were qos properties but not the information of the
       // execution time
       // machine tested
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug("Module '" + moduleName + "' had dependencies but it id not contain information of other modules");
       }
 
@@ -207,7 +206,7 @@ public class YAMLgroupsOptimizerParser {
          return null;
       }
 
-      if (IS_DEBUG) {
+      if (log.isDebugEnabled()) {
          log.debug("It was found a group without member definitios. Error ahead.");
       }
       return null;
@@ -227,7 +226,7 @@ public class YAMLgroupsOptimizerParser {
       }
 
       if (!memberList.isEmpty()) {
-         if (IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("Member of the group is: " + memberList.get(0));
          }
          return memberList;

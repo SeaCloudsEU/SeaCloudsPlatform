@@ -64,7 +64,7 @@ public class BlindSearch extends AbstractHeuristic implements SearchMethod {
          currentSol[0].setSolutionFitness(super.fitness(currentSol[0],
                requirements, topology, cloudOffers));
 
-         if (AbstractHeuristic.IS_DEBUG) {
+         if (log.isDebugEnabled()) {
             log.debug("Start checking the presence of quality attached to solutions after generating a new random solution in BLIND. With sol= "
                   + currentSol[0].toString());
             super.checkQualityAttachedToSolutions(currentSol);
@@ -73,9 +73,9 @@ public class BlindSearch extends AbstractHeuristic implements SearchMethod {
                .getMinimumFitnessOfSolutions(bestSols)) {
             if (!currentSol[0].isContainedIn(bestSols)) {
                super.insertOrdered(bestSols, currentSol[0]);
-               if (AbstractHeuristic.IS_DEBUG) {
+    
                   log.debug("Better solution found after " + numItersNoImprovement + " iterations");
-               }
+               
                numItersNoImprovement = 0;
             }
          }
