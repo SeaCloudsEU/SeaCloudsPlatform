@@ -5,46 +5,48 @@ brooklyn.catalog:
     name: "SeaClouds Planner"
     description: "SeaClouds Planner server"
     item:
-      type: org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess
-      id: planner
-      name: Planner
+       type: org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess
+       id: planner
+       name: Planner
 
-      brooklyn.config:
-        planner.config.port: 1234
-        planner.config.discoverer.url: undefined
-        planner.config.optimizer.url: undefined
-        planner.config.monitor_generator.url: undefined
-        planner.config.sla_generator.url: undefined
+       brooklyn.config:
+         runtimeFiles:
+           https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=planner-service&v=LATEST&e=jar : planner-service.jar
+         planner.config.port: 1234
+         planner.config.discoverer.url: undefined
+         planner.config.optimizer.url: undefined
+         planner.config.monitor_generator.url: undefined
+         planner.config.sla_generator.url: undefined
 
-      shell.env:
-        PLANNER_PORT: $brooklyn:config("planner.config.port")
-        DISCOVERER_URL: $brooklyn:config("planner.config.discoverer.url")
-        OPTIMIZER_URL: $brooklyn:config("planner.config.optimizer.url")
-        MONITOR_GENERATOR_URL: $brooklyn:config("planner.config.monitor_generator.url")
-        SLA_GENERATOR_URL: $brooklyn:config("planner.config.sla_generator.url")
+       shell.env:
+         PLANNER_PORT: $brooklyn:config("planner.config.port")
+         DISCOVERER_URL: $brooklyn:config("planner.config.discoverer.url")
+         OPTIMIZER_URL: $brooklyn:config("planner.config.optimizer.url")
+         MONITOR_GENERATOR_URL: $brooklyn:config("planner.config.monitor_generator.url")
+         SLA_GENERATOR_URL: $brooklyn:config("planner.config.sla_generator.url")
 
-      provisioning.properties:
-        osFamily: ubuntu
+       provisioning.properties:
+         osFamily: ubuntu
 
-      launch.command: |
-        sudo apt-get update
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated tzdata openjdk-7-jdk curl
-        tee ./conf.yml  <<EOF
-        server:
-          type: simple
-          applicationContextPath: /application
-          adminContextPath: /admin
-          connector:
-           type: http
-           port: ${PLANNER_PORT}
-        discovererURL: ${DISCOVERER_URL}
-        optimizerURL: ${OPTIMIZER_URL}
-        monitorGeneratorURL: ${MONITOR_GENERATOR_URL}
-        slaGeneratorURL: ${SLA_GENERATOR_URL}
-        EOF
+       launch.command: |
+         sudo apt-get update
+         sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated tzdata openjdk-7-jdk curl
+         tee ./conf.yml  <<EOF
+         server:
+           type: simple
+           applicationContextPath: /application
+           adminContextPath: /admin
+           connector:
+            type: http
+            port: ${PLANNER_PORT}
+         discovererURL: ${DISCOVERER_URL}
+         optimizerURL: ${OPTIMIZER_URL}
+         monitorGeneratorURL: ${MONITOR_GENERATOR_URL}
+         slaGeneratorURL: ${SLA_GENERATOR_URL}
+         EOF
 
-        nohup java -jar planner-service.jar server conf.yml > console.out 2>&1 &
-        echo $! > $PID_FILE
+         nohup java -jar planner-service.jar server conf.yml > console.out 2>&1 &
+         echo $! > $PID_FILE
   - id: seaclouds-dashboard
     name: "SeaClouds Dashboard"
     description: "SeaClouds Dashboard server"
@@ -52,6 +54,8 @@ brooklyn.catalog:
       type: org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess
       name: Dashboard
       brooklyn.config:
+        runtimeFiles:
+          https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=planner-service&v=LATEST&e=jar : dashboard.jar
         dashboard.port: 8000
         deployer.host: 127.0.0.1
         deployer.port: 8081
@@ -217,60 +221,60 @@ brooklyn.catalog:
       location:
         byon:
           user: vagrant
-          privateKeyFile: ./seaclouds_id_rsa
+          password: vagrant
           hosts:
-          - 192.168.100.10
-          - 192.168.100.11
+            - 10.10.10.101
 
       services:
       - type: org.apache.brooklyn.entity.software.base.SameServerEntity
-        name: SeaClouds Deployer + Monitoring + Discoverer
+        name: SeaClouds Platform
         brooklyn.children:
-          - type: seaclouds-discoverer
-            setup.latch: $brooklyn:component("deployer").attributeWhenReady("service.isUp")
-          - type: seaclouds-deployer
-            setup.latch: $brooklyn:component("monitor-manager").attributeWhenReady("service.isUp")
-          - type: seaclouds-monitor-manager
-            brooklyn.config:
-              monitor.dda.host: $brooklyn:component("monitor-dda").attributeWhenReady("host.address")
-              monitor.dda.port: $brooklyn:component("monitor-dda").config("monitor.dda.port")
-            install.latch: $brooklyn:component("monitor-dda").attributeWhenReady("service.isUp")
-          - type: seaclouds-monitor-dda
-
-      - type: org.apache.brooklyn.entity.software.base.SameServerEntity
-        name: SeaClouds Dashboard + Planner + SLA
-        brooklyn.children:
-          - type: seaclouds-dashboard
-            brooklyn.config:
-              deployer.host: $brooklyn:component("deployer").attributeWhenReady("host.address")
-              deployer.port: $brooklyn:component("deployer").attributeWhenReady("brooklynnode.webconsole.httpPort")
-              sla.host: $brooklyn:component("sla-core").attributeWhenReady("host.address")
-              sla.port: $brooklyn:component("sla-core").attributeWhenReady("http.port")
-              monitor.manager.host: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
-              monitor.manager.port: $brooklyn:component("monitor-manager").config("monitor.manager.port")
-              planner.host: $brooklyn:component("planner").attributeWhenReady("host.address")
-              planner.port: $brooklyn:component("planner").config("planner.config.port")
-            install.latch: $brooklyn:component("planner").attributeWhenReady("service.isUp")
-          - type: seaclouds-planner
-            install.latch: $brooklyn:component("sla-core").attributeWhenReady("service.isUp")
-          - type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
-            name: SLA service
-            id: sla-core
-            brooklyn.config:
-              java.sysprops:
-                  DB_URL: $brooklyn:formatString("jdbc:%s%s", component("sla-db").attributeWhenReady("datastore.url"), "sc_sla")
-                  DB_USERNAME: "atossla"
-                  DB_PASSWORD: "_atossla_"
-                  MONITOR_METRICS_URL: $brooklyn:formatString("http://%s:%s/v1/metrics", component("monitor-manager").attributeWhenReady("host.address"), component("monitor-manager").config("monitor.manager.port"))
-                  SLA_URL: $brooklyn:formatString("http://%s:%s", component("sla-core").attributeWhenReady("host.address"), component("sla-core").attributeWhenReady("http.port"))
-            war: https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=sla-service&v=LATEST&e=war
-            setup.latch: $brooklyn:component("sla-db").attributeWhenReady("service.isUp")
-
-          - type: org.apache.brooklyn.entity.database.mysql.MySqlNode
-            name: SLA service Db
-            id: sla-db
-            brooklyn.config:
-              creationScriptUrl: https://raw.githubusercontent.com/SeaCloudsEU/sla-core/e1d3bd4dec27236cfdefa1eae81d38db3dcd11da/sla-repository/src/main/resources/sql/01database.sql
+        - type: seaclouds-dashboard
+          id: seaclouds-dashboard
+          name: seaclouds-dashboard
+          brooklyn.config:
+            deployer.host: $brooklyn:component("deployer").attributeWhenReady("host.address")
+            deployer.port: $brooklyn:component("deployer").attributeWhenReady("brooklynnode.webconsole.httpPort")
+            sla.host: $brooklyn:component("sla-core").attributeWhenReady("host.address")
+            sla.port: $brooklyn:component("sla-core").attributeWhenReady("http.port")
+            monitor.manager.host: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
+            monitor.manager.port: $brooklyn:component("monitor-manager").config("monitor.manager.port")
+            planner.host: $brooklyn:component("planner").attributeWhenReady("host.address")
+            planner.port: $brooklyn:component("planner").config("planner.config.port")
+          launch.latch: $brooklyn:component("planner").attributeWhenReady("service.isUp")
+        - type: seaclouds-planner
+          name: seaclouds-planner
+          install.latch: $brooklyn:component("deployer").attributeWhenReady("service.isUp")
+        - type: seaclouds-deployer
+          name: seaclouds-deployer
+          setup.latch: $brooklyn:component("sla-core").attributeWhenReady("service.isUp")
+        - type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
+          name: seaclouds-sla-service
+          id: sla-core
+          name: seaclouds-sla-service
+          brooklyn.config:
+            jmx.enabled: false
+            java.sysprops:
+                DB_URL: $brooklyn:formatString("jdbc:%s%s", component("sla-db").attributeWhenReady("datastore.url"),"sc_sla")
+                DB_USERNAME: "atossla"
+                DB_PASSWORD: "_atossla_"
+                MONITOR_METRICS_URL: $brooklyn:formatString("http://%s:%s/v1/metrics", component("monitor-manager").attributeWhenReady("host.address"), component("monitor-manager").config("monitor.manager.port"))
+                SLA_URL: $brooklyn:formatString("http://%s:%s", component("sla-core").attributeWhenReady("host.address"), component("sla-core").attributeWhenReady("http.port"))
+          setup.latch: $brooklyn:component("sla-db").attributeWhenReady("service.isUp")
+        - type: org.apache.brooklyn.entity.database.mysql.MySqlNode
+          name: seaclouds-sla-db
+          id: sla-db
+          brooklyn.config:
+            creationScriptUrl: https://raw.githubusercontent.com/SeaCloudsEU/sla-core/e1d3bd4dec27236cfdefa1eae81d38db3dcd11da/sla-repository/src/main/resources/sql/01database.sql
+          install.latch: $brooklyn:component("monitor-manager").attributeWhenReady("service.isUp")
+        - type: seaclouds-monitor-manager
+          name: seaclouds-monitor-manager
+          brooklyn.config:
+            monitor.dda.host: $brooklyn:component("monitor-dda").attributeWhenReady("host.address")
+            monitor.dda.port: $brooklyn:component("monitor-dda").config("monitor.dda.port")
+          install.latch: $brooklyn:component("monitor-dda").attributeWhenReady("service.isUp")
+        - type: seaclouds-monitor-dda
+          name: seaclouds-monitor-dda
 
   - id: seaclouds-platform
     name: "SeaClouds Platform"
@@ -285,14 +289,9 @@ brooklyn.catalog:
           region:       eu-west-1
 
       services:
-      - type: seaclouds-discoverer
-      - type: seaclouds-deployer
-      - type: seaclouds-monitor-dda
-      - type: seaclouds-monitor-manager
-        brooklyn.config:
-          monitor.dda.host: $brooklyn:component("monitor-dda").attributeWhenReady("host.address")
-          monitor.dda.port: $brooklyn:component("monitor-dda").config("monitor.dda.port")
       - type: seaclouds-dashboard
+        id: seaclouds-dashboard
+        name: seaclouds-dashboard
         brooklyn.config:
           deployer.host: $brooklyn:component("deployer").attributeWhenReady("host.address")
           deployer.port: $brooklyn:component("deployer").attributeWhenReady("brooklynnode.webconsole.httpPort")
@@ -304,19 +303,36 @@ brooklyn.catalog:
           planner.port: $brooklyn:component("planner").config("planner.config.port")
         launch.latch: $brooklyn:component("planner").attributeWhenReady("service.isUp")
       - type: seaclouds-planner
+        name: seaclouds-planner
+        install.latch: $brooklyn:component("deployer").attributeWhenReady("service.isUp")
+      - type: seaclouds-deployer
+        name: seaclouds-deployer
+        brooklyn.config:
+        setup.latch: $brooklyn:component("sla-core").attributeWhenReady("service.isUp")
       - type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
-        name: SLA service Core
+        name: seaclouds-sla-service
         id: sla-core
+        name: seaclouds-sla-service
         brooklyn.config:
+          jmx.enabled: false
           java.sysprops:
-            DB_URL: $brooklyn:formatString("jdbc:%s%s", component("sla-db").attributeWhenReady("datastore.url"), "sc_sla")
-            DB_USERNAME: "atossla"
-            DB_PASSWORD: "_atossla_"
-            MONITOR_METRICS_URL: $brooklyn:formatString("http://%s:%s/v1/metrics", component("monitor-manager").attributeWhenReady("host.address"), component("monitor-manager").config("monitor.manager.port"))
-            SLA_URL: $brooklyn:formatString("http://%s:%s", component("sla-core").attributeWhenReady("host.address"), component("sla-core").attributeWhenReady("http.port"))
-        war: https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=sla-service&v=LATEST&e=war
+              DB_URL: $brooklyn:formatString("jdbc:%s%s", component("sla-db").attributeWhenReady("datastore.url"), "sc_sla")
+              DB_USERNAME: "atossla"
+              DB_PASSWORD: "_atossla_"
+              MONITOR_METRICS_URL: $brooklyn:formatString("http://%s:%s/v1/metrics", component("monitor-manager").attributeWhenReady("host.address"), component("monitor-manager").config("monitor.manager.port"))
+              SLA_URL: $brooklyn:formatString("http://%s:%s", component("sla-core").attributeWhenReady("host.address"), component("sla-core").attributeWhenReady("http.port"))
+        setup.latch: $brooklyn:component("sla-db").attributeWhenReady("service.isUp")
       - type: org.apache.brooklyn.entity.database.mysql.MySqlNode
+        name: seaclouds-sla-db
         id: sla-db
-        name: SLA service Db
         brooklyn.config:
-         creationScriptUrl: https://raw.githubusercontent.com/SeaCloudsEU/sla-core/e1d3bd4dec27236cfdefa1eae81d38db3dcd11da/sla-repository/src/main/resources/sql/01database.sql
+          creationScriptUrl: https://raw.githubusercontent.com/SeaCloudsEU/sla-core/e1d3bd4dec27236cfdefa1eae81d38db3dcd11da/sla-repository/src/main/resources/sql/01database.sql
+        install.latch: $brooklyn:component("monitor-manager").attributeWhenReady("service.isUp")
+      - type: seaclouds-monitor-manager
+        name: seaclouds-monitor-manager
+        brooklyn.config:
+          monitor.dda.host: $brooklyn:component("monitor-dda").attributeWhenReady("host.address")
+          monitor.dda.port: $brooklyn:component("monitor-dda").config("monitor.dda.port")
+        install.latch: $brooklyn:component("monitor-dda").attributeWhenReady("service.isUp")
+      - type: seaclouds-monitor-dda
+        name: seaclouds-monitor-dda
