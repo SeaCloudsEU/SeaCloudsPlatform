@@ -11,40 +11,13 @@
 
     <artifactId>seaclouds-qa</artifactId>
 
-    <!--
-    TODO find a better workaround to force seaclouds-qa to be the last leaf of the build. Add a dependency on each module defined at root pom.xml
-    -->
-
     <dependencies>
         <dependency>
-            <groupId>eu.seaclouds-project</groupId>
-            <artifactId>deployer</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.seaclouds-project</groupId>
-            <artifactId>planner</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>eu.seaclouds-project</groupId>
-            <artifactId>discoverer</artifactId>
-            <version>${project.version}</version>
-            <type>war</type>
-        </dependency>
-        <dependency>
-            <groupId>eu.seaclouds-project</groupId>
-            <artifactId>dashboard</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.seaclouds-project</groupId>
-            <artifactId>sla</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
+            <groupId>org.apache.brooklyn</groupId>
+            <artifactId>brooklyn-all</artifactId>
         </dependency>
     </dependencies>
+
 
     <profiles>
         <profile>
@@ -55,23 +28,35 @@
                         <groupId>io.brooklyn.maven</groupId>
                         <artifactId>brooklyn-maven-plugin</artifactId>
                         <version>0.3.0-SNAPSHOT</version>
-                        <inherited>false</inherited>
                         <executions>
                             <execution>
-                                <id>Deploy blueprint</id>
+                                <id>Run and deploy SeaClouds</id>
                                 <goals>
+                                    <goal>start-server</goal>
                                     <goal>deploy</goal>
+                                    <goal>sensor</goal>
                                     <goal>stop</goal>
                                 </goals>
                                 <configuration>
-                                    <server>${brookyn.server}</server>
-                                    <timeout>${brookyn.timeout}</timeout>
+                                    <bindPort>${bindPort}</bindPort>
                                     <pollPeriod>${brookyn.pollPeriod}</pollPeriod>
-                                    <username>${brookyn.user}</username>
-                                    <password>${brookyn.password}</password>
+                                    <timeout>30</timeout><!--minutes-->
+                                    <bindAddress>localhost</bindAddress>
+                                    <arguments>
+                                        <argument>--catalogInitial</argument>
+                                        <argument>${project.basedir}/../seaclouds-catalog.bom</argument>
+                                        <argument>--localBrooklynProperties</argument>
+                                        <argument>${project.basedir}/src/main/resources/brooklyn.properties</argument>
+                                    </arguments>
                                     <blueprint>${project.basedir}/src/main/resources/seaclouds-on-travis.yaml</blueprint>
                                     <sensor>service.isUp</sensor>
                                 </configuration>
+                            </execution>
+                            <execution>
+                                <id>Stop SeaClouds</id>
+                                <goals>
+                                    <goal>stop-server</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>

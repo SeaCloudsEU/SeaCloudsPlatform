@@ -1,0 +1,29 @@
+---
+- name: brooklyn
+  box: ubuntu/vivid64
+  ram: 2048
+  cpus: 4
+  ip: 10.10.10.100
+  forwarded_ports:
+   - guest: 8081
+     host: 8081
+  shell:
+    - curl -o apache-brooklyn-0.8.0-incubating-bin.tar.gz -s -S http://apache.mirror.anlx.net/incubator/brooklyn/apache-brooklyn-0.8.0-incubating/apache-brooklyn-0.8.0-incubating-bin.tar.gz
+    - tar zxf apache-brooklyn-0.8.0-incubating-bin.tar.gz
+    - sudo sh -c 'export DEBIAN_FRONTEND=noninteractive; apt-get install --yes openjdk-8-jre-headless'
+    - sudo ln -s /vagrant/files/brooklyn.service /etc/systemd/system/brooklyn.service
+    - mkdir -p /home/vagrant/.brooklyn
+    - cp /vagrant/files/brooklyn.properties /home/vagrant/.brooklyn/
+    - chmod 600 /home/vagrant/.brooklyn/brooklyn.properties
+    - sudo systemctl start brooklyn
+- name: seaclouds1
+  box: ubuntu/precise64
+  ram: 1512
+  cpus: 2
+  ip: 10.10.10.101
+- name: seaclouds2
+  box: ubuntu/precise64
+  ram: 1512
+  cpus: 2
+  ip: 10.10.10.102
+...
