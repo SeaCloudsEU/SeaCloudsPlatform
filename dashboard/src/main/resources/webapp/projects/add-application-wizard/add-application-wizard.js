@@ -120,6 +120,7 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
                 case 2:
                     break;
                 case 3:
+                    $scope.applicationWizardData.adpDescriptions = undefined;
                     $scope.applicationWizardData.feasibleAdps = undefined;
                     $scope.applicationWizardData.finalAdp = undefined;
                     break;
@@ -152,6 +153,7 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
                             $scope.SeaCloudsApi.getAdpList(aam).
                                 success(function (feasibleAdps) {
                                     $scope.applicationWizardData.feasibleAdps = feasibleAdps;
+                                    $scope.applicationWizardData.adpDescriptions = feasibleAdps.map(AdpPretifier.adpToObject);
                                 })
                                 .error(function () {
                                     notificationService.error('The Planner failed to generate the feasible ADPs');
@@ -268,9 +270,11 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
             controller: function ($scope, $element) {
                 var MAX_ITEM_PER_PAGE = 3
                 var currentPage = 0;
-                $scope.getCurrentlyVisibleFeasibleAdps = function () {
-                    $scope.MAX_PAGES = Math.floor($scope.applicationWizardData.feasibleAdps.length / MAX_ITEM_PER_PAGE);
-                    return $scope.applicationWizardData.feasibleAdps.slice(currentPage * MAX_ITEM_PER_PAGE,
+
+                $scope.getCurrentlyVisibleAdpDescriptions = function () {
+                    $scope.MAX_PAGES = Math.floor($scope.applicationWizardData.adpDescriptions.length / MAX_ITEM_PER_PAGE);
+
+                    return $scope.applicationWizardData.adpDescriptions.slice(currentPage * MAX_ITEM_PER_PAGE,
                         currentPage * MAX_ITEM_PER_PAGE + MAX_ITEM_PER_PAGE);
                 }
 
@@ -286,8 +290,14 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
                     currentPage--;
                 }
 
-                $scope.setFinalAdp = function (finalAdp) {
-                    $scope.applicationWizardData.finalAdp = finalAdp;
+                $scope.isAdpSelected = function(index){
+                    var computedIndex = index + currentPage * MAX_ITEM_PER_PAGE;
+                    return  $scope.applicationWizardData.finalAdp == $scope.applicationWizardData.feasibleAdps[computedIndex];
+                }
+
+                $scope.setFinalAdp = function (index) {
+                    var computedIndex = index + currentPage * MAX_ITEM_PER_PAGE;
+                    $scope.applicationWizardData.finalAdp = $scope.applicationWizardData.feasibleAdps[computedIndex];
                 }
             }
         };
