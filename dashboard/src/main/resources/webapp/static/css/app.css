@@ -19,7 +19,7 @@
     display: none !important;
 }
 
-.col-centered{
+.col-centered {
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -37,8 +37,8 @@
 
 .navbar-nav li a {
     line-height: 48px;
-    padding-top : 1px;
-    padding-bottom : 1px;
+    padding-top: 1px;
+    padding-bottom: 1px;
 }
 
 .navbar-brand {
@@ -74,13 +74,16 @@
     padding: 15px;
     margin: 0 auto;
 }
+
 .form-signin .form-signin-heading,
 .form-signin .checkbox {
     margin-bottom: 10px;
 }
+
 .form-signin .checkbox {
     font-weight: normal;
 }
+
 .form-signin .form-control {
     position: relative;
     height: auto;
@@ -90,14 +93,17 @@
     padding: 10px;
     font-size: 16px;
 }
+
 .form-signin .form-control:focus {
     z-index: 2;
 }
+
 .form-signin input[type="email"] {
     margin-bottom: -1px;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
 }
+
 .form-signin input[type="password"] {
     margin-bottom: 10px;
     border-top-left-radius: 0;
@@ -105,7 +111,7 @@
 }
 
 .form-signin button {
-    background-color : #6CB3EF !important;
+    background-color: #6CB3EF !important;
     background-image: none;
     border: 0px;
 }
@@ -118,15 +124,14 @@
     color: white;
 }
 
-
-.project-panel>.project-panel-body {
+.project-panel > .project-panel-body {
     text-align: center;
     height: 150px;
     line-height: 100px;
 
 }
 
-.project-panel-body  h3 {
+.project-panel-body h3 {
     margin-top: 0px;
     margin-bottom: 0px;
 
@@ -166,38 +171,36 @@
     user-select: none;
 }
 
-.project-pills>li.active>a,.project-pills>li.active>a:focus,.project-pills>li.active>a:hover {
-    background-color : #6CB3EF;
-    cursor:pointer;
+.project-pills > li.active > a, .project-pills > li.active > a:focus, .project-pills > li.active > a:hover {
+    background-color: #6CB3EF;
+    cursor: pointer;
 }
 
-.project-pills>li.active>a,.project-pills>li.active>a:focus,.project-pills>li.active>a:hover {
-    background-color : #6CB3EF;
+.project-pills > li.active > a, .project-pills > li.active > a:focus, .project-pills > li.active > a:hover {
+    background-color: #6CB3EF;
 }
 
-
-.project-pills .red-pill{
-    background-color:#F57676;
+.project-pills .red-pill {
+    background-color: #F57676;
     border-radius: 4px;
 }
 
-.red-pill>a{
+.red-pill > a {
     color: white;
 }
 
-.nav>.red-pill>a:focus, .nav>.red-pill>a:hover {
-    background-color : #E82849;
+.nav > .red-pill > a:focus, .nav > .red-pill > a:hover {
+    background-color: #E82849;
 }
 
-
-.title-pill>a {
-    color : black;
-    cursor:default;
+.title-pill > a {
+    color: black;
+    cursor: default;
 }
 
-.nav>.title-pill>a:focus, .nav>.title-pill>a:hover {
-    background-color : white;
-    cursor:default;
+.nav > .title-pill > a:focus, .nav > .title-pill > a:hover {
+    background-color: white;
+    cursor: default;
 }
 
 input.form-control.ng-untouched {
@@ -215,6 +218,7 @@ input.form-control.ng-valid.ng-touched {
 .chart-container {
     height: 300px;
 }
+
 /* Wizard CSS */
 /* TODO: Wizard step graph is not responsive */
 
@@ -227,7 +231,7 @@ input.form-control.ng-valid.ng-touched {
     height: 650px;
 }
 
-.wizard-footer{
+.wizard-footer {
     background-color: inherit;
     border-top: inherit;
     position: fixed;
@@ -289,21 +293,20 @@ input.form-control.ng-valid.ng-touched {
     border: 1px solid #eee;
 }
 
-.codemirror-height-xs .CodeMirror  {
-    height : 100px;
+.codemirror-height-xs .CodeMirror {
+    height: 100px;
 }
 
-.codemirror-height-sm .CodeMirror  {
-    height : 200px;
+.codemirror-height-sm .CodeMirror {
+    height: 200px;
 }
 
-
-.codemirror-height-md .CodeMirror  {
-    height : 300px;
+.codemirror-height-md .CodeMirror {
+    height: 300px;
 }
 
-.codemirror-height-lg .CodeMirror  {
-    height : 500px;
+.codemirror-height-lg .CodeMirror {
+    height: 500px;
 }
 
 .centered-progress-bar {
@@ -314,3 +317,21 @@ input.form-control.ng-valid.ng-touched {
 .adp-box {
     height: 650px !important;
 }
+
+.adp-box-button{
+    margin: 15px 10px 0px 10px;
+}
+
+.adp-box-list {
+    overflow-y: auto;
+    height: 535px;
+    padding-top: 15px;
+}
+
+
+.adp-box-table-container{
+    height: 100px;
+    overflow-y: auto;
+}
+
+
