@@ -1,0 +1,81 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: WebChat application
+imports: ['tosca-normative-types:1.0.0.wd03-SNAPSHOT']
+topology_template:
+  node_templates:
+    Chat:
+      type: sc_req.Chat
+      artifacts:
+      - {war: 'http://www.seaclouds.eu/artifacts/chat-webApplication.war', type: tosca.artifacts.File}
+      requirements:
+      - {endpoint: MessageDatabase}
+      - {host: Cloud_Foundry, instancesPOC: 7}
+    MessageDatabase:
+      type: sc_req.MessageDatabase
+      artifacts:
+      - {db_create: 'http://www.seaclouds.eu/artifacts/create-message-database.sql',
+        type: tosca.artifacts.File}
+      properties:
+        mysql_version:
+          constraints:
+          - {greater_or_equal: '5.0'}
+          - {less_or_equal: '5.0'}
+      requirements:
+      - {host: Amazon_EC2_c3_xlarge_us_west_1, instancesPOC: 8}
+    Amazon_EC2_c3_xlarge_us_west_1:
+      type: seaclouds.Nodes.Compute
+      properties: {num_cpus: 4, country: United States, cost: 0.255 USD/hour, city: SAN JOSE,
+        resource_type: compute, disk_size: 80, availability: 0.9995, performance: 92,
+        hardwareId: c3.xlarge, disk_type: ssd, location: aws-ec2, num_disks: 2, region: us-west-1,
+        ram: 7}
+    Cloud_Foundry:
+      type: seaclouds.Nodes.Platform
+      properties: {node_support: true, go_support: true, tomcat_version: 7, private_hosting: true,
+        resource_type: platform, tomcat_support: true, auto_scaling: false, public_hosting: false,
+        java_support: true, horizontal_scaling: true, ruby_support: true, python_support: true,
+        scala_support: true, vertical_scaling: true, location: CloudFoundry, go_version: 1.4,
+        php_support: true}
+node_types:
+  sc_req.Chat:
+    derived_from: seaclouds.nodes.webapp.tomcat.TomcatServer
+    properties:
+      java_support:
+        constraints:
+        - {equal: true}
+      tomcat_support:
+        constraints:
+        - {equal: true}
+      tomcat_version:
+        constraints:
+        - {greater_or_equal: '6'}
+      resource_type:
+        constraints:
+        - {equal: platform}
+  sc_req.MessageDatabase:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      disk_size:
+        constraints:
+        - {greater_or_equal: '50'}
+      resource_type:
+        constraints:
+        - {equal: compute}
+groups:
+  operation_Chat:
+    members: [Chat]
+    policies:
+    - QoSInfo: {execution_time: 50 ms, benchmark_platform: hp_cloud_services.2xl}
+    - dependencies: {operation_MessageDatabase: '2'}
+    - QoSRequirements:
+        response_time: {less_than: 2000.0 ms}
+        availability: {greater_than: 0.998}
+        cost: {less_or_equal: 200.0 euros_per_month}
+        workload: {less_or_equal: 50.0 req_per_min}
+    - ExpectedQualityPOC: {fitnessPOC: .NaN, expectedCostPOC: 1468.8, expectedExecutionTimePOC: .NaN}
+  operation_MessageDatabase:
+    members: [MessageDatabase]
+    policies:
+    - QoSInfo: {execution_time: 30 ms, benchmark_platform: hp_cloud_services.2xl}
+    - dependencies: {}
+
+

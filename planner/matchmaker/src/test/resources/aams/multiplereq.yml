@@ -1,0 +1,36 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: WebChat application
+imports:
+- tosca-normative-types:1.0.0.wd03-SNAPSHOT
+topology_template:
+  node_templates:
+    MessageDatabase:
+      type: sc_req.MessageDatabase
+      artifacts:
+      - db_create: http://www.seaclouds.eu/artifacts/create-message-database.sql
+        type: tosca.artifacts.File
+      properties:
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5.0'
+          - less_or_equal: '5.0'
+node_types:
+  sc_req.MessageDatabase:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      java_version:
+        constraints:
+        - greater_or_equal: '7'
+        - less_or_equal: '8'
+      resource_type:
+        constraints:
+        - equal: platform
+groups:
+  operation_MessageDatabase:
+    members:
+    - MessageDatabase
+    policies:
+    - QoSInfo:
+        execution_time: 30 ms
+        benchmark_platform: hp_cloud_services.2xl
+    - dependencies: {}

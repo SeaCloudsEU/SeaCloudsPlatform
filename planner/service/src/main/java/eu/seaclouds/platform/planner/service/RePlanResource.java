@@ -3,10 +3,13 @@ package eu.seaclouds.platform.planner.service;
 import alien4cloud.tosca.parser.ParsingException;
 import com.codahale.metrics.annotation.Timed;
 import eu.seaclouds.platform.planner.core.Planner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Copyright 2014 SeaClouds
@@ -31,29 +34,33 @@ public class RePlanResource {
 
     private final String discovererURL;
     private final String optimizerURL;
+    private final String[] deployableProviders;
 
-    public RePlanResource(String discovererURL, String optimizerURL)
+    static Logger log = LoggerFactory.getLogger(RePlanResource.class);
+
+    public RePlanResource(String discovererURL, String optimizerURL, String[] deployableProviders)
     {
         this.discovererURL = discovererURL;
         this.optimizerURL = optimizerURL;
+        this.deployableProviders = deployableProviders;
     }
 
     @GET
     @Timed
-    public PlannerResponse replan(@QueryParam("aam") String aam, @QueryParam("dam") String dam){
-       return getPlans(aam, dam);
+    public PlannerResponse replan(@QueryParam("aam") String aam, @QueryParam("dam") String dam, String[] failingModules){
+       return getPlans(aam, dam, failingModules);
     }
 
 
-    private PlannerResponse getPlans(String aam, String dam){
+    private PlannerResponse getPlans(String aam, String dam, String[] failingModules){
         Planner p = new Planner(discovererURL, optimizerURL, aam, dam);
-        String resp = "{}";
+        String[] resp = new String[0];
         try {
-            resp = p.rePlan();
+            resp = p.rePlan(Arrays.asList(this.deployableProviders), Arrays.asList(failingModules));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getCause().getMessage(), e);
         } catch (ParsingException e) {
-            e.printStackTrace();
+            log.error(e.getCause().getMessage(), e);
         }
         return new PlannerResponse(aam, resp);
     }

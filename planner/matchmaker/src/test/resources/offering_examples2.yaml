@@ -1,0 +1,35 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description:
+template_name:
+template_version: 1.0.0-SNAPSHOT
+template_author:
+
+imports:
+  - tosca-normative-types:1.0.0.wd03-SNAPSHOT
+
+topology_template:
+  node_templates:
+    valid1:
+      type: seaclouds.Nodes.Platform.Trucker_io
+      properties:
+         resource_type: platform
+         java_version: 8
+
+    valid2:
+      type: seaclouds.Nodes.Platform.Trucker_io
+      properties:
+         resource_type: platform
+         java_version: '8.0'
+
+    valid3:
+      type: seaclouds.Nodes.Platform.Trucker_io
+      properties:
+         resource_type: platform
+         java_version: "7"
+
+    invalid:
+      type: seaclouds.Nodes.Platform.Trucker_io
+      properties:
+         resource_type: platform
+         java_version: 5
+

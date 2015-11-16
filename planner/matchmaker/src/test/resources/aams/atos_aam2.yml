@@ -1,0 +1,101 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: Sample 3-tier application
+imports:
+- tosca-normative-types:1.0.0.wd03-SNAPSHOT
+topology_template:
+  node_templates:
+    www:
+      type: sc_req.www
+      requirements:
+      - endpoint: webservices
+    webservices:
+      type: sc_req.webservices
+      properties:
+        java_version:
+          constraints:
+          - greater_or_equal: '7'
+          - less_or_equal: '8'
+      requirements:
+      - endpoint: db1
+    db1:
+      type: sc_req.db1
+      properties:
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5.0'
+          - less_or_equal: '5.6'
+node_types:
+  sc_req.www:
+    derived_from: seaclouds.nodes.webapp.tomcat.TomcatServer
+    properties:
+      java_support:
+        constraints:
+        - equal: true
+      tomcat_support:
+        constraints:
+        - equal: true
+      java_version:
+        constraints:
+        - greater_or_equal: '7'
+        - less_or_equal: '8'
+      resource_type:
+        constraints:
+        - equal: platform
+  sc_req.webservices:
+    derived_from: seaclouds.nodes.SoftwareComponent
+    properties:
+      num_cpus:
+        constraints:
+        - greater_or_equal: '4'
+      disk_size:
+        constraints:
+        - greater_or_equal: '256'
+      resource_type:
+        constraints:
+        - equal: compute
+  sc_req.db1:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      mysql_support:
+        constraints:
+        - equal: true
+      mysql_version:
+        constraints:
+        - greater_or_equal: '5.0'
+        - less_or_equal: '5.6'
+groups:
+  operation_www:
+    members:
+    - www
+    policies:
+    - QoSInfo:
+        execution_time: 200 ms
+        benchmark_platform: wwwValidOffering
+    - dependencies:
+        operation_webservices: '2'
+    - QoSRequirements:
+        response_time:
+          less_than: 2000.0 ms
+        availability:
+          greater_than: 0.98
+        cost:
+          less_or_equal: 200.0 euros_per_month
+        workload:
+          less_or_equal: 50.0 req_per_min
+  operation_webservices:
+    members:
+    - webservices
+    policies:
+    - QoSInfo:
+        execution_time: 100 ms
+        benchmark_platform: hp_cloud_services.2xl
+    - dependencies:
+        operation_db1: '1'
+  operation_db1:
+    members:
+    - db1
+    policies:
+    - dependencies: {}
+    - QoSInfo:
+        execution_time: 50 ms
+        benchmark_platform: db1ValidOffering

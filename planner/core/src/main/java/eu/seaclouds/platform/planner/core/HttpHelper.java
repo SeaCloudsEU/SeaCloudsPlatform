@@ -1,23 +1,26 @@
 package eu.seaclouds.platform.planner.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.seaclouds.planner.matchmaker.Pair;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.URLCodec;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -42,6 +45,7 @@ public class HttpHelper {
     private CloseableHttpClient httpclient;
     private String serviceURL;
     private ObjectMapper mapper;
+    static Logger log = LoggerFactory.getLogger(HttpHelper.class);
 
     /**
      *
@@ -60,27 +64,47 @@ public class HttpHelper {
      * @return
      */
     public String getRequest(String restPath, List<NameValuePair> params){
+        log.info("Getting request for " + this.serviceURL + restPath);
 
         HttpGet httpGet = new HttpGet(prepareRequestURL(restPath, params));
-
         CloseableHttpResponse response = null;
+        String content ="";
         try {
             response = httpclient.execute(httpGet);
             HttpEntity entity = response.getEntity();
-            String content = new Scanner(entity.getContent()).useDelimiter("\\Z").next();
+            content = new Scanner(entity.getContent()).useDelimiter("\\Z").next();
             EntityUtils.consume(entity);
-            return content;
+            log.info("Request executed succesfully");
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            log.error("IOException", e);
         } finally {
             try {
                 response.close();
             } catch (IOException e) {
-                e.printStackTrace();
-                return null;
+                log.error("IOEXception", e);
             }
         }
+        return content;
+    }
+
+    public String postInBody(String restPath, String bodyContent){
+        log.info("Posting request for " + this.serviceURL + restPath);
+        HttpPost post = new HttpPost(prepareRequestURL(restPath));
+        String result = "";
+        try {
+            StringEntity entity = new StringEntity(bodyContent);
+            post.setEntity(entity);
+            HttpResponse response = httpclient.execute(post);
+            result = EntityUtils.toString(response.getEntity());
+        }catch (ClientProtocolException e) {
+            log.error("ClientProtocolException", e);
+        } catch (UnsupportedEncodingException e) {
+            log.error("UnsupportedEncodingException", e);
+        } catch (IOException e) {
+            log.error("IOException", e);
+        }
+
+        return result;
     }
 
     /**
@@ -89,43 +113,91 @@ public class HttpHelper {
      * @param params
      * @return
      */
-    public String postRequest(String restPath, List<NameValuePair> params){
+    public Pair<String, String> postRequest(String restPath, List<NameValuePair> params){
+        log.info("Posting request for " + this.serviceURL + restPath);
         HttpPost httpPost = new HttpPost(prepareRequestURL(restPath, new ArrayList<NameValuePair>()));
+        CloseableHttpResponse response = null;
+        String content = "";
+        try {
+            httpPost.setEntity(new UrlEncodedFormEntity(params));
+            response = httpclient.execute(httpPost);
+            HttpEntity entity = response.getEntity();
+            int status = response.getStatusLine().getStatusCode();
+
+            if(status == 200) {
+                content = EntityUtils.toString(entity);
+            }else{
+                content =response.getStatusLine().getReasonPhrase();
+            }
+
+            EntityUtils.consume(entity);
+            log.info("Post success");
+            return new Pair<String, String>(String.valueOf(status), content);
+
+        } catch (UnsupportedEncodingException e) {
+            log.error("UnsupportedEncodingException", e);
+        } catch (ClientProtocolException e) {
+            log.error("ClientProtocolException", e);
+        } catch (IOException e) {
+            log.error("IOException", e);
+        }finally {
+            try {
+                response.close();
+            } catch (IOException e) {
+                log.error("IOException", e);
+            }
+        }
+        return new Pair<>("500", "Post Exception for: " + httpPost.toString());
+    }
+
+    public Pair<String, String> postRequestWithParams(String restPath, List<NameValuePair> params){
+        log.info("Posting request for " + this.serviceURL + restPath);
+        HttpPost httpPost = new HttpPost(prepareRequestURL(restPath, params));
         CloseableHttpResponse response = null;
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(params));
             response = httpclient.execute(httpPost);
             HttpEntity entity = response.getEntity();
-            String content = new Scanner(entity.getContent()).useDelimiter("\\Z").next();
+            String content = "";
+            int status = response.getStatusLine().getStatusCode();
+
+            if(status == 200) {
+                content = EntityUtils.toString(entity); //new Scanner(entity.getContent()).useDelimiter("\\Z").next();
+            }else{
+                content =response.getStatusLine().getReasonPhrase();
+            }
+
             EntityUtils.consume(entity);
-            return content;
+            log.info("Post success");
+            return new Pair<String, String>(String.valueOf(status), content);
 
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return null;
+            log.error(e.getCause().getMessage(), e);
+            return new Pair<String, String>("500", "Exception: " + e.getCause().getMessage());
         } catch (ClientProtocolException e) {
-            e.printStackTrace();
-            return null;
+            log.error("ClientProtocolException");
+            return new Pair<String, String>("500", "Exception: " + e.getCause().getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            log.error("IOException");
+            return new Pair<String, String>("500", "Exception: " + e.getCause().getMessage());
         }finally {
             try {
                 response.close();
             } catch (IOException e) {
-                e.printStackTrace();
-                return null;
+                log.error("IOException", e);
+                return new Pair<String, String>("500", "Exception: " + e.getCause().getMessage());
             }
         }
+    }
+
+    private String prepareRequestURL(String restPath){
+        return prepareRequestURL(restPath, new ArrayList<NameValuePair>());
     }
 
     private String prepareRequestURL(String restPath, List<NameValuePair> params){
         StringBuilder operationBuilder = new StringBuilder();
         operationBuilder.append(serviceURL);
         operationBuilder.append(restPath);
-
-
-
         if(params.size() > 0) {
             operationBuilder.append("?");
             URLCodec coded = new URLCodec();
@@ -134,25 +206,10 @@ public class HttpHelper {
                     operationBuilder.append(p.getName() + "=" + coded.encode(p.getValue()));
 
             } catch (EncoderException e) {
-                e.printStackTrace();
-                return null;
+                log.error(e.getCause().getMessage(), e);
+                return "";
             }
         }
         return operationBuilder.toString();
-    }
-
-    /**
-     *
-     * @param jsonString
-     * @param <T>
-     * @return
-     */
-    public <T> T getObjectFromJson(String jsonString, Class<T> type){
-        try {
-            return mapper.readValue(jsonString, type);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 }

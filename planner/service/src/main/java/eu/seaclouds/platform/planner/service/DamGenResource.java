@@ -1,6 +1,7 @@
 package eu.seaclouds.platform.planner.service;
 
 import com.codahale.metrics.annotation.Timed;
+import eu.seaclouds.platform.planner.core.DamGenerator;
 import eu.seaclouds.platform.planner.core.Planner;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -44,10 +45,16 @@ public class DamGenResource {
 
     }
 
+    @POST
+    @Timed
+    public DamGeneratorResponse damGenPost(String adp){
+        return new DamGeneratorResponse(DamGenerator.generateDam(adp, monitorGeneratorURL, slaGeneratorURL));
+    }
+
     @GET
     @Timed
     public DamGeneratorResponse damgen(@QueryParam("adp") String adp){
-        return new DamGeneratorResponse(new Planner(genURLs, adp).generateDam());
+        return new DamGeneratorResponse(DamGenerator.generateDam(adp, monitorGeneratorURL, slaGeneratorURL));
     }
 
 }

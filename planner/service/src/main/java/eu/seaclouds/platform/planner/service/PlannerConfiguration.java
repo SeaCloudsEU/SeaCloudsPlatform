@@ -27,10 +27,19 @@ public class PlannerConfiguration extends Configuration{
     private String optimizerURL;
 
     @NotEmpty
+    private String[] deployableProviders;
+
+    @NotEmpty
     private String monitorGeneratorURL;
 
     @NotEmpty
     private String slaGeneratorURL;
+
+    @JsonProperty("deployableProviders")
+    public void setDeployableProviders(String[] deployableProviders) { this.deployableProviders = deployableProviders; }
+
+    @JsonProperty("deployableProviders")
+    public String[] getDeployableProviders() { return this.deployableProviders; }
 
     @JsonProperty("monitorGeneratorURL")
     public void setMonitorGeneratorURL(String monitorGeneratorURL) { this.monitorGeneratorURL = monitorGeneratorURL; }
