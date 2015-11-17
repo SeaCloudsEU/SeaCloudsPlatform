@@ -3,10 +3,13 @@ package eu.seaclouds.platform.planner.service;
 import alien4cloud.tosca.parser.ParsingException;
 import com.codahale.metrics.annotation.Timed;
 import eu.seaclouds.platform.planner.core.Planner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Copyright 2014 SeaClouds
@@ -28,15 +31,22 @@ import java.io.IOException;
 @Path("/plan")
 @Produces(MediaType.APPLICATION_JSON)
 public class PlanResource {
-
     private final String discovererURL;
     private final String optimizerURL;
+    private final String[] deployableProviders;
 
-    public PlanResource(String discovererURL, String optimizerURL)
+    static Logger log = LoggerFactory.getLogger(PlanResource.class);
+
+    public PlanResource(String discovererURL, String optimizerURL, String[] deployableProviders)
     {
         this.discovererURL = discovererURL;
         this.optimizerURL = optimizerURL;
+        this.deployableProviders = deployableProviders;
     }
+
+    @POST
+    @Timed
+    public PlannerResponse planPost(String aam) { return getPlans(aam); }
 
     @GET
     @Timed
@@ -46,13 +56,13 @@ public class PlanResource {
 
     private PlannerResponse getPlans(String aam){
         Planner p = new Planner(discovererURL, optimizerURL, aam);
-        String resp = "{}";
+        String[] resp = new String[0];
         try {
-            resp = p.plan();
+            resp = p.plan(Arrays.asList(deployableProviders));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getCause().getMessage(), e);
         } catch (ParsingException e) {
-            e.printStackTrace();
+            log.error(e.getCause().getMessage(), e);
         }
         return new PlannerResponse(aam, resp);
     }

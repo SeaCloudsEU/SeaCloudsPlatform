@@ -22,7 +22,6 @@
 
 	<packaging>pom</packaging>
 	<modules>
-		<module>optimizer-service</module>
 		<module>optimizer-core</module>
 	</modules>
 	<dependencies>

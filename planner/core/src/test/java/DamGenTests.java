@@ -16,41 +16,108 @@
  */
 
 import com.google.common.io.Resources;
+import eu.seaclouds.platform.planner.core.HttpHelper;
 import eu.seaclouds.platform.planner.core.Planner;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.testng.annotations.Test;
+import org.yaml.snakeyaml.Yaml;
+import sun.net.www.http.HttpClient;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
+import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertTrue;
 
+@Test
 public class DamGenTests {
 
     @Test
-    public void damGenerationTest() throws Exception {
+    public void damTranslation() throws Exception{
+        //String adp = new Scanner(new File(Resources.getResource("example_adp.yml").toURI())).useDelimiter("\\Z").next();
+        String adp = new Scanner(new File(Resources.getResource("generated_adp.yml").toURI())).useDelimiter("\\Z").next();
+        Yaml yml =new Yaml();
 
-        String adp = new Scanner(new File(Resources.getResource("example_adp.yml").toURI())).useDelimiter("\\Z").next();
-        assertNotNull(adp);
+        ArrayList<Object> groupsToAdd = new ArrayList<>();
+        HashMap<String, ArrayList<String>> groups = new HashMap<>();
 
-        String slaOut = new Scanner(new File(Resources.getResource("sla_example_out.json").toURI())).useDelimiter("\\Z").next();
-        assertNotNull(slaOut);
+        Map<String, Map<String, Object>> adpYaml = (Map<String, Map<String, Object>>) yml.load(adp);
+        assertNotNull(adpYaml);
+        Map<String, Object> ADPgroups = adpYaml.get("groups");
 
-        String monitoringRules = new Scanner(new File(Resources.getResource("example_monitoringrule.json").toURI())).useDelimiter("\\Z").next();
-        assertNotNull(monitoringRules);
+        Map<String, Object> nodeTemplates = (Map<String, Object>) adpYaml.get("topology_template").get("node_templates");
+        Map<String, Object> nodeTypes = (Map<String, Object>) adpYaml.get("node_types");
+        assertNotNull(nodeTemplates);
 
-        Planner planner = new Planner();
+        for(String moduleName:nodeTemplates.keySet()){
+            Map<String, Object> module = (Map<String, Object>) nodeTemplates.get(moduleName);
 
-        String partialDam = planner.generateMonitoringInfo(adp, monitoringRules);
+            //type replacement
+            String moduleType = (String) module.get("type");
+            if(nodeTypes.containsKey(moduleType)){
+                Map<String, Object> type = (HashMap<String, Object>) nodeTypes.get(moduleType);
+                String oldType = (String) type.get("derived_from");
+                if(oldType.startsWith("seaclouds.nodes.")){
+                    String newType = oldType.replaceAll("seaclouds.nodes.", "org.apache.brooklyn.entity.");
+                    module.put("type", newType);
+                }
+                assertNotNull(type);
+            }
 
-        assertNotNull(partialDam);
 
-        String finalDam = planner.generateSlaInfo(partialDam, slaOut);
+            if(module.keySet().contains("requirements")){
+                ArrayList<Map<String, Object> > requirements = (ArrayList<Map<String, Object> >) module.get("requirements");
+                assertNotNull(requirements);
+                for(Map<String, Object> req : requirements){
+                    if(req.keySet().contains("host")){
+                        String host = (String) req.get("host");
+                        if(!groups.keySet().contains(host)){
+                            groups.put(host, new ArrayList<String>());
+                        }
+                        groups.get(host).add(moduleName);
+                    }
+                }
+            }
+        }
+        assertNotNull(groups);
 
+        //get brookly location from host
+        int blidx = 1;
+        for(String group: groups.keySet()){
+            HashMap<String, Object> policyGroup = new HashMap<>();
+            policyGroup.put("members", groups.get(group));
+
+            HashMap<String, Object> cloudOffering = (HashMap<String, Object>) nodeTemplates.get(group);
+            HashMap<String, Object> properties = (HashMap<String, Object>) cloudOffering.get("properties");
+            String location = (String) properties.get("location");
+            String region = (String) properties.get("region");
+            String hardwareId = (String) properties.get("hardwareId");
+
+
+            ArrayList<HashMap<String, Object>> policy = new ArrayList<>();
+            HashMap<String, Object> p = new HashMap<>();
+            p.put("brooklyn.location", location + ":" + region);
+            policy.add(p);
+
+            policyGroup.put("policies", policy);
+
+            HashMap<String, Object> finalGroup = new HashMap<>();
+
+            ADPgroups.put("add_brooklyn_location" + blidx++ ,policyGroup);
+        }
+
+        String finalDam = yml.dump(adpYaml);
         assertNotNull(finalDam);
-
-        assertTrue(adp.length() <= finalDam.length());
-        assertTrue(partialDam.length() <= finalDam.length());
-        assertTrue(adp.length() <= partialDam.length());
     }
 }

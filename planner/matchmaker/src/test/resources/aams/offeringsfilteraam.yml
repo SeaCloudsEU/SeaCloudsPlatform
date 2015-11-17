@@ -1,0 +1,31 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: Web App
+imports:
+- tosca-normative-types:1.0.0.wd03-SNAPSHOT
+topology_template:
+  node_templates:
+    Sample:
+      type: sc_req.Sample
+node_types:
+  sc_req.Sample:
+    derived_from: seaclouds.nodes.SoftwareComponent
+    properties:
+      num_cpus:
+        constraints:
+          - less_or_equal: 2
+
+groups:
+  operation_Sample:
+    members:
+    - Sample
+    policies:
+    - dependencies: {}
+    - QoSRequirements:
+        response_time:
+          less_than: 222.0 ms
+        availability:
+          greater_than: 99.9
+        cost:
+          less_or_equal: 1111.0 euros_per_month
+        workload:
+          less_or_equal: 400 req_per_min

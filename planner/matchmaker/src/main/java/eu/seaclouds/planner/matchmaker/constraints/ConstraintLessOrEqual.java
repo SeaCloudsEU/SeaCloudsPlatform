@@ -25,6 +25,9 @@ public class ConstraintLessOrEqual<T extends Comparable<T>> extends Constraint {
     }
 
     public boolean checkConstraint(PropertyValue prop) {
-        return super.checkConstraint(prop) &&  ((T) value).compareTo((T) prop.getValue()) >= 0;
+        Double pval = new Double(((T) prop.getValue()).toString());
+        Double val = new Double(value.toString());
+        boolean v = val.compareTo(pval) >= 0;
+        return super.checkConstraint(prop) && v;
     }
 }

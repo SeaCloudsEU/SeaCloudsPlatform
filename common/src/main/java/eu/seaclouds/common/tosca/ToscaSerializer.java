@@ -23,6 +23,9 @@ import alien4cloud.tosca.parser.ParsingException;
 import alien4cloud.tosca.parser.ParsingResult;
 import alien4cloud.tosca.parser.ToscaParser;
 import alien4cloud.tosca.serializer.VelocityUtil;
+import com.google.common.base.Supplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -32,7 +35,15 @@ import java.util.Map;
 
 public class ToscaSerializer {
 
+    static Logger log = LoggerFactory.getLogger(ToscaSerializer.class);
+
     public final static String TEMPLATE_VERSION = "1.0.0-SNAPSHOT";
+    private static Supplier<ToscaParser> p = new Supplier<ToscaParser>() {
+        @Override
+        public ToscaParser get() {
+            return new ToscaParserSupplier().get();
+        }
+    };
 
     public static String toTOSCA(Topology topology, String author, String name, String description) {
 
@@ -55,18 +66,19 @@ public class ToscaSerializer {
     }
 
     public static ParsingResult<ArchiveRoot> fromTOSCA(Path filePath) throws ParsingException {
-        ToscaParser parser = new ToscaParserSupplier().get();
+        ToscaParser parser = p.get();
         ParsingResult<ArchiveRoot> parsingResult = parser.parseFile(filePath);
         return parsingResult;
     }
 
     public static ParsingResult<ArchiveRoot> fromTOSCA(String yaml) throws ParsingException, IOException {
+        log.debug("Parsing: \n" + yaml);
         File tempFile = File.createTempFile("toscayamlFile", null);
         BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile));
         bw.write(yaml);
         bw.close();
 
-        ToscaParser parser = new ToscaParserSupplier().get();
+        ToscaParser parser = p.get();
         ParsingResult<ArchiveRoot> parsingResult = parser.parseFile(Paths.get(tempFile.getAbsolutePath()));
 
         tempFile.delete();

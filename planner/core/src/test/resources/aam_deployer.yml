@@ -11,8 +11,6 @@ topology_template:
         type: tosca.artifacts.File
       requirements:
       - endpoint: MessageDatabase
-      - host: webserviceValidOffering
-
     MessageDatabase:
       type: sc_req.MessageDatabase
       artifacts:
@@ -23,34 +21,6 @@ topology_template:
           constraints:
           - greater_or_equal: '5.0'
           - less_or_equal: '5.0'
-      requirements:
-       - host: db1ValidOffering
-
-    webserviceValidOffering:
-      type: seaclouds.nodes.webserviceValidOffering
-      properties:
-        num_cpus: 8
-        disk_size: 512
-        resource_type: compute
-        availability: 0.98
-        cost: 0.928 usd_per_hour
-        performance: 543
-        location: "aws:ec2"
-        region: "ap-china-1"
-        hardwareId: m1.small
-
-    db1ValidOffering:
-      type: seaclouds.nodes.db1ValidOffering
-      properties:
-        mysql_support: true
-        mysql_version: 5.4
-        availability: 0.99
-        cost: 0.928 usd_per_hour
-        performance : 62
-        location: "aws:ec2"
-        region: "ap-china-1"
-        hardwareId: m1.small
-
 node_types:
   sc_req.Chat:
     derived_from: seaclouds.nodes.webapp.tomcat.TomcatServer
@@ -61,7 +31,7 @@ node_types:
       tomcat_support:
         constraints:
         - equal: true
-      java_version:
+      tomcat_version:
         constraints:
         - greater_or_equal: '6'
       resource_type:

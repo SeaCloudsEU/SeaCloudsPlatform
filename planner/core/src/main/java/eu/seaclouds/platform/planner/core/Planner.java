@@ -17,8 +17,11 @@
 package eu.seaclouds.platform.planner.core;
 
 import alien4cloud.model.topology.NodeTemplate;
+import alien4cloud.tosca.model.ArchiveRoot;
 import alien4cloud.tosca.parser.ParsingException;
+import alien4cloud.tosca.parser.ParsingResult;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import eu.seaclouds.common.tosca.ToscaSerializer;
@@ -26,24 +29,29 @@ import eu.seaclouds.planner.matchmaker.Matchmaker;
 import eu.seaclouds.planner.matchmaker.Pair;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
+import eu.seaclouds.platform.planner.optimizer.Optimizer;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.URI;
 import java.util.*;
 
 public class Planner {
-
-    private static final String DAM_GEN_OP = "/daminfo";
+    static Logger log = LoggerFactory.getLogger(ToscaSerializer.class);
+    private static final String MONITOR_GEN_OP = "/damgen";
+    private static final String SLA_GEN_OP = "/seaclouds/templates";
+    private static final String DISCOVERER_PATH = "discoverer/";
+    private static final String OPTIMIZER_PATH = "optimizer/";
 
     private final String discovererURL;
     private final String optimizerURL;
     private final String slaGenURL;
     private final String monitorGenURL;
-    private final HttpHelper discovererClient;
-    private final HttpHelper optimizerClient;
+    private HttpHelper discovererClient;
+    private HttpHelper optimizerClient;
     private final String aam;
     private final String dam;
     private final String adp;
@@ -68,21 +76,23 @@ public class Planner {
     }
 
     private Planner(String discovererURL, String optimizerURL, String monitorGenURL, String slaGenURL, String aam, String dam, String adp){
-        this.discovererURL = discovererURL;
-        this.optimizerURL = optimizerURL;
+        this.discovererURL = discovererURL + DISCOVERER_PATH;
+        this.optimizerURL = optimizerURL + OPTIMIZER_PATH;
         this.monitorGenURL = monitorGenURL;
         this.slaGenURL = slaGenURL;
-        this.discovererClient = new HttpHelper(discovererURL);
-        this.optimizerClient = new HttpHelper(optimizerURL);
+        this.discovererClient = new HttpHelper(this.discovererURL);
+        this.optimizerClient = new HttpHelper(this.optimizerURL);
         this.aam = aam;
         this.dam = dam;
         this.adp = adp;
     }
 
-    private String generatMMOutput(Map<String, HashSet<String>> mmResult, Map<String, Pair<NodeTemplate, String>> offerings) throws Exception{
+    private String generateMMOutput2(Map<String, HashSet<String>> mmResult, Map<String, Pair<NodeTemplate, String>> offerings) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
         ArrayList<Map<String, ArrayList<Map<String, Object>>>> singleRes = new ArrayList<>();
+
+        Yaml yml = new Yaml();
 
         for(String moduleName : mmResult.keySet()) {
 
@@ -90,9 +100,41 @@ public class Planner {
 
             //create suitable lists
             for (String id : mmResult.get(moduleName)) {
-                Object off = offerings.get(id);
+                String off = offerings.get(id).second;
                 Map<String, Object> innerMap = new HashMap<>();
                 innerMap.put(id, off);
+                suitableList.add(innerMap);
+            }
+
+            HashMap<String, ArrayList<Map<String, Object>>> finalRes = new HashMap<>();
+            finalRes.put(moduleName, suitableList);
+            singleRes.add(finalRes);
+        }
+
+
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(singleRes);
+    }
+
+    private String generateMMOutput(Map<String, HashSet<String>> mmResult, Map<String, Pair<NodeTemplate, String>> offerings) throws Exception{
+        ObjectMapper mapper = new ObjectMapper();
+
+        ArrayList<Map<String, ArrayList<Map<String, Object>>>> singleRes = new ArrayList<>();
+
+        Yaml yml = new Yaml();
+
+        for(String moduleName : mmResult.keySet()) {
+
+            ArrayList<Map<String, Object>> suitableList = new ArrayList<>();
+
+            //create suitable lists
+            for (String id : mmResult.get(moduleName)) {
+                String off = offerings.get(id).second;
+                Map<String, Object> innerMap = new HashMap<>();
+                Map<String, Map<String, Object>> tosca = (Map<String, Map<String, Object>>) yml.load(off);
+
+                Object o = tosca.get("topology_template").get("node_templates");
+                String od = yml.dump(o);
+                innerMap.put(id, od);
                 suitableList.add(innerMap);
             }
 
@@ -105,152 +147,71 @@ public class Planner {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(singleRes);
     }
 
-    public String plan() throws ParsingException, IOException {
+
+    public String[] plan(List<String> deployableOfferings) throws ParsingException, IOException {
 
         //Get offerings
-        Map<String, Pair<NodeTemplate, String>> offerings = getOfferingsFromDiscoverer();
+        log.info("Getting Offeing Step: Start");
+        Map<String, Pair<NodeTemplate, String>> offerings = getOfferings(deployableOfferings); // getOfferingsFromDiscoverer();
+        log.info("Getting Offeing Step: Complete");
 
         //Matchmake
+        log.info("Matchmaking Step: Start");
         Matchmaker mm = new Matchmaker();
         Map<String, HashSet<String>> matchingOfferings = mm.match(ToscaSerializer.fromTOSCA(aam), offerings);
-
+        log.info("Matchmaking Step: Complete");
         //Optimize
         String mmOutput = "";
         try {
-            mmOutput = generatMMOutput(matchingOfferings, offerings);
-        } catch (Exception e) {
-            //What should we return in case of failure?
-            e.printStackTrace();
+            mmOutput = generateMMOutput2(matchingOfferings, offerings);
+        }catch(JsonProcessingException e){
+            log.error("Error preparing matchmaker output for optimization", e);
         }
 
-        //CHECKME: I am assuming it is possible to call the optimizer using a POST to /optimize?aam=xxx&dam=xxx&mmResults=xxx
-        // https://docs.google.com/document/d/1GQrH3kYbIZN34OkHPmMlg8VrYlPZmC2jsbDOc-dkVcc/edit#
 
-        List<NameValuePair> optParams = getReqParams(
-                new BasicNameValuePair("aam", aam),
-                new BasicNameValuePair("mmResults", mmOutput)
-        );
+        log.info("Optimization Step: Start");
+        Optimizer optimizer = new Optimizer();
+        String[] outputPlans = optimizer.optimize(aam, mmOutput);
 
-        String optResult = optimizerClient.postRequest("/optimize", optParams);
-        //return result
-        return optResult; //TODO: check the output for the optimizer
+        log.info("Optimization Step: Complete");
+
+        return outputPlans;
     }
 
-    private Map<String, HashSet<String>> filterOffering(Map<String, HashSet<String>> matchingResult){
+    private Map<String, HashSet<String>> filterOffering(Map<String, HashSet<String>> matchingResult, List<String> modulesToFilter){
         //TODO: need clear parameter requirements description
         throw new UnsupportedOperationException();
     }
 
-    public String rePlan() throws ParsingException, IOException {
+    public String[] rePlan(List<String> deployableOfferings, List<String> modulesToFilter) throws ParsingException, IOException {
         //Get offerings
-        Map<String, Pair<NodeTemplate, String>> offerings = getOfferingsFromDiscoverer();
+        log.info("Getting Offeing Step: Start");
+        Map<String, Pair<NodeTemplate, String>> offerings = getOfferings(deployableOfferings); // getOfferingsFromDiscoverer();
+        log.info("Getting Offeing Step: Complete");
 
         //Matchmake
+        log.info("Matchmaking Step: Start");
         Matchmaker mm = new Matchmaker();
         Map<String, HashSet<String>> matchingOfferings = mm.match(ToscaSerializer.fromTOSCA(aam), offerings);
-
-        matchingOfferings = filterOffering(matchingOfferings);
-
+        matchingOfferings = filterOffering(matchingOfferings, modulesToFilter);
+        log.info("Matchmaking Step: Complete");
         //Optimize
         String mmOutput = "";
         try {
-            mmOutput = generatMMOutput(matchingOfferings, offerings);
-        } catch (Exception e) {
-            //What should we return in case of failure?
-            e.printStackTrace();
-            return null;
+            mmOutput = generateMMOutput2(matchingOfferings, offerings);
+        }catch(JsonProcessingException e){
+            log.error("Error preparing matchmaker output for optimization", e);
         }
 
-        //CHECKME: I am assuming it is possible to call the optimizer using a POST to /optimize?aam=xxx&dam=xxx&mmResults=xxx
-        // https://docs.google.com/document/d/1GQrH3kYbIZN34OkHPmMlg8VrYlPZmC2jsbDOc-dkVcc/edit#
 
-        List<NameValuePair> optParams = getReqParams(
-                new BasicNameValuePair("aam", aam),
-                new BasicNameValuePair("dam", dam),
-                new BasicNameValuePair("mmResults", mmOutput)
-        );
-        String optResult = optimizerClient.postRequest("/optimize", optParams);
-        return optResult; //TODO: check the output for the optimizer
+        log.info("Optimization Step: Start");
+        Optimizer optimizer = new Optimizer();
+        String[] outputPlans = optimizer.optimize(aam, mmOutput);
+
+        log.info("Optimization Step: Complete");
+        return  outputPlans;
     }
 
-    public String generateDam() {
-
-        List<NameValuePair> damInfoParams = getReqParams(new BasicNameValuePair("adp", adp));
-
-        String monitorInfo = new HttpHelper(monitorGenURL).postRequest(DAM_GEN_OP, damInfoParams);
-
-        if(monitorInfo == null)
-            return "error"; //TODO: check it is a good response, need error handling policy
-
-        String partialDam = generateMonitoringInfo(adp, monitorInfo);
-
-        if(partialDam == null)
-            return "error"; //TODO: need real error handling policy
-
-        List<NameValuePair> slaGenInfoParams = getReqParams(new BasicNameValuePair("dam", partialDam));
-        String slaInfo = new HttpHelper(slaGenURL).postRequest(DAM_GEN_OP, slaGenInfoParams);
-
-        if(slaInfo == null)
-            return "error"; //TODO: check it is a good response, need proper error handling
-
-        String finalDam = generateSlaInfo(partialDam, slaInfo);
-        return finalDam;
-    }
-
-    public String generateMonitoringInfo(String currentAdp, String monitoringServiceResponse){
-        Yaml parser = new Yaml();
-        Map<String, Map<String, Object>> adpYml = (Map<String, Map<String, Object>>) parser.load(currentAdp);
-        Map<String, Object> groups = adpYml.get("groups");
-
-        try{
-            ObjectMapper mapper = new ObjectMapper();
-            String[] mrs = mapper.readValue(monitoringServiceResponse, new String[0].getClass());
-            for(String s: mrs){
-                Map<String, Object> rule = (HashMap<String, Object>) parser.load(s);
-                for(String k:rule.keySet()){
-                    groups.put(k, rule.get(k));
-                }
-            }
-            return parser.dump(adpYml);
-        }catch(Exception e){
-            e.printStackTrace();
-            return "error"; //FIXME: need error handling policy
-        }
-    }
-
-    public String generateSlaInfo(String partialDam, String slaServiceResponse){
-        Yaml parser = new Yaml();
-        Map<String, Map<String, Object>> damYml = (Map<String, Map<String, Object>>) parser.load(partialDam);
-        Map<String, Object> groups = damYml.get("groups");
-
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            SLAInfo i = mapper.readValue(slaServiceResponse, SLAInfo.class);
-
-            String slaPolicy = new StringBuilder().append("sla_gen_info:\n")
-                                                  .append("\tmember: [ application ]\n")
-                                                  .append("\tpolicies:\n").append("\t\t- id: ")
-                                                  .append("123").append("\n").toString();
-
-            HashMap<String, Object> slaGroup = new HashMap<>();
-            slaGroup.put("members", new String[]{"application"});
-
-            ArrayList<HashMap<String, String>> l = new ArrayList<>();
-            HashMap<String, String> m = new HashMap<>();
-            m.put("id", i.id);
-            l.add(m);
-            slaGroup.put("policies", l);
-
-            groups.put("sla_gen_info", slaGroup);
-
-            return parser.dump(damYml);
-
-        }catch(Exception e){
-            e.printStackTrace();
-            return "error"; //FIXME: need error handling policy
-        }
-    }
 
     private List<NameValuePair> getReqParams(NameValuePair... params){
         ArrayList<NameValuePair> reqParams = new ArrayList<>();
@@ -259,12 +220,51 @@ public class Planner {
         return reqParams;
     }
 
-    private Map<String, Pair<NodeTemplate, String>> getOfferingsFromDiscoverer() throws ParsingException, IOException {
+    public Map<String, Pair<NodeTemplate, String>> getOfferings(List<String> deployableOfferings){
+        Map<String, Pair<NodeTemplate, String>> map = new HashMap<>();
+        try {
+            String discovererOutput = discovererClient.getRequest("fetch_all", Collections.EMPTY_LIST);
+
+            ObjectMapper mapper = new ObjectMapper();
+            DiscovererFetchallResult allOfferings = mapper.readValue(discovererOutput, DiscovererFetchallResult.class);
+            String offerings = allOfferings.offering;
+
+            ParsingResult<ArchiveRoot> offeringRes = ToscaSerializer.fromTOSCA(offerings);
+            Map<String, NodeTemplate> offering = offeringRes.getResult().getTopology().getNodeTemplates();
+            Yaml yml = new Yaml();
+            Map<String, Map<String, Object>> adpYaml = (Map<String, Map<String, Object>>) yml.load(offerings);
+            Map<String, Object> nodeTemplates = (Map<String, Object>) adpYaml.get("topology_template").get("node_templates");
+
+            for (String node : offering.keySet()) {
+
+                Map<String, Object> properties = ((Map<String, Map<String, Object>>) nodeTemplates.get(node)).get("properties");
+                String location = (String) properties.get("location");
+
+                if(deployableOfferings.contains(location)){
+
+                    NodeTemplate nt = offering.get(node);
+                    String s= nt.getProperties().get("location").toString();
+                    HashMap<String, Object> offerMap = new HashMap<>();
+                    offerMap.put(node, nodeTemplates.get(node));
+
+                    String offerDump = yml.dump(offerMap);
+
+                    map.put(node, new Pair<NodeTemplate, String>(nt, offerDump));
+                }
+            }
+        }catch (Exception e){ }
+
+
+        return map;
+    }
+
+    private Map<String, Pair<NodeTemplate, String>> getOfferingsFromDiscoverer() throws  IOException {
         //Get discoverer ids
         // GET discovererurl/fetch -> ids [ "id1", ..., "idn" ]
         // POST discovererurl/fetch?oid=idx -> { code: "...", errormessage: "...", idx: "yaml"  }
-        String idsString = discovererClient.getRequest("/fetch", Collections.EMPTY_LIST);
-        String[] discoveredIds = discovererClient.getObjectFromJson(idsString, String[].class);
+        ObjectMapper mapper = new ObjectMapper();
+        String idsString = discovererClient.getRequest("fetch", Collections.EMPTY_LIST);
+        String[] discoveredIds = mapper.readValue(idsString, String[].class);
 
         Map<String, Pair<NodeTemplate, String>> offerings = new HashMap<>();
 
@@ -272,56 +272,54 @@ public class Planner {
         for(String offerId:discoveredIds) {
             ArrayList<NameValuePair> params = new ArrayList<>();
             params.add(new BasicNameValuePair("oid", offerId));
-            String offerStr = discovererClient.postRequest("/fetch", params);
-            Map<String, String> offer = discovererClient.getObjectFromJson(offerStr, new HashMap<String, String>().getClass());
+            Pair<String, String> discovererResponse = discovererClient.postRequestWithParams("fetch", params);
 
-            NodeTemplate nt = ToscaSerializer.fromTOSCA(offer.get(offerId)).getResult().getTopology().getNodeTemplates().values().iterator().next();
-            offerings.put(offerId, new Pair<NodeTemplate, String>(nt, offer.get(offerId)));
+            if(discovererResponse.first.equals("200")){
+                String offerStr = discovererResponse.second;
+                Offering offer = mapper.readValue(offerStr, Offering.class);
+
+                try {
+                    NodeTemplate nt = ToscaSerializer.fromTOSCA(offer.offering).getResult().getTopology().getNodeTemplates().values().iterator().next();
+                    offerings.put(offerId, new Pair<NodeTemplate, String>(nt, offer.offering));
+                }catch (ParsingException e){
+
+                }
+            }
         }
 
         return offerings;
     }
 
-
-    public static class SLAInfo {
-        public String id;
-
-        public SLAInfo() {}
-
-        @JsonProperty
-        public void setId(String id) { this.id = id; }
-
-        @JsonProperty
-        public String getId() { return this.id; }
-
+    public static class DiscovererFetchallResult{
+        public String offering;
+        public String[] offering_ids;
     }
 
-    class OfferJson {
+    public static class Offering {
 
-        public String code;
-        public String idx;
+        public String offering;
+        public String offering_id;
 
-        public OfferJson() {
+        public Offering() {}
+
+        @JsonProperty
+        public void setOffering(String offering) {
+            this.offering = offering;
         }
 
         @JsonProperty
-        public void setCode(String code) {
-            this.code = code;
+        public String getOffering(){
+            return offering;
         }
 
         @JsonProperty
-        public String getCode() {
-            return code;
+        public void setOffering_id(String offering_id) {
+            this.offering_id = offering_id;
         }
 
         @JsonProperty
-        public void setIdx(String idx) {
-            this.idx = idx;
-        }
-
-        @JsonProperty
-        public String getIdx() {
-            return idx;
+        public String getOffering_id() {
+            return offering_id;
         }
 
     }

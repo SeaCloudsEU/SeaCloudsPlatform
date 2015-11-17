@@ -27,16 +27,104 @@ import alien4cloud.tosca.parser.ParsingResult;
 import alien4cloud.tosca.parser.ToscaParser;
 import com.google.common.io.Resources;
 import eu.seaclouds.common.tosca.ToscaParserSupplier;
+import eu.seaclouds.common.tosca.ToscaSerializer;
 import org.testng.annotations.Test;
+import org.yaml.snakeyaml.Yaml;
+import sun.java2d.loops.ScaledBlit;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Scanner;
 
 import static org.testng.AssertJUnit.*;
-
+@Test
 public class MatchmakerTest {
+
+    @Test
+    public void testMultipleConstraints() throws Exception{
+        String aam = new Scanner(new File(Resources.getResource("aams/multiplereq.yml").toURI())).useDelimiter("\\Z").next();
+        assertNotNull(aam);
+        String offerings = new Scanner(new File(Resources.getResource("offering_examples2.yaml").toURI())).useDelimiter("\\Z").next();
+        assertNotNull(offerings);
+
+        ParsingResult<ArchiveRoot> aamResult = ToscaSerializer.fromTOSCA(aam);
+        ParsingResult<ArchiveRoot> offeringsResult = ToscaSerializer.fromTOSCA(offerings);
+        Map<String, NodeTemplate> offNodeTemplates = offeringsResult.getResult().getTopology().getNodeTemplates();
+
+        Map<String, Pair<NodeTemplate, String>> off = new HashMap<>();
+
+        for(String node : offNodeTemplates.keySet()){
+            off.put(node, new Pair<NodeTemplate, String>(offNodeTemplates.get(node), ""));
+        }
+
+        Matchmaker mm = new Matchmaker();
+        Map<String, HashSet<String>> res = mm.match(aamResult, off);
+
+        assertEquals(res.get("MessageDatabase").size(), 3);
+    }
+
+    @Test
+    public void testFilterOfferings() throws  Exception {
+        ToscaParser parser = new ToscaParserSupplier().get();
+        assertNotNull(parser);
+        ParsingResult<ArchiveRoot> aamResult = parser.parseFile(Paths.get(Resources.getResource("aams/offeringsfilteraam.yml").toURI()));
+
+        assertNotNull(aamResult);
+        ParsingResult<ArchiveRoot> offeringResult = parser.parseFile(Paths.get(Resources.getResource("global.yaml").toURI()));
+        Map<String, Pair<NodeTemplate, String>> offeringsToMatch = new HashMap<>();
+        Map<String, NodeTemplate> offeringsNt =  offeringResult.getResult().getTopology().getNodeTemplates();
+        for(String ntn : offeringsNt.keySet()){
+            offeringsToMatch.put(ntn, new Pair<NodeTemplate, String>(offeringsNt.get(ntn), ntn));
+        }
+
+        Matchmaker mm = new Matchmaker();
+        Map<String, HashSet<String>> res  = mm.match(aamResult, offeringsToMatch);
+        assertNotNull(res);
+
+        for(String moduleName : res.keySet()){
+            for(String of : res.get(moduleName)){
+                NodeTemplate nt = offeringsNt.get(of);
+                AbstractPropertyValue offeringProperty = nt.getProperties().get("num_cpus");
+                String spv = ((ScalarPropertyValue) offeringProperty).getValue();
+                assertTrue(new Integer("2").compareTo(new Integer(spv)) >= 0); ;
+            }
+        }
+
+        ParsingResult<ArchiveRoot> aamResult2 = parser.parseFile(Paths.get(Resources.getResource("aams/offeringsfilteraam2.yml").toURI()));
+        assertNotNull(aamResult2);
+
+        res  = mm.match(aamResult2, offeringsToMatch);
+        assertNotNull(res);
+        for(String moduleName : res.keySet()){
+            for(String of : res.get(moduleName)){
+                NodeTemplate nt = offeringsNt.get(of);
+                AbstractPropertyValue offeringProperty = nt.getProperties().get("num_cpus");
+                String spv = ((ScalarPropertyValue) offeringProperty).getValue();
+                assertTrue(new Integer("2").compareTo(new Integer(spv)) > 0); ;
+            }
+        }
+
+        ParsingResult<ArchiveRoot> aamResult3 = parser.parseFile(Paths.get(Resources.getResource("aams/offeringsfilteraam3.yml").toURI()));
+        assertNotNull(aamResult3);
+
+        res  = mm.match(aamResult3, offeringsToMatch);
+        assertNotNull(res);
+        for(String moduleName : res.keySet()){
+            for(String of : res.get(moduleName)){
+                NodeTemplate nt = offeringsNt.get(of);
+                AbstractPropertyValue offeringProperty = nt.getProperties().get("num_cpus");
+                String spv = ((ScalarPropertyValue) offeringProperty).getValue();
+                assertTrue(new Integer("2").compareTo(new Integer(spv)) == 0); ;
+            }
+        }
+
+
+}
+
+
 
     @Test
     public void testPropertyMatch() throws Exception {
