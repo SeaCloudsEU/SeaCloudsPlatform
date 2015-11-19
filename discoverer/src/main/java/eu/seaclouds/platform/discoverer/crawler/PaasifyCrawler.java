@@ -15,43 +15,29 @@
  *    limitations under the License.
  */
 
-package eu.seaclouds.platform.discoverer.ws;
+package eu.seaclouds.platform.discoverer.crawler;
 
-import alien4cloud.tosca.parser.ParsingException;
 import eu.seaclouds.platform.discoverer.core.Offering;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.text.DecimalFormat;
+import java.util.HashMap;
 
-public class PaasifySpider extends SCSpider {
+public class PaasifyCrawler extends SCCrawler {
     /* consts */
-    private final String paasifyRepositoryDirecory = System.getProperty("user.home") + "paas-profiles";
+    private final String paasifyRepositoryDirecory = System.getProperty("user.home") + "/paas-profiles";
     private final String paasifyRepositoryURL = "https://github.com/stefan-kolb/paas-profiles/";
 
     private JSONParser jsonParser = new JSONParser();
-    private static HashMap<String, String> paasifyToSeaclouds;
 
-    static {
-        HashMap<String, String> initializedMap = new HashMap<>();
-
-        /* Initialized map from paasify to Seaclouds keywords */
-        initializedMap.put("java", "java_support");
-        initializedMap.put("go", "go_support");
-        initializedMap.put("node", "node_support");
-        initializedMap.put("php", "php_support");
-        initializedMap.put("python", "python_support");
-        initializedMap.put("ruby", "ruby_support");
-
-        paasifyToSeaclouds = initializedMap;
-    }
+    private DecimalFormat slaFormat = new DecimalFormat("0.00000");
 
     private static HashMap<String, String> continentFullName;
 
@@ -68,12 +54,12 @@ public class PaasifySpider extends SCSpider {
         continentFullName = initializedMap;
     }
 
-
+    public static String Name = "PaasifyCrawler";
 
     /**
      * Initializes a temporary directory and clones paasify repository in it
      */
-    public PaasifySpider() {
+    public PaasifyCrawler() {
 
         File tempDirectory = new File(paasifyRepositoryDirecory);
 
@@ -99,18 +85,14 @@ public class PaasifySpider extends SCSpider {
      *
      * @return the array of offerings that have been successfully converted into SeaClouds offerings
      */
-    public CrawlingResult[] crawl() {
-
-        CrawlingResult[] offerings = null;
+    public void crawl() {
 
         try {
             updateLocalRepository();
-            offerings = getOfferings();
+            getOfferings();
         } catch (Exception e){
             e.printStackTrace();
         }
-
-        return offerings;
     }
 
 
@@ -135,23 +117,25 @@ public class PaasifySpider extends SCSpider {
      *
      * @return an array of offerings successfully translated into SeaClouds offering format
      */
-    private CrawlingResult[] getOfferings() {
+    private void getOfferings() {
 
         File offeringsDirectory = new File(paasifyRepositoryDirecory + "/profiles");
-        ArrayList<CrawlingResult> offers = new ArrayList<>();
 
         for (File offerFile : offeringsDirectory.listFiles()) {
             try {
                 if (offerFile.isFile() && isJSON(offerFile)) {
-                    JSONObject obj =(JSONObject) jsonParser.parse(new FileReader(offerFile));
-                    convertToTOSCA(obj, offers);
+                    FileReader fr = new FileReader(offerFile);
+                    JSONObject obj =(JSONObject) jsonParser.parse(fr);
+                    Offering offering = getOfferingFromJSON(obj);
+                    fr.close();
+
+                    if (offering != null)
+                        addOffering(offering);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
-        return offers.toArray(new CrawlingResult[offers.size()]);
     }
 
 
@@ -160,22 +144,19 @@ public class PaasifySpider extends SCSpider {
      * Conversion from Paasify JSON model into TOSCA PaaS model
      *
      * @param obj the decoded JSON offering
-     * @param offers the array containing already decoded offerings
      *
-     * @throws ParsingException
      * @throws IOException
      */
-    private void convertToTOSCA(JSONObject obj, ArrayList<CrawlingResult> offers) throws ParsingException, IOException {
+    private Offering getOfferingFromJSON(JSONObject obj) throws IOException {
 
         JSONArray infrastructures = (JSONArray) obj.get("infrastructures");
         String name = (String) obj.get("name");
+        Offering offering = null;
 
         if (infrastructures == null || infrastructures.size() == 0) {
             String offeringName = Offering.sanitizeName(name);
-            ArrayList<String> generatedTOSCA = parseOffering(offeringName, obj);
-            CrawlingResult crawlingResult = getCrawlingResult(super.join("\n", generatedTOSCA), obj);
 
-            offers.add(crawlingResult);
+            offering = this.parseOffering(offeringName, obj);
         } else {
             for (Object element: infrastructures) {
                 JSONObject infrastructure = (JSONObject) element;
@@ -198,81 +179,78 @@ public class PaasifySpider extends SCSpider {
                 }
 
                 String offeringName = Offering.sanitizeName(fullName);
-                ArrayList<String> generatedTOSCA = parseOffering(offeringName, obj);
+
+                offering = this.parseOffering(offeringName, obj);
 
                 if (!continent.isEmpty())
-                    generatedTOSCA.add("      continent: " + continent);
+                    offering.addProperty("continent", continent);
 
                 if (!country.isEmpty())
-                    generatedTOSCA.add("      country: " + country);
+                    offering.addProperty("country", country);
+            }
+        }
 
-                CrawlingResult crawlingResult = getCrawlingResult(super.join("\n", generatedTOSCA), obj);
-                offers.add(crawlingResult);
+        return offering;
+    }
+
+
+    private Offering parseOffering(String name, JSONObject obj) {
+        Offering offering = new Offering(name);
+
+        offering.setType("seaclouds.Nodes.Platform");
+        offering.addProperty("resource_type", "platform");
+
+        parseRuntimesAndMiddlewares(obj, offering);
+        parseScaling(obj, offering);
+        parseHosting(obj, offering);
+        parseQOS(obj, offering);
+        parseNativeAndAddonServices(obj, offering);
+
+        return offering;
+    }
+
+
+
+    private void parseRuntimesAndMiddlewares(JSONObject obj, Offering offering) {
+        JSONArray runtimes = (JSONArray) obj.get("runtimes");
+
+        if(runtimes != null) {
+
+            for (int i = 0; i < runtimes.size(); i++) {
+                JSONObject runtime = (JSONObject) runtimes.get(i);
+                String currentLanguage = (String) runtime.get("language");
+
+                String runtimeSupportTag = externaltoSCTag.get(currentLanguage);
+
+                if (runtimeSupportTag != null) {
+                    offering.addProperty(runtimeSupportTag + "_support", "true");
+                    parseVersion(runtimeSupportTag, runtime, offering);
+                }
+
+            }
+
+        }
+        JSONArray middlewares = (JSONArray) obj.get("middleware");
+
+        if(middlewares != null) {
+
+            for (int i = 0; i < middlewares.size(); i++) {
+                JSONObject middleware = (JSONObject) middlewares.get(i);
+                String middlewareName = (String) middleware.get("name");
+
+                String middlewareSupportTag = externaltoSCTag.get(middlewareName);
+
+                if (middlewareSupportTag != null) {
+                    offering.addProperty(middlewareSupportTag + "_support", "true");
+                    parseVersion(middlewareSupportTag, middleware, offering);
+                }
+
             }
         }
     }
 
 
-
-    private CrawlingResult getCrawlingResult(String offering, JSONObject obj) throws ParsingException, IOException {
-        Offering off = Offering.fromTosca(offering);
-        DateFormat df = new SimpleDateFormat("yyyy-mm-dd");
-        Date lastRevision;
-
-        try {
-            lastRevision = df.parse((String) obj.get("revision"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            lastRevision = Calendar.getInstance().getTime();
-        }
-
-        return new CrawlingResult(lastRevision, off);
-    }
-
-
-
-    private ArrayList<String> parseOffering(String name, JSONObject obj) {
-        ArrayList<String> generatedTOSCA = new ArrayList<>();
-
-        generatedTOSCA.add("tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03");
-        generatedTOSCA.add("imports:");
-        generatedTOSCA.add("  - tosca-normative-types:1.0.0.wd03-SNAPSHOT");
-        generatedTOSCA.add("topology_template:");
-        generatedTOSCA.add(" node_templates:");
-        generatedTOSCA.add(String.format("  %s:", name));
-        generatedTOSCA.add(String.format("    type: seaclouds.Nodes.Platform.%s", name));
-        generatedTOSCA.add("    properties:");
-
-        parseRuntimes(obj, generatedTOSCA);
-        parseScaling(obj, generatedTOSCA);
-        parseHosting(obj, generatedTOSCA);
-        parseQOS(obj, generatedTOSCA);
-
-        return generatedTOSCA;
-    }
-
-
-
-    private void parseRuntimes(JSONObject obj, ArrayList<String> generatedTOSCA) {
-        JSONArray runtimes = (JSONArray) obj.get("runtimes");
-
-        if(runtimes == null)
-            return;
-
-        for (int i = 0; i < runtimes.size(); i++) {
-            JSONObject runtime = (JSONObject) runtimes.get(i);
-            String currentLanguage = (String) runtime.get("language");
-
-            String runtimeSupportTag = paasifyToSeaclouds.get(currentLanguage);
-
-            if (runtimeSupportTag != null)
-                generatedTOSCA.add(String.format("      %s: true", runtimeSupportTag));
-        }
-    }
-
-
-
-    private void parseHosting(JSONObject obj, ArrayList<String> generatedTOSCA) {
+    private void parseHosting(JSONObject obj, Offering offering) {
         JSONObject hosting = (JSONObject) obj.get("hosting");
 
         if (hosting == null)
@@ -281,13 +259,13 @@ public class PaasifySpider extends SCSpider {
         Boolean publicHosting = (Boolean) hosting.get("public");
         Boolean privateHosting = (Boolean) hosting.get("private");
 
-        generatedTOSCA.add(String.format("      public_hosting: %b", publicHosting));
-        generatedTOSCA.add(String.format("      private_hosting: %b", privateHosting));
+        offering.addProperty("public_hosting", publicHosting.toString());
+        offering.addProperty("private_hosting", privateHosting.toString());
     }
 
 
 
-    private void parseScaling(JSONObject obj, ArrayList<String> generatedTOSCA) {
+    private void parseScaling(JSONObject obj, Offering offering) {
         JSONObject scaling = (JSONObject) obj.get("scaling");
 
         if (scaling == null)
@@ -297,14 +275,14 @@ public class PaasifySpider extends SCSpider {
         Boolean horizontalScaling = (Boolean) scaling.get("horizontal");
         Boolean autoScaling = (Boolean) scaling.get("auto");
 
-        generatedTOSCA.add(String.format("      vertical_scaling: %b", verticalScaling));
-        generatedTOSCA.add(String.format("      horizontal_scaling: %b", horizontalScaling));
-        generatedTOSCA.add(String.format("      auto_scaling: %b", autoScaling));
+        offering.addProperty("vertical_scaling", verticalScaling.toString());
+        offering.addProperty("horizontal_scaling", horizontalScaling.toString());
+        offering.addProperty("auto_scaling", autoScaling.toString());
     }
 
 
 
-    private void parseQOS(JSONObject obj, ArrayList<String> generatedTOSCA) {
+    private void parseQOS(JSONObject obj, Offering offering) {
         JSONObject qos = (JSONObject) obj.get("qos");
 
         if (qos == null || !qos.containsKey("uptime"))
@@ -313,10 +291,55 @@ public class PaasifySpider extends SCSpider {
         Double value = (Double) qos.get("uptime");
 
         if (value != null)
-            generatedTOSCA.add(String.format("      uptime: %.2f", value.doubleValue()));
+            offering.addProperty("availability", this.slaFormat.format(value/100.0));
     }
 
+    private void parseNativeAndAddonServices(JSONObject obj, Offering offering) {
+        JSONObject services = (JSONObject) obj.get("services");
 
+        if(services == null)
+            return;
+
+        JSONArray nativeServices = (JSONArray) services.get("native");
+        JSONArray addonServices = (JSONArray) services.get("addon");
+
+        if (nativeServices != null)
+            parseServices(nativeServices, offering);
+
+        if (addonServices != null)
+            parseServices(addonServices, offering);
+    }
+
+    private void parseServices(JSONArray services, Offering offering) {
+        for (int i = 0; i < services.size(); i++) {
+            JSONObject service = (JSONObject) services.get(i);
+            String serviceName = (String) service.get("name");
+
+            String serviceSupportTag = externaltoSCTag.get(serviceName);
+
+            if (serviceSupportTag != null && offering.getProperty(serviceSupportTag + "_support") == null) {
+
+                offering.addProperty(serviceSupportTag + "_support", "true");
+                parseVersion(serviceSupportTag, service, offering);
+            }
+        }
+    }
+
+    private void parseVersion(String name, JSONObject service, Offering offering) {
+        JSONArray versions = (JSONArray) service.get("versions");
+
+        if (versions != null && versions.size() > 0) {
+            String version = (String) versions.get(versions.size() - 1);
+
+            if (version.indexOf('*') == -1) {
+                if (name.equals("java")) { // per java la versione da prendere non è 1.x, ma 6,7,8..
+                    version = version.substring(2);
+                }
+
+                offering.addProperty(name + "_version", version);
+            }
+        }
+    }
 
     private boolean isJSON(File file) {
         String fileName = file.getName();
