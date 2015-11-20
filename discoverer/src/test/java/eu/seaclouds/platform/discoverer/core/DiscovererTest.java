@@ -17,9 +17,10 @@
 
 package eu.seaclouds.platform.discoverer.core;
 
-
-import org.testng.annotations.Test;
 import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import java.io.File;
 
 
 public class DiscovererTest {
@@ -32,28 +33,17 @@ public class DiscovererTest {
 
 
     @Test
-    public void testWorkingDirectoryNotNull() {
+    public void testOfferingDirectoryExists() {
         Discoverer d = Discoverer.instance();
-        String wd = d.getWorkingDirectory();
-        Assert.assertNotNull(wd);
+        File od = d.offeringManager.getOfferingDirectory();
+        Assert.assertTrue(od.exists());
     }
 
 
     @Test
-    public void testWorkingDirectoryLengthNotZero() {
+    public void testMetaDirectoryExists() {
         Discoverer d = Discoverer.instance();
-        String wd = d.getWorkingDirectory();
-        int len = wd.length();
-        Assert.assertFalse(len == 0);
-    }
-
-
-    @Test
-    public void testWorkingDirectoryEndingWithSlash() {
-        Discoverer d = Discoverer.instance();
-        String wd = d.getWorkingDirectory();
-        int len = wd.length();
-        char ending = wd.charAt(len - 1);
-        Assert.assertEquals(ending, '/');
+        File md = d.offeringManager.getMetaDirectory();
+        Assert.assertTrue(md.exists());
     }
 }

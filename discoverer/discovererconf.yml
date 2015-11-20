@@ -1,0 +1,10 @@
+server:
+ type: simple
+ applicationContextPath: /discoverer
+ adminContextPath: /admin
+ connector:
+   type: http
+   port: 1236
+refreshInterval: 24
+crawlOnStartup: true
+activeCrawlers: ["CloudHarmonyCrawler", "PaasifyCrawler"]

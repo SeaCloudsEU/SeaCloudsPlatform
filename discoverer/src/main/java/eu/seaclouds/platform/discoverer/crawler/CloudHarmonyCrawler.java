@@ -15,26 +15,22 @@
  *    limitations under the License.
  */
 
-package eu.seaclouds.platform.discoverer.ws;
+package eu.seaclouds.platform.discoverer.crawler;
 
-/* JSON parser */
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-/* seaclouds */
-import alien4cloud.tosca.parser.ParsingException;
 import eu.seaclouds.platform.discoverer.core.Offering;
-
-/* rest client */
-import java.util.*;
-import java.io.IOException;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.*;
 
 
 /* cloud type enumeration */
@@ -44,7 +40,7 @@ enum CloudTypes {
 }
 
 
-public class CloudHarmonySpider extends SCSpider {
+public class CloudHarmonyCrawler extends SCCrawler {
     /* consts */
     private static final String API_KEY = "3y5A9MYhtEPFaq16CLdUvfH7TgK0zjc2";
 
@@ -53,11 +49,13 @@ public class CloudHarmonySpider extends SCSpider {
     private Hashtable<String, String> booleans;
     private Hashtable<String, String> numbers;
     private Hashtable<String, String> strings;
+    private DecimalFormat slaFormat = new DecimalFormat("0.00000");
     CloseableHttpClient httpclient;
 
+    public static String Name = "CloudHarmonyCrawler";
 
     /* c.tor */
-    public CloudHarmonySpider() {
+    public CloudHarmonyCrawler() {
         /* json parser */
         this.jsonParser = new JSONParser();
 
@@ -78,26 +76,12 @@ public class CloudHarmonySpider extends SCSpider {
         this.numbers.put("cpuCores", "num_cpus");
         this.numbers.put("localDisks", "num_disks");
         this.numbers.put("memory", "ram");
-        this.numbers.put("localStorage", "local_storage");
+        this.numbers.put("localStorage", "disk_size");
 
         /* mapping strings */
         this.strings = new Hashtable<String, String>();
         this.strings.put("localDiskType", "disk_type");
     }
-
-
-    // Method not active:
-    // Determine proper tosca metrics for cloudharmony bandwidth pricing
-    //
-    // private JSONArray getBandwidthPricing(String serviceId) {
-    //     /* computing the query string */
-    //     String getBandwidthPricingQuery = "https://cloudharmony.com/api/pricing/bandwidth/"
-    //             + serviceId + "?"
-    //             + "api-key=" + API_KEY + "&";
-    //     return (JSONArray) query(getBandwidthPricingQuery);
-    // }
-
-
 
     private JSONArray iaas_getServiceFeatures(String serviceId) {
         /* computing the query string */
@@ -117,8 +101,6 @@ public class CloudHarmonySpider extends SCSpider {
         return (JSONObject) query(getServiceFeaturesQuery);
     }
 
-
-
     private Object query(String query) {
         HttpGet httpGet = new HttpGet(query);
         CloseableHttpResponse response = null;
@@ -135,12 +117,11 @@ public class CloudHarmonySpider extends SCSpider {
     }
 
 
-
-    private JSONObject getComputeInstanceType(String serviceId, String instanceType) {
+    private JSONObject getComputeInstanceType(String serviceId, String instanceTypeId) {
         /* query string */
         String queryStr = "https://cloudharmony.com/api/compute/"
                 + serviceId + "/"
-                + instanceType + "?"
+                + instanceTypeId + "?"
                 + "api-key=" + API_KEY + "&";
         return (JSONObject) query(queryStr);
     }
@@ -164,31 +145,24 @@ public class CloudHarmonySpider extends SCSpider {
         /* name */
         String name = "unknown_name";
         if(service.containsKey("name"))
-            name = Offering.sanitizeName((String) service.get("name"));
+            name = (String) service.get("name");
 
         /* sla */
-        Object sla = "-1";
-        if (service.containsKey("sla"))
-            sla = (service.get("sla"));
+        Double sla = null;
+        if (service.containsKey("sla")) {
+            Object slaValue = service.get("sla");
+            if (slaValue.getClass().equals(Long.class)) {
+                sla = ((Long) slaValue).doubleValue();
+            } else { // Double
+                sla = (Double) slaValue;
+            }
+        }
 
         /* locations */
         JSONArray locations = null;
         if (service.containsKey("regions"))
             locations = (JSONArray) service.get("regions");
 
-        // Method not active:
-        // Determine proper tosca metrics for cloudharmony bandwidth pricing
-        //
-        // /* bandwidth pricing */
-        // JSONArray bandwidthPricing = null;
-        // boolean hasBandwidthPricing = false;
-        // if( service.containsKey("hasBandwidthPricing") ) {
-        //     Boolean bb = (Boolean) service.get("hasBandwidthPricing");
-        //     hasBandwidthPricing = bb.booleanValue();
-        // }
-        //
-        // if (hasBandwidthPricing)
-        //     bandwidthPricing = getBandwidthPricing(serviceId);
 
         /* service features */
         Object serviceFeatures;
@@ -199,16 +173,23 @@ public class CloudHarmonySpider extends SCSpider {
                                                                    * the compute instance types.
                                                                    */
             if( serviceFeatures != null && ((JSONArray)(serviceFeatures)).size() != 0 ) {
-                /* retrieving instance types */
+                /* retrieving instance types
+                 * up to now only Amazon AWS:EC2 and Aruba ARUBA:COMPUTE
+                 * return more than one properties object */
                 JSONObject oneFeature = (JSONObject) ((JSONArray) (serviceFeatures)).get(0);
+
+                /* It's actually returned a list of service features apparently equal
+                 * (except for id which is -> aws:ec2, aws:ec2-..-..) */
                 JSONArray instanceTypes = (JSONArray) oneFeature.get("instanceTypes");
-                Iterator<String> it = instanceTypes.iterator();
+                Iterator<String> instanceTypesIDs = instanceTypes.iterator();
 
                 /* querying each instance type */
                 computeInstanceTypes = new ArrayList<JSONObject>();
-                while (it.hasNext()) {
-                    String instanceType = it.next();
-                    JSONObject cit = getComputeInstanceType(serviceId, instanceType);
+                while (instanceTypesIDs.hasNext()) {
+                    /* current instance id */
+                    String instanceTypeID = instanceTypesIDs.next();
+
+                    JSONObject cit = getComputeInstanceType(serviceId, instanceTypeID);
                     computeInstanceTypes.add(cit);
                 }
             }
@@ -218,6 +199,7 @@ public class CloudHarmonySpider extends SCSpider {
 
         /* returning everything */
         return new CloudHarmonyService(t, // cloud type
+                serviceId,                // service id
                 name,                     // cloud name
                 sla,                      // availability
                 locations,                // geographics
@@ -228,7 +210,7 @@ public class CloudHarmonySpider extends SCSpider {
 
 
 
-    private void generateOfferings(CloudHarmonyService chs, ArrayList<CrawlingResult> collected) {
+    private void generateOfferings(CloudHarmonyService chs) {
         if(chs == null || chs.computeInstanceTypes == null || chs.locations == null)
             return;
 
@@ -236,29 +218,26 @@ public class CloudHarmonySpider extends SCSpider {
         Iterator<JSONObject> locations = chs.locations.iterator();
         while (locations.hasNext()) {
             JSONObject location_i = locations.next();
+
+            Offering newOffer;
+
             if(chs.cloudType == CloudTypes.IAAS) {
                 /* ...and for each compute instance type */
                 for (JSONObject cit_i : chs.computeInstanceTypes) {
                     /* generate the offering */
-                    String generatedTosca = iaas_generateTosca(chs, location_i, cit_i);
-                    Offering newOffer = null;
-                    try { newOffer = Offering.fromTosca(generatedTosca); }
-                    catch (IOException | ParsingException pex) { pex.printStackTrace(); }
+                    newOffer = generateIAASOffering(chs, location_i, cit_i);
 
                     /* collect */
                     if (newOffer != null)
-                        collected.add(new CrawlingResult(newOffer));
+                        addOffering(newOffer);
                 }
             } else { // chs.cloudType == CloudTypes.PAAS
                 /* generate the offering */
-                String generatedTosca = paas_generateTosca(chs, location_i);
-                Offering newOffer = null;
-                try { newOffer = Offering.fromTosca(generatedTosca); }
-                catch(IOException | ParsingException ex) { ex.printStackTrace(); }
+                newOffer = generatePAASOffering(chs, location_i);
 
                 /* collect */
                 if(newOffer != null)
-                    collected.add(new CrawlingResult(newOffer));
+                    addOffering(newOffer);
             }
         }
     }
@@ -272,37 +251,58 @@ public class CloudHarmonySpider extends SCSpider {
 
 
 
-    private String iaas_generateTosca(CloudHarmonyService chs, JSONObject location,
-            JSONObject computeInstanceType) {
+    private Offering generateIAASOffering(CloudHarmonyService chs, JSONObject locationInformation,
+                                      JSONObject computeInstanceType) {
         /* tosca lines into ArrayList */
         ArrayList<String> gt = new ArrayList<>();
+        String providerName = chs.name;
+        /* name not sanitized (used to access SPECint table) */
+        String providerOriginalName = chs.originalName;
+        String instanceId = (String) computeInstanceType.get("instanceId");
+        String locationCode = (String) locationInformation.get("providerCode");
 
-        /* name */
-        String name = Offering.sanitizeName(chs.name + "_" + location.get("city"));
+        /* name, taken as 'cloud service name'_'instance id'_'city where is located'  */
+        String name = Offering.sanitizeName(providerName + "_" + instanceId + "_" + locationCode);
 
-        /* header */
-        gt.add("tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03");
-        gt.add("imports:");
-        gt.add("  - tosca-normative-types:1.0.0.wd03-SNAPSHOT");
-        gt.add("topology_template:");
-        gt.add(" node_templates:");
-        gt.add(String.format("  %s:", name));
-        gt.add(String.format("    type: seaclouds.Nodes.Compute.%s", name));
-        gt.add("    properties:");
+        Offering offering = new Offering(name);
+        offering.setType("seaclouds.Nodes.Compute");
 
+        offering.addProperty("resource_type", "compute");
+        offering.addProperty("hardwareId", instanceId);
+        offering.addProperty("location", chs.serviceId);
+        offering.addProperty("region", locationCode);
+
+        /* Performance */
+        Integer performance = CloudHarmonySPECint.getSPECint(providerOriginalName, instanceId);
+        if (performance != null) {
+            offering.addProperty("performance", performance.toString());
+        }
         /* sla */
-        if( chs.sla.equals("-1") == false )
-            gt.add("        availability: " + chs.sla.toString());
+        if(chs.sla != null) {
+            offering.addProperty("availability", this.slaFormat.format(chs.sla/100.0));
+        }
 
         /* location */
-        gt.add("        country: " + expandCountryCode((String) (location.get("country"))));
-        gt.add("        city: " + expandCountryCode((String) (location.get("city"))));
+        offering.addProperty("country", expandCountryCode((String) (locationInformation.get("country"))));
+        offering.addProperty("city", expandCountryCode((String) (locationInformation.get("city"))));
+
+        JSONArray pricings = (JSONArray) computeInstanceType.get("pricing");
+
+        if (pricings.size() > 0) {
+            JSONObject pricing = ((JSONObject) ((JSONArray) computeInstanceType.get("pricing")).get(0));
+
+            Object price = pricing.get("price");
+            Object currency = pricing.get("currency");
+            Object priceInterval = pricing.get("priceInterval");
+
+            offering.addProperty("cost", price.toString() + " " + currency.toString() + "/" + priceInterval);
+        }
 
         /* compute instance type - numbers */
         for(String k : this.numbers.keySet()) {
             if( computeInstanceType.containsKey(k) ) {
                 Object vv = computeInstanceType.get(k);
-                gt.add("        " + (String)(this.numbers.get(k)) + ": " + vv.toString());
+                offering.addProperty(this.numbers.get(k), vv.toString());
             }
         }
 
@@ -311,41 +311,36 @@ public class CloudHarmonySpider extends SCSpider {
             for (String k : this.strings.keySet()) {
                 if (computeInstanceType.containsKey(k)) {
                     String v = (String) (computeInstanceType.get(k));
-                    gt.add("        " + (String) (this.strings.get(k)) + ": " + v);
+                    offering.addProperty(this.strings.get(k), v);
                 }
             }
         }
 
-        /* building the tosca */
-        return super.join("\n", gt);
+        return offering;
     }
 
 
 
-    private String paas_generateTosca(CloudHarmonyService chs, JSONObject location) {
+    private Offering generatePAASOffering(CloudHarmonyService chs, JSONObject location) {
         /* tosca lines into ArrayList */
-        ArrayList<String> generatedTOSCA = new ArrayList<>();
-
         /* name */
         String name = Offering.sanitizeName(chs.name + "_" + location.get("city"));
 
-        /* header */
-        generatedTOSCA.add("tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03");
-        generatedTOSCA.add("imports:");
-        generatedTOSCA.add("  - tosca-normative-types:1.0.0.wd03-SNAPSHOT");
-        generatedTOSCA.add("topology_template:");
-        generatedTOSCA.add(" node_templates:");
-        generatedTOSCA.add(String.format("  %s:", name));
-        generatedTOSCA.add(String.format("    type: seaclouds.Nodes.Platform.%s", name));
-        generatedTOSCA.add("    properties:");
+        Offering offering = new Offering(name);
+
+        offering.setType("seaclouds.Nodes.Platform");
+
+        /* resource type  */
+        offering.addProperty("resource_type", "platform");
 
         /* sla */
-        if( chs.sla.equals("-1") == false )
-            generatedTOSCA.add("        availability: " + chs.sla.toString());
+        if(chs.sla != null) {
+            offering.addProperty("availability", this.slaFormat.format(chs.sla / 100.0));
+        }
 
         /* location */
-        generatedTOSCA.add("        country: " + expandCountryCode((String) (location.get("country"))));
-        generatedTOSCA.add("        city: " + expandCountryCode((String)(location.get("city"))));
+        offering.addProperty("country", expandCountryCode((String) (location.get("country"))));
+        offering.addProperty("city", expandCountryCode((String)(location.get("city"))));
 
         /* features */
         JSONObject feat = (JSONObject) chs.serviceFeatures;
@@ -354,43 +349,46 @@ public class CloudHarmonySpider extends SCSpider {
         for(String k : this.booleans.keySet()) {
             if( feat.containsKey(k) ) {
                 boolean v = Boolean.parseBoolean((String)(feat.get(k)));
-                generatedTOSCA.add("        " + (String)(this.booleans.get(k)) + ": " + (v ? "true" : "false"));
+                offering.addProperty(this.booleans.get(k), (v ? "true" : "false"));
             }
         }
 
         /* supported databases and languages */
-        supports("supportedDatabases", feat, generatedTOSCA);
-        supports("supportedLanguages", feat, generatedTOSCA);
+        supports("supportedDatabases", feat, offering);
+        supports("supportedLanguages", feat, offering);
 
         /* building the tosca */
-        return super.join("\n", generatedTOSCA);
+        return offering;
     }
 
 
 
-    private void supports(String keyName, JSONObject feat, ArrayList<String> generatedTOSCA) {
+    private void supports(String keyName, JSONObject feat, Offering offering) {
         if( feat.containsKey(keyName) == false )
             return;
 
         JSONArray dbs = (JSONArray) feat.get(keyName);
-        for(int i=0; i<dbs.size(); i++) {
-            String dbname = (String) dbs.get(i);
-            generatedTOSCA.add("        " + dbname + "_support: true");
+        for(int i = 0; i < dbs.size(); i++) {
+            String cloudHarmonySupportName = (String) dbs.get(i);
+            String seaCloudsSupportName = externaltoSCTag.get(cloudHarmonySupportName);
+
+            if (seaCloudsSupportName != null)
+                offering.addProperty(seaCloudsSupportName + "_support", "true");
         }
     }
 
-
-
-    @Override
-    public CrawlingResult[] crawl() {
-        /* result set */
-        ArrayList<CrawlingResult> resultSet = new ArrayList<CrawlingResult>();
-
+    private void crawlComputeOfferings() {
         /* iaas section */
         String computeQuery = "https://cloudharmony.com/api/services?"
                 + "api-key=" + API_KEY + "&"
                 + "serviceTypes=compute";
+
         JSONObject resp = (JSONObject) query(computeQuery);
+
+        if(resp == null) {
+            return;
+        }
+
         JSONArray computes = (JSONArray) resp.get("ids");
 
         Iterator<String> it = computes.iterator();
@@ -399,11 +397,16 @@ public class CloudHarmonySpider extends SCSpider {
                 String serviceId = it.next();
                 CloudHarmonyService chService = getService(serviceId, CloudTypes.IAAS);
                 if (chService != null)
-                    generateOfferings(chService, resultSet);
+                    generateOfferings(chService);
             } catch(Exception ex) {
                 ex.printStackTrace();
             }
         }
+    }
+
+    private void crawlPaasOfferings() {
+        JSONObject resp;
+        Iterator<String> it;
 
         /* paas section */
         String paasQuery = "https://cloudharmony.com/api/services?"
@@ -416,18 +419,18 @@ public class CloudHarmonySpider extends SCSpider {
             try {
                 String serviceId = it.next();
                 CloudHarmonyService chService = getService(serviceId, CloudTypes.PAAS);
-                generateOfferings(chService, resultSet);
+                generateOfferings(chService);
             } catch(Exception e) {
                 e.printStackTrace();
             }
         }
+    }
 
-        /* finalization */
-        CrawlingResult[] ret = new CrawlingResult[resultSet.size()];
-        for(int i=0; i<resultSet.size(); i++)
-            ret[i] = resultSet.get(i);
-
-        return ret;
+    @Override
+    public void crawl() {
+        /* crawl Compute and PaaS offerings */
+        this.crawlComputeOfferings();
+        this.crawlPaasOfferings();
     }
 }
 
@@ -437,7 +440,9 @@ class CloudHarmonyService {
     /* members */
     public CloudTypes cloudType;
     public String name;
-    public Object sla;
+    public String originalName;
+    public String serviceId;
+    public Double sla;
     public JSONArray locations;
     public JSONArray bandwidthPricing;
 
@@ -452,11 +457,13 @@ class CloudHarmonyService {
 
 
     /* c.tor */
-    public CloudHarmonyService(CloudTypes cloudType, String name, Object sla, JSONArray locations,
-            JSONArray bandwidthPricing, Object serviceFeatures,
-            ArrayList<JSONObject> computeInstanceTypes) {
+    public CloudHarmonyService(CloudTypes cloudType, String serviceId, String name, Double sla, JSONArray locations,
+                               JSONArray bandwidthPricing, Object serviceFeatures,
+                               ArrayList<JSONObject> computeInstanceTypes) {
+        this.serviceId = serviceId;
         this.cloudType = cloudType;
-        this.name = name;
+        this.name = Offering.sanitizeName(name);
+        this.originalName = name;
         this.sla = sla;
         this.locations = locations;
         this.bandwidthPricing = bandwidthPricing;
