@@ -43,15 +43,19 @@ For more information, please look at [github FAQ](https://help.github.com/)
 ## Before creating the PR
 Some best practices to submit a good PR:
 - create a feature branch (feature/SEACLOUDS-2345) or a fix branch (fix/SEACLOUDS-123) on your forked repository 
-- code your patch
-- rebase your branch
-- test your code locally!
+- write clean code that follows Effective Java guidelines
+- create unit tests for your changes.
+- test your patch locally! Using `mvn verify -pl qa -Pintergration`
+- 
 - commit your code and push it to a remote
-- create the PR from Github website
+- create the PR from Github website. Pull request descriptions should be as clear as possible and include a reference
+to all the issues that they address.
 
 Your commit messages must properly describes the changes that have been made and their purpose (here are some [guidelines](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html)). If your contributions fix a Github issue, then ensure that you follow our rules about the commit message.
 
-Each commit must have the following structure (since 17/12/2014):
+Commit messages must start with a capitalized and short summary (max. 50 chars)
+written in the imperative, followed by an optional, more detailed explanatory
+text which is separated from the summary by an empty line. 
 ```<type>(<scope>): <subject>```
 ( e.g. “FIX (dashboard): Modified resizing on app-monitoring section” )
 
@@ -62,8 +66,16 @@ Each commit must have the following structure (since 17/12/2014):
 * **STYLE**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc).
 * **TEST**: Adding missing tests.
 
-### Scope
-Scope of the changes, often it will be the name of the module involved in this commit (planner, monitor, deployer…).
+### Code Review
+Code review comments may be added to your pull request. Discuss, then make the suggested modifications and push additional commits to your feature branch. Post a comment after pushing. New commits show up in the pull request automatically,
+but the reviewers are notified only when you comment.
+At the end of the review, pull requests must be cleanly rebased on top of master without multiple branches mixed into the PR.
+
+**Git tip**: If your PR no longer merges cleanly, use `rebase master` in your
+feature branch to update your pull request rather than `merge master`.
+
+### Merge approval
+Maintainers use LGTM (Looks Good To Me) in comments on the code review to indicate acceptance.
 
 ## Some Words of Advice
 
