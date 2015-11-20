@@ -45,8 +45,7 @@ Some best practices to submit a good PR:
 - create a feature branch (feature/SEACLOUDS-2345) or a fix branch (fix/SEACLOUDS-123) on your forked repository 
 - write clean code that follows Effective Java guidelines
 - create unit tests for your changes.
-- test your patch locally! Using `mvn verify -pl qa -Pintergration`
-- 
+- test your patch locally! Using `mvn verify -pl qa -Pintegration`
 - commit your code and push it to a remote
 - create the PR from Github website. Pull request descriptions should be as clear as possible and include a reference
 to all the issues that they address.
