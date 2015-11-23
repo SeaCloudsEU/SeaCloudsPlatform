@@ -10,6 +10,7 @@ brooklyn.catalog:
       name: Planner
 
       brooklyn.config:
+        planner.url: https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=planner-service&v=LATEST&e=jar
         planner.config.port: 1234
         planner.config.discoverer.url: $brooklyn:formatString("http://%s:%s", component("discoverer").attributeWhenReady("host.address"), component("discoverer").attributeWhenReady("http.port"))
         planner.config.monitor_generator.url: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
@@ -22,6 +23,7 @@ brooklyn.catalog:
         MONITOR_GENERATOR_URL: $brooklyn:config("planner.config.monitor_generator.url")
         MONITOR_GENERATOR_PORT: $brooklyn:config("planner.config.monitor_generator.port")
         SLA_GENERATOR_URL: $brooklyn:config("planner.config.sla_generator.url")
+        PLANNER_URL: $brooklyn:config("planner.url")
 
       provisioning.properties:
         osFamily: ubuntu
@@ -43,7 +45,7 @@ brooklyn.catalog:
         slaGeneratorURL: ${SLA_GENERATOR_URL}
         deployableProviders: ["openstack-nova","openstack-keystone","openstack-nova-ec2", "byon", "sts", "elasticstack", "cloudstack", "rackspace-cloudidentity","aws-ec2","gogrid","elastichosts-lon-p","elastichosts-sat-p","elastichosts-lon-b","openhosting-east1","serverlove-z1-man","skalicloud-sdg-my","go2cloud-jhb1","softlayer","hpcloud-compute","rackspace-cloudservers-us","rackspace-cloudservers-uk","azurecompute","google-compute-engine","CloudFoundry"]
         EOF
-
+        wget -O planner-service.jar ${PLANNER_URL}
         nohup java -jar planner-service.jar server conf.yml > console.out 2>&1 &
         echo $! > $PID_FILE
   - id: seaclouds-dashboard
@@ -201,13 +203,46 @@ brooklyn.catalog:
     name: "SeaClouds Discoverer"
     description: "SeaClouds Discoverer server"
     item:
-      type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
-      id: discoverer
-      name: Discoverer
-      war: https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=discoverer&v=LATEST&e=war
+      type: org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess
+      id: planner
+      name: Planner
 
-      provisioning.properties:
+       brooklyn.config:
+        discoverer.url: https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=discoverer&v=LATEST&e=jar
+        discoverer.config.port: 1236
+        discoverer.config.refreshInterval: 24
+        discoverer.config.crawlOnStartup: true
+        discoverer.config.activeCrawlers: ["CloudHarmonyCrawler", "PaasifyCrawler"]
+
+
+       shell.env:
+        DISCOVERER_URL: $brooklyn:config("discoverer.url")
+        DISCOVERER_PORT: $brooklyn:config("discoverer.config.port")
+        DISCOVERER_REFRESH: $brooklyn:config("discoverer.config.refreshInterval")
+        DISCOVERER_CRAWL_ON_STARTUP: $brooklyn:config("discoverer.config.crawlOnStartup")
+        DISCOVERER_ACTIVE_CRAWLERS: $brooklyn:config("discoverer.config.activeCrawlers")
+
+       provisioning.properties:
         osFamily: ubuntu
+
+       launch.command: |
+        sudo apt-get update
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated tzdata openjdk-7-jdk curl
+        tee ./conf.yml  <<EOF
+        server:
+         type: simple
+         applicationContextPath: /discoverer
+         adminContextPath: /admin
+         connector:
+           type: http
+           port: ${DISCOVERER_PORT}
+        refreshInterval: ${DISCOVERER_REFRESH}
+        crawlOnStartup: ${DISCOVERER_CRAWL_ON_STARTUP}
+        activeCrawlers: ["CloudHarmonyCrawler", "PaasifyCrawler"]
+        EOF
+        wget -O discoverer-service.jar ${DISCOVERER_URL}
+        nohup java -jar discoverer-service.jar server conf.yml > console.out 2>&1 &
+        echo $! > $PID_FILE
 
   - id: seaclouds-platform-on-byon
     name: "SeaClouds Platform on BYON"
