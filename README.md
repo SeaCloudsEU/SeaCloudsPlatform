@@ -10,19 +10,20 @@ This is a proof of concept of the **SeaClouds Platform** ([www.seaclouds-project
 
 This work is part of the ongoing European research project *EC-FP7-ICT-610531* SeaClouds, and it's *currently under development*.
 
-Contributing
--------------
-If you want to help us with the development of this project please read carefully our [**Contributing Guide**](CONTRIBUTING.md).
+# Building SeaClouds
+Building SeaClouds shouldn't be a big deal, however it has the following prerequisites:
+- Git
+- Java 7 JDK.
+- Maven 3.3.3 or greater.
+- Node.js 0.12.x (with npm) or greater.
 
-Getting Started
--------------------
-* Installation guide: please follow the instruction to know [how to deploy SeaClouds](usage/installer/README.md)
+After you have been installed all the prerequisites, you can download the master branch of the repository from git with `git clone git@github.com:SeaCloudsEU/SeaCloudsPlatform.git` and build it with `mvn clean install` (if you want to skip the tests, please add `-DskipTest` flag) 
 
-## Deploy SeaClouds
+# Deploy SeaClouds
 A deployment of SeaClouds can be launched using Apache Brooklyn. We currently support deployments against Bring Your
 Own Nodes (BYON) and to all the IaaS provider supported by [Apache jclouds](http://jclouds.org).
 
-# Setup your environment
+## Setup your environment
 
 - Download [Apache Brooklyn](https://www.apache.org/dyn/closer.lua/incubator/brooklyn/apache-brooklyn-0.8
 .0-incubating/apache-brooklyn-0.8.0-incubating-bin.tar.gz) and unpack it in your $BROOKLYN_HOME
@@ -36,13 +37,13 @@ Own Nodes (BYON) and to all the IaaS provider supported by [Apache jclouds](http
 
 Notice, if you are a `Windows` user, you may need to specify the absolute path to reach the `seaclouds-catalog.bom` file on your filesystem.
 
-## Deploying SeaClouds on the cloud
+### Deploying SeaClouds on the cloud
 
 - Select `SeaClouds platform` application from Apache Brooklyn dropdown menu
 - Edit `location` specifying the cloud provider and the credentials to use it, in the YAML format.
 - run it by editing the YAML blueprint with the your own credentials.
 
-## Deploying SeaClouds on BYON
+### Deploying SeaClouds on BYON
 
 Make sure you have [Vagrant](https://www.vagrantup.com/), [Virtualbox](https://www.virtualbox.org/)
 
@@ -64,8 +65,17 @@ A detailed description of [0.7.0-M19](https://github.com/SeaCloudsEU/SeaCloudsPl
 
 can be found in the [Integrated Platform deliverable](https://drive.google.com/file/d/0B3naRHlVBGTEdmYySFVWSGdIYzA/view?usp=sharing).
 
-### Troubleshooting
+# Contributing
+-------------
+If you want to help us with the development of this project please read carefully our [**Contributing Guide**](CONTRIBUTING.md). 
 
+# Building
+-------------
+If you want to help us with the development of this project please read carefully our [**Contributing Guide**](CONTRIBUTING.md).
+
+
+# Troubleshooting
+-------------
 When deploying SeaClouds platform an [Apache Brooklyn](http://brooklyn.io) instance will be started on your
 workstation, accessible at `http://localhost:8081` by default. Please double-check in nohup.out the correct url.
 
