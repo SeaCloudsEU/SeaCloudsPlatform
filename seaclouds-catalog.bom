@@ -11,16 +11,16 @@ brooklyn.catalog:
 
       brooklyn.config:
         planner.config.port: 1234
-        planner.config.discoverer.url: undefined
-        planner.config.optimizer.url: undefined
-        planner.config.monitor_generator.url: undefined
-        planner.config.sla_generator.url: undefined
+        planner.config.discoverer.url: $brooklyn:formatString("http://%s:%s", component("discoverer").attributeWhenReady("host.address"), component("discoverer").attributeWhenReady("http.port"))
+        planner.config.monitor_generator.url: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
+        planner.config.monitor_generator.port: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
+        planner.config.sla_generator.url: $brooklyn:formatString("http://%s:%s", component("sla-core").attributeWhenReady("host.address"), component("sla-core").attributeWhenReady("http.port"))
 
       shell.env:
         PLANNER_PORT: $brooklyn:config("planner.config.port")
         DISCOVERER_URL: $brooklyn:config("planner.config.discoverer.url")
-        OPTIMIZER_URL: $brooklyn:config("planner.config.optimizer.url")
         MONITOR_GENERATOR_URL: $brooklyn:config("planner.config.monitor_generator.url")
+        MONITOR_GENERATOR_PORT: $brooklyn:config("planner.config.monitor_generator.port")
         SLA_GENERATOR_URL: $brooklyn:config("planner.config.sla_generator.url")
 
       provisioning.properties:
@@ -32,15 +32,16 @@ brooklyn.catalog:
         tee ./conf.yml  <<EOF
         server:
           type: simple
-          applicationContextPath: /application
+          applicationContextPath: /planner
           adminContextPath: /admin
           connector:
-           type: http
-           port: ${PLANNER_PORT}
-        discovererURL: ${DISCOVERER_URL}
-        optimizerURL: ${OPTIMIZER_URL}
+            type: http
+            port: ${PLANNER_PORT}
+        discovererURL: http://131.114.3.217:1236/
         monitorGeneratorURL: ${MONITOR_GENERATOR_URL}
+        monitorGeneratorPort: ${MONITOR_GENERATOR_PORT}
         slaGeneratorURL: ${SLA_GENERATOR_URL}
+        deployableProviders: ["openstack-nova","openstack-keystone","openstack-nova-ec2", "byon", "sts", "elasticstack", "cloudstack", "rackspace-cloudidentity","aws-ec2","gogrid","elastichosts-lon-p","elastichosts-sat-p","elastichosts-lon-b","openhosting-east1","serverlove-z1-man","skalicloud-sdg-my","go2cloud-jhb1","softlayer","hpcloud-compute","rackspace-cloudservers-us","rackspace-cloudservers-uk","azurecompute","google-compute-engine","CloudFoundry"]
         EOF
 
         nohup java -jar planner-service.jar server conf.yml > console.out 2>&1 &

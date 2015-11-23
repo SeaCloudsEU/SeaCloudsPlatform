@@ -2,12 +2,14 @@ package eu.seaclouds.platform.planner.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 import static com.google.common.base.Preconditions.*;
 import java.io.File;
 import java.util.*;
+import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
 
 /**
  * Copyright 2014 SeaClouds
@@ -26,29 +28,51 @@ import java.util.*;
  * limitations under the License.
  */
 public class DamGenerator {
-    private static final String MONITOR_GEN_OP = "/damgen";
     private static final String SLA_GEN_OP = "/seaclouds/templates";
     private static final String SLA_INFO_GROUPNAME = "sla_gen_info";
     private static final String MONITOR_INFO_GROUPNAME = "monitoringInformation";
 
+    static Map<String, List<Module>> monitoringInfoByApplication=new HashMap<String,List<Module>>();
+
     static Logger log = LoggerFactory.getLogger(DamGenerator.class);
 
-    public static String generateDam(String adp, String monitorGenURL, String slaGenURL){
+    public static String generateDam(String adp, String monitorGenURL, String monitorGenPort, String slaGenURL){
         Yaml yml = new Yaml();
         Map<String, Object> adpYaml = (Map<String, Object>) yml.load(adp);
         adpYaml = DamGenerator.translateAPD(adpYaml);
+        adpYaml = DamGenerator.addMonitorInfo(adp, monitorGenURL, monitorGenPort);
 
-//        String monitorInfoResponse = new HttpHelper(monitorGenURL).postInBody(MONITOR_GEN_OP, adp);
-//        checkNotNull(monitorInfoResponse, "Error getting monitoring info");
-//
-//        adpYaml = DamGenerator.addApplicationInfo(adpYaml, monitorGenURL, MONITOR_INFO_GROUPNAME);
-//
-//        String slaInfoResponse = new HttpHelper(slaGenURL).postInBody(SLA_GEN_OP, adp);
-//        checkNotNull(slaInfoResponse, "Error getting SLA info");
-//
-//        adpYaml = DamGenerator.addApplicationInfo(adpYaml, slaGenURL, SLA_INFO_GROUPNAME);
+        String slaInfoResponse = new HttpHelper(slaGenURL).postInBody(SLA_GEN_OP, adp);
+        checkNotNull(slaInfoResponse, "Error getting SLA info");
+        adpYaml = DamGenerator.addApplicationInfo(adpYaml, slaGenURL, SLA_INFO_GROUPNAME);
+
         String adpStr = yml.dump(adpYaml);
         return adpStr;
+    }
+
+
+    public static Map<String, Object> addMonitorInfo(String adp, String monitorUrl, String monitorPort){
+        MonitoringDamGenerator monDamGen = new MonitoringDamGenerator(monitorUrl, monitorPort);
+        String generatedApplicationId = UUID.randomUUID().toString();
+
+        List<Module> generated = monDamGen.generateMonitoringInfo(adp);
+        monitoringInfoByApplication.put(generatedApplicationId, generated);
+
+        HashMap<String, Object> appGroup = new HashMap<>();
+        appGroup.put("members", new String[]{"application"});
+
+        ArrayList<HashMap<String, String>> l = new ArrayList<>();
+        HashMap<String, String> m = new HashMap<>();
+        m.put("id", generatedApplicationId);
+        l.add(m);
+        appGroup.put("policies", l);
+
+        Yaml yml = new Yaml();
+        Map<String, Object> adpYaml = (Map<String, Object>) yml.load(adp);
+        Map<String, Object> groups = (Map<String, Object>) adpYaml.get("groups");
+        groups.put(MONITOR_INFO_GROUPNAME, appGroup);
+
+        return adpYaml;
     }
 
     public static Map<String, Object> translateAPD(Map<String, Object> adpYaml){
