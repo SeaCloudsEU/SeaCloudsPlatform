@@ -17,7 +17,7 @@ Building SeaClouds shouldn't be a big deal, however it has the following prerequ
 - Maven 3.3.3 or greater.
 - Node.js 0.12.x (with npm) or greater.
 
-After you have been installed all the prerequisites, you can download the master branch of the repository from git with `git clone git@github.com:SeaCloudsEU/SeaCloudsPlatform.git` and build it with `mvn clean install` (if you want to skip the tests, please add `-DskipTest` flag) 
+After you have been installed all the prerequisites, you can download the master branch of the repository from git with `git clone git@github.com:SeaCloudsEU/SeaCloudsPlatform.git` and build it with `mvn clean install` (if you want to skip the tests, please add `-DskipTest` flag). 
 
 # Deploy SeaClouds
 A deployment of SeaClouds can be launched using Apache Brooklyn. We currently support deployments against Bring Your
@@ -68,11 +68,6 @@ can be found in the [Integrated Platform deliverable](https://drive.google.com/f
 # Contributing
 -------------
 If you want to help us with the development of this project please read carefully our [**Contributing Guide**](CONTRIBUTING.md). 
-
-# Building
--------------
-If you want to help us with the development of this project please read carefully our [**Contributing Guide**](CONTRIBUTING.md).
-
 
 # Troubleshooting
 -------------
