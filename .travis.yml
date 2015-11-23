@@ -6,7 +6,6 @@ after_success:
 - ".buildscript/deploy_snapshot.sh"
 install: true
 script:
-    - "git clone -b travis `git config --get remote.origin.url` target/travis"
     - travis_wait mvn -q clean install -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
 branches:
   except:
