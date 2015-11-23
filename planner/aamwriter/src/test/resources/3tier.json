@@ -22,6 +22,8 @@
                         "threshold": "5000"
                     }
                 ],
+                "location": "DYNAMIC",
+                "location_option": "FOLLOW_SUN",
                 "infrastructure": "platform",
                 "container": "webapp.tomcat.TomcatServer",
                 "benchmark_rt": "200",
@@ -37,7 +39,8 @@
                 "artifact": "",
                 "min_version": "7",
                 "max_version": "8",
-                "location": "",
+                "location": "STATIC",
+                "location_option": "EUROPE",
                 "qos": [],
                 "infrastructure": "compute",
                 "num_cpus": "4",

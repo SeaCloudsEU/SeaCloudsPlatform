@@ -18,6 +18,7 @@ package eu.seaclouds.platform.planner.aamwriter.modeldesigner;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
@@ -35,7 +36,7 @@ public class DNode {
     private DGraph graph;
     private String name;
     private String type;
-    private Map<String, String> properties;
+    private Map<String, Object> properties;
     
     private String language;
     private String minVersion;
@@ -48,6 +49,7 @@ public class DNode {
     private String diskSize;
     private String benchmarkResponseTime;
     private String benchmarkPlatform;
+    private List<Map<String, String>> qos;
 
     public DNode(JSONObject jnode, DGraph graph) {
         this.graph = graph;
@@ -55,7 +57,7 @@ public class DNode {
         this.name = (String) jnode.get(Attributes.NAME);
         this.type = (String) jnode.get(Attributes.TYPE);
 
-        this.properties = new HashMap<String, String>();
+        this.properties = new HashMap<String, Object>();
         this.properties.putAll(readProperties(jnode));
     }
 
@@ -65,8 +67,8 @@ public class DNode {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, String> readProperties(JSONObject jnode) {
-        Map<String, String> map =  (Map<String, String>)jnode.get(Attributes.PROPERTIES);
+    private Map<String, Object> readProperties(JSONObject jnode) {
+        Map<String, Object> map =  (Map<String, Object>)jnode.get(Attributes.PROPERTIES);
         
         language = extractStringFromMap("language", map);
         minVersion = extractStringFromMap("min_version", map);
@@ -79,16 +81,22 @@ public class DNode {
         diskSize = extractStringFromMap("disk_size", map);
         benchmarkResponseTime = extractStringFromMap("benchmark_rt", map);
         benchmarkPlatform = extractStringFromMap("benchmark_platform", map);
-        
+        qos = (List) extractListFromMap("qos", map);
         return map;
     }
     
-    private String extractStringFromMap(String key, Map<String, String> map) {
-        String value = map.remove(key);
+    private String extractStringFromMap(String key, Map<String, Object> map) {
+        String value = (String) map.remove(key);
         
         return (value == null)? "" : value;
     }
 
+    private List<Object> extractListFromMap(String key, Map<String, Object> map) {
+        List<Object> value = (List) map.remove(key);
+        
+        return (value == null)? Collections.EMPTY_LIST : value;
+    }
+    
     @Override
     public String toString() {
         return String.format("Node [name=%s, type=%s, properties=%s]", 
@@ -128,23 +136,14 @@ public class DNode {
         return type;
     }
     
-    public Map<String, String> getOtherProperties() {
+    public Map<String, Object> getOtherProperties() {
         return Collections.unmodifiableMap(properties);
     }
     
-//    private String getStringProperty(String key) {
-//        String value = properties.get(key);
-//        return (value == null)? "" : value;
-//    }
-//    
     public String getLanguage() {
         return language;
     }
     
-//    public String getVersion() {
-//        return getStringProperty("version");
-//    }
-
     public String getMinVersion() {
         return minVersion;
     }
@@ -185,4 +184,7 @@ public class DNode {
         return benchmarkPlatform;
     }
     
+    public List<Map<String, String>> getQos() {
+        return qos;
+    }
 }

@@ -77,13 +77,19 @@ public class Translator {
         NodeTemplate module = new NodeTemplate(dnode.getName());
         topology.addNodeTemplate(module);
         
-        boolean needsContainer = !"".equals(dnode.getContainer());
+        boolean needsContainer = !dnode.getContainer().isEmpty();
+        
+        if (!dnode.getLanguage().isEmpty()) {
+            module.addProperty("language", dnode.getLanguage());
+        }
+        
+        module.addProperties(dnode.getOtherProperties());
         
         /*
          * Handle artifacts
          */
         String artifactValue = dnode.getArtifact();
-        if (!"".equals(artifactValue)) {
+        if (!artifactValue.isEmpty()) {
             String artifactName;
             String artifactType;
             
