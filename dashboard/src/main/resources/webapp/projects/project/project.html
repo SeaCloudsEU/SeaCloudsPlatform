@@ -39,7 +39,7 @@
                     <li class="divider">
                         <hr>
                     </li>
-                    <li role="presentation" class="red-pill"><a data-toggle="modal" data-target="#removeModal">Remove
+                    <li role="presentation" class="red-pill"><a ng-click="openRemoveApplicationModal()">Remove
                         Application</a></li>
                 </ul>
             </div>
@@ -54,34 +54,25 @@
             </div>
         </div>
 
-        <!--TODO: Use angular modals to be able to dismiss the modal properly (now fades after ng-click"-->
-        <div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="removeModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="removeModalLabel">Remove application</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>You are going to remove <b>{{project.name}}</b>, if you continue the removal process will
-                            start, freeing all the resources used
-                            by the application.</p>
-
-                        <p>This step is <span class="text-danger"><b>IRREVERSIBLE</b></span>, do you want to continue?
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <a type="button" class="btn btn-danger" data-dismiss="modal" ng-click="removeProject()">Yes,
-                            remove it!</a>
-                    </div>
-                </div>
+        <script type="text/ng-template" id="removeApplicationModal.html">
+            <div class="modal-header">
+                <button type="button" class="close" aria-label="Close" ng-click="cancel()"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="removeModalLabel">Remove application</h4>
             </div>
-        </div>
+            <div class="modal-body">
+                <p>You are going to remove <b>{{project.name}}</b>, if you continue the removal process will
+                    start, freeing all the resources used
+                    by the application.</p>
 
+                <p>This step is <span class="text-danger"><b>IRREVERSIBLE</b></span>, do you want to continue?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
+                <a type="button" class="btn btn-danger" data-dismiss="modal" ng-click="ok()">Yes,
+                    remove it!</a>
+            </div>
+        </script>
     </div>
-
-
 </div>

@@ -17,26 +17,27 @@
 
 'use strict';
 
-angular.module('seacloudsDashboard.projects.project', ['ngRoute', 'seacloudsDashboard.projects', 'seacloudsDashboard.projects.project.status',
+angular.module('seacloudsDashboard.projects.project', ['ngRoute', 'ui.bootstrap',
+    'seacloudsDashboard.projects', 'seacloudsDashboard.projects.project.status',
     'seacloudsDashboard.projects.project.monitor', 'seacloudsDashboard.projects.project.sla'])
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/projects/:project', {
             templateUrl: 'projects/project/project.html'
         })
     }])
-    .controller('ProjectCtrl', function ($scope, $routeParams, $location, $interval, notificationService) {
+    .controller('ProjectCtrl', function ($scope, $routeParams, $location, $interval, $uibModal, notificationService) {
         $scope.Page.setTitle('SeaClouds Dashboard - Project details');
 
         $scope.project = undefined;
-        
+
         $scope.isLoaded = false;
 
         $scope.SeaCloudsApi.getProject($routeParams.project).
-            success(function(project){
+            success(function (project) {
                 $scope.project = project;
                 $scope.isLoaded = true;
             }).
-            error(function(){
+            error(function () {
                 notificationService.error("Cannot retrieve the project, please try it again");
             })
 
@@ -56,7 +57,7 @@ angular.module('seacloudsDashboard.projects.project', ['ngRoute', 'seacloudsDash
         }, 5000);
 
         $scope.$on('$destroy', function () {
-            if($scope.updateFunction){
+            if ($scope.updateFunction) {
                 $interval.cancel($scope.updateFunction);
             }
         });
@@ -64,10 +65,10 @@ angular.module('seacloudsDashboard.projects.project', ['ngRoute', 'seacloudsDash
 
         $scope.$watch('projects', function (data) {
             $scope.SeaCloudsApi.getProject($routeParams.project).
-                success(function(project){
+                success(function (project) {
                     $scope.project = project;
                 }).
-                error(function(){
+                error(function () {
                     notificationService.error("Cannot retrieve the project, please try it again");
                 })
         })
@@ -82,15 +83,41 @@ angular.module('seacloudsDashboard.projects.project', ['ngRoute', 'seacloudsDash
             tabSelected = tab;
         }
 
-        $scope.removeProject = function () {
-            $scope.SeaCloudsApi.removeProject($scope.project.id).
-                success(function () {
-                    $location.path("/projects")
-                    notificationService.success("The application will be removed soon");
-                }).
-                error(function () {
-                    notificationService.error("An error happened during the removal process, please try it again");
-                })
-        }
+
+        $scope.openRemoveApplicationModal = function () {
+            var modalInstance = $uibModal.open({
+                resolve: {
+                    project: function () {
+                        return $scope.project;
+                    }
+                },
+                templateUrl: 'removeApplicationModal.html',
+                controller: function ($scope, $uibModalInstance, project) {
+                    $scope.project = project;
+
+                    $scope.ok = function () {
+                        $uibModalInstance.close(project.id);
+                    };
+
+                    $scope.cancel = function () {
+                        $uibModalInstance.dismiss('cancel');
+                    };
+
+                }
+            });
+
+            modalInstance.result.then(function (projectId) {
+                $scope.SeaCloudsApi.removeProject(projectId).
+                    success(function () {
+                        $location.path("/projects")
+                        notificationService.success("The application " + projectId + " will be removed soon");
+                    }).
+                    error(function () {
+                        notificationService.error("An error happened during the removal process, please try it again");
+                        $scope.closeRemoveApplicationModal();
+                    });
+            });
+        };
+
 
     });
