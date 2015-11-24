@@ -17,7 +17,6 @@
 'use strict';
 
 var seacloudsDashboard = angular.module('seacloudsDashboard', [
-    'ui.bootstrap',
     'jlareau.pnotify',
     'ngAnimate',
     'seacloudsDashboard.header',
