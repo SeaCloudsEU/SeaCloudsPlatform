@@ -1,13 +1,19 @@
 package eu.seaclouds.platform.planner.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
 import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
-import static com.google.common.base.Preconditions.*;
-import java.util.*;
-import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Copyright 2014 SeaClouds
