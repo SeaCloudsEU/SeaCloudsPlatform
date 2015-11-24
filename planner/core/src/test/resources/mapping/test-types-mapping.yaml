@@ -1,0 +1,10 @@
+map_name: test-mapping
+description: This mapping contains the equivalence between source and target types
+
+mapping.nodeTypes:
+  source.NodeType1: target.NodeType1
+  source.NodeType2: target.NodeType2
+
+mapping.relationshipTypes:
+  source.RelationshipType1: target.RelationshipType1
+  source.RelationshipType2: target.RelationshipType2
