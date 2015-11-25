@@ -21,11 +21,15 @@ package eu.seaclouds.platform.discoverer.core;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class OfferingManager {
 
@@ -39,13 +43,12 @@ public class OfferingManager {
     /* *************************************************************** */
     /* **                     subparts initialization               ** */
     /* *************************************************************** */
-    public OfferingManager() {
+    public OfferingManager(String repositoryPath) {
         String prefix = "offer_",
                 offeringSuffix = ".yaml",
-                metaSuffix = ".json",
-                dir = System.getProperty("user.home") + "/offerings_repo";
+                metaSuffix = ".json";
 
-        this.ufg = new UniqueFileGen(prefix, offeringSuffix, metaSuffix, dir); // offerings ID generator
+        this.ufg = new UniqueFileGen(prefix, offeringSuffix, metaSuffix, repositoryPath); // offerings ID generator
     }
 
     public File getOfferingDirectory() {
@@ -236,7 +239,7 @@ public class OfferingManager {
                 Offering offering = Offering.fromJSON(json);
                 offeringNameToOfferingId.put(offering.getName(), offering.getId());
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 this.removeOffering(offeringId);
             }
         }
@@ -282,6 +285,46 @@ public class OfferingManager {
         }
 
         return ret;
+    }
+
+    public void initializeFromRemote(String remoteInitializationPath) {
+        try {
+            URL url = new URL(remoteInitializationPath);
+            ZipInputStream zin = new ZipInputStream(url.openStream());
+            ZipEntry zipEntry = null;
+
+            File metaDirectory = this.getMetaDirectory();
+            File offeringDirectory = this.getOfferingDirectory();
+
+            while ((zipEntry = zin.getNextEntry()) != null) {
+                if (!zipEntry.isDirectory()) { /* Taking only files */
+                    String filePath = zipEntry.getName();
+                    String fileName = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1);
+                    if (filePath.startsWith("meta_directory/")) { /* meta file (.json) */
+                        this.extractFile(zin, fileName, metaDirectory);
+                    } else if (filePath.startsWith("offering_directory/")) { /* offering file (.yaml) */
+                        this.extractFile(zin, fileName, offeringDirectory);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void extractFile(ZipInputStream zin, String fileName, File outdir) {
+        try {
+            OutputStream out = new FileOutputStream(outdir.getAbsolutePath() + File.separator + fileName);
+
+            byte[] buffer = new byte[8192];
+            int len;
+            while ((len = zin.read(buffer)) != -1) {
+                out.write(buffer, 0, len);
+            }
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 

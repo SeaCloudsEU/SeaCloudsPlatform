@@ -23,10 +23,14 @@ import eu.seaclouds.platform.discoverer.crawler.CrawlerManager;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
 
-import java.io.InputStream;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 
 public class Discoverer extends Application<DiscovererConfiguration> {
@@ -44,13 +48,6 @@ public class Discoverer extends Application<DiscovererConfiguration> {
 
     /* vars */
     public OfferingManager offeringManager;
-
-    /* *************************************************************** */
-    /* **                     subparts initialization               ** */
-    /* *************************************************************** */
-    public Discoverer() {
-        this.offeringManager = new OfferingManager();
-    }
 
     public synchronized void setRefreshing(boolean refreshing) {
         this.refreshing = refreshing;
@@ -180,26 +177,26 @@ public class Discoverer extends Application<DiscovererConfiguration> {
 
     @Override
     public void run(DiscovererConfiguration configuration, Environment environment) {
+        this.offeringManager = new OfferingManager(configuration.getRepositoryPath());
         this.initializeResources();
 
-        if (configuration.getCrawlOnStartup() == false) {
+        /* if remoteInitializationPath configuration variable is not set */
+        if (configuration.getRemoteInitializationPath() == null || configuration.getRemoteInitializationPath().length() == 0) {
+            /* tries to restore previous session data from the repository path */
             this.initializeOfferings();
-        } else {
+        } else { /* remoteInitializationPath is valid, then it tries to restore from there */
             this.emptyRepository();
+            this.offeringManager.initializeFromRemote(configuration.getRemoteInitializationPath());
+            this.initializeOfferings();
         }
 
         this.activeCrawlers = configuration.getActiveCrawlers();
-
-        if (configuration.getCrawlOnStartup()) {
-            this.refreshRepository();
-        }
 
         environment.jersey().register(new FetchAPI());          /* /fetchOffer */
         environment.jersey().register(new FetchAllAPI());       /* /fetch_all */
         environment.jersey().register(new DeleteAPI());         /* /delete */
         environment.jersey().register(new StatisticsAPI());     /* /statistics */
         environment.jersey().register(new RefreshAPI());        /* /refresh */
-
     }
 
     public static void main(String[] args) throws Exception {

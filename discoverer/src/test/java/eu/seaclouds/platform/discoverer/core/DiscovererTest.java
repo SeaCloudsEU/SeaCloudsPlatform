@@ -30,20 +30,4 @@ public class DiscovererTest {
         Discoverer d = Discoverer.instance();
         Assert.assertNotNull(d);
     }
-
-
-    @Test
-    public void testOfferingDirectoryExists() {
-        Discoverer d = Discoverer.instance();
-        File od = d.offeringManager.getOfferingDirectory();
-        Assert.assertTrue(od.exists());
-    }
-
-
-    @Test
-    public void testMetaDirectoryExists() {
-        Discoverer d = Discoverer.instance();
-        File md = d.offeringManager.getMetaDirectory();
-        Assert.assertTrue(md.exists());
-    }
 }

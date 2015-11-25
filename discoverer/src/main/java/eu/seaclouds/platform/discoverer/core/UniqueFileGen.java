@@ -45,18 +45,22 @@ public class UniqueFileGen {
     /* **              C.TOR               ** */
     /* ************************************** */
 
-    public UniqueFileGen(String prefix, String offeringSuffix, String metaSuffix, String dir) {
+    public UniqueFileGen(String prefix, String offeringSuffix, String metaSuffix, String path) {
 
         /* input consistency check */
-        if(dir == null) throw new NullPointerException("Parameter \"dir\" cannot be null.");
+        if(path == null) throw new NullPointerException("Parameter \"dir\" cannot be null.");
         this.prefix = prefix;
         this.offeringSuffix = offeringSuffix;
         this.metaSuffix = metaSuffix;
 
+        if (path.startsWith("~" + File.separator)) {
+            path = System.getProperty("user.home") + path.substring(1);
+        }
+
         /* filesystem check */
-        this.currentDirectory = this.createDirectory(dir);
-        this.offeringDirectory = this.createDirectory(dir + "/offering_directory");
-        this.metaDirectory = this.createDirectory(dir + "/meta_directory");
+        this.currentDirectory = this.createDirectory(path);
+        this.offeringDirectory = this.createDirectory(path + "/offering_directory");
+        this.metaDirectory = this.createDirectory(path + "/meta_directory");
     }
 
     private File createDirectory(String directoryName) {
