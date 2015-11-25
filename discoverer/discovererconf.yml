@@ -6,5 +6,5 @@ server:
    type: http
    port: 1236
 refreshInterval: 24
-crawlOnStartup: true
+crawlOnStartup: false
 activeCrawlers: ["CloudHarmonyCrawler", "PaasifyCrawler"]

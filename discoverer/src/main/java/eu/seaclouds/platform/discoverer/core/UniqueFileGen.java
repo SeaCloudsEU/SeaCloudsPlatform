@@ -85,7 +85,7 @@ public class UniqueFileGen {
     public String getPrefix() {
         return this.prefix;
     }
-    
+
     public String getOfferingSuffix() {
         return this.offeringSuffix;
     }

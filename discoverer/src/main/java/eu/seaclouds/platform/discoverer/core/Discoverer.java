@@ -18,10 +18,12 @@
 package eu.seaclouds.platform.discoverer.core;
 
 import eu.seaclouds.platform.discoverer.api.*;
+import eu.seaclouds.platform.discoverer.crawler.CloudHarmonySPECint;
 import eu.seaclouds.platform.discoverer.crawler.CrawlerManager;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -164,8 +166,22 @@ public class Discoverer extends Application<DiscovererConfiguration> {
         }
     }
 
+    private void initializeResources() {
+        /* Location map */
+        InputStream locationMap = this.getClass().getClassLoader().getResourceAsStream("location_mapping");
+        if (locationMap != null)
+            LocationMapping.initializeMap(locationMap);
+
+        /* SPECint map */
+        InputStream SPECintMap = this.getClass().getClassLoader().getResourceAsStream("SPECint_mapping");
+        if (SPECintMap != null)
+            CloudHarmonySPECint.initializeMap(SPECintMap);
+    }
+
     @Override
     public void run(DiscovererConfiguration configuration, Environment environment) {
+        this.initializeResources();
+
         if (configuration.getCrawlOnStartup() == false) {
             this.initializeOfferings();
         } else {
