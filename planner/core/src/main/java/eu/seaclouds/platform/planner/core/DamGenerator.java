@@ -1,13 +1,13 @@
 package eu.seaclouds.platform.planner.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.io.Resources;
 import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 import static com.google.common.base.Preconditions.*;
-import java.io.File;
 import java.util.*;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
 
@@ -55,7 +55,13 @@ public class DamGenerator {
         MonitoringDamGenerator monDamGen = new MonitoringDamGenerator(monitorUrl, monitorPort);
         String generatedApplicationId = UUID.randomUUID().toString();
 
-        List<Module> generated = monDamGen.generateMonitoringInfo(adp);
+
+        List<Module> generated = new ArrayList<>();
+        try {
+            generated = monDamGen.generateMonitoringInfo(adp);
+        }catch (Exception e){
+            log.error("MonitorGeneration failed", e);
+        }
         monitoringInfoByApplication.put(generatedApplicationId, generated);
 
         HashMap<String, Object> appGroup = new HashMap<>();
@@ -115,27 +121,31 @@ public class DamGenerator {
         }
 
         //get brookly location from host
-        int blidx = 1;
         for(String group: groups.keySet()){
             HashMap<String, Object> policyGroup = new HashMap<>();
             policyGroup.put("members", groups.get(group));
 
             HashMap<String, Object> cloudOffering = (HashMap<String, Object>) nodeTemplates.get(group);
             HashMap<String, Object> properties = (HashMap<String, Object>) cloudOffering.get("properties");
+
             String location = (String) properties.get("location");
             String region = (String) properties.get("region");
             String hardwareId = (String) properties.get("hardwareId");
 
             ArrayList<HashMap<String, Object>> policy = new ArrayList<>();
             HashMap<String, Object> p = new HashMap<>();
-            p.put("brooklyn.location", location + (location.equals("CloudFoundry") ? "" : ":" + region));
+            if(location != null) {
+                p.put("brooklyn.location", location + (location.equals("CloudFoundry") ? "" : ":" + region));
+            }else{
+                p.put("brooklyn.location", group);
+            }
             policy.add(p);
 
             policyGroup.put("policies", policy);
 
             HashMap<String, Object> finalGroup = new HashMap<>();
 
-            ADPgroups.put("add_brooklyn_location" + blidx++ ,policyGroup);
+            ADPgroups.put("add_brooklyn_location_" + group ,policyGroup);
         }
 
         String finalDam = yml.dump(adpYaml);

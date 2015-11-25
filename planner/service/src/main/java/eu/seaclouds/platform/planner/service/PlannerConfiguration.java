@@ -36,6 +36,9 @@ public class PlannerConfiguration extends Configuration{
     @NotEmpty
     private String slaGeneratorURL;
 
+    @NotEmpty
+    private String filterOfferings;
+
     @JsonProperty("monitorGeneratorPort")
     public void setMonitorGeneratorPort(String monitorGeneratorPort) { this.monitorGeneratorPort = monitorGeneratorPort; }
 
@@ -65,5 +68,11 @@ public class PlannerConfiguration extends Configuration{
 
     @JsonProperty("discovererURL")
     public String getDiscovererURL() { return this.discovererURL; }
+
+    @JsonProperty("filterOfferings")
+    public void setFilterOfferings(String filterOfferings) { this.filterOfferings = filterOfferings; }
+
+    @JsonProperty("filterOfferings")
+    public String getFilterOfferings() { return this.filterOfferings; }
 
 }

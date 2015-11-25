@@ -1,3 +1,21 @@
+package eu.seaclouds.platform.planner.core;
+
+import com.google.common.io.Resources;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+import static org.testng.Assert.*;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertNotNull;
+import static org.testng.AssertJUnit.assertTrue;
+
 /**
  * Copyright 2014 SeaClouds
  * Contact: SeaClouds
@@ -14,34 +32,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import com.google.common.io.Resources;
-import eu.seaclouds.platform.planner.core.HttpHelper;
-import eu.seaclouds.platform.planner.core.Planner;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.testng.annotations.Test;
-import org.yaml.snakeyaml.Yaml;
-import sun.net.www.http.HttpClient;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
-
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertNotNull;
-import static org.testng.AssertJUnit.assertTrue;
-
 @Test
-public class DamGenTests {
+public class DamGeneratorTest {
+
+    @Test
+    public void  damBrooklynTest() throws Exception {
+        String adp = new Scanner(new File(Resources.getResource("generated_adp.yml").toURI())).useDelimiter("\\Z").next();
+        Yaml yml = new Yaml();
+        Map<String, Object> adpYaml = (HashMap<String, Object>) yml.load(adp);
+        int adpGroupsNumber = ((Map<Object, Object>) adpYaml.get("groups")).size();
+
+        Map<String, Object> translatedAdp = DamGenerator.translateAPD(adpYaml);
+        assertNotNull(translatedAdp);
+        Map<Object, Object> translatedGroups = (Map<Object, Object>) translatedAdp.get("groups");
+
+        assertTrue(adpGroupsNumber < ((Map) translatedAdp.get("groups")).size());
+    }
+
+    @Test
+    public void monitorRuleTest() throws Exception{
+        String adp = new Scanner(new File(Resources.getResource("generated_adp.yml").toURI())).useDelimiter("\\Z").next();
+        Yaml yml = new Yaml();
+        Map<String, Object> adpYaml = (HashMap<String, Object>) yml.load(adp);
+
+        adpYaml = DamGenerator.translateAPD(adpYaml);
+        adpYaml = DamGenerator.addMonitorInfo(adp, "127.0.0.1", "8080");
+
+        String dam = yml.dump(adpYaml);
+        Assert.assertNotNull(adpYaml);
+
+    }
 
     @Test
     public void damTranslation() throws Exception{
@@ -120,4 +140,5 @@ public class DamGenTests {
         String finalDam = yml.dump(adpYaml);
         assertNotNull(finalDam);
     }
+
 }

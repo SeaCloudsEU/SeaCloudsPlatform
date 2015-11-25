@@ -16,6 +16,7 @@ brooklyn.catalog:
         planner.config.monitor_generator.url: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
         planner.config.monitor_generator.port: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
         planner.config.sla_generator.url: $brooklyn:formatString("http://%s:%s", component("sla-core").attributeWhenReady("host.address"), component("sla-core").attributeWhenReady("http.port"))
+        planner.config.filterDeployableOfferings: false
 
       shell.env:
         PLANNER_PORT: $brooklyn:config("planner.config.port")
@@ -24,6 +25,7 @@ brooklyn.catalog:
         MONITOR_GENERATOR_PORT: $brooklyn:config("planner.config.monitor_generator.port")
         SLA_GENERATOR_URL: $brooklyn:config("planner.config.sla_generator.url")
         PLANNER_URL: $brooklyn:config("planner.url")
+        PLANNER_URL: $brooklyn:config("planner.config.filterDeployableOfferings")
 
       provisioning.properties:
         osFamily: ubuntu
@@ -44,6 +46,7 @@ brooklyn.catalog:
         monitorGeneratorPort: ${MONITOR_GENERATOR_PORT}
         slaGeneratorURL: ${SLA_GENERATOR_URL}
         deployableProviders: ["openstack-nova","openstack-keystone","openstack-nova-ec2", "byon", "sts", "elasticstack", "cloudstack", "rackspace-cloudidentity","aws-ec2","gogrid","elastichosts-lon-p","elastichosts-sat-p","elastichosts-lon-b","openhosting-east1","serverlove-z1-man","skalicloud-sdg-my","go2cloud-jhb1","softlayer","hpcloud-compute","rackspace-cloudservers-us","rackspace-cloudservers-uk","azurecompute","google-compute-engine","CloudFoundry"]
+        filterOfferings: false
         EOF
         wget -O planner-service.jar ${PLANNER_URL}
         nohup java -jar planner-service.jar server conf.yml > console.out 2>&1 &
@@ -341,8 +344,9 @@ brooklyn.catalog:
           planner.port: $brooklyn:component("planner").config("planner.config.port")
         launch.latch: $brooklyn:component("planner").attributeWhenReady("service.isUp")
       - type: seaclouds-planner
-        launch.latch: $brooklyn:component("sla-core").attributeWhenReady("service.isUp")
-        launch.latch: $brooklyn:component("discoverer").attributeWhenReady("service.isUp")
+        launch.latch:
+          - $brooklyn:component("sla-core").attributeWhenReady("service.isUp")
+          - $brooklyn:component("discoverer").attributeWhenReady("service.isUp")
       - type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
         name: SLA service Core
         id: sla-core

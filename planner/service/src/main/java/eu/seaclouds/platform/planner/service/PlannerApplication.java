@@ -27,8 +27,7 @@ public class PlannerApplication extends Application<PlannerConfiguration> {
 
     @Override
     public void run(PlannerConfiguration plannerConfiguration, Environment environment) throws Exception {
-        PlanResource pr = new PlanResource( plannerConfiguration.getDiscovererURL(),
-                                            plannerConfiguration.getDeployableProviders());
+        PlanResource pr = new PlanResource( plannerConfiguration );
         RePlanResource rpr = new RePlanResource(plannerConfiguration.getDiscovererURL(),
                                                 plannerConfiguration.getDeployableProviders());
         DamGenResource dgr = new DamGenResource(plannerConfiguration.getMonitorGeneratorURL(),

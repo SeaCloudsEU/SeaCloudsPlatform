@@ -1,0 +1,24 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: Sample 3-tier application
+imports:
+- tosca-normative-types:1.0.0.wd03-SNAPSHOT
+topology_template:
+  node_templates:
+    db1:
+      type: sc_req.db1
+      properties:
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5.0'
+          - less_or_equal: '5.6'
+node_types:
+  sc_req.db1:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      mysql_support:
+        constraints:
+        - equal: true
+      mysql_version:
+        constraints:
+        - greater_or_equal: '5.0'
+        - less_or_equal: '5.6'

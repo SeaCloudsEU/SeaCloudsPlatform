@@ -16,7 +16,9 @@
  */
 package eu.seaclouds.planner.matchmaker.constraints;
 
+import eu.seaclouds.planner.matchmaker.Pair;
 import eu.seaclouds.planner.matchmaker.PropertyValue;
+import org.apache.commons.lang.StringUtils;
 
 public abstract class Constraint<T> {
     protected final String name;
@@ -31,5 +33,18 @@ public abstract class Constraint<T> {
 
     public boolean checkConstraint(PropertyValue prop){
         return this.value.getClass().equals(prop.getValue().getClass());
+    }
+
+    protected Pair<String, String> uniformStrings(String a, String b){
+        int ac = StringUtils.countMatches(a, ".");
+        int bc = StringUtils.countMatches(b, ".");
+        String toUpdate = ac > bc ? b : a;
+        for(int i = 0; i < Math.abs(ac-bc); i++){
+            toUpdate += ".0";
+        }
+        String na = ac >= bc ? a : toUpdate;
+        String nb = bc >= ac ? b : toUpdate;
+
+        return new Pair<>(na.replace(".",  ""), nb.replace(".", "")) ;
     }
 }

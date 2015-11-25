@@ -35,11 +35,13 @@ public class PlanResource {
     private final String[] deployableProviders;
 
     static Logger log = LoggerFactory.getLogger(PlanResource.class);
+    private final boolean filterOfferings;
 
-    public PlanResource(String discovererURL, String[] deployableProviders)
+    public PlanResource(PlannerConfiguration conf)
     {
-        this.discovererURL = discovererURL;
-        this.deployableProviders = deployableProviders;
+        this.discovererURL = conf.getDiscovererURL();
+        this.deployableProviders = conf.getDeployableProviders();
+        this.filterOfferings = new Boolean(conf.getFilterOfferings());
     }
 
     @POST
@@ -56,7 +58,9 @@ public class PlanResource {
         Planner p = new Planner(discovererURL, aam);
         String[] resp = new String[0];
         try {
-            resp = p.plan(Arrays.asList(deployableProviders));
+
+            resp = filterOfferings? p.plan(Arrays.asList(deployableProviders)) : p.plan();
+
         } catch (IOException e) {
             log.error(e.getCause().getMessage(), e);
         } catch (ParsingException e) {
