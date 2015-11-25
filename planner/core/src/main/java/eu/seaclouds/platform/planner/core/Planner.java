@@ -41,47 +41,31 @@ import java.util.*;
 
 public class Planner {
     static Logger log = LoggerFactory.getLogger(ToscaSerializer.class);
-    private static final String MONITOR_GEN_OP = "/damgen";
-    private static final String SLA_GEN_OP = "/seaclouds/templates";
     private static final String DISCOVERER_PATH = "discoverer/";
-    private static final String OPTIMIZER_PATH = "optimizer/";
 
     private final String discovererURL;
-    private final String optimizerURL;
-    private final String slaGenURL;
-    private final String monitorGenURL;
     private HttpHelper discovererClient;
-    private HttpHelper optimizerClient;
     private final String aam;
     private final String dam;
     private final String adp;
 
     public Planner() {
-        this(null, null, null);
+        this(null, null, null, null);
     }
 
     //Replan ctor
-    public Planner(String discovererURL, String optimizerURL, String aam, String dam){
-        this(discovererURL, optimizerURL, null, null, aam, dam, null);
+    public Planner(String discovererURL, String aam, String adp){
+        this(discovererURL, aam, adp, null);
     }
 
     //Plan ctor
-    public Planner(String discovererURL, String optimizerURL, String aam){
-        this(discovererURL, optimizerURL, aam, null);
+    public Planner(String discovererURL, String aam){
+        this(discovererURL, aam, null, null);
     }
 
-    //DamGen ctor
-    public Planner(String[] damGenURLs, String adp){
-        this(null, null, damGenURLs[0], damGenURLs[1], null, null, adp);
-    }
-
-    private Planner(String discovererURL, String optimizerURL, String monitorGenURL, String slaGenURL, String aam, String dam, String adp){
+    private Planner(String discovererURL, String aam, String adp, String dam) {
         this.discovererURL = discovererURL + DISCOVERER_PATH;
-        this.optimizerURL = optimizerURL + OPTIMIZER_PATH;
-        this.monitorGenURL = monitorGenURL;
-        this.slaGenURL = slaGenURL;
         this.discovererClient = new HttpHelper(this.discovererURL);
-        this.optimizerClient = new HttpHelper(this.optimizerURL);
         this.aam = aam;
         this.dam = dam;
         this.adp = adp;
@@ -150,10 +134,20 @@ public class Planner {
 
     public String[] plan(List<String> deployableOfferings) throws ParsingException, IOException {
 
+        log.info("Planning for aam: \n" + aam);
+
         //Get offerings
         log.info("Getting Offeing Step: Start");
         Map<String, Pair<NodeTemplate, String>> offerings = getOfferings(deployableOfferings); // getOfferingsFromDiscoverer();
         log.info("Getting Offeing Step: Complete");
+
+        log.info("\nNot deployable offering have been filtered!");
+        log.info("\nDeployable offerings have location: " + deployableOfferings);
+
+        log.info("Got " + offerings.size() + " offerings from discoverer:");
+        for(String s: offerings.keySet()){
+            log.info("\n" + s + "\n\t" +offerings.get(s).second);
+        }
 
         //Matchmake
         log.info("Matchmaking Step: Start");
@@ -168,11 +162,15 @@ public class Planner {
             log.error("Error preparing matchmaker output for optimization", e);
         }
 
+        for(String s:matchingOfferings.keySet()){
+            log.info("Module " + s + "has matching offerings: " + matchingOfferings.get(s));
+        }
 
         log.info("Optimization Step: Start");
+        log.info("Calling optimizer with suitable offerings: \n" + mmOutput);
         Optimizer optimizer = new Optimizer();
         String[] outputPlans = optimizer.optimize(aam, mmOutput);
-
+        log.info("Optimzer result: " + Arrays.asList(outputPlans));
         log.info("Optimization Step: Complete");
 
         return outputPlans;
@@ -209,6 +207,7 @@ public class Planner {
         String[] outputPlans = optimizer.optimize(aam, mmOutput);
 
         log.info("Optimization Step: Complete");
+
         return  outputPlans;
     }
 
