@@ -136,6 +136,12 @@ public class YAMLoptimizerParser {
       YAMLgroupsOptimizerParser.addQualityOfSolutionToGroup(sol, initialElementName, groups);
 
    }
+   
+   public static void addScalingPolicyToModule(String modulename, Map<String,Object> applicationMapComplete, 
+         double wklLowerBound, double wklUpperBound, int minPoolSize, int maxPoolSize){
+      Map<String, Object> groups = YAMLoptimizerParser.getGroupMapFromAppMap(applicationMapComplete);
+      YAMLgroupsOptimizerParser.addScalingPolicyToModuleGroup(groups, modulename, wklLowerBound, wklUpperBound, minPoolSize, maxPoolSize);
+   }
 
    private static double getCloudLatency(String suitableCloudOffers, String latencyKeyword) {
 
@@ -477,7 +483,9 @@ public class YAMLoptimizerParser {
       double hostPerformance = appInfoSuitableOptions.getCloudCharacteristics(elementName,
             YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups)).getPerformance();
 
-
+      boolean elementCanScale= YAMLmodulesOptimizerParser.getScalabilityCapabilitiesOfModule(modules, elementName);
+            
+            
       newelement.setExecTimeMillis(
             YAMLmodulesOptimizerParser.getMeasuredExecTimeMillis(elementName, groups) * hostPerformance);
 
@@ -624,7 +632,7 @@ public class YAMLoptimizerParser {
    }
 
    @SuppressWarnings("unchecked")
-   private static String getInitialElementName(Map<String, Object> appMap) {
+   public   static String getInitialElementName(Map<String, Object> appMap) {
       // The initial element is such one that has QoSrequirements in the
       // "groups" part.
 
@@ -670,7 +678,7 @@ public class YAMLoptimizerParser {
    }
 
    @SuppressWarnings("unchecked")
-   private static Map<String, Object> getModuleMapFromAppMap(Map<String, Object> appMap) {
+   public static Map<String, Object> getModuleMapFromAppMap(Map<String, Object> appMap) {
 
       Map<String, Object> modulesMap;
       try {
@@ -687,8 +695,10 @@ public class YAMLoptimizerParser {
 
       return modulesMap;
    }
+   
+   
 
-   private static Map<String, Object> getGroupMapFromAppMap(Map<String, Object> appMap) {
+   public static Map<String, Object> getGroupMapFromAppMap(Map<String, Object> appMap) {
       Map<String, Object> groupsMap;
       try {
          if (log.isDebugEnabled()) {

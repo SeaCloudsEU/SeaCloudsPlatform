@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 public class Topology {
 
-   static Logger                 log = LoggerFactory.getLogger(Topology.class);
+   static Logger log = LoggerFactory.getLogger(Topology.class);
 
    private List<TopologyElement> modules;
 
@@ -81,7 +81,8 @@ public class Topology {
 
       }
 
-      log.warn("Initial element not found. Possible circular dependences in the design. Please, state clearly which is the initial element");
+      log.warn(
+            "Initial element not found. Possible circular dependences in the design. Please, state clearly which is the initial element");
       return null;
    }
 
@@ -109,6 +110,16 @@ public class Topology {
     */
    public void replaceElementsIndexes(TopologyElement element, int toIndex) {
       int targetIndex = modules.indexOf(element);
+      if (log.isDebugEnabled()) {
+         if(modules==null){
+            log.warn("Modules in topology points to NULL");
+         }
+         if(element==null){
+            log.warn("Element to search in topology points to NULL");
+         }
+         log.debug("The topology consists of " + modules.size() + " modules. Replacing index " + toIndex + " with "
+               + targetIndex + ". The element name whose index was searched was " + element.getName() + "and the topology was composed of modules: " + toString());
+      }
       TopologyElement replaced = modules.set(toIndex, element);
       modules.set(targetIndex, replaced);
    }
@@ -133,11 +144,9 @@ public class Topology {
       String NL = System.getProperty("line.separator");
       String out = "";
       for (TopologyElement mod : modules) {
-         out += mod.getName() + " : execTime - "
-               + mod.getDefaultExecutionTime() + " : dependences - {";
+         out += mod.getName() + " : execTime - " + mod.getDefaultExecutionTime() + " : dependences - {";
          for (TopologyElementCalled modc : mod.getDependences()) {
-            out += modc.getElement().getName() + "(" + modc.getProbCall()
-                  + "), ";
+            out += modc.getElement().getName() + "(" + modc.getProbCall() + "), ";
          }
          out += "}" + NL + NL;
 
@@ -171,13 +180,11 @@ public class Topology {
    }
 
    // Iterator that returns list of dependencies
-   class DependencyListsIterator extends
-         AbstractIterator<List<TopologyElementCalled>> {
+   class DependencyListsIterator extends AbstractIterator<List<TopologyElementCalled>> {
 
       @Override
       public List<TopologyElementCalled> next() {
-         List<TopologyElementCalled> currentList = modules.get(currentIndex)
-               .getDependences();
+         List<TopologyElementCalled> currentList = modules.get(currentIndex).getDependences();
          currentIndex++;
          return currentList;
 

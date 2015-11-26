@@ -55,7 +55,7 @@ public class Reoptimizer {
    }
 
    public String[] optimize(String appModel, String suitableCloudOffer,
-         int numPlansToGenerate_ArrayLength) {
+         int numPlansToGenerate_ArrayLength, double hyst) {
       // TODO Auto-generated method stub
       return null;
    }
