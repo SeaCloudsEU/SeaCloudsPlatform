@@ -15,7 +15,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Host;
 import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
-import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.ParsingException;
+import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.AdpParsingException;
 import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.YAMLMonitorParser;
 import eu.seaclouds.monitor.monitoringdamgenerator.dcscriptgenerators.JavaAppLevelDcDeploymentScriptGenerator;
 import eu.seaclouds.monitor.monitoringdamgenerator.dcscriptgenerators.MODACloudsDcDeploymentScriptGenerator;
@@ -136,9 +136,9 @@ public class MonitoringDamGenerator {
 
             return toReturn;
 
-        }catch (ParsingException e) {
-            logger.error("Error parsing the Abstract Deployment Model", e);
-            throw new RuntimeException("Error parsing the Abstract Deployment Model");
+        }catch (AdpParsingException e) {
+            logger.error(e.getMessage());
+            throw new IllegalStateException(e.getMessage(), e.getCause());
         }
     }
 
