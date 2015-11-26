@@ -18,6 +18,11 @@
 	</appender>
 
 	<logger
+		name="eu.seaclouds.platform.planner.optimizer.Topology">
+		<level value="info" />
+	</logger>
+	
+	<logger
 		name="eu.seaclouds.platform.planner.optimizer.heuristics.AbstractHeuristic">
 		<level value="info" />
 	</logger>

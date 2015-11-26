@@ -350,4 +350,17 @@ public class YAMLmodulesOptimizerParser {
       return availabilityMapValue;
    }
 
+   public static boolean getScalabilityCapabilitiesOfModule(Map<String, Object> modules, String elementName) {
+      try{
+       Map<String,Object> moduleInfo = (Map<String,Object>) modules.get(elementName);  
+       Map<String,Object> moduleProperties= (Map<String,Object>) moduleInfo.get(TOSCAkeywords.MODULE_PROPERTIES_TAG); 
+       boolean moduleCanScale = (boolean) moduleProperties.get(TOSCAkeywords.MODULE_AUTOSCALE_PROPERTY); 
+       return moduleCanScale;
+      }catch(Exception e){
+         //Some part did not work looking in the definition of scaling. 
+         //Probably because it was not defined. Returning the default value "true" for seeing policies generated 
+      }
+      return true;
+   }
+
 }

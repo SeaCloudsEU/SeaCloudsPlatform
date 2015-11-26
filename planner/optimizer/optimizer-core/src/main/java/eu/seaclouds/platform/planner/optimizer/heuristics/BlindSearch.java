@@ -50,7 +50,7 @@ public class BlindSearch extends AbstractHeuristic implements SearchMethod {
       // value to or create a new method that does not consider the current one.
       // This way may help for replanning, when even the first attempt for
       // solution will be based on the current deployment
-      Solution[] bestSols = findSolutions(null, cloudOffers,numPlansToGenerate);
+      Solution[] bestSols = findInitialRandomSolutions(cloudOffers,numPlansToGenerate,topology);
 
       super.setFitnessOfSolutions(bestSols, requirements, topology,
             cloudOffers);
@@ -60,7 +60,7 @@ public class BlindSearch extends AbstractHeuristic implements SearchMethod {
       int numItersNoImprovement = 0;
       while (numItersNoImprovement < super.getMaxIterNoImprove()) {
 
-         currentSol[0] = super.findRandomSolution(cloudOffers);
+         currentSol[0] = super.findRandomSolution(cloudOffers,topology);
          currentSol[0].setSolutionFitness(super.fitness(currentSol[0],
                requirements, topology, cloudOffers));
 
@@ -88,19 +88,6 @@ public class BlindSearch extends AbstractHeuristic implements SearchMethod {
 
    }
 
-   private Solution[] findSolutions(Solution baseSolution,
-         SuitableOptions cloudOffers, int numPlansToGenerate) {
-
-      Solution[] newSolutions = new Solution[numPlansToGenerate];
-
-      for (int newSolIndex = 0; newSolIndex < newSolutions.length; newSolIndex++) {
-
-         newSolutions[newSolIndex] = super.findRandomSolution(cloudOffers);
-      }
-
-      return newSolutions;
-
-   }
 
 
 

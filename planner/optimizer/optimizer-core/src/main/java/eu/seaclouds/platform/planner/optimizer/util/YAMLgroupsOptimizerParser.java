@@ -114,7 +114,7 @@ public class YAMLgroupsOptimizerParser {
 
    }
 
-   private static Map<String, Object> getPolicySubInfoFromGroupInfo(Map<String, Object> groupInfo,
+   public static Map<String, Object> getPolicySubInfoFromGroupInfo(Map<String, Object> groupInfo,
          String infoToSearch) {
 
       List<Object> groupPoliciesList = null;
@@ -316,7 +316,7 @@ public class YAMLgroupsOptimizerParser {
     */
    public static void addQualityOfSolutionToGroup(Solution sol, String initialElementName, Map<String, Object> groups) {
 
-      HashMap<String, Object> expectedQuality = createHashmapOfExpectedQuality(sol);
+      Map<String, Object> expectedQuality = createMapOfExpectedQuality(sol);
 
       Map<String, Object> groupInfo = YAMLgroupsOptimizerParser.findGroupOfMemberName(initialElementName, groups);
 
@@ -331,9 +331,24 @@ public class YAMLgroupsOptimizerParser {
       policies.add(expectedQuality);
 
    }
+   
+   public static void addScalingPolicyToModuleGroup(Map<String, Object> groups, String modulename, double wklLowerBound,
+         double wklUpperBound, int minPoolSize, int maxPoolSize) {
+     
+      Map<String, Object> groupInfo = YAMLgroupsOptimizerParser.findGroupOfMemberName(modulename, groups);
+      List<Object> policies = null;
+      if (groupInfo.containsKey(TOSCAkeywords.GROUP_ELEMENT_POLICY_TAG)) {
+         policies = (List<Object>) groupInfo.get(TOSCAkeywords.GROUP_ELEMENT_POLICY_TAG);
+      } else {
+         policies = new ArrayList<Object>();
+         groupInfo.put(TOSCAkeywords.GROUP_ELEMENT_POLICY_TAG, policies);
+      }
 
-   private static HashMap<String, Object> createHashmapOfExpectedQuality(Solution sol) {
-      HashMap<String, Double> qosPropsMap = new HashMap<String, Double>();
+      policies.add(ScalingPolicy.createPolicy(wklLowerBound, wklUpperBound, minPoolSize, maxPoolSize));
+   }
+
+   private static Map<String, Object> createMapOfExpectedQuality(Solution sol) {
+      Map<String, Double> qosPropsMap = new HashMap<String, Double>();
 
       if (sol.getSolutionQuality() == null) {
          log.warn("quality Of Solution Not Found for solution: " + sol.toString());
@@ -362,4 +377,6 @@ public class YAMLgroupsOptimizerParser {
       expectedQuality.put(TOSCAkeywords.EXPECTED_QUALITY_PROPERTIES, qosPropsMap);
       return expectedQuality;
    }
+
+ 
 }

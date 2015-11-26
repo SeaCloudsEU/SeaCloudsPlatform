@@ -27,26 +27,31 @@ public class Optimizer {
 
    private static Logger log = LoggerFactory.getLogger(Optimizer.class);
    private final int NUMBER_OF_PLANS_GENERATED;
+   private static final int DEFAULT_NUMBER_OF_PLANS_GENERATED = 5;
    private final SearchMethodName searchName;
+   private final double HYSTERESIS_PROPORTION; 
+   private static final double DEFAULT_HYSTERESIS_PROPORTION=0.5; 
 
    public Optimizer() {
-      NUMBER_OF_PLANS_GENERATED = 5;
-      searchName = SearchMethodName.BLINDSEARCH;
+      this(DEFAULT_NUMBER_OF_PLANS_GENERATED,SearchMethodName.BLINDSEARCH,DEFAULT_HYSTERESIS_PROPORTION);
    }
 
    public Optimizer(int num) {
-      NUMBER_OF_PLANS_GENERATED = num;
-      searchName = SearchMethodName.BLINDSEARCH;
+      this(num,SearchMethodName.BLINDSEARCH,DEFAULT_HYSTERESIS_PROPORTION);
    }
 
    public Optimizer(SearchMethodName name) {
-      NUMBER_OF_PLANS_GENERATED = 5;
-      searchName = name;
+      this(DEFAULT_NUMBER_OF_PLANS_GENERATED,name,DEFAULT_HYSTERESIS_PROPORTION);
    }
 
    public Optimizer(int num, SearchMethodName name) {
+      this(num,name,DEFAULT_HYSTERESIS_PROPORTION);
+   }
+   
+   public Optimizer(int num, SearchMethodName name, double hysteresis){
       NUMBER_OF_PLANS_GENERATED = num;
       searchName = name;
+      HYSTERESIS_PROPORTION=hysteresis;
    }
 
    // Optimizer uses its previously generated plan as a source when replanning.
@@ -62,13 +67,13 @@ public class Optimizer {
 
          try {
             outputPlans = initialOptimizer.optimize(appModel,
-                  MMtoOptModelTransformer.transformModel(suitableCloudOffer), NUMBER_OF_PLANS_GENERATED);
+                  MMtoOptModelTransformer.transformModel(suitableCloudOffer), NUMBER_OF_PLANS_GENERATED,HYSTERESIS_PROPORTION);
             previousPlans = outputPlans;
 
          } catch (Exception exc) {
-            log.info(
-                  "Optimizer did not work in its expected input. Trying with the assumption of former versions of Input ");
-            outputPlans = initialOptimizer.optimize(appModel, suitableCloudOffer, NUMBER_OF_PLANS_GENERATED);
+            log.warn(
+                  "Optimizer did not work in its expected input. Exception name was " + exc.getClass().getName() +" Trying with the assumption of former versions of Input ");
+            outputPlans = initialOptimizer.optimize(appModel, suitableCloudOffer, NUMBER_OF_PLANS_GENERATED,HYSTERESIS_PROPORTION);
             previousPlans = outputPlans;
          } catch (Error E) {
             log.error("Error optimizing the initial deployment");
@@ -80,7 +85,7 @@ public class Optimizer {
 
          try {
             log.error("Calling a Replanning. The previously generated Plan will be used as a base");
-            outputPlans = optimizerReplanning.optimize(appModel, suitableCloudOffer, NUMBER_OF_PLANS_GENERATED);
+            outputPlans = optimizerReplanning.optimize(appModel, suitableCloudOffer, NUMBER_OF_PLANS_GENERATED,HYSTERESIS_PROPORTION);
             previousPlans = outputPlans;
          } catch (Error E) {
             log.error("Error optimizing the Replanning");

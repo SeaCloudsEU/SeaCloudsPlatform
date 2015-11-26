@@ -31,6 +31,9 @@ public class TOSCAkeywords {
    public static final String GROUP_ELEMENT_TAG               = "groups";
    public static final String GROUP_ELEMENT_MEMBERS_TAG       = "members";
 
+   //AUTOSCALING PROPERTIES
+   public static final String MODULE_PROPERTIES_TAG      = "properties";
+   public static final String MODULE_AUTOSCALE_PROPERTY               ="autoscale";
    
    public static final String GROUP_POLICY_QOSREQUIREMENTS        = "QoSRequirements";
    public static final String GROUP_POLICY_QOSINFO                 = "QoSInfo";
@@ -79,6 +82,18 @@ public class TOSCAkeywords {
    public static final String MODULE_QOS_PERFORMANCE_LOCATION = "executionTimeMeasuredInPOC";
    public static final String MODULE_QOS_OPERATIONAL_PROFILE  = "OpProfilePOC";
 
+   // These ones are for the autoscaling policies
+   public static final String AUTOSCALING_TAG   = "autoscaling";
+   public static final String AUTOSCALE_TYPE= "type";
+   public static final String BROOKLYN_AUTOSCALER_POLICY= "org.apache.brooklyn.policy.autoscaling.AutoScalerPolicy";
+   public static final String AUTOSCALE_METRIC= "metric";
+   public static final String BOOKLYN_AUTOSCALER_METRIC_ARRIVALRATE_PER_SECOND="$brooklyn:sensor(\"org.apache.brooklyn.entity.webapp.DynamicWebAppCluster\", \"webapp.reqs.perSec.windowed.perNode\")";
+   public static final String AUTOSCALE_METRIC_LOWERBOUND= "metricLowerBound";
+   public static final String AUTOSCALE_METRIC_UPPERBOUND= "metricUpperBound";
+   public static final String AUTOSCALE_POOL_MINIMUM_SIZE= "minPoolSize";
+   public static final String AUTOSCALE_POOL_MAXIMUM_SIZE= "maxPoolSize";
+   
+   
    public static final String CLOUD_OFFER_PROVIDER_NAME_SEPARATOR = "\\.";
    public static final String LOG_LEVEL = "TRACE";
 
