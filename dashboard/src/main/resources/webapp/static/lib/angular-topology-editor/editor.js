@@ -18,8 +18,8 @@ var Editor = (function() {
     var LOCATION_STATIC = "STATIC";
     var LOCATION_DYNAMIC = "DYNAMIC";
 
-    var INFRASTRUCTURE_IAAS = "IAAS";
-    var INFRASTRUCTURE_PAAS = "PAAS";
+    var INFRASTRUCTURE_IAAS = "compute";
+    var INFRASTRUCTURE_PAAS = "platform";
 
     var language_options = {
         "": "",
