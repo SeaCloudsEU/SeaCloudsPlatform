@@ -64,20 +64,7 @@ public class PlannerResource {
                         .path("/planner/plan")
                         .build();
 
-                JsonObject plannerObject = new JsonParser().parse(plannerResponse).getAsJsonObject();
-                JsonArray adpList = new JsonArray();
-
-                if (!plannerObject.get("adps").isJsonNull()) {
-                    String unparsedAdps = plannerObject.get("adps").getAsString();
-
-                    for (String adp : unparsedAdps.split("---")) {
-                        adpList.add(new JsonPrimitive(adp.trim()));
-                    }
-
-                    // Remove the last element because it's an empty string, due a bug on the adps list generation
-                    adpList.remove(adpList.size() -1);
-                }
-                return Response.ok(adpList.toString()).build();
+               return Response.ok(plannerResponse).build();
             }
         } catch (IOException | URISyntaxException e) {
             log.error(e.getMessage());
