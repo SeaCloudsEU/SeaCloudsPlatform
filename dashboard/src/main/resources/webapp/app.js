@@ -309,8 +309,8 @@ seacloudsDashboard.factory('SeaCloudsApi', function ($http) {
         getAdpList: function (aam) {
             var promise = new Promise(function (resolve, reject) {
                 $http.post("/api/planner/adps", aam).
-                    success(function (adps) {
-                        resolve(adps);
+                    success(function (response) {
+                        resolve(response.adps);
                     }).
                     error(function (err) {
                         reject(Error(err));
