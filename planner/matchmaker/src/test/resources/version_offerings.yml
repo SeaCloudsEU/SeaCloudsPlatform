@@ -1,0 +1,39 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description:
+template_name:
+template_version: 1.0.0-SNAPSHOT
+template_author:
+
+imports:
+  - tosca-normative-types:1.0.0.wd03-SNAPSHOT
+
+topology_template:
+  node_templates:
+    valid1:
+      type: seaclouds.Nodes.Platform.Trucker_io
+      properties:
+         resource_type: platform
+         mysql_version: 5.1.1
+         mysql_support: true
+
+    valid2:
+      type: seaclouds.Nodes.Platform.Trucker_io
+      properties:
+         resource_type: platform
+         mysql_version: 5.6
+         mysql_support: true
+
+    valid3:
+      type: seaclouds.Nodes.Platform.Trucker_io
+      properties:
+         resource_type: platform
+         mysql_version: 5.4.6.6
+         mysql_support: true
+
+    invalid:
+      type: seaclouds.Nodes.Platform.Trucker_io
+      properties:
+         resource_type: platform
+         mysql_version: 3.1.2
+         mysql_support: true
+

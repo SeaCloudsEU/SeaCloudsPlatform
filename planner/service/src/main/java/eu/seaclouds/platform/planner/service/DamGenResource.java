@@ -31,12 +31,15 @@ public class DamGenResource {
     private final String slaGeneratorURL;
 
     private final String[] genURLs;
+    private final String monitorGeneratorPort;
 
     public DamGenResource(String monitorGeneratorURL,
+                          String monitorGeneratorPort,
                           String slaGeneratorURL)
     {
         this.monitorGeneratorURL = monitorGeneratorURL;
         this.slaGeneratorURL = slaGeneratorURL;
+        this.monitorGeneratorPort = monitorGeneratorPort;
 
         this.genURLs = new String[] {
                 monitorGeneratorURL,
@@ -48,13 +51,13 @@ public class DamGenResource {
     @POST
     @Timed
     public DamGeneratorResponse damGenPost(String adp){
-        return new DamGeneratorResponse(DamGenerator.generateDam(adp, monitorGeneratorURL, slaGeneratorURL));
+        return new DamGeneratorResponse(DamGenerator.generateDam(adp, monitorGeneratorURL, monitorGeneratorPort, slaGeneratorURL));
     }
 
     @GET
     @Timed
     public DamGeneratorResponse damgen(@QueryParam("adp") String adp){
-        return new DamGeneratorResponse(DamGenerator.generateDam(adp, monitorGeneratorURL, slaGeneratorURL));
+        return new DamGeneratorResponse(DamGenerator.generateDam(adp, monitorGeneratorURL, monitorGeneratorPort, slaGeneratorURL));
     }
 
 }

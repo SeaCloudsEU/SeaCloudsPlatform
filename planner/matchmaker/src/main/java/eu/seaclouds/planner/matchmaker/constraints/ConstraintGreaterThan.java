@@ -16,6 +16,7 @@
  */
 package eu.seaclouds.planner.matchmaker.constraints;
 
+import eu.seaclouds.planner.matchmaker.Pair;
 import eu.seaclouds.planner.matchmaker.PropertyValue;
 
 public class ConstraintGreaterThan<T extends Comparable<T>> extends Constraint {
@@ -25,9 +26,8 @@ public class ConstraintGreaterThan<T extends Comparable<T>> extends Constraint {
     }
 
     public boolean checkConstraint(PropertyValue prop) {
-        Double pval = new Double(((T) prop.getValue()).toString());
-        Double val = new Double(value.toString());
-        boolean v = val.compareTo(pval) < 0;
+        String pvalstr = ((T) prop.getValue()).toString();
+        boolean v = new Version(value.toString()).compareTo(new Version(pvalstr)) < 0;
         return super.checkConstraint(prop) && v;
     }
 }
