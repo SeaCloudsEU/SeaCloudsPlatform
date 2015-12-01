@@ -16,7 +16,9 @@
  */
 package eu.seaclouds.planner.matchmaker.constraints;
 
+import eu.seaclouds.planner.matchmaker.Pair;
 import eu.seaclouds.planner.matchmaker.PropertyValue;
+import org.apache.commons.lang.StringUtils;
 
 public abstract class Constraint<T> {
     protected final String name;
@@ -32,4 +34,5 @@ public abstract class Constraint<T> {
     public boolean checkConstraint(PropertyValue prop){
         return this.value.getClass().equals(prop.getValue().getClass());
     }
+
 }

@@ -44,6 +44,29 @@ import static org.testng.AssertJUnit.*;
 public class MatchmakerTest {
 
     @Test
+    public void testVersionConstraints() throws Exception{
+        String aam = new Scanner(new File(Resources.getResource("aams/version_aam.yml").toURI())).useDelimiter("\\Z").next();
+        assertNotNull(aam);
+        String offerings = new Scanner(new File(Resources.getResource("version_offerings.yml").toURI())).useDelimiter("\\Z").next();
+        assertNotNull(offerings);
+
+        ParsingResult<ArchiveRoot> aamResult = ToscaSerializer.fromTOSCA(aam);
+        ParsingResult<ArchiveRoot> offeringsResult = ToscaSerializer.fromTOSCA(offerings);
+        Map<String, NodeTemplate> offNodeTemplates = offeringsResult.getResult().getTopology().getNodeTemplates();
+
+        Map<String, Pair<NodeTemplate, String>> off = new HashMap<>();
+
+        for(String node : offNodeTemplates.keySet()){
+            off.put(node, new Pair<NodeTemplate, String>(offNodeTemplates.get(node), ""));
+        }
+
+        Matchmaker mm = new Matchmaker();
+        Map<String, HashSet<String>> res = mm.match(aamResult, off);
+
+        assertEquals(res.get("db1").size(), 3);
+    }
+
+    @Test
     public void testMultipleConstraints() throws Exception{
         String aam = new Scanner(new File(Resources.getResource("aams/multiplereq.yml").toURI())).useDelimiter("\\Z").next();
         assertNotNull(aam);

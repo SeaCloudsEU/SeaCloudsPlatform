@@ -33,27 +33,25 @@ import java.util.Arrays;
 public class RePlanResource {
 
     private final String discovererURL;
-    private final String optimizerURL;
     private final String[] deployableProviders;
 
     static Logger log = LoggerFactory.getLogger(RePlanResource.class);
 
-    public RePlanResource(String discovererURL, String optimizerURL, String[] deployableProviders)
+    public RePlanResource(String discovererURL, String[] deployableProviders)
     {
         this.discovererURL = discovererURL;
-        this.optimizerURL = optimizerURL;
         this.deployableProviders = deployableProviders;
     }
 
     @GET
     @Timed
-    public PlannerResponse replan(@QueryParam("aam") String aam, @QueryParam("dam") String dam, String[] failingModules){
-       return getPlans(aam, dam, failingModules);
+    public PlannerResponse replan(@QueryParam("aam") String aam, @QueryParam("adp") String adp, String[] failingModules){
+       return getPlans(aam, adp, failingModules);
     }
 
 
-    private PlannerResponse getPlans(String aam, String dam, String[] failingModules){
-        Planner p = new Planner(discovererURL, optimizerURL, aam, dam);
+    private PlannerResponse getPlans(String aam, String adp, String[] failingModules){
+        Planner p = new Planner(discovererURL, aam, adp);
         String[] resp = new String[0];
         try {
             resp = p.rePlan(Arrays.asList(this.deployableProviders), Arrays.asList(failingModules));

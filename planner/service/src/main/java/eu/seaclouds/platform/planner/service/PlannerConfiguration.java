@@ -23,8 +23,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 public class PlannerConfiguration extends Configuration{
     @NotEmpty
     private String discovererURL;
-    @NotEmpty
-    private String optimizerURL;
 
     @NotEmpty
     private String[] deployableProviders;
@@ -33,7 +31,19 @@ public class PlannerConfiguration extends Configuration{
     private String monitorGeneratorURL;
 
     @NotEmpty
+    private  String monitorGeneratorPort;
+
+    @NotEmpty
     private String slaGeneratorURL;
+
+    @NotEmpty
+    private String filterOfferings;
+
+    @JsonProperty("monitorGeneratorPort")
+    public void setMonitorGeneratorPort(String monitorGeneratorPort) { this.monitorGeneratorPort = monitorGeneratorPort; }
+
+    @JsonProperty("monitorGeneratorPort")
+    public String getMonitorGeneratorPort() { return this.monitorGeneratorPort; }
 
     @JsonProperty("deployableProviders")
     public void setDeployableProviders(String[] deployableProviders) { this.deployableProviders = deployableProviders; }
@@ -53,17 +63,16 @@ public class PlannerConfiguration extends Configuration{
     @JsonProperty("slaGeneratorURL")
     public String getSlaGeneratorURL() { return this.slaGeneratorURL;}
 
-    @JsonProperty("optimizerURL")
-    public void setOptimizerURL(String optimizerURL) { this.optimizerURL = optimizerURL; }
-
-    @JsonProperty("optimizerURL")
-    public String getOptimizerURL() { return this.optimizerURL; }
-
     @JsonProperty("discovererURL")
     public void setDiscovererURL(String discovererURL) { this.discovererURL = discovererURL; }
 
     @JsonProperty("discovererURL")
     public String getDiscovererURL() { return this.discovererURL; }
 
+    @JsonProperty("filterOfferings")
+    public void setFilterOfferings(String filterOfferings) { this.filterOfferings = filterOfferings; }
+
+    @JsonProperty("filterOfferings")
+    public String getFilterOfferings() { return this.filterOfferings; }
 
 }
