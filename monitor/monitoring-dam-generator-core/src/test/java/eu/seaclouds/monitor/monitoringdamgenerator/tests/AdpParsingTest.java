@@ -38,9 +38,10 @@ public class AdpParsingTest {
                 break;
             
             case "webservices":
-                Assert.assertEquals(m.getAvailability(), 0.0);
+                Assert.assertEquals(m.getAvailability(), 0.96);
                 Assert.assertEquals(m.getResponseTime(), 0.0);
                 Assert.assertTrue(m.isJavaApp());
+                Assert.assertEquals(m.getPort(), "8080");
                 Assert.assertEquals(m.getHost().getHostName(), "Amazon_EC2_i2_xlarge_us_west_1");
                 Assert.assertEquals(m.getHost().getDeploymentType(), "IaaS");
                 break;

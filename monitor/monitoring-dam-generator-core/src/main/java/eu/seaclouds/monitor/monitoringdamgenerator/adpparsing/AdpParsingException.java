@@ -1,10 +1,10 @@
 package eu.seaclouds.monitor.monitoringdamgenerator.adpparsing;
 
-public class ParsingException extends Exception {
+public class AdpParsingException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    public ParsingException(String msg) {
+    public AdpParsingException(String msg) {
         super(msg);
     }
 }
