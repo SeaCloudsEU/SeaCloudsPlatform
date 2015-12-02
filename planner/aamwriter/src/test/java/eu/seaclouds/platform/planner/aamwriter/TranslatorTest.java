@@ -155,6 +155,9 @@ public class TranslatorTest {
 
         checkProperty(n2, "location", graph.getNode("webservices").getOtherProperties().get("location"));
         checkProperty(n2, "location_option", graph.getNode("webservices").getOtherProperties().get("location_option"));
+
+        checkProperty(n1, "autoscale", graph.getNode("www").getOtherProperties().get("autoscale"));
+        checkProperty(n3, "autoscale", graph.getNode("db1").getOtherProperties().get("autoscale"));
     }
     
     @Test
@@ -163,7 +166,7 @@ public class TranslatorTest {
         assertNull(getProperty(n2, "qos"));
         assertNull(getProperty(n3, "qos"));
     }
-    
+
     private Object getProperty(Map<String, Object> nodeTemplate, String propertyName) {
         Map properties = (Map)nodeTemplate.get("properties");
         Object actual = properties.get(propertyName);

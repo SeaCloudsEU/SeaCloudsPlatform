@@ -27,7 +27,8 @@
                 "infrastructure": "platform",
                 "container": "webapp.tomcat.TomcatServer",
                 "benchmark_rt": "200",
-                "benchmark_platform": "hp_cloud_services.2xl"
+                "benchmark_platform": "hp_cloud_services.2xl",
+                "autoscale": "1"
             }
         },
         {
@@ -46,7 +47,8 @@
                 "num_cpus": "4",
                 "disk_size": "256",
                 "benchmark_rt": "100",
-                "benchmark_platform": "hp_cloud_services.2xl"
+                "benchmark_platform": "hp_cloud_services.2xl",
+                "autoscale": "0"
             }
         },
         {

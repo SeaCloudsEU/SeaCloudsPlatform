@@ -499,12 +499,14 @@ var Editor = (function() {
         this.qos_table.load(node.properties.qos);
         $("#nf-benchmark-responsetime").val(node.properties.benchmark_rt);
         $("#nf-benchmark-platform").val(node.properties.benchmark_platform);
+        $("#nf-autoscale").val(node.properties.autoscale);
     };
 
     nonfunctionalset.store = function(node) {
         node.properties.qos = this.qos_table.serialize();
         node.properties.benchmark_rt = $("#nf-benchmark-responsetime").val();
         node.properties.benchmark_platform = $("#nf-benchmark-platform").val();
+        node.properties.autoscale = $("#nf-autoscale").val();
     };
 
 

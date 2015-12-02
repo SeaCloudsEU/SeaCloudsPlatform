@@ -59,9 +59,15 @@ var Forms = (function() {
             this.title = title;
             this.fieldsets = fieldsets;
 
+            if (div == undefined) {
+                console.error("Form " + title + ": Div is null ");
+            }
             this.$div = $(div);
             this.$allsets = this.$div.find("fieldset");
             this.form = this.$div.find("form")[0];
+            if (this.form == undefined) {
+                console.error("Form tag not found in " + div.id);
+            }
             this.$title = this.$div.find(".modal-title");
 
             this.node = undefined;
