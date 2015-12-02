@@ -9,7 +9,7 @@ import it.polimi.tower4clouds.rules.MonitoringRules;
 import org.testng.annotations.Test;
 
 import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
-import eu.seaclouds.monitor.monitoringdamgenerator.dcscriptgenerators.NuroDcDeploymentScriptGenerator;
+import eu.seaclouds.monitor.monitoringdamgenerator.dcgenerators.NuroDcGenerator;
 import eu.seaclouds.monitor.monitoringdamgenerator.rulesgenerators.NuroRulesGenerator;
 
 public class NuroMonitoringGeneratorTest {
@@ -20,7 +20,7 @@ public class NuroMonitoringGeneratorTest {
 
     @Test
     public void nuroTest() throws Exception {
-        NuroDcDeploymentScriptGenerator nuroScriptGenerator = new NuroDcDeploymentScriptGenerator();
+        NuroDcGenerator nuroScriptGenerator = new NuroDcGenerator();
         NuroRulesGenerator nuroRulesGenerator = new NuroRulesGenerator();
         MonitoringRules rules;
         Map<String, String> parametersTest;
@@ -30,11 +30,12 @@ public class NuroMonitoringGeneratorTest {
         nuroModule.setModuleName(NURO_MODULE_NAME);
         nuroModule.setResponseTimeMillis(EXPECTED_RESPONSE_TIME_THRESHOLD);
         
+        /*
         nuroDcDeploymentScript.put("nuroDcDeploymentScript", nuroScriptGenerator
-                .generateDataCollectorDeploymentScript(nuroModule, "127.0.0.1",
+                .addDataCollector(nuroModule, "127.0.0.1",
                         8170));
         TestUtils.testDcDeploymentScript(nuroModule.getModuleName(),nuroDcDeploymentScript );
-        
+        */
         rules = nuroRulesGenerator.generateMonitoringRules(nuroModule);
 
         for (MonitoringRule rule : rules.getMonitoringRules()) {

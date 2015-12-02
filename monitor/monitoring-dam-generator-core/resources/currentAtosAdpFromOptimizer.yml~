@@ -9,18 +9,19 @@ topology_template:
         language: JAVA
       requirements:
       - {endpoint: webservices}
-      - {instancesPOC: 9, host: Rapidcloud_io_Asia_HK}
+      - {host: CloudFoundry, instancesPOC: 4}
     webservices:
       type: sc_req.webservices
       properties:
         language: JAVA
+        port: '8080'
         java_version:
           constraints:
           - {greater_or_equal: '7'}
           - {less_or_equal: '8'}
       requirements:
       - {endpoint: db1}
-      - {instancesPOC: 4, host: Vultr_64gb_mc_atlanta}
+      - {host: AmazonEC2i2xlargeuswest1, instancesPOC: 1}
     db1:
       type: sc_req.db1
       properties:
@@ -29,28 +30,25 @@ topology_template:
           - {greater_or_equal: '5.0'}
           - {less_or_equal: '5.6'}
       requirements:
-      - {instancesPOC: 8, host: App42_PaaS_America_US}
-    Vultr_64gb_mc_atlanta:
-      type: seaclouds.Nodes.Compute
-      properties: {num_cpus: 24, country: United States, cost: 0.893 USD/hour, hardwareId: 64gb-mc,
-        city: ATLANTA, disk_type: ssd, resource_type: compute, disk_size: 800, location: 'vultr:compute',
-        region: atlanta, ram: 64}
-    App42_PaaS_America_US:
-      type: seaclouds.Nodes.Platform
-      properties: {continent: America, country: US, postgresql_support: true, php_version: 5.5,
-        auto_scaling: false, postgresql_version: 9.1, horizontal_scaling: true, python_version: 2.7,
-        vertical_scaling: true, php_support: true, node_support: true, tomcat_version: 6.0,
-        private_hosting: false, mongodb_version: 2.4, resource_type: platform, node_version: 0.10.22,
-        ruby_version: 2.0.0, tomcat_support: true, mongodb_support: true, public_hosting: true,
-        redis_support: true, mysql_version: 5.5, java_support: true, redis_version: 2.8,
-        ruby_support: true, python_support: true, java_version: 7, mysql_support: true}
-    Rapidcloud_io_Asia_HK:
-      type: seaclouds.Nodes.Platform
-      properties: {continent: Asia, country: HK, tomcat_version: 8.0, private_hosting: false,
-        resource_type: platform, tomcat_support: true, auto_scaling: false, public_hosting: true,
-        memcached_support: true, redis_support: true, mysql_version: 5.6, java_support: true,
-        horizontal_scaling: true, redis_version: 2.8, java_version: 8, vertical_scaling: false,
-        mysql_support: true, memcached_version: 1.4}
+      - {host: AmazonEC2i2xlargeuswest2, instancesPOC: 1}
+    AmazonEC2i2xlargeuswest1:
+      type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_1
+      properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',
+        region: us-west-1, performance: 90, availability: 0.9995, country: United States,
+        city: SAN JOSE, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,
+        ram: 30.5, disk_type: ssd}
+    CloudFoundry:
+      type: seaclouds.Nodes.Platform.CloudFoundry_Pivotal
+      properties: {resource_type: compute, hardwareId: m3.xlarge, location: 'aws:ec2',
+        region: eu-central-1, performance: 90, availability: 0.9995, country: Germany,
+        city: FRANKFURT, cost: 0.385 USD/hour, disk_size: 80, num_disks: 2, num_cpus: 4,
+        ram: 15, disk_type: ssd}
+    AmazonEC2i2xlargeuswest2:
+      type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_2
+      properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',
+        region: us-west-2, performance: 90, availability: 0.9995, country: United States,
+        city: PORTLAND, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,
+        ram: 30.5, disk_type: ssd}
 node_types:
   sc_req.www:
     derived_from: seaclouds.nodes.webapp.tomcat.TomcatServer
@@ -61,7 +59,7 @@ node_types:
       tomcat_support:
         constraints:
         - {equal: true}
-      tomcat_version:
+      java_version:
         constraints:
         - {greater_or_equal: '7'}
         - {less_or_equal: '8'}
@@ -94,20 +92,27 @@ groups:
   operation_www:
     members: [www]
     policies:
-    - QoSInfo: {execution_time: 200 ms, benchmark_platform: hp_cloud_services.2xl}
+    - QoSInfo: {execution_time: 200 ms, benchmark_platform: Amazon_EC2_m3_xlarge_eu_central_1}
     - dependencies: {operation_webservices: '2'}
     - QoSRequirements:
         response_time: {less_than: 2000.0 ms}
         availability: {greater_than: 0.98}
         cost: {less_or_equal: 200.0 euros_per_month}
         workload: {less_or_equal: 50.0 req_per_min}
-    - ExpectedQualityPOC: {expectedExecutionTimePOC: .NaN, fitnessPOC: .NaN, expectedCostPOC: 2571.84}
+    - ExpectedQualityPOC: {expectedAvailabilityPOC: 0.9980004999999379, fitnessPOC: 0.6928079971558232,
+        expectedCostPOC: 2550.24, expectedExecutionTimePOC: 0.5129285749062759}
   operation_webservices:
     members: [webservices]
     policies:
-    - QoSInfo: {execution_time: 100 ms, benchmark_platform: hp_cloud_services.2xl}
+    - QoSInfo: {execution_time: 100 ms, benchmark_platform: Amazon_EC2_m3_xlarge_eu_central_1}
     - dependencies: {operation_db1: '1'}
+    - QoSRequirements:
+        availability: {greater_than: 0.96}
   operation_db1:
     members: [db1]
     policies:
     - dependencies: {}
+    - QoSInfo: {execution_time: 50 ms, benchmark_platform: Amazon_EC2_m3_xlarge_eu_central_1}
+ReconfigurationsPOC: {}
+
+

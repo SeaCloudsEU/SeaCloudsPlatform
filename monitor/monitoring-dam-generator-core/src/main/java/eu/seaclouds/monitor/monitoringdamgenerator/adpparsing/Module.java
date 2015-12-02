@@ -1,41 +1,45 @@
-/**
- * Copyright 2014 SeaClouds
- * Contact: SeaClouds
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- */
-
 package eu.seaclouds.monitor.monitoringdamgenerator.adpparsing;
 
 import it.polimi.tower4clouds.rules.MonitoringRules;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class Module {
 
-    private static final double HOURS_IN_MONTH = 24 * 30;
     private double respTime = 0;
     private double availability = 0;
-    private double cost = 0;
-    private double workload = 0;
     private boolean isJavaApp;
     private String moduleName;
     private Host host;
-    
-    private MonitoringRules rules;
-    private Map<String,String> dataCollectorBashDeploymentScripts;
-    private Map<String,String> dataCollectorToscaDeploymentScripts;
-   
+    private String port;
+
+    private List<Map<String, Object>> dataCollectors;
+    private MonitoringRules monitoringRules;
+
+    public Module() {
+        dataCollectors = new ArrayList<Map<String, Object>>();
+        monitoringRules = new MonitoringRules();
+    }
+
+    public void addApplicationMonitoringRules(MonitoringRules toAdd) {
+        this.monitoringRules.getMonitoringRules().addAll(
+                toAdd.getMonitoringRules());
+    }
+
+    public void addDataCollector(Map<String, Object> toAdd) {
+        this.dataCollectors.add(toAdd);
+    }
+
+    public List<Map<String, Object>> getDataCollector() {
+        return dataCollectors;
+    }
+
+    public MonitoringRules getApplicationMonitoringRules() {
+        return monitoringRules;
+    }
+
     public String getModuleName() {
         return moduleName;
     }
@@ -67,54 +71,18 @@ public class Module {
     public boolean existAvailabilityRequirement() {
         return availability != 0.0;
     }
-
-    public void setCostHour(double cost) {
-        this.cost = cost;
-    }
-
-    public void setCostMonth(double c) {
-        setCostHour(c / (30.0 * 24.0));
-    }
-
-    public double getCostHour() {
-
-        return cost;
-    }
-
-    public Double getCostMonth() {
-        return cost * HOURS_IN_MONTH;
-    }
-
-    public boolean existCostRequirement() {
-        return cost != 0.0;
-    }
-
-    public void setWorkload(double applicationWorkload) {
-        workload = applicationWorkload;
-
-    }
-
-    public double getWorkload() {
-        return workload;
-    }
-
-    public boolean hasValidWorkload() {
-        return workload > 0;
-    }
-
-    public void setWorkloadMinute(double wkl) {
-        setWorkload(wkl / 60.0);
-    }
-
+    
     @Override
     public String toString() {
-        String info = "";
-        info += "ModuleName= " + this.moduleName + " RespTime= " + this.respTime + " Availability= "
-                + this.availability + " Cost= " + this.getCostMonth()
-                + " Workload= " + this.getWorkload() +"Host= " + this.host.getHostName()
-                + " DeploymentType= " + this.host.getDeploymentType() + " isJavaApp= "+this.isJavaApp;
-
-        return info;
+        
+        StringBuilder sb = new StringBuilder(300);
+        return sb.append("ModuleName= ").append(this.moduleName)
+              .append(" RespTime= ").append(this.respTime)
+              .append(" Availability= ").append(this.availability)
+              .append(" Host= ").append(this.host.getHostName())
+              .append(" DeploymentType= ").append(this.host.getDeploymentType())
+              .append(" isJavaApp= ").append(this.isJavaApp)
+              .toString();
     }
 
     public boolean isJavaApp() {
@@ -125,32 +93,6 @@ public class Module {
         this.isJavaApp = isJavaApp;
     }
 
-    public MonitoringRules getRules() {
-        return rules;
-    }
-
-    public void setRules(MonitoringRules rules) {
-        this.rules = rules;
-    }
-
-    public Map<String, String> getDataCollectorBashDeploymentScripts() {
-        return dataCollectorBashDeploymentScripts;
-    }
-
-    public void setDataCollectorBashDeploymentScripts(
-            Map<String, String> dataCollectorBashDeploymentScripts) {
-        this.dataCollectorBashDeploymentScripts = dataCollectorBashDeploymentScripts;
-    }
-
-    public Map<String, String> getDataCollectorToscaDeploymentScripts() {
-        return dataCollectorToscaDeploymentScripts;
-    }
-
-    public void setDataCollectorToscaDeploymentScripts(
-            Map<String, String> dataCollectorToscaDeploymentScripts) {
-        this.dataCollectorToscaDeploymentScripts = dataCollectorToscaDeploymentScripts;
-    }
-
     public Host getHost() {
         return host;
     }
@@ -158,5 +100,14 @@ public class Module {
     public void setHost(Host host) {
         this.host = host;
     }
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+    }
+
 
 }

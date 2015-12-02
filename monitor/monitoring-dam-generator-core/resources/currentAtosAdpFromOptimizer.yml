@@ -14,6 +14,7 @@ topology_template:
       type: sc_req.webservices
       properties:
         language: JAVA
+        port: '8080'
         java_version:
           constraints:
           - {greater_or_equal: '7'}
@@ -105,6 +106,8 @@ groups:
     policies:
     - QoSInfo: {execution_time: 100 ms, benchmark_platform: Amazon_EC2_m3_xlarge_eu_central_1}
     - dependencies: {operation_db1: '1'}
+    - QoSRequirements:
+        availability: {greater_than: 0.96}
   operation_db1:
     members: [db1]
     policies:

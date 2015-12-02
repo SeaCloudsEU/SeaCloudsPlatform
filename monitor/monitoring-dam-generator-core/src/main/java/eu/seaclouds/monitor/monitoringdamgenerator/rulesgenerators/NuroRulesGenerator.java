@@ -9,13 +9,12 @@ import org.slf4j.LoggerFactory;
 import it.polimi.tower4clouds.rules.MonitoringRules;
 import it.polimi.tower4clouds.rules.ObjectFactory;
 import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
-import eu.seaclouds.monitor.monitoringdamgenerator.util.RuleSchemaGenerator;
 
 public class NuroRulesGenerator {
 
     private static final Logger logger = LoggerFactory
             .getLogger(NuroRulesGenerator.class);
-    
+
     public static final ObjectFactory factory = new ObjectFactory();
 
     public MonitoringRules generateMonitoringRules(Module module) {
@@ -104,8 +103,9 @@ public class NuroRulesGenerator {
         parameters.put("samplingTime", "5");
         return RuleSchemaGenerator.fillMonitoringRuleSchema(
                 "nuroThirtySecondsThroughput", "30", "30", "InternalComponent",
-                module.getModuleName(), "NUROServerLastTenSecondsAverageThroughput",
-                parameters, "Average", "InternalComponent", null,
+                module.getModuleName(),
+                "NUROServerLastTenSecondsAverageThroughput", parameters,
+                "Average", "InternalComponent", null,
                 "NUROServerLastThirtySecondsAverageThroughput");
     }
 
