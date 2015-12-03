@@ -36,6 +36,6 @@ services:
 - serviceType: org.apache.brooklyn.entity.database.mysql.MySqlNode
   name: External DB
   id: mysql
-  location: aws-ec2:us-west-2
+  location: aws-ec2:eu-west-1
   brooklyn.config:
     creationScriptUrl: classpath://chat-database.sql
