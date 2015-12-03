@@ -1,0 +1,19 @@
+map_name: brooklyn-tosca-ssh-mapping
+description: This mapping contains the equivalence between SeaClouds NodeTypes and brooklyn-tosca-types
+
+mapping.nodeTypes:
+  seaclouds.nodes.webapp.jboss.JBoss6Server: org.apache.brooklyn.entity.webapp.jboss.JBoss6Server
+  seaclouds.nodes.webapp.jboss.JBoss7Server: org.apache.brooklyn.entity.webapp.jboss.JBoss7Server
+  seaclouds.nodes.webapp.jetty.Jetty6Server: org.apache.brooklyn.entity.webapp.jetty.Jetty6Server
+  seaclouds.nodes.webapp.tomcat.TomcatServer: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
+  seaclouds.nodes.webapp.tomcat.Tomcat8Server: org.apache.brooklyn.entity.webapp.tomcat.Tomcat8Server
+  seaclouds.nodes.database.mysql.MySqlNode: org.apache.brooklyn.entity.database.mysql.MySqlNode
+  seaclouds.nodes.database.mariadb.MariaDbNode: org.apache.brooklyn.entity.database.mariadb.MariaDbNode
+  seaclouds.nodes.database.postgresql.PostgreSqlNode: org.apache.brooklyn.entity.database.postgresql.PostgreSqlNode
+  seaclouds.nodes.nosql.mongodb.MongoDBServer: org.apache.brooklyn.entity.nosql.mongodb.MongoDBServer
+  seaclouds.nodes.nosql.redis.RedisStore: org.apache.brooklyn.entity.nosql.redis.RedisStore
+  seaclouds.nodes.database.mysql.MySqlNode: org.apache.brooklyn.entity.database.mysql.MySqlNode
+  seaclouds.nodes.database.mariadb.MariaDbNode: org.apache.brooklyn.entity.database.mariadb.MariaDbNode
+  seaclouds.nodes.database.postgresql.PostgreSqlNode: org.apache.brooklyn.entity.database.postgresql.PostgreSqlNode
+  seaclouds.nodes.nosql.mongodb.MongoDBServer: org.apache.brooklyn.entity.nosql.mongodb.MongoDBServer
+  seaclouds.nodes.nosql.redis.RedisStore: org.apache.brooklyn.entity.nosql.redis.RedisStore

@@ -29,14 +29,11 @@ import static org.testng.Assert.assertNull;
 public class DeployerTypesResolverTest {
 
     final private static String TYPES_TEST_MAPPING = "mapping/test-types-mapping.yaml";
-    final private static String NODETYPE__TEST_MAPPING = "mapping/test-NodeTypes-mapping.yaml";
-    final private static String RELATIONSHIPTYPE__TEST_MAPPING = "mapping/test-RelationshipTypes-mapping.yaml";
-
-
-    DeployerTypesResolver typesResolver;
+    final private static String NODETYPE_TEST_MAPPING = "mapping/test-NodeTypes-mapping.yaml";
+    final private static String RELATIONSHIPTYPE_TEST_MAPPING = "mapping/test-RelationshipTypes-mapping.yaml";
 
     public void testResolvingTargetDeployerTypes() throws URISyntaxException, IOException {
-        typesResolver = new DeployerTypesResolver(Resources
+        DeployerTypesResolver typesResolver = new DeployerTypesResolver(Resources
                 .getResource(TYPES_TEST_MAPPING).toURI().toString());
 
         assertEquals(typesResolver.resolveNodeType("source.NodeType1"), "target.NodeType1");
@@ -48,12 +45,11 @@ public class DeployerTypesResolverTest {
         assertEquals(typesResolver.resolveRelationshipType("source.RelationshipType2"),
                 "target.RelationshipType2");
         assertNull(typesResolver.resolveRelationshipType("source.RelationshipType_X"));
-
     }
 
-    public void testResolvingWithRelationshipTypes() throws URISyntaxException, IOException {
-        typesResolver = new DeployerTypesResolver(Resources
-                .getResource(NODETYPE__TEST_MAPPING).toURI().toString());
+    public void testResolvingWithoutRelationshipTypes() throws URISyntaxException, IOException {
+        DeployerTypesResolver typesResolver = new DeployerTypesResolver(Resources
+                .getResource(NODETYPE_TEST_MAPPING).toURI().toString());
 
         assertEquals(typesResolver.resolveNodeType("source.NodeType1"), "target.NodeType1");
         assertEquals(typesResolver.resolveNodeType("source.NodeType2"), "target.NodeType2");
@@ -65,8 +61,8 @@ public class DeployerTypesResolverTest {
     }
 
     public void testResolvingWithNodeTypes() throws URISyntaxException, IOException {
-        typesResolver = new DeployerTypesResolver(Resources
-                .getResource(RELATIONSHIPTYPE__TEST_MAPPING).toURI().toString());
+        DeployerTypesResolver typesResolver = new DeployerTypesResolver(Resources
+                .getResource(RELATIONSHIPTYPE_TEST_MAPPING).toURI().toString());
 
         assertNull(typesResolver.resolveNodeType("source.NodeType1"));
         assertNull(typesResolver.resolveNodeType("source.NodeType2"));
