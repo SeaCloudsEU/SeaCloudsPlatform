@@ -21,6 +21,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -171,10 +172,12 @@ public class Offering {
         if (this.toscaString != null)
             return this.toscaString;
 
-        /* otherwise, if there is the path of the file where the offering is stored, the file is read */
+        /* otherwise, if the path of the file is valid, then it is possible to read the offering from file */
         if (this.offeringPath != null) {
             try {
-                this.toscaString = new String(Files.readAllBytes(Paths.get(this.offeringPath)));
+                String offeringDirectory = Discoverer.instance().offeringManager.getOfferingDirectory().getAbsolutePath();
+                String offeringFileName = "offer_" + this.offeringId + ".yaml";
+                this.toscaString = new String(Files.readAllBytes(Paths.get(offeringDirectory + File.separatorChar + offeringFileName)));
                 return this.toscaString;
             } catch (IOException e) { }
         }
