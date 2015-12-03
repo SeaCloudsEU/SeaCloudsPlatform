@@ -1,6 +1,7 @@
 package eu.seaclouds.platform.planner.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.io.Resources;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
 import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * limitations under the License.
  */
 public class DamGenerator {
+
     private static final String SLA_GEN_OP = "/seaclouds/templates";
     private static final String SLA_INFO_GROUPNAME = "sla_gen_info";
     private static final String MONITOR_INFO_GROUPNAME = "monitoringInformation";
@@ -46,7 +48,6 @@ public class DamGenerator {
     public static final String GROUPS = "groups";
     public static final String HOST = "host";
     public static final String REQUIREMENTS = "requirements";
-    public static final String DERIVED_FROM = "derived_from";
     public static final String MEMBERS = "members";
     public static final String ID = "id";
     public static final String APPLICATION = "application";
@@ -54,9 +55,8 @@ public class DamGenerator {
     public static final String TOPOLOGY_TEMPLATE = "topology_template";
     public static final String NODE_TEMPLATES = "node_templates";
     public static final String NODE_TYPES = "node_types";
-    public static final String ORG_APACHE_BROOKLYN_ENTITY = "org.apache.brooklyn.entity.";
-    public static final String SEACLOUDS_NODES = "seaclouds.nodes.";
     public static final String PROPERTIES = "properties";
+    private static final String BROOKLYN_TYPES_MAPPING = "mapping/brooklyn-types-mapping.yaml";
 
 
     static Map<String, List<Module>> monitoringInfoByApplication=new HashMap<String,List<Module>>();
@@ -109,6 +109,15 @@ public class DamGenerator {
     }
 
     public static Map<String, Object> translateAPD(Map<String, Object> adpYaml){
+
+        DeployerTypesResolver deployerTypesResolver = null;
+        try{
+            deployerTypesResolver = new DeployerTypesResolver(Resources
+                    .getResource(BROOKLYN_TYPES_MAPPING).toURI().toString());}
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
+
         Yaml yml = new Yaml();
         List<Object> groupsToAdd = new ArrayList<>();
         Map<String, ArrayList<String>> groups = new HashMap<>();
@@ -124,12 +133,14 @@ public class DamGenerator {
 
             //type replacement
             String moduleType = (String) module.get(TYPE);
-            if(nodeTypes.containsKey(moduleType)){
+            if(nodeTypes.containsKey(moduleType)) {
                 Map<String, Object> type = (HashMap<String, Object>) nodeTypes.get(moduleType);
-                String oldType = (String) type.get(DERIVED_FROM);
-                if(oldType.startsWith(SEACLOUDS_NODES)){
-                    String newType = oldType.replaceAll(SEACLOUDS_NODES, ORG_APACHE_BROOKLYN_ENTITY);
-                    module.put(TYPE, newType);
+                String sourceType = (String) type.get("derived_from");
+                String targetType = deployerTypesResolver.resolveNodeType(sourceType);
+                if (targetType != null) {
+                    module.put("type", targetType);
+                } else {
+                    module.put("type", sourceType);
                 }
             }
 
