@@ -291,6 +291,9 @@ public class OfferingManager {
         try {
             URL url = new URL(remoteInitializationPath);
             ZipInputStream zin = new ZipInputStream(url.openStream());
+
+            /* Zip file has been downloaded, clear curreny repository directory to fill it with new information */
+            this.emptyRepository();
             ZipEntry zipEntry = null;
 
             File metaDirectory = this.getMetaDirectory();

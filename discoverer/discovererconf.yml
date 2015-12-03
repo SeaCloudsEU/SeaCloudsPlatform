@@ -7,4 +7,4 @@ server:
    port: 1236
 activeCrawlers: ["CloudHarmonyCrawler", "PaasifyCrawler"]
 repositoryPath: "~/offerings_repo"
-remoteInitializationPath:
+remoteInitializationPath: "http://ginger.di.unipi.it/offerings_repo.zip"

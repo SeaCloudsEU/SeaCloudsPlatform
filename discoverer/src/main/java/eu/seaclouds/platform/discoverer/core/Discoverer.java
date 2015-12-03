@@ -57,17 +57,6 @@ public class Discoverer extends Application<DiscovererConfiguration> {
         return refreshing;
     }
 
-    /* *************************************************************** */
-    /* **                       PUBLIC UTILS                        ** */
-    /* *************************************************************** */
-    public void emptyRepository() {
-        offeringManager.emptyRepository();
-    }
-
-
-    /* *************************************************************** */
-    /* **                   INTERFACE IMPLEMENTATION                ** */
-    /* *************************************************************** */
     /**
      * Reads an offering from the local repository.
      * @param cloudOfferingId The ID of the offering to read.
@@ -180,15 +169,13 @@ public class Discoverer extends Application<DiscovererConfiguration> {
         this.offeringManager = new OfferingManager(configuration.getRepositoryPath());
         this.initializeResources();
 
-        /* if remoteInitializationPath configuration variable is not set */
-        if (configuration.getRemoteInitializationPath() == null || configuration.getRemoteInitializationPath().length() == 0) {
-            /* tries to restore previous session data from the repository path */
-            this.initializeOfferings();
-        } else { /* remoteInitializationPath is valid, then it tries to restore from there */
-            this.emptyRepository();
+        /* if remoteInitializationPath configuration variable is set */
+        if (configuration.getRemoteInitializationPath() != null && configuration.getRemoteInitializationPath().length() > 0) {
+            /* remoteInitializationPath is valid, then empty current repository and tries to restore from remote path */
             this.offeringManager.initializeFromRemote(configuration.getRemoteInitializationPath());
-            this.initializeOfferings();
         }
+
+        this.initializeOfferings();
 
         this.activeCrawlers = configuration.getActiveCrawlers();
 
