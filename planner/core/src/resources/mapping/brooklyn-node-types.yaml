@@ -1,0 +1,50 @@
+node_types:
+
+  seaclouds.nodes.Compute:
+   derived_from: tosca.nodes.Compute
+   description: >
+     Custom compute
+   properties:
+     hardwareId:
+       type: string
+       required: false
+
+  org.apache.brooklyn.entity.webapp.tomcat.TomcatServer:
+    derived_from: tosca.nodes.Root
+    description: >
+      A simple Tomcat server
+    properties:
+      wars.root:
+        type: string
+        required: false
+      http.port:
+        type: list
+        required: false
+        entry_schema:
+          type: string
+      java.sysprops:
+        type: map
+        required: false
+        entry_schema:
+          type: string
+    requirements:
+      - host: seaclouds.nodes.Compute
+        type: tosca.relationships.HostedOn
+    artifacts:
+      - wars.root:
+        type: tosca.artifacts.File
+
+  org.apache.brooklyn.entity.database.mysql.MySqlNode:
+    derived_from: tosca.nodes.Root
+    description: >
+      A MySQL server
+    properties:
+      datastore.creation.script.url:
+        type: string
+        required: false
+    requirements:
+      - host: tosca.nodes.Compute
+        type: tosca.relationships.HostedOn
+    artifacts:
+      - datastore.creation.script.url:
+        type: tosca.artifacts.File

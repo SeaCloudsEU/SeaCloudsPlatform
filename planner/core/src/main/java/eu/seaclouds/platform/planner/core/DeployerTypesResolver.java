@@ -30,13 +30,14 @@ public class DeployerTypesResolver {
 
     static Logger log = LoggerFactory.getLogger(DeployerTypesResolver.class);
 
-    final private static String NODE_TYPES_SECTION = "mapping.nodeTypes";
-    final private static String RELATIONSHIP_TYPES_SECTION = "mapping.relationshipTypes";
-
+    final private static String NODE_TYPES_MAPPING_SECTION = "mapping.node_types";
+    final private static String RELATIONSHIP_TYPES_MAPPING_SECTION = "mapping.relationship_types";
+    final private static String NODE_TYPES_DEFINITIONS = "node_types";
 
     Map<String, Object> mapping;
     Map<String, String> nodeTypesMapping;
     Map<String, String> relationshipTypesMapping;
+    Map<String, Object> nodeTypesDefinitions;
 
     public DeployerTypesResolver(String mappingFile) throws IOException {
         this(new URL(mappingFile));
@@ -47,7 +48,6 @@ public class DeployerTypesResolver {
         mapping = (Map<String, Object>) yml.load(
                 Resources.toString(mappingFileUrl, Charsets.UTF_8));
         initTypesMapping();
-
     }
 
     /**
@@ -59,20 +59,25 @@ public class DeployerTypesResolver {
                     "DeployerTypesResolver " + this);
         }
 
-        if (mapping.containsKey(NODE_TYPES_SECTION)) {
-            log.debug("Mapping contains NodeTypes description");
-            nodeTypesMapping = (Map<String, String>) mapping.get(NODE_TYPES_SECTION);
+        if (mapping.containsKey(NODE_TYPES_MAPPING_SECTION)) {
+            log.debug("Mapping contains NodeTypes mapping");
+            nodeTypesMapping = (Map<String, String>) mapping.get(NODE_TYPES_MAPPING_SECTION);
         }
 
-        if (mapping.containsKey(RELATIONSHIP_TYPES_SECTION)) {
-            log.debug("Mapping contains NodeTypes description");
+        if (mapping.containsKey(RELATIONSHIP_TYPES_MAPPING_SECTION)) {
+            log.debug("Mapping contains NodeTypes mapping");
             relationshipTypesMapping = (Map<String, String>) mapping
-                    .get(RELATIONSHIP_TYPES_SECTION);
+                    .get(RELATIONSHIP_TYPES_MAPPING_SECTION);
+        }
+
+        if(mapping.containsKey(NODE_TYPES_DEFINITIONS)){
+            log.debug("Mapping contains NodeTypes description");
+            nodeTypesDefinitions = (Map<String, Object>) mapping.get(NODE_TYPES_DEFINITIONS);
         }
     }
 
     public String resolveNodeType(String sourceNodeType) {
-        if (nodeTypesMapping == null || nodeTypesMapping.isEmpty()) {
+        if (nodeTypesMapping == null) {
             log.debug("NodeType mapping was not initialized for " + this);
             return null;
         }
@@ -80,11 +85,19 @@ public class DeployerTypesResolver {
     }
 
     public String resolveRelationshipType(String sourceRelationshipType) {
-        if (relationshipTypesMapping == null || relationshipTypesMapping.isEmpty()) {
+        if (relationshipTypesMapping == null) {
             log.debug("RelationshipType mapping was not initialized for " + this);
             return null;
         }
         return relationshipTypesMapping.get(sourceRelationshipType);
+    }
+
+    public Object getNodeTypeDefinition(String nodeType){
+        if(nodeTypesDefinitions == null){
+            log.debug("NodeTypes definitions was not initialized for " + this);
+            return null;
+        }
+        return nodeTypesDefinitions.get(nodeType);
     }
 
 }

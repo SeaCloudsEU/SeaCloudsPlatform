@@ -1,10 +1,16 @@
 map_name: test-mapping
 description: This mapping contains the equivalence between source and target types
 
-mapping.nodeTypes:
+mapping.node_types:
   source.NodeType1: target.NodeType1
   source.NodeType2: target.NodeType2
 
-mapping.relationshipTypes:
+mapping.relationship_types:
   source.RelationshipType1: target.RelationshipType1
   source.RelationshipType2: target.RelationshipType2
+
+node_types:
+  target.NodeType1:
+    derived_from: tosca.nodes.Root
+  target.NodeType3:
+      derived_from: tosca.nodes.Root
