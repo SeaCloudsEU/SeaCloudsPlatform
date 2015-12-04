@@ -131,22 +131,23 @@ public class DamGenerator {
             Map<String, Object> module = (Map<String, Object>) nodeTemplates.get(moduleName);
 
             //type replacement
-            String moduleType = (String) module.get(TYPE);
-            if(nodeTypes.containsKey(moduleType)) {
+            String moduleType = (String) module.get("type");
+            if(nodeTypes.containsKey(moduleType)){
                 Map<String, Object> type = (HashMap<String, Object>) nodeTypes.get(moduleType);
                 String sourceType = (String) type.get("derived_from");
                 String targetType = deployerTypesResolver.resolveNodeType(sourceType);
+
                 if (targetType != null) {
                     module.put("type", targetType);
+                    if(deployerTypesResolver.getNodeTypeDefinition(targetType)!=null){
+                        damUsedNodeTypes.put(targetType,
+                                deployerTypesResolver.getNodeTypeDefinition(targetType));
+                    } else {
+                        log.error("TargetType definition " + targetType + "was not found" +
+                                "so it will not added to DAM");
+                    }
                 } else {
-                    module.put("type", sourceType);
-                }
-
-                if(deployerTypesResolver.getNodeTypeDefinition(targetType)!=null){
-                    damUsedNodeTypes.put(targetType,
-                            deployerTypesResolver.getNodeTypeDefinition(targetType));
-                } else {
-                    damUsedNodeTypes.put(sourceType, type);
+                    damUsedNodeTypes.put(moduleType, nodeTypes.get(moduleType));
                 }
             }
 
