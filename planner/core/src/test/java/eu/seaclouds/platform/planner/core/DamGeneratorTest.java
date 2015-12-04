@@ -100,16 +100,17 @@ public class DamGeneratorTest {
                 Map<String, Object> type = (HashMap<String, Object>) nodeTypes.get(moduleType);
                 String sourceType = (String) type.get("derived_from");
                 String targetType = deployerTypesResolver.resolveNodeType(sourceType);
+
                 if (targetType != null) {
                     module.put("type", targetType);
-                } else {
-                    module.put("type", sourceType);
-                }
-                if(deployerTypesResolver.getNodeTypeDefinition(targetType)!=null){
+                    if(deployerTypesResolver.getNodeTypeDefinition(targetType)!=null){
                     damUsedNodeTypes.put(targetType,
                             deployerTypesResolver.getNodeTypeDefinition(targetType));
+                    } else {
+                     //error
+                    }
                 } else {
-                    damUsedNodeTypes.put(sourceType, type);
+                    damUsedNodeTypes.put(moduleType, nodeTypes.get(moduleType));
                 }
 
                 assertNotNull(type);
