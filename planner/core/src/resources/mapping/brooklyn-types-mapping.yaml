@@ -17,6 +17,7 @@ mapping.node_ypes:
   seaclouds.nodes.database.postgresql.PostgreSqlNode: org.apache.brooklyn.entity.database.postgresql.PostgreSqlNode
   seaclouds.nodes.nosql.mongodb.MongoDBServer: org.apache.brooklyn.entity.nosql.mongodb.MongoDBServer
   seaclouds.nodes.nosql.redis.RedisStore: org.apache.brooklyn.entity.nosql.redis.RedisStore
+  seaclouds.nodes.SoftwareComponent: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
 
 
 node_types:

@@ -109,24 +109,23 @@ public class DamGenerator {
     }
 
     public static Map<String, Object> translateAPD(Map<String, Object> adpYaml){
-
+        Yaml yml = new Yaml();
         DeployerTypesResolver deployerTypesResolver = null;
+
+        Map<String, Object> damUsedNodeTypes = new HashMap<>();
+        List<Object> groupsToAdd = new ArrayList<>();
+        Map<String, ArrayList<String>> groups = new HashMap<>();
+        Map<String, Object> ADPgroups = (Map<String, Object>) adpYaml.get(GROUPS);
+        Map<String, Object> topologyTemplate = (Map<String, Object>) adpYaml.get(TOPOLOGY_TEMPLATE);
+        Map<String, Object> nodeTemplates = (Map<String, Object>) topologyTemplate.get(NODE_TEMPLATES);
+        Map<String, Object> nodeTypes = (Map<String, Object>) adpYaml.get(NODE_TYPES);
+
         try{
             deployerTypesResolver = new DeployerTypesResolver(Resources
                     .getResource(BROOKLYN_TYPES_MAPPING).toURI().toString());}
         catch(Exception e){
             throw new RuntimeException(e);
         }
-
-        Yaml yml = new Yaml();
-        List<Object> groupsToAdd = new ArrayList<>();
-        Map<String, ArrayList<String>> groups = new HashMap<>();
-
-        Map<String, Object> ADPgroups = (Map<String, Object>) adpYaml.get(GROUPS);
-
-        Map<String, Object> topologyTemplate = (Map<String, Object>) adpYaml.get(TOPOLOGY_TEMPLATE);
-        Map<String, Object> nodeTemplates = (Map<String, Object>) topologyTemplate.get(NODE_TEMPLATES);
-        Map<String, Object> nodeTypes = (Map<String, Object>) adpYaml.get(NODE_TYPES);
 
         for(String moduleName:nodeTemplates.keySet()){
             Map<String, Object> module = (Map<String, Object>) nodeTemplates.get(moduleName);
@@ -141,6 +140,13 @@ public class DamGenerator {
                     module.put("type", targetType);
                 } else {
                     module.put("type", sourceType);
+                }
+
+                if(deployerTypesResolver.getNodeTypeDefinition(targetType)!=null){
+                    damUsedNodeTypes.put(targetType,
+                            deployerTypesResolver.getNodeTypeDefinition(targetType));
+                } else {
+                    damUsedNodeTypes.put(sourceType, type);
                 }
             }
 
@@ -157,6 +163,8 @@ public class DamGenerator {
                 }
             }
         }
+
+        adpYaml.put(NODE_TYPES, damUsedNodeTypes);
 
         //get brookly location from host
         for(String group: groups.keySet()){
