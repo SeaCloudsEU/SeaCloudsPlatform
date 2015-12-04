@@ -79,6 +79,7 @@ public class DamGeneratorTest {
         String adp = new Scanner(new File(Resources.getResource("generated_adp.yml").toURI())).useDelimiter("\\Z").next();
         Yaml yml =new Yaml();
 
+        Map<String, Object> damUsedNodeTypes = new HashMap<>();
         ArrayList<Object> groupsToAdd = new ArrayList<>();
         HashMap<String, ArrayList<String>> groups = new HashMap<>();
 
@@ -104,6 +105,13 @@ public class DamGeneratorTest {
                 } else {
                     module.put("type", sourceType);
                 }
+                if(deployerTypesResolver.getNodeTypeDefinition(targetType)!=null){
+                    damUsedNodeTypes.put(targetType,
+                            deployerTypesResolver.getNodeTypeDefinition(targetType));
+                } else {
+                    damUsedNodeTypes.put(sourceType, type);
+                }
+
                 assertNotNull(type);
             }
 
@@ -121,6 +129,7 @@ public class DamGeneratorTest {
                 }
             }
         }
+        adpYaml.put(DamGenerator.NODE_TYPES, damUsedNodeTypes);
         assertNotNull(groups);
 
         //get brookly location from host
