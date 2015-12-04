@@ -35,7 +35,7 @@ public class TOSCAkeywords {
    public static final String MODULE_PROPERTIES_TAG      = "properties";
    public static final String MODULE_AUTOSCALE_PROPERTY               ="autoscale";
    
-   public static final String GROUP_POLICY_QOSREQUIREMENTS        = "QoSRequirements";
+   public static final String GROUP_POLICY_QOSREQUIREMENTS        = "AppQoSRequirements";
    public static final String GROUP_POLICY_QOSINFO                 = "QoSInfo";
    public static final String GROUP_ELEMENT_QOS_EXECUTIONTIME      = "execution_time";
    public static final String GROUP_ELEMENT_QOS_BENCHMARK_PLATFORM = "benchmark_platform";
