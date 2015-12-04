@@ -41,6 +41,13 @@ import eu.atos.sla.parser.data.wsag.Template;
 public class TemplateParser implements IParser<Template> {
     private static Logger logger = LoggerFactory.getLogger(TemplateParser.class);
 
+    private ObjectMapper mapper;
+    
+    public TemplateParser() {
+        mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS , false);
+    }
+
     /*
      * getWsagObject receives in serializedData the object information in json 
      * must returns a eu.atos.sla.parser.data.wsag.Template 
@@ -50,7 +57,6 @@ public class TemplateParser implements IParser<Template> {
         Template template = null;
         try{
             logger.info("Will parse {}", serializedData);
-            ObjectMapper mapper = new ObjectMapper();
             template = mapper.readValue(serializedData, Template.class);
             logger.debug("Template parsed {}", template);
         } catch (JsonProcessingException e) {
@@ -92,8 +98,6 @@ public class TemplateParser implements IParser<Template> {
                 JAXBContext jaxbContext = JAXBContext.newInstance(Template.class);
                 Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
                 Template template = (Template)jaxbUnmarshaller.unmarshal(new StringReader(wsagSerialized));
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS , false);
                 String result = mapper.writeValueAsString(template);
                 return result;
             } catch (JsonProcessingException e) {

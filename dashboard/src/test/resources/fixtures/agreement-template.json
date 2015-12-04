@@ -1,0 +1,39 @@
+{
+  "templateId":"template05",
+  "context":{
+    "agreementInitiator":"provider02",
+    "agreementResponder":null,
+    "serviceProvider":"AgreementInitiator",
+    "templateId":"template01",
+    "service":"service3",
+    "expirationTime":"2014-03-07T12:00:00CET"
+  },
+  "name":"ExampleTemplate",
+  "terms":{
+    "allTerms":{
+      "serviceDescriptionTerm":{
+        "name":null,
+        "serviceName":null
+      },
+      "serviceProperties":[
+        {"name":null, "serviceName":null, "variableSet":null},
+        {"name":null, "serviceName":null, "variableSet":null}
+      ],
+      "guaranteeTerms":[
+        {
+          "name":"FastReaction",
+          "serviceScope":{
+            "serviceName":"GPS0001",
+            "value":"http://www.gps.com/coordsservice/getcoords"
+          },
+          "serviceLevelObjetive":{
+            "kpitarget":{
+              "kpiName":"FastResponseTime",
+              "customServiceLevel":null
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "id": "XqxVwV2b",
+  "displayName": "start",
+  "description": "Invoking effector start on simple-appserver with parameters {locations=[]}",
+  "entityId": "aZmyBOdM",
+  "entityDisplayName": "simple-appserver",
+  "tags": [
+    {
+      "type": "org.apache.brooklyn.core.mgmt.internal.LocalManagementContext"
+    },
+    {
+      "entitlementContext": {
+        "user": null,
+        "sourceIp": "127.0.0.1",
+        "requestUri": "/v1/applications",
+        "requestUniqueIdentifier": "Qn4a7z"
+      }
+    },
+    "EFFECTOR",
+    {
+      "entitlementContext": {
+        "user": null,
+        "sourceIp": "127.0.0.1",
+        "requestUri": "/v1/applications",
+        "requestUniqueIdentifier": "Qn4a7z"
+      }
+    },
+    "inessential",
+    {
+      "entityId": "aZmyBOdM",
+      "effectorName": "start"
+    },
+    {
+      "wrappingType": "targetEntity",
+      "entity": {
+        "type": "org.apache.brooklyn.api.entity.Entity",
+        "id": "aZmyBOdM"
+      }
+    },
+    {
+      "wrappingType": "callerEntity",
+      "entity": {
+        "type": "org.apache.brooklyn.api.entity.Entity",
+        "id": "aZmyBOdM"
+      }
+    },
+    {
+      "wrappingType": "contextEntity",
+      "entity": {
+        "type": "org.apache.brooklyn.api.entity.Entity",
+        "id": "aZmyBOdM"
+      }
+    }
+  ],
+  "submitTimeUtc": 1450196196559,
+  "startTimeUtc": 1450196196559,
+  "endTimeUtc": null,
+  "currentStatus": "In progress",
+  "result": null,
+  "isError": false,
+  "isCancelled": false,
+  "children": [],
+  "submittedByTask": null,
+  "detailedStatus": "Task[start:XqxVwV2b]\n\nIn progress (RUNNABLE)\nAt: org.apache.brooklyn.util.groovy.GroovyJavaMethods.invokeMethodOnMetaClass(GroovyJavaMethods.java:190)\n    org.apache.brooklyn.core.mgmt.internal.AbstractManagementContext.invokeEffectorMethodLocal(AbstractManagementContext.java:309)\n    org.apache.brooklyn.core.mgmt.internal.AbstractManagementContext.invokeEffectorMethodSync(AbstractManagementContext.java:333)\n    org.apache.brooklyn.core.mgmt.internal.EffectorUtils.invokeMethodEffector(EffectorUtils.java:250)\n    org.apache.brooklyn.core.effector.MethodEffector.call(MethodEffector.java:149)\n    org.apache.brooklyn.core.entity.trait.Startable$StartEffectorBody.call(Startable.java:56)\n    org.apache.brooklyn.core.entity.trait.Startable$StartEffectorBody.call(Startable.java:50)\n    org.apache.brooklyn.core.effector.EffectorTasks$EffectorBodyTaskFactory$1.call(EffectorTasks.java:82)\n    org.apache.brooklyn.util.core.task.DynamicSequentialTask$DstJob.call(DynamicSequentialTask.java:342)\n    org.apache.brooklyn.util.core.task.BasicExecutionManager$SubmissionCallable.call(BasicExecutionManager.java:492)",
+  "streams": {},
+  "links": {
+    "self": "/v1/activities/XqxVwV2b",
+    "children": "/v1/activities/XqxVwV2b/children",
+    "entity": "/v1/applications/aZmyBOdM/entities/aZmyBOdM"
+  }
+}

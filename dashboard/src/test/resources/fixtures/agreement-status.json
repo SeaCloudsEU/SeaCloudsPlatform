@@ -1,0 +1,8 @@
+{"AgreementId":"agreement02",
+ "guaranteestatus":"NON_DETERMINED",
+ "guaranteeterms":[
+    {"name":"GT_Metric1","status":"NON_DETERMINED"},
+    {"name":"GT_Metric2","status":"NON_DETERMINED"},
+    {"name":"GT_Metric3","status":"VIOLATED"},
+    {"name":"GT_Metric4","status":"FULFILLED"}]
+}

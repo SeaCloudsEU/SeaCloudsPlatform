@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -33,14 +34,17 @@ import eu.atos.sla.parser.DateTimeSerializerJSON;
 @XmlRootElement(name = "metric")
 public class MonitoringMetric {
 
+    @JsonProperty("key")
     @XmlElement(name = "key")
     private String metricKey;
     
+    @JsonProperty("value")
     @XmlElement(name = "value")
     private String metricValue;
 
     @JsonSerialize(using=DateTimeSerializerJSON.class)
     @JsonDeserialize(using=DateTimeDeserializerJSON.class)
+    @JsonProperty("datetime")
     @XmlElement(name = "datetime")    
     private Date date;
 

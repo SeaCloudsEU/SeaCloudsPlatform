@@ -25,12 +25,8 @@ SeaClouds Dashboard is packaged as a Dropwizard application. It requires a confi
 - deployer.port: SeaClouds Planner Port. Required. Eg. 8081.
 - deployer.username: SeaClouds Deployer Username. Optional. Eg. user.
 - deployer.password: SeaClouds Deployer Password. Optional. Eg. password.
-- monitor.host: SeaClouds Monitor (Tower4Clouds Monitoring Manager) IP. Required. Eg. 127.0.0.1.
-- monitor.port: SeaClouds Monitor (Tower4Clouds Monitoring Manager) Port. Required. Eg. 8710.
-- monitor.graphiteHost: SeaClouds Monitor (Graphite) IP. Deprecated. Required. Eg. 127.0.0.1.
-- monitor.graphitePort: SeaClouds Monitor (Graphite) Port. Deprecated. Required. Eg. 1234.
-- monitor.grafanaHost: SeaClouds Monitor (Grafana) IP. Required. Eg. 127.0.0.1.
-- monitor.grafanaPort: SeaClouds Monitor (Grafana) Port. Required. Eg. 3000.
+- monitor.manager.host: SeaClouds Monitor (Tower4Clouds Monitoring Manager) IP. Required. Eg. 127.0.0.1.
+- monitor.manager.port: SeaClouds Monitor (Tower4Clouds Monitoring Manager) Port. Required. Eg. 8710.
 - sla.host: SeaClouds Deployer IP. Required. Eg. 127.0.0.1. 
 - sla.port: SeaClouds SLA Port. Required. Eg. 8080. 
 

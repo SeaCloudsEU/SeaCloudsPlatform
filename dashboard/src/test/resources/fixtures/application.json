@@ -1,0 +1,15 @@
+{
+  "id": "DUkgr9Vb",
+  "spec": {
+    "name": "simple-appserver",
+    "type": "org.apache.brooklyn.entity.stock.BasicApplication",
+    "locations": [
+      "nC4Z0sLy"
+    ]
+  },
+  "status": "STARTING",
+  "links": {
+    "self": "/v1/applications/DUkgr9Vb",
+    "entities": "/v1/applications/DUkgr9Vb/entities"
+  }
+}

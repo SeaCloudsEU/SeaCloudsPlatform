@@ -28,11 +28,11 @@ import org.slf4j.LoggerFactory;
 public class DateTimeAdapter extends XmlAdapter<String, Date>{ 
     private static Logger logger = LoggerFactory.getLogger(DateTimeAdapter.class);
     
-    static private String dateFormat;
+    static private String dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ";
 
-    static private String unmarshallTimezone;
+    static private String unmarshallTimezone = TimeZone.getDefault().getDisplayName();
 
-    static private String marshallTimezone;
+    static private String marshallTimezone = TimeZone.getDefault().getDisplayName();
     
     public String getDateFormat() {
         return dateFormat;

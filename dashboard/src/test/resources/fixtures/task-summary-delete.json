@@ -1,0 +1,23 @@
+{
+  "id": "UHzgGYAL",
+  "displayName": "destroying BasicApplicationImpl{id=aZmyBOdM}",
+  "description": "REST call to destroy application simple-appserver (BasicApplicationImpl{id=aZmyBOdM})",
+  "entityId": null,
+  "entityDisplayName": null,
+  "tags": [],
+  "submitTimeUtc": 1450196371846,
+  "startTimeUtc": null,
+  "endTimeUtc": null,
+  "currentStatus": "Submitted for execution",
+  "result": null,
+  "isError": false,
+  "isCancelled": false,
+  "children": [],
+  "submittedByTask": null,
+  "detailedStatus": "Submitted for execution 16784d 16h ago",
+  "streams": {},
+  "links": {
+    "self": "/v1/activities/UHzgGYAL",
+    "children": "/v1/activities/UHzgGYAL/children"
+  }
+}

@@ -1,0 +1,76 @@
+{
+    "agreementId": "agreement01",
+    "name": "ExampleAgreement",
+    "context": {
+        "agreementInitiator": "RandomClient",
+        "agreementResponder": "provider01",
+        "serviceProvider": "AgreementResponder",
+        "expirationTime": "2014-03-07T11:00:00+0000",
+        "templateId": "template01",
+        "service": "service01"
+    },
+    "terms": {
+        "allTerms": {
+            "serviceDescriptionTerm": {
+                "name": "SDTName2",
+                "serviceName": "ServiceName"
+            },
+            "serviceProperties": [{
+                "name": "NonFunctional",
+                "serviceName": "ServiceName",
+                "variableSet": {
+                    "variables": [{
+                        "name": "ResponseTime",
+                        "metric": "xs:double",
+                        "location": "qos:ResponseTime"
+                    }, {
+                        "name": "Performance",
+                        "metric": "xs:double",
+                        "location": "qos:Performance"
+                    }]
+                }
+            }],
+            "guaranteeTerms": [{
+                "name": "GT_ResponseTime",
+                "serviceScope": {
+                    "serviceName": "ServiceName",
+                    "value": "ScopeName1"
+                },
+                "qualifyingCondition": null,
+                "businessValueList": null,
+                "serviceLevelObjetive": {
+                    "kpitarget": {
+                        "kpiName": "ResponseTime",
+                        "customServiceLevel": "{\"constraint\" : \"ResponseTime LT 0.9\"}"
+                    }
+                }
+            }, {
+                "name": "GT_Performance",
+                "serviceScope": {
+                    "serviceName": "ServiceName",
+                    "value": "ScopeName2"
+                },
+                "qualifyingCondition": null,
+                "businessValueList": {
+                    "customBusinessValue": [{
+                        "count": 1,
+                        "duration": "PT0S",
+                        "penalties": [{
+                            "type": "discount",
+                            "expression": "",
+                            "unit": "euro",
+                            "validity": ""
+                        }]
+                    }],
+                    "importance": 3
+                },
+                "serviceLevelObjetive": {
+                    "kpitarget": {
+                        "kpiName": "Performance",
+                        "customServiceLevel": "{\"constraint\" : \"Performance GT 0.1\"}"
+                    }
+                }
+            }]
+        }
+    }
+}
