@@ -124,11 +124,14 @@ public class OptimizerInitialDeployment {
 
       Map<String, Object>[] appMapSolutions = hashMapOfFoundSolutionsWithThresholds(solutions, appMap, topology,
             appInfoSuitableOptions, numPlansToGenerate, requirements, suitableCloudOffer, hyst);
-
-      log.debug("Before ReplaceSuitableServiceByHost");
+      
+      
+      
+      log.debug("Before ReplaceSuitableServiceByHost and adding the seaclouds.nodes.Compute type information");
 
       String[] stringSolutions = new String[numPlansToGenerate];
       for (int i = 0; i < appMapSolutions.length; i++) {
+         YAMLoptimizerParser.addComputeTypeToTypes(appMapSolutions[i]);
          YAMLoptimizerParser.replaceSuitableServiceByHost(appMapSolutions[i]);
          stringSolutions[i] = YAMLoptimizerParser.fromMAPtoYAMLstring(appMapSolutions[i]);
       }
@@ -204,12 +207,12 @@ public class OptimizerInitialDeployment {
             log.debug("Adding upperWkl= " + upperWklBound + " lowerWkl=" + lowerWklBound + " poolsize=" + maxPoolSize);
             YAMLoptimizerParser.addScalingPolicyToModule(entry.getKey(), baseAppMap, lowerWklBound, upperWklBound, 1,
                   maxPoolSize);
+            YAMLoptimizerParser.changeModuleToScalableType(entry.getKey(), baseAppMap);
          } else {
             log.debug("Module " + entry.getKey() + " was not scalable");
          }
 
       }
-
    }
 
    private String showThresholds(HashMap<String, ArrayList<Double>> thresholds) {

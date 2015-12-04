@@ -42,7 +42,6 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 //Version of September 2015
 public class YAMLoptimizerParser {
 
-
    static Logger log = LoggerFactory.getLogger(YAMLoptimizerParser.class);
 
    public static void cleanSuitableOfferForModule(String modulename, Map<String, Object> appMap) {
@@ -136,11 +135,12 @@ public class YAMLoptimizerParser {
       YAMLgroupsOptimizerParser.addQualityOfSolutionToGroup(sol, initialElementName, groups);
 
    }
-   
-   public static void addScalingPolicyToModule(String modulename, Map<String,Object> applicationMapComplete, 
-         double wklLowerBound, double wklUpperBound, int minPoolSize, int maxPoolSize){
+
+   public static void addScalingPolicyToModule(String modulename, Map<String, Object> applicationMapComplete,
+         double wklLowerBound, double wklUpperBound, int minPoolSize, int maxPoolSize) {
       Map<String, Object> groups = YAMLoptimizerParser.getGroupMapFromAppMap(applicationMapComplete);
-      YAMLgroupsOptimizerParser.addScalingPolicyToModuleGroup(groups, modulename, wklLowerBound, wklUpperBound, minPoolSize, maxPoolSize);
+      YAMLgroupsOptimizerParser.addScalingPolicyToModuleGroup(groups, modulename, wklLowerBound, wklUpperBound,
+            minPoolSize, maxPoolSize);
    }
 
    private static double getCloudLatency(String suitableCloudOffers, String latencyKeyword) {
@@ -345,7 +345,6 @@ public class YAMLoptimizerParser {
 
    }
 
-
    public static QualityInformation getQualityRequirements(Map<String, Object> applicationMap) {
 
       Map<String, Object> groupsMap = YAMLoptimizerParser.getGroupMapFromAppMap(applicationMap);
@@ -387,7 +386,6 @@ public class YAMLoptimizerParser {
 
    }
 
- 
    public static double getApplicationWorkload(Map<String, Object> applicationMap) {
 
       // The initial element is such one that has QoSrequirements in the
@@ -431,7 +429,8 @@ public class YAMLoptimizerParser {
       if (log.isDebugEnabled()) {
          log.debug("Reading topology. Next step: replace the module name by the name of the host");
       }
-      // TODO: study these two lines and uncomment them if necessary. It may be required in the future (it was in previous
+      // TODO: study these two lines and uncomment them if necessary. It may be
+      // required in the future (it was in previous
       // versions). Change done in the phase of module testing.
       // replaceModuleNameByHostName(topology, (Map<String, Object>)
       // appMap.get(TOSCAkeywords.NODE_TEMPLATE));
@@ -483,9 +482,8 @@ public class YAMLoptimizerParser {
       double hostPerformance = appInfoSuitableOptions.getCloudCharacteristics(elementName,
             YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups)).getPerformance();
 
-      boolean elementCanScale= YAMLmodulesOptimizerParser.getScalabilityCapabilitiesOfModule(modules, elementName);
-            
-            
+      boolean elementCanScale = YAMLmodulesOptimizerParser.getScalabilityCapabilitiesOfModule(modules, elementName);
+
       newelement.setExecTimeMillis(
             YAMLmodulesOptimizerParser.getMeasuredExecTimeMillis(elementName, groups) * hostPerformance);
 
@@ -536,7 +534,8 @@ public class YAMLoptimizerParser {
    }
 
    /**
-    * @return Default qualityInformation. Used just for testing the full execution. 
+    * @return Default qualityInformation. Used just for testing the full
+    *         execution.
     */
    public static QualityInformation getQualityRequirementsForTesting() {
 
@@ -621,7 +620,7 @@ public class YAMLoptimizerParser {
             // 2) find the module in the topology with this name.
 
             Map<String, Object> modulesMap = YAMLoptimizerParser.getModuleMapFromAppMap(appMap);
-            return YAMLoptimizerParser.getModuleInfoFromModulesMap(modulesMap, moduleName);
+            return YAMLmodulesOptimizerParser.getModuleInfoFromModulesMap(modulesMap, moduleName);
 
          }
       }
@@ -632,7 +631,7 @@ public class YAMLoptimizerParser {
    }
 
    @SuppressWarnings("unchecked")
-   public   static String getInitialElementName(Map<String, Object> appMap) {
+   public static String getInitialElementName(Map<String, Object> appMap) {
       // The initial element is such one that has QoSrequirements in the
       // "groups" part.
 
@@ -662,20 +661,7 @@ public class YAMLoptimizerParser {
       return null;
    }
 
-   private static Entry<String, Object> getModuleInfoFromModulesMap(Map<String, Object> modulesMap, String moduleName) {
-      if (modulesMap.containsKey(moduleName)) {
-         for (Map.Entry<String, Object> entry : modulesMap.entrySet()) {
-            if (entry.getKey().equals(moduleName)) {
-               if (log.isDebugEnabled()) {
-                  log.debug("return entry that describes module with name '" + entry.getKey() + "'");
-               }
-               return entry;
-            }
-         }
-      }
-      log.warn("Module description not found. Check correcness of name given as group members and modules name");
-      return null;
-   }
+
 
    @SuppressWarnings("unchecked")
    public static Map<String, Object> getModuleMapFromAppMap(Map<String, Object> appMap) {
@@ -695,8 +681,6 @@ public class YAMLoptimizerParser {
 
       return modulesMap;
    }
-   
-   
 
    public static Map<String, Object> getGroupMapFromAppMap(Map<String, Object> appMap) {
       Map<String, Object> groupsMap;
@@ -712,6 +696,21 @@ public class YAMLoptimizerParser {
          return null;
       }
       return groupsMap;
+   }
+
+   public static Map<String, Object> getTypesMapFromAppMap(Map<String, Object> appMap) {
+      Map<String, Object> typesMap;
+      try {
+         if (log.isDebugEnabled()) {
+            log.debug("Opening TOSCA for obtaining types");
+         }
+         typesMap = (Map<String, Object>) appMap.get(TOSCAkeywords.NODE_TYPES);
+
+      } catch (NullPointerException E) {
+         log.error("It was not found '" + TOSCAkeywords.NODE_TYPES + "' . Cannot be unveiled the types of modules");
+         return null;
+      }
+      return typesMap;
    }
 
    private static boolean moduleIsRequiredByOthers(Map<String, Object> appMap, String potentialModuleName) {
@@ -738,6 +737,24 @@ public class YAMLoptimizerParser {
          return;
       }
       modulesMap.put(key, value);
+
+   }
+
+   public static void changeModuleToScalableType(String moduleName, Map<String, Object> appMap) {
+      Map<String, Object> modulesMap = YAMLoptimizerParser.getModuleMapFromAppMap(appMap);
+      
+      String typeOfModule = YAMLmodulesOptimizerParser.getModuleTypeFromModulesMap(moduleName, modulesMap);
+      
+      Map<String, Object> typesMap = (Map<String, Object>) YAMLoptimizerParser.getTypesMapFromAppMap(appMap);
+
+      if (typesMap != null) {
+         YAMLtypesOptimizerParser.changeTypeToBeScalable(typeOfModule, typesMap);
+      }
+
+   }
+
+   public static void addComputeTypeToTypes(Map<String, Object> appMap) {
+     YAMLtypesOptimizerParser.addComputeType(YAMLoptimizerParser.getTypesMapFromAppMap(appMap));
       
    }
 
