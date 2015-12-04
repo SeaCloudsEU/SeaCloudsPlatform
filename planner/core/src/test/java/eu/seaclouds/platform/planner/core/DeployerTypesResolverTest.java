@@ -21,17 +21,22 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 @Test
 public class DeployerTypesResolverTest {
 
     final private static String TYPES_TEST_MAPPING = "mapping/test-types-mapping.yaml";
     final private static String NODETYPE_TEST_MAPPING = "mapping/test-NodeTypes-mapping.yaml";
-    final private static String RELATIONSHIPTYPE_TEST_MAPPING = "mapping/test-RelationshipTypes-mapping.yaml";
+    final private static String RELATIONSHIPTYPE_TEST_MAPPING =
+            "mapping/test-RelationshipTypes-mapping.yaml";
 
+    @SuppressWarnings("unchecked")
     public void testResolvingTargetDeployerTypes() throws URISyntaxException, IOException {
         DeployerTypesResolver typesResolver = new DeployerTypesResolver(Resources
                 .getResource(TYPES_TEST_MAPPING).toURI().toString());
@@ -45,6 +50,15 @@ public class DeployerTypesResolverTest {
         assertEquals(typesResolver.resolveRelationshipType("source.RelationshipType2"),
                 "target.RelationshipType2");
         assertNull(typesResolver.resolveRelationshipType("source.RelationshipType_X"));
+
+        assertNotNull(typesResolver.getNodeTypeDefinition("target.NodeType1"));
+        assertNull(typesResolver.getNodeTypeDefinition("target.NodeType2"));
+        assertNotNull(typesResolver.getNodeTypeDefinition("target.NodeType3"));
+
+        assertTrue(typesResolver.getNodeTypeDefinition("target.NodeType1") instanceof Map);
+        Map<String, Object> typeDefinition = (Map<String, Object>)typesResolver
+                .getNodeTypeDefinition("target.NodeType1");
+        assertEquals(typeDefinition.get("derived_from"), "tosca.nodes.Root");
     }
 
     public void testResolvingWithoutRelationshipTypes() throws URISyntaxException, IOException {
