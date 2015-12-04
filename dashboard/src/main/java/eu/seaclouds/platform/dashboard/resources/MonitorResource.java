@@ -105,46 +105,4 @@ public class MonitorResource {
         }
 
     }
-
-
-
-    @POST
-    @Path("model")
-    public Response addDeploymentModel(String monitoringModel) {
-
-        try {
-            String monitorResponse = new HttpPostRequestBuilder()
-                    .entity(new StringEntity(monitoringModel, ContentType.APPLICATION_JSON))
-                    .host(monitor.getEndpoint())
-                    .path("/v1/model/resources")
-                    .build();
-
-            return Response.ok().build();
-        } catch (IOException | URISyntaxException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
-    }
-
-    @DELETE
-    @Path("model/{id}")
-    public Response removeDeploymentModel(@PathParam("id") String id) {
-
-        if (id != null) {
-            try {
-                String monitorResponse = new HttpDeleteRequestBuilder()
-                        .host(monitor.getEndpoint())
-                        .path("/v1/model/resources/" + id)
-                        .build();
-                return Response.ok().build();
-            } catch (IOException | URISyntaxException e) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-
-
-        } else {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-
-    }
 }

@@ -66,12 +66,12 @@ public class DashboardConfiguration extends Configuration {
         this.deployer = factory;
     }
 
-    @JsonProperty("monitor")
+    @JsonProperty("monitor.manager")
     public MonitorFactory getMonitorFactory() {
         return monitor;
     }
 
-    @JsonProperty("monitor")
+    @JsonProperty("monitor.manager")
     public void setMonitorConfigFactory(MonitorFactory factory) {
         this.monitor = factory;
     }
