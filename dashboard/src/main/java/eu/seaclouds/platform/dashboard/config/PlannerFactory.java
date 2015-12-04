@@ -17,22 +17,6 @@
 
 package eu.seaclouds.platform.dashboard.config;
 
-import com.google.common.base.Charsets;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.net.URISyntaxException;
-import org.apache.commons.io.IOUtils;
-
 public class PlannerFactory extends BasicEndpointFactory {
-    
-    static final String DEFAULT_OFFERINGS_PATH = "/serviceOfferings.yaml";
-    
-    public String getServiceOfferings() throws URISyntaxException, IOException {
-        InputStream in = getClass().getResourceAsStream(DEFAULT_OFFERINGS_PATH);
-        StringWriter writer = new StringWriter();
-        IOUtils.copy(in, writer, Charsets.UTF_8);
-        return writer.toString();
-    }
-    
+
 }
