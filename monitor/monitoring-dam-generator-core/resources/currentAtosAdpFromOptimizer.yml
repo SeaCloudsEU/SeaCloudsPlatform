@@ -8,8 +8,8 @@ topology_template:
       properties:
         language: JAVA
       requirements:
-      - {endpoint: webservices}
       - {host: CloudFoundry, instancesPOC: 4}
+      - {endpoint: webservices}
     webservices:
       type: sc_req.webservices
       properties:
