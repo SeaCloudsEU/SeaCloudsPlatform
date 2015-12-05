@@ -13,6 +13,7 @@ before_script:
 - echo "    StrictHostKeyChecking no" >> /home/travis/.ssh/config
 - ssh-keyscan -t rsa localhost >> ~/.ssh/known_hosts
 - chmod g-rw,o-rw /home/travis/.ssh/*
+- pip install --user codecov
 script:
 - export MAVEN_OPTS="-Dmaven.repo.local=$HOME/.m2/repository -Xmx2469m -XX:MaxPermSize=512m"
 - mvn -q clean install -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
@@ -20,6 +21,9 @@ script:
 #- touch qa/target/brooklyn-maven-plugin/brooklyn.debug.log
 #- mvn verify -pl qa -Ptravis -DskipTests
 #- cat qa/target/brooklyn-maven-plugin/brooklyn.debug.log
+after_success:
+  - codecov
+
 branches:
   except:
   - travis
