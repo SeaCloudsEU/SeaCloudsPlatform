@@ -30,4 +30,11 @@ public class DiscovererTest {
         Discoverer d = Discoverer.instance();
         Assert.assertNotNull(d);
     }
+
+    @Test
+    public void testAddInvalidOffering() {
+        Discoverer d = Discoverer.instance();
+        String ofId = d.addOffering(null);
+        Assert.assertNull(ofId);
+    }
 }

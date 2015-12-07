@@ -24,13 +24,9 @@ import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 
 public class Discoverer extends Application<DiscovererConfiguration> {
@@ -170,9 +166,9 @@ public class Discoverer extends Application<DiscovererConfiguration> {
         this.initializeResources();
 
         /* if remoteInitializationPath configuration variable is set */
-        if (configuration.getRemoteInitializationPath() != null && configuration.getRemoteInitializationPath().length() > 0) {
+        if (configuration.getInitializeRepository()) {
             /* remoteInitializationPath is valid, then empty current repository and tries to restore from remote path */
-            this.offeringManager.initializeFromRemote(configuration.getRemoteInitializationPath());
+            this.offeringManager.initializeRepository();
         }
 
         this.initializeOfferings();

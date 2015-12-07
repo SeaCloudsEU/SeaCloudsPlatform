@@ -17,12 +17,7 @@
 
 package eu.seaclouds.platform.discoverer.core;
 
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URL;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -150,8 +145,6 @@ public class OfferingManager {
 
             /* now that the offeringId is know it is possible to set it */
             offering.setId(offeringId);
-            /* it is also possible to set the path of the offering file */
-            offering.setOfferingPath(offeringFile.getAbsolutePath());
 
             /* flushing the meta information into the meta file */
             fos = new FileOutputStream(metaFile);
@@ -239,7 +232,7 @@ public class OfferingManager {
                 Offering offering = Offering.fromJSON(json);
                 offeringNameToOfferingId.put(offering.getName(), offering.getId());
 
-            } catch (Exception e) {
+            } catch (IOException e) {
                 this.removeOffering(offeringId);
             }
         }
@@ -287,17 +280,18 @@ public class OfferingManager {
         return ret;
     }
 
-    public void initializeFromRemote(String remoteInitializationPath) {
-        try {
-            URL url = new URL(remoteInitializationPath);
-            ZipInputStream zin = new ZipInputStream(url.openStream());
+    public void initializeRepository() {
+        File metaDirectory = this.getMetaDirectory();
+        File offeringDirectory = this.getOfferingDirectory();
+        InputStream is = null;
+        ZipInputStream zin = null;
 
+        try {
+            is = this.getClass().getClassLoader().getResourceAsStream("initialization.zip");
+            zin = new ZipInputStream(is);
             /* Zip file has been downloaded, clear curreny repository directory to fill it with new information */
             this.emptyRepository();
             ZipEntry zipEntry = null;
-
-            File metaDirectory = this.getMetaDirectory();
-            File offeringDirectory = this.getOfferingDirectory();
 
             while ((zipEntry = zin.getNextEntry()) != null) {
                 if (!zipEntry.isDirectory()) { /* Taking only files */
@@ -312,22 +306,43 @@ public class OfferingManager {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (is != null)
+                    is.close();
+
+                if (zin != null)
+                    zin.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     private void extractFile(ZipInputStream zin, String fileName, File outdir) {
+        OutputStream out = null;
+
         try {
-            OutputStream out = new FileOutputStream(outdir.getAbsolutePath() + File.separator + fileName);
+            out = new FileOutputStream(outdir.getAbsolutePath() + File.separator + fileName);
 
             byte[] buffer = new byte[8192];
             int len;
             while ((len = zin.read(buffer)) != -1) {
                 out.write(buffer, 0, len);
             }
-            out.close();
+
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
+
 

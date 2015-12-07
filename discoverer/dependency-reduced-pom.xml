@@ -9,11 +9,6 @@
   <groupId>eu.seaclouds-project</groupId>
   <artifactId>discoverer</artifactId>
   <build>
-    <resources>
-      <resource>
-        <directory>src/resources</directory>
-      </resource>
-    </resources>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>

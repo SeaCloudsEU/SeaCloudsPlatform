@@ -29,9 +29,12 @@ public class CloudHarmonySPECint {
     private static HashMap<String, Integer> SPECint = new HashMap<>();
 
     public static void initializeMap(InputStream resource) {
+        InputStreamReader isr = null;
+        BufferedReader br = null;
+
         try {
-            InputStreamReader isr = new InputStreamReader(resource);
-            BufferedReader br = new BufferedReader(isr);
+            isr = new InputStreamReader(resource);
+            br = new BufferedReader(isr);
             String line;
 
             while ((line = br.readLine()) != null) {
@@ -43,13 +46,22 @@ public class CloudHarmonySPECint {
                     System.err.println("Cannot parse integer value " + parts[1]);
                 }
             }
-
-            br.close();
-            isr.close();
-            resource.close();
         } catch (IOException e) {
             e.printStackTrace();
             System.err.print("Cannot open location mapping file");
+        } finally {
+            try {
+                if (isr != null) {
+                    isr.close();
+                }
+                if (br != null) {
+                    br.close();
+                }
+
+                resource.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

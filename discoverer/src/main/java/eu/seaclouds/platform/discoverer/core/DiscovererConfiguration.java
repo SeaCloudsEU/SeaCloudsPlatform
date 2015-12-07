@@ -42,8 +42,8 @@ public class DiscovererConfiguration extends Configuration {
     private String repositoryPath = "~/offerings_repo/";
 
     @Valid
-    @JsonProperty("remoteInitializationPath")
-    private String remoteInitializationPath;
+    @JsonProperty("initializeRepository")
+    private boolean initializeRepository;
 
     @JsonProperty("activeCrawlers")
     public void setActiveCrawlers(ArrayList<String> activeCrawlers) {
@@ -61,10 +61,10 @@ public class DiscovererConfiguration extends Configuration {
     @JsonProperty("repositoryPath")
     public String getRepositoryPath() { return this.repositoryPath; }
 
-    @JsonProperty("remoteInitializationPath")
-    public void setRemoteInitializationPath(String remoteInitializationPath) { this.remoteInitializationPath = remoteInitializationPath; }
+    @JsonProperty("initializeRepository")
+    public void setInitializeRepository(boolean initializeRepository) { this.initializeRepository = initializeRepository; }
 
-    @JsonProperty("remoteInitializationPath")
-    public String getRemoteInitializationPath() { return this.remoteInitializationPath; }
+    @JsonProperty("initializeRepository")
+    public boolean getInitializeRepository() { return this.initializeRepository; }
 }
 
