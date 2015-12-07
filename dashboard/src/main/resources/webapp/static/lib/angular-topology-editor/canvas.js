@@ -557,7 +557,7 @@ var Canvas = (function() {
 
     function getnodebyname(name) {
         return _search(g_nodes, function(node) {
-            node.name === name;
+            return node.name === name;
         });
     }
 
