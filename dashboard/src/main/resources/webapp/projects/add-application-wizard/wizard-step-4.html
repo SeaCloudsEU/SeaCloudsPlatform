@@ -24,29 +24,28 @@
 
 </div>
 <div class="row" ng-if="damGenerated">
-    <div class="row">
-        <div class="col-lg-12">
+
+    <div class="col-lg-8">
+        <h3>
+            <small>Deployable Application Model</small>
+        </h3>
+        <credentials-editor  bind="applicationWizardData.finalDam"></credentials-editor>
+    </div>
+    <div class="col-lg-4">
+        <div class="row">
             <h3>
-                <small>Deployable Application Model</small>
+                <small>Monitoring Rules</small>
             </h3>
-            <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="codemirrorDamOptions"
-                           ng-model="applicationWizardData.finalDam"></ui-codemirror>
+            <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="codeMirrorMonitoringRulesOptions"
+                           ng-model="applicationWizardData.finalMonitoringRules"></ui-codemirror>
+        </div>
+        <div class="row">
+            <h3>
+                <small>Service Level Agreements</small>
+            </h3>
+            <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="codemirrorSlaRulesOptions"
+                           ng-model="applicationWizardData.finalSlaRules" disabled></ui-codemirror>
         </div>
     </div>
 
-    <div class="col-lg-6">
-        <h3>
-            <small>Monitoring Rules</small>
-        </h3>
-        <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="codeMirrorMonitoringRulesOptions"
-                       ng-model="applicationWizardData.finalMonitoringRules"></ui-codemirror>
-    </div>
-
-    <div class="col-lg-6">
-        <h3>
-            <small>Service Level Agreements</small>
-        </h3>
-        <ui-codemirror class="codemirror-height-sm" ui-codemirror-opts="codemirrorSlaRulesOptions"
-                       ng-model="applicationWizardData.finalSlaRules" disabled></ui-codemirror>
-    </div>
 </div>

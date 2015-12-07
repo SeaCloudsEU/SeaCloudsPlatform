@@ -557,7 +557,7 @@ var Canvas = (function() {
 
     function getnodebyname(name) {
         return _search(g_nodes, function(node) {
-            node.name === name;
+            return node.name === name;
         });
     }
 
@@ -574,14 +574,21 @@ var Canvas = (function() {
     }
 
     function addnode(node) {
+        _addnode(node);
+        firechange();
+    }
+
+    function _addnode(node) {
         log.info("Adding node " + node.toString());
         g_nodes.push(node);
-        firechange();
     }
 
     function addlink(link) {
         log.info("Adding link " + link.toString());
+        _addlink(link);
+    }
 
+    function _addlink(link) {
         if (link) {
             links.push(link);
             firechange();
@@ -687,15 +694,16 @@ var Canvas = (function() {
         for (var i = 0; i < json.nodes.length; i++) {
             var jsonnode = json.nodes[i];
             var node = nodefromjson(jsonnode, typeMap);
-            this.addnode(node);
+            _addnode(node);
             nodesmap[node.name] = node;
         }
 
         for (var i = 0; i < json.links.length; i++) {
             var jsonlink = json.links[i];
             var link = linkfromjson(jsonlink, nodesmap);
-            this.addlink(link);
+            _addlink(link);
         }
+        firechange();
     };
 
     var nodefromjson = function(json, typeMap) {
