@@ -81,7 +81,7 @@ public class DNode {
         diskSize = extractStringFromMap("disk_size", map);
         benchmarkResponseTime = extractStringFromMap("benchmark_rt", map);
         benchmarkPlatform = extractStringFromMap("benchmark_platform", map);
-        qos = (List) extractListFromMap("qos", map);
+        qos = (List) extractQosFromMap("qos", map);
         return map;
     }
     
@@ -95,6 +95,20 @@ public class DNode {
         List<Object> value = (List) map.remove(key);
         
         return (value == null)? Collections.EMPTY_LIST : value;
+    }
+    
+    private List<Map<String, String>> extractQosFromMap(String key, Map<String, Object> map) {
+        List<Map<String, Object>> qos = (List) map.remove(key);
+        
+        if (qos != null) {
+            for (Map<String, Object> listitem : qos) {
+                for (String mapkey : listitem.keySet()) {
+                    Object mapvalue = listitem.get(mapkey);
+                    listitem.put(mapkey, mapvalue.toString());
+                }
+            }
+        }
+        return (qos == null)? Collections.EMPTY_LIST : qos;
     }
     
     @Override

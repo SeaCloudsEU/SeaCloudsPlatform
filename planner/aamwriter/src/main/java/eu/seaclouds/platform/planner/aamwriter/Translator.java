@@ -18,6 +18,7 @@ package eu.seaclouds.platform.planner.aamwriter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import eu.seaclouds.platform.planner.aamwriter.modelaam.Aam;
 import eu.seaclouds.platform.planner.aamwriter.modelaam.Constraint;
@@ -231,13 +232,20 @@ public class Translator {
             sourceOperation.addDependencies(new Policy.Dependencies(dependencies));
             
             /*
-             * QosRequirements if this node is the source of the flow graph
+             * Application QosRequirements if this node is the source of the flow graph
              */
             if (isSource(dgraph, dnode)) {
                 DRequirements dreq = dgraph.getRequirements();
-                Policy.QoSRequirements requirements = new Policy.QoSRequirements(
+                Policy.AppQoSRequirements requirements = new Policy.AppQoSRequirements(
                         dreq.getResponseTime(), dreq.getAvailability(), dreq.getCost(), dreq.getWorkload());
-                sourceOperation.addQoSRequirement(requirements);
+                sourceOperation.addAppQoSRequirement(requirements);
+            }
+            /*
+             * Module QoSRequirements
+             */
+            if (!dnode.getQos().isEmpty()) {
+                Policy.ModuleQoSRequirements requirements = buildModuleQoSRequirements(dnode.getQos());
+                sourceOperation.addModuleQoSRequirement(requirements);
             }
         }
     }
@@ -346,4 +354,21 @@ public class Translator {
             return "";
         }
     }
+    
+    private Policy.ModuleQoSRequirements buildModuleQoSRequirements(List<Map<String, String>> qos) {
+        
+        Policy.ModuleQoSRequirements result = new Policy.ModuleQoSRequirements();
+        for (Map<String, String> item : qos) {
+            
+            MonitoringMetrics metric = MonitoringMetrics.from(item.get("metric"));
+            String metricName = metric.getMetricName();
+            String operator = item.get("operator");
+            String threshold = item.get("threshold");
+            String unit = metric.getUnit();
+            result.addConstraint(metricName, operator, Double.parseDouble(threshold), unit);
+        }
+        
+        return result;
+    }
+    
 }
