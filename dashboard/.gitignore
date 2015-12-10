@@ -4,3 +4,4 @@ target
 **/webapp/static/lib/*
 !**/webapp/static/lib/angular-topology-editor/
 !**/webapp/static/lib/format-validator/
+!**/webapp/static/lib/adp-prettifier/
