@@ -11,10 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import static org.testng.Assert.*;
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertNotNull;
-import static org.testng.AssertJUnit.assertTrue;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
+
 
 /**
  * Copyright 2014 SeaClouds
@@ -34,6 +33,8 @@ import static org.testng.AssertJUnit.assertTrue;
  */
 @Test
 public class DamGeneratorTest {
+
+    private static final String BROOKLYN_TYPES_MAPPING = "mapping/brooklyn-types-mapping.yaml";
 
     @Test
     public void  damBrooklynTest() throws Exception {
@@ -65,10 +66,20 @@ public class DamGeneratorTest {
 
     @Test
     public void damTranslation() throws Exception{
+
+        DeployerTypesResolver deployerTypesResolver = null;
+        try{
+            deployerTypesResolver = new DeployerTypesResolver(Resources
+                    .getResource(BROOKLYN_TYPES_MAPPING).toURI().toString());}
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
+
         //String adp = new Scanner(new File(Resources.getResource("example_adp.yml").toURI())).useDelimiter("\\Z").next();
         String adp = new Scanner(new File(Resources.getResource("generated_adp.yml").toURI())).useDelimiter("\\Z").next();
         Yaml yml =new Yaml();
 
+        Map<String, Object> damUsedNodeTypes = new HashMap<>();
         ArrayList<Object> groupsToAdd = new ArrayList<>();
         HashMap<String, ArrayList<String>> groups = new HashMap<>();
 
@@ -87,14 +98,23 @@ public class DamGeneratorTest {
             String moduleType = (String) module.get("type");
             if(nodeTypes.containsKey(moduleType)){
                 Map<String, Object> type = (HashMap<String, Object>) nodeTypes.get(moduleType);
-                String oldType = (String) type.get("derived_from");
-                if(oldType.startsWith("seaclouds.nodes.")){
-                    String newType = oldType.replaceAll("seaclouds.nodes.", "org.apache.brooklyn.entity.");
-                    module.put("type", newType);
+                String sourceType = (String) type.get("derived_from");
+                String targetType = deployerTypesResolver.resolveNodeType(sourceType);
+
+                if (targetType != null) {
+                    module.put("type", targetType);
+                    if(deployerTypesResolver.getNodeTypeDefinition(targetType)!=null){
+                    damUsedNodeTypes.put(targetType,
+                            deployerTypesResolver.getNodeTypeDefinition(targetType));
+                    } else {
+                     //error
+                    }
+                } else {
+                    damUsedNodeTypes.put(moduleType, nodeTypes.get(moduleType));
                 }
+
                 assertNotNull(type);
             }
-
 
             if(module.keySet().contains("requirements")){
                 ArrayList<Map<String, Object> > requirements = (ArrayList<Map<String, Object> >) module.get("requirements");
@@ -110,6 +130,7 @@ public class DamGeneratorTest {
                 }
             }
         }
+        adpYaml.put(DamGenerator.NODE_TYPES, damUsedNodeTypes);
         assertNotNull(groups);
 
         //get brookly location from host

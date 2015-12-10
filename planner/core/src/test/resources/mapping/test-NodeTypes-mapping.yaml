@@ -1,0 +1,6 @@
+map_name: test-mapping-nodeTypes
+description: This mapping contains the equivalence between source and target Nodetypes
+
+mapping.node_types:
+  source.NodeType1: target.NodeType1
+  source.NodeType2: target.NodeType2

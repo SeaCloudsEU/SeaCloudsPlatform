@@ -1,13 +1,20 @@
 package eu.seaclouds.platform.planner.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.io.Resources;
+import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
 import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
-import static com.google.common.base.Preconditions.*;
-import java.util.*;
-import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Copyright 2014 SeaClouds
@@ -26,6 +33,7 @@ import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
  * limitations under the License.
  */
 public class DamGenerator {
+
     private static final String SLA_GEN_OP = "/seaclouds/templates";
     private static final String SLA_INFO_GROUPNAME = "sla_gen_info";
     private static final String MONITOR_INFO_GROUPNAME = "monitoringInformation";
@@ -40,7 +48,6 @@ public class DamGenerator {
     public static final String GROUPS = "groups";
     public static final String HOST = "host";
     public static final String REQUIREMENTS = "requirements";
-    public static final String DERIVED_FROM = "derived_from";
     public static final String MEMBERS = "members";
     public static final String ID = "id";
     public static final String APPLICATION = "application";
@@ -48,9 +55,8 @@ public class DamGenerator {
     public static final String TOPOLOGY_TEMPLATE = "topology_template";
     public static final String NODE_TEMPLATES = "node_templates";
     public static final String NODE_TYPES = "node_types";
-    public static final String ORG_APACHE_BROOKLYN_ENTITY = "org.apache.brooklyn.entity.";
-    public static final String SEACLOUDS_NODES = "seaclouds.nodes.";
     public static final String PROPERTIES = "properties";
+    private static final String BROOKLYN_TYPES_MAPPING = "mapping/brooklyn-types-mapping.yaml";
 
 
     static Map<String, List<Module>> monitoringInfoByApplication=new HashMap<String,List<Module>>();
@@ -104,26 +110,44 @@ public class DamGenerator {
 
     public static Map<String, Object> translateAPD(Map<String, Object> adpYaml){
         Yaml yml = new Yaml();
+        DeployerTypesResolver deployerTypesResolver = null;
+
+        Map<String, Object> damUsedNodeTypes = new HashMap<>();
         List<Object> groupsToAdd = new ArrayList<>();
         Map<String, ArrayList<String>> groups = new HashMap<>();
-
         Map<String, Object> ADPgroups = (Map<String, Object>) adpYaml.get(GROUPS);
-
         Map<String, Object> topologyTemplate = (Map<String, Object>) adpYaml.get(TOPOLOGY_TEMPLATE);
         Map<String, Object> nodeTemplates = (Map<String, Object>) topologyTemplate.get(NODE_TEMPLATES);
         Map<String, Object> nodeTypes = (Map<String, Object>) adpYaml.get(NODE_TYPES);
+
+        try{
+            deployerTypesResolver = new DeployerTypesResolver(Resources
+                    .getResource(BROOKLYN_TYPES_MAPPING).toURI().toString());}
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
 
         for(String moduleName:nodeTemplates.keySet()){
             Map<String, Object> module = (Map<String, Object>) nodeTemplates.get(moduleName);
 
             //type replacement
-            String moduleType = (String) module.get(TYPE);
+            String moduleType = (String) module.get("type");
             if(nodeTypes.containsKey(moduleType)){
                 Map<String, Object> type = (HashMap<String, Object>) nodeTypes.get(moduleType);
-                String oldType = (String) type.get(DERIVED_FROM);
-                if(oldType.startsWith(SEACLOUDS_NODES)){
-                    String newType = oldType.replaceAll(SEACLOUDS_NODES, ORG_APACHE_BROOKLYN_ENTITY);
-                    module.put(TYPE, newType);
+                String sourceType = (String) type.get("derived_from");
+                String targetType = deployerTypesResolver.resolveNodeType(sourceType);
+
+                if (targetType != null) {
+                    module.put("type", targetType);
+                    if(deployerTypesResolver.getNodeTypeDefinition(targetType)!=null){
+                        damUsedNodeTypes.put(targetType,
+                                deployerTypesResolver.getNodeTypeDefinition(targetType));
+                    } else {
+                        log.error("TargetType definition " + targetType + "was not found" +
+                                "so it will not added to DAM");
+                    }
+                } else {
+                    damUsedNodeTypes.put(moduleType, nodeTypes.get(moduleType));
                 }
             }
 
@@ -140,6 +164,8 @@ public class DamGenerator {
                 }
             }
         }
+
+        adpYaml.put(NODE_TYPES, damUsedNodeTypes);
 
         //get brookly location from host
         for(String group: groups.keySet()){
