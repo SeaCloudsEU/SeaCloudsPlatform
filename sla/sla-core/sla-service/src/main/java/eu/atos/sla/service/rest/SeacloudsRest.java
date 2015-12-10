@@ -177,6 +177,56 @@ public class SeacloudsRest extends AbstractSLARest {
         }
     }
 
+    @POST
+    @Path("templates")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createTemplateFromDamAndRules(@Context UriInfo uriInfo, FormDataMultiPart form) throws InternalException {
+        try {
+            
+            FormDataBodyPart damPart = form.getField("dam");
+            FormDataBodyPart rulesPart = form.getField("rules");
+
+            if (damPart == null || rulesPart == null) {
+                String entity = ((damPart == null)? "DAM not found in multipart. " : "") + 
+                                ((rulesPart == null)? "Monitoring rules not found in multipart. " : "");
+                Response response = Response.
+                        status(Response.Status.BAD_REQUEST).
+                        entity(entity).
+                        build();
+                return response;
+            }
+            String rules = rulesPart.getValueAs(String.class);
+            String dam = damPart.getValueAs(String.class);
+
+            logger.info("\nPOST /seaclouds/templates\n{}\n{}", dam, rules);
+
+            SlaInfo slaInfo = slaInfoBuilder.build(dam, rules);
+            
+            String id = createTemplate(slaInfo, true);
+            String location = buildResourceLocation(uriInfo.getAbsolutePath().toString(), id);
+            
+            Map<String, String> map = Collections.singletonMap("id", id);
+            
+            ResponseBuilderImpl builder = new ResponseBuilderImpl();
+            builder.header("location", location);
+            builder.status(HttpStatus.CREATED.value());
+            builder.entity(map);
+            return builder.build();
+            
+        } catch (DBMissingHelperException e) {
+            throw new InternalException(e.getMessage(), e);
+        } catch (DBExistsHelperException e) {
+            throw new InternalException(e.getMessage(), e);
+        } catch (InternalHelperException e) {
+            throw new InternalException(e.getMessage(), e);
+        } catch (ParserHelperException e) {
+            throw new InternalException(e.getMessage(), e);
+        } catch (JAXBException e) {
+            throw new InternalException(e.getMessage(), e);
+        }
+    }
+
     public String createTemplate(SlaInfo slaInfo, boolean persist) throws JAXBException,
             DBMissingHelperException, DBExistsHelperException,
             InternalHelperException, ParserHelperException {
@@ -199,16 +249,49 @@ public class SeacloudsRest extends AbstractSLARest {
     
     @POST
     @Path("agreements")
+    public Response createAgreement(
+            @Context UriInfo uriInfo, 
+            @QueryParam("agreementId") String agreementId,
+            @RequestBody String slaPayload) 
+                    throws ParserException, InternalException {
+        
+        String id = createAgreementImpl(agreementId, slaPayload);
+        String location = buildResourceLocation(uriInfo.getAbsolutePath().toString() ,id);
+        logger.debug("EndOf createAgreement");
+        return buildResponsePOST(
+                HttpStatus.CREATED,
+                createMessage(HttpStatus.CREATED, id, 
+                        "The agreement has been stored successfully in the SLA Repository Database. "
+                        + "It has location " + location), location);
+    }
+
+    /*
+     * Maintained for backward compatibility
+     */
+    @Deprecated
+    @POST
+    @Path("agreements")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response createAgreement(@Context UriInfo uriInfo, FormDataMultiPart form,
+    public Response createAgreementMultipart(@Context UriInfo uriInfo, FormDataMultiPart form,
             @QueryParam("agreementId") String agreementId) 
             throws ParserException, InternalException {
         
         FormDataBodyPart slaPart = form.getField("sla");
         String slaPayload = slaPart.getValueAs(String.class);
 
+        String id = createAgreementImpl(agreementId, slaPayload);
+        String location = buildResourceLocation(uriInfo.getAbsolutePath().toString() ,id);
+        logger.debug("EndOf createAgreement");
+        return buildResponsePOST(
+                HttpStatus.CREATED,
+                createMessage(HttpStatus.CREATED, id, 
+                        "The agreement has been stored successfully in the SLA Repository Database. "
+                        + "It has location " + location), location);
+    }
+
+    private String createAgreementImpl(String agreementId, String slaPayload)
+            throws ParserException, InternalException {
         String id;
-        String location = null;
         Agreement a = agreementParser.getWsagObject(slaPayload);
         try {
             String providerUuid = a.getContext().getAgreementResponder();
@@ -220,7 +303,6 @@ public class SeacloudsRest extends AbstractSLARest {
                 provider = providerDAO.save(provider);
             }
             id = agreementHelper.createAgreement(a, slaPayload, agreementId != null? agreementId : "");
-            location = buildResourceLocation(uriInfo.getAbsolutePath().toString() ,id);
         } catch (DBMissingHelperException e) {
             throw new InternalException(e.getMessage());
         } catch (DBExistsHelperException e) {
@@ -230,12 +312,7 @@ public class SeacloudsRest extends AbstractSLARest {
         } catch (ParserHelperException e) {
             throw new InternalException(e.getMessage());
         }
-        logger.debug("EndOf createAgreement");
-        return buildResponsePOST(
-                HttpStatus.CREATED,
-                createMessage(HttpStatus.CREATED, id, 
-                        "The agreement has been stored successfully in the SLA Repository Database. "
-                        + "It has location " + location), location);
+        return id;
     }
     
     @POST
@@ -278,11 +355,12 @@ public class SeacloudsRest extends AbstractSLARest {
         Agreement wsagAgreement = new AgreementGenerator(wsagTemplate).generate();
         logger.debug(JaxbUtils.toString(wsagAgreement));
         
-        /*
-         * TODO: Finish 
-         */
-        return null;
+        ResponseBuilderImpl builder = new ResponseBuilderImpl();
+        builder.status(HttpStatus.OK.value());
+        builder.entity(wsagAgreement);
+        return builder.build();
     }
+    
     
     /**
      * Returns base url of the sla core.

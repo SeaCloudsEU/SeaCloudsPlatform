@@ -38,7 +38,7 @@ import eu.seaclouds.platform.sla.generator.SlaInfo;
 import eu.seaclouds.platform.sla.generator.TemplateGenerator;
 import eu.seaclouds.platform.sla.generator.ContextInfo.Validity;
 
-public class SlaGeneratorTest {
+public class TemplateGeneratorTest {
 
     @Test
     public void testGenerate() throws JAXBException {

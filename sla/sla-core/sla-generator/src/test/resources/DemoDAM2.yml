@@ -1,0 +1,89 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: WebChat application
+imports: ['tosca-normative-types:1.0.0.wd03-SNAPSHOT']
+topology_template:
+  node_templates:
+    Chat:
+      type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
+      artifacts:
+      - {war: 'http://www.seaclouds.eu/artifacts/chat-webApplication.war', type: tosca.artifacts.File}
+      requirements:
+      - {endpoint: MessageDatabase}
+      - {instancesPOC: 8, host: App42_PaaS_America_US}
+    MessageDatabase:
+      type: org.apache.brooklyn.entity.database.mysql.MySqlNode
+      artifacts:
+      - {db_create: 'http://www.seaclouds.eu/artifacts/create-message-database.sql',
+        type: tosca.artifacts.File}
+      properties:
+        mysql_version:
+          constraints:
+          - {greater_or_equal: '5.0'}
+          - {less_or_equal: '5.0'}
+      requirements:
+      - {instancesPOC: 7, host: Microsoft_Azure_Virtual_Machines_A10_asia_southeast}
+    Microsoft_Azure_Virtual_Machines_A10_asia_southeast:
+      type: seaclouds.Nodes.Compute
+      properties: {num_cpus: 8, country: Singapore, cost: 1.97 USD/hour, hardwareId: A10,
+        city: SINGAPORE, resource_type: compute, disk_size: 382, location: azurecompute,
+        availability: 0.9995, region: asia-southeast, ram: 56}
+    App42_PaaS_America_US:
+      type: seaclouds.Nodes.Platform
+      properties: {continent: America, country: US, postgresql_support: true, php_version: 5.5,
+        auto_scaling: false, postgresql_version: 9.1, horizontal_scaling: true, python_version: 2.7,
+        vertical_scaling: true, php_support: true, node_support: true, tomcat_version: 6.0,
+        private_hosting: false, mongodb_version: 2.4, resource_type: platform, node_version: 0.10.22,
+        ruby_version: 2.0.0, tomcat_support: true, mongodb_support: true, public_hosting: true,
+        redis_support: true, mysql_version: 5.5, java_support: true, redis_version: 2.8,
+        ruby_support: true, python_support: true, java_version: 7, mysql_support: true}
+  groups:
+      operation_Chat:
+        members: [Chat]
+        policies:
+        - QoSInfo: {execution_time: 50 ms, benchmark_platform: hp_cloud_services.2xl}
+        - dependencies: {operation_MessageDatabase: '2'}
+        - QoSRequirements:
+            response_time: {less_than: 2000.0 ms}
+            availability: {greater_than: 0.998}
+            cost: {less_or_equal: 200.0 euros_per_month}
+            workload: {less_or_equal: 50.0 req_per_min}
+        - ExpectedQualityPOC: {expectedExecutionTimePOC: .NaN, fitnessPOC: .NaN, expectedCostPOC: 9928.8}
+      operation_MessageDatabase:
+        members: [MessageDatabase]
+        policies:
+        - QoSInfo: {execution_time: 30 ms, benchmark_platform: hp_cloud_services.2xl}
+        - dependencies: {}
+      add_brooklyn_location_App42_PaaS_America_US:
+        members: [Chat]
+        policies:
+        - {brooklyn.location: App42_PaaS_America_US}
+      add_brooklyn_location_Microsoft_Azure_Virtual_Machines_A10_asia_southeast:
+        members: [MessageDatabase]
+        policies:
+        - {brooklyn.location: 'azurecompute:asia-southeast'}
+    
+node_types:
+  sc_req.Chat:
+    derived_from: seaclouds.nodes.webapp.tomcat.TomcatServer
+    properties:
+      java_support:
+        constraints:
+        - {equal: true}
+      tomcat_support:
+        constraints:
+        - {equal: true}
+      java_version:
+        constraints:
+        - {greater_or_equal: '6'}
+      resource_type:
+        constraints:
+        - {equal: platform}
+  sc_req.MessageDatabase:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      disk_size:
+        constraints:
+        - {greater_or_equal: '50'}
+      resource_type:
+        constraints:
+        - {equal: compute}

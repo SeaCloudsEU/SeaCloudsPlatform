@@ -41,8 +41,8 @@ public class AgreementGenerator {
         this.ctx = new ContextInfo(
                 c.getAgreementResponder(), 
                 c.getAgreementInitiator(), 
-                c.getService(), 
-                "");
+                c.getService(),
+                "P1Y");
     }
     public AgreementGenerator(Template template, ContextInfo ctx) {
         this.template = template;
