@@ -23,7 +23,6 @@ import alien4cloud.tosca.parser.ParsingResult;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.io.Resources;
 import eu.seaclouds.common.tosca.ToscaSerializer;
 import eu.seaclouds.planner.matchmaker.Matchmaker;
 import eu.seaclouds.planner.matchmaker.Pair;
@@ -34,12 +33,15 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 import eu.seaclouds.platform.planner.optimizer.Optimizer;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.*;
 
 public class Planner {
+    public static final String BENCHMARK_PLATFORM = "benchmark_platform";
+    public static final String QOS_INFO = "QoSInfo";
+    public static final String OPERATION = "operation";
+    public static final String POLICIES = "policies";
+    public static final String GROUPS = "groups";
     static Logger log = LoggerFactory.getLogger(ToscaSerializer.class);
     private static final String DISCOVERER_PATH = "discoverer/";
 
@@ -97,6 +99,34 @@ public class Planner {
 
 
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(singleRes);
+    }
+
+    protected String addBenchmarkInfo(String aam, Map<String, Object> nodeTemplates){
+        Yaml yml = new Yaml();
+        Map<String, Object> aamYaml = (Map<String, Object>) yml.load(aam);
+        Map<String, Map<String, Object>> aamGroups = (Map<String, Map<String, Object>>) aamYaml.get(GROUPS);
+
+         for(String m:aamGroups.keySet()){
+            if(m.startsWith(OPERATION)){
+                List<Map<String, Object>> policies = (List<Map<String, Object>>) aamGroups.get(m).get(POLICIES);
+                for(Map<String, Object> o : policies){
+                    if(o.keySet().contains(QOS_INFO)){
+                        Map<String, Object> QoSInfo = (Map<String, Object>) o.get(QOS_INFO);
+                        String benchMarkPlatform = (String) QoSInfo.get(BENCHMARK_PLATFORM);
+                        if(!nodeTemplates.keySet().contains(benchMarkPlatform)){
+                            log.error("Impossible to add benchmark node. The node "+benchMarkPlatform+" is not among the offerings");
+                        }else {
+                            Map<String, Object> bpNode = new HashMap<>();
+                            bpNode.put(benchMarkPlatform, nodeTemplates.get(benchMarkPlatform));
+                            QoSInfo.put(BENCHMARK_PLATFORM, bpNode);
+                        }
+                    }
+                }
+            }
+        }
+
+        String newAAM = yml.dump(aamYaml);
+        return newAAM;
     }
 
     private String generateMMOutput(Map<String, HashSet<String>> mmResult, Map<String, Pair<NodeTemplate, String>> offerings) throws Exception{
@@ -161,10 +191,15 @@ public class Planner {
             log.info("Module " + s + "has matching offerings: " + matchingOfferings.get(s));
         }
 
+        log.info("Adding benchmark information to AAM");
+        String modifiedAAM = addBenchmarkInfo(aam, transformDiscovererOutput(offerings));
+        log.info("The modified AAM is:\n " + modifiedAAM );
+        log.info("benchmark information added");
+
         log.info("Optimization Step: Start");
         log.info("Calling optimizer with suitable offerings: \n" + mmOutput);
         Optimizer optimizer = new Optimizer();
-        String[] outputPlans = optimizer.optimize(aam, mmOutput);
+        String[] outputPlans = optimizer.optimize(modifiedAAM, mmOutput);
         log.info("Optimzer result: " + Arrays.asList(outputPlans));
         log.info("Optimization Step: Complete");
 
@@ -204,6 +239,11 @@ public class Planner {
         for(String s:matchingOfferings.keySet()){
             log.info("Module " + s + "has matching offerings: " + matchingOfferings.get(s));
         }
+
+        log.info("Adding benchmark information to AAM");
+        String modifiedAAM = addBenchmarkInfo(aam, transformDiscovererOutput(offerings));
+        log.info("The modified AAM is:\n " + modifiedAAM );
+        log.info("benchmark information added");
 
         log.info("Optimization Step: Start");
         log.info("Calling optimizer with suitable offerings: \n" + mmOutput);
@@ -289,6 +329,15 @@ public class Planner {
 
 
         return map;
+    }
+
+    private Map<String, Object> transformDiscovererOutput(Map<String, Pair<NodeTemplate, String>> offerings){
+        Map<String, Object> ofs = new HashMap<>();
+        for(String k: offerings.keySet()){
+            Pair<NodeTemplate, String> of = offerings.get(k);
+            ofs.put(k, of.second);
+        }
+        return ofs;
     }
 
     public Map<String, Pair<NodeTemplate, String>> getOfferings(List<String> deployableOfferings){
