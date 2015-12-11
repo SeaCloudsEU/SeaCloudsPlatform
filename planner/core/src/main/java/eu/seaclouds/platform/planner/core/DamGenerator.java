@@ -44,6 +44,7 @@ public class DamGenerator {
     public static final String POLICIES = "policies";
     public static final String GROUPS = "groups";
     public static final String HOST = "host";
+    public static final String INSTANCES_POC = "instancesPOC";
     public static final String REQUIREMENTS = "requirements";
     public static final String MEMBERS = "members";
     public static final String ID = "id";
@@ -158,6 +159,7 @@ public class DamGenerator {
                         }
                         groups.get(host).add(moduleName);
                     }
+                    req.remove(INSTANCES_POC);
                 }
             }
         }

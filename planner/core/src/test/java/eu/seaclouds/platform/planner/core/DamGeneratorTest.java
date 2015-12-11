@@ -127,6 +127,8 @@ public class DamGeneratorTest {
                         }
                         groups.get(host).add(moduleName);
                     }
+                    req.remove(DamGenerator.INSTANCES_POC);
+
                 }
             }
         }
