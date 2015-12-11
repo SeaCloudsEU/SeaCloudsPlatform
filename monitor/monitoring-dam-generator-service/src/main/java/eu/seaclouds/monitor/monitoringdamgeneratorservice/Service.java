@@ -1,11 +1,9 @@
 package eu.seaclouds.monitor.monitoringdamgeneratorservice;
 
-import it.polimi.tower4clouds.rules.MonitoringRules;
-
 import java.io.StringWriter;
-import java.util.ArrayList;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -20,16 +18,22 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
-import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
+import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
 
 @Path("/")
 public class Service{
 
+    
+    static Logger log = LoggerFactory.getLogger(Service.class);
+
     private static String monitoringManagerIp;
     private static String monitoringManagerPort;
 
-    private static Map<String, List<Module>> monitoringInfoByApplication=new HashMap<String,List<Module>>();
+    private static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<String, MonitoringInfo>();
     
     public Service(String monitorUrl,
             String monitorPort)
@@ -46,14 +50,23 @@ public class Service{
     @Consumes(MediaType.TEXT_PLAIN)
     public ApplicationId generateMonitoringInfo(String adp) {
 
-        MonitoringDamGenerator monDamGen= new MonitoringDamGenerator(monitoringManagerIp, monitoringManagerPort);
+        MonitoringDamGenerator monDamGen;
+
+        try {
+            monDamGen = new MonitoringDamGenerator(new URL("http://"+ monitoringManagerIp +":"+ monitoringManagerPort +""));
+            String generatedApplicationId = UUID.randomUUID().toString();
+            MonitoringInfo generated = monDamGen.generateMonitoringInfo(adp);
+            
+            monitoringInfoByApplication.put(generatedApplicationId, generated);   
+            
+            return new ApplicationId(generatedApplicationId);
+        } catch (MalformedURLException e) {
+            log.error(e.getMessage());
+        }
         
-        String generatedApplicationId = UUID.randomUUID().toString();
-        List<Module> generated = monDamGen.generateMonitoringInfo(adp);
+        return null;
         
-        monitoringInfoByApplication.put(generatedApplicationId, generated);   
-        
-        return new ApplicationId(generatedApplicationId);
+
 
     }
     
@@ -67,20 +80,7 @@ public class Service{
     @Produces(MediaType.APPLICATION_JSON)
     public ApplicationRules getMonitoringRulesByApplication(@PathParam("id") String applicationId){
         
-        MonitoringRules toReturn=new MonitoringRules();
         StringWriter sw = new StringWriter();
-        
-        for(Module i: monitoringInfoByApplication.get(applicationId)){
-            
-            if(i.getRules()!=null){
-                toReturn.getMonitoringRules().addAll(i.getRules().getMonitoringRules());
-            }
-            
-            if(i.getHost().getRules() != null){
-                toReturn.getMonitoringRules().addAll(i.getHost().getRules().getMonitoringRules());
-            }
-            
-        }
         
         JAXBContext context;
         try {
@@ -88,7 +88,7 @@ public class Service{
                     .newInstance("it.polimi.tower4clouds.rules");
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty("jaxb.formatted.output", Boolean.TRUE);
-            marshaller.marshal(toReturn, sw);
+            marshaller.marshal(monitoringInfoByApplication.get(applicationId).getApplicationMonitoringRules(), sw);
         } catch (JAXBException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -103,25 +103,11 @@ public class Service{
      *                      in order to deploy the data collectors associated which applicationId
      */
     @GET
-    @Path("/{id}/dataCollectorNodeTemplates")
+    @Path("/{id}/generatedAdp")
     @Produces(MediaType.APPLICATION_JSON)
-    public ApplicationToscaDcScripts getDataCollectorNodeTemplatesByApplication(@PathParam("id") String applicationId){
+    public GeneratedAdp getGeneratedAdp(@PathParam("id") String applicationId){
         
-        List<String> output = new ArrayList<String>();
-        
-        for(Module i: monitoringInfoByApplication.get(applicationId)){
-            
-            for(String dc: i.getDataCollectorToscaDeploymentScripts().keySet()){
-                output.add(i.getDataCollectorToscaDeploymentScripts().get(dc));
-            }
-            
-            for(String dc: i.getHost().getDataCollectorToscaDeploymentScripts().keySet()){
-                output.add(i.getHost().getDataCollectorToscaDeploymentScripts().get(dc));
-            }
-           
-        }
-        
-        return new ApplicationToscaDcScripts(output);
+        return new GeneratedAdp(monitoringInfoByApplication.get(applicationId).getReturnedAdp());
     }
 
 }

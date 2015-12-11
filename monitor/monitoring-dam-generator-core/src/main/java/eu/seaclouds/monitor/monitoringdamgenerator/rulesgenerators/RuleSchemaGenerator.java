@@ -1,4 +1,4 @@
-package eu.seaclouds.monitor.monitoringdamgenerator.util;
+package eu.seaclouds.monitor.monitoringdamgenerator.rulesgenerators;
 
 import java.util.Map;
 
@@ -22,7 +22,6 @@ public class RuleSchemaGenerator {
     private static final ObjectFactory factory = new ObjectFactory();
     private static final Logger logger = LoggerFactory
             .getLogger(RuleSchemaGenerator.class);
-
 
     public static MonitoringRules fillMonitoringRuleSchema(String ruleId,
             String timestep, String timewindow, String targetClass,
@@ -50,7 +49,7 @@ public class RuleSchemaGenerator {
         monitoredTarget = factory.createMonitoredTarget();
         collectedMetric = factory.createCollectedMetric();
         metricAggregation = factory.createMonitoringMetricAggregation();
-        cond= factory.createCondition();
+        cond = factory.createCondition();
         actions = factory.createActions();
         action = factory.createAction();
         metric = factory.createParameter();
@@ -101,7 +100,7 @@ public class RuleSchemaGenerator {
             collectedMetric.setMetricName(monitoredMetric);
         }
 
-        if(parameters!=null){
+        if (parameters != null) {
             for (String key : parameters.keySet()) {
                 parameter = factory.createParameter();
                 parameter.setName(key);
@@ -121,8 +120,8 @@ public class RuleSchemaGenerator {
             logger.warn("Aggregation fucntion specified but no aggregation level found; any aggregation will be applied for rule"
                     + ruleId);
         }
-        
-        if(condition!= null){
+
+        if (condition != null) {
             cond.setValue(condition);
             rule.setCondition(cond);
         }

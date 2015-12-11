@@ -3,18 +3,15 @@ package eu.seaclouds.platform.planner.core;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
-import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
+import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
+import static com.google.common.base.Preconditions.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Copyright 2014 SeaClouds
@@ -59,7 +56,7 @@ public class DamGenerator {
     private static final String BROOKLYN_TYPES_MAPPING = "mapping/brooklyn-types-mapping.yaml";
 
 
-    static Map<String, List<Module>> monitoringInfoByApplication=new HashMap<String,List<Module>>();
+    static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<String, MonitoringInfo>();
 
     static Logger log = LoggerFactory.getLogger(DamGenerator.class);
 
@@ -78,17 +75,17 @@ public class DamGenerator {
     }
 
 
-    public static Map<String, Object> addMonitorInfo(String adp, String monitorUrl, String monitorPort){
-        MonitoringDamGenerator monDamGen = new MonitoringDamGenerator(monitorUrl, monitorPort);
+    public static Map<String, Object> addMonitorInfo(String adp, String monitorUrl, String monitorPort){      
+        
+        MonitoringDamGenerator monDamGen = null;
+        try {
+            monDamGen = new MonitoringDamGenerator(new URL("http://"+ monitorUrl +":"+ monitorPort +""));
+        } catch (MalformedURLException e) {
+            log.error(e.getMessage());
+        }
         String generatedApplicationId = UUID.randomUUID().toString();
 
-
-        List<Module> generated = new ArrayList<>();
-        try {
-            generated = monDamGen.generateMonitoringInfo(adp);
-        }catch (Exception e){
-            log.error("MonitorGeneration failed", e);
-        }
+        MonitoringInfo generated = monDamGen.generateMonitoringInfo(adp);
         monitoringInfoByApplication.put(generatedApplicationId, generated);
 
         HashMap<String, Object> appGroup = new HashMap<>();
@@ -101,7 +98,7 @@ public class DamGenerator {
         appGroup.put(POLICIES, l);
 
         Yaml yml = new Yaml();
-        Map<String, Object> adpYaml = (Map<String, Object>) yml.load(adp);
+        Map<String, Object> adpYaml = (Map<String, Object>) yml.load(generated.getReturnedAdp());
         Map<String, Object> groups = (Map<String, Object>) adpYaml.get(GROUPS);
         groups.put(MONITOR_INFO_GROUPNAME, appGroup);
 
