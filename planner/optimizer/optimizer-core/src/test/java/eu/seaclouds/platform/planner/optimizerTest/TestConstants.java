@@ -4,7 +4,7 @@ public class TestConstants {
 
    public static final boolean EnabledTest = true;
    
-   public static final String APP_MODEL_FILENAME    = "./src/test/resources/aam_atos_case_study20Oct.yml";
+   public static final String APP_MODEL_FILENAME    = "./src/test/resources/aam_atos_case_study10Dec.yml";
 
    
    public static final String CLOUD_OFFER_FILENAME_IN_DIRECTMAP  = "./src/test/resources/MMoutputV-15-09.yml";
