@@ -204,12 +204,12 @@ public class OptimizerInitialDeployment {
             log.debug("Adding upperWkl= " + upperWklBound + " lowerWkl=" + lowerWklBound + " poolsize=" + maxPoolSize);
             YAMLoptimizerParser.addScalingPolicyToModule(entry.getKey(), baseAppMap, lowerWklBound, upperWklBound, 1,
                   maxPoolSize);
+            YAMLoptimizerParser.changeModuleToScalableType(entry.getKey(), baseAppMap);
          } else {
             log.debug("Module " + entry.getKey() + " was not scalable");
          }
 
       }
-
    }
 
    private String showThresholds(HashMap<String, ArrayList<Double>> thresholds) {

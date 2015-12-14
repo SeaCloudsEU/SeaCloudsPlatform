@@ -20,6 +20,7 @@ package eu.seaclouds.platform.planner.optimizer.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -366,6 +367,63 @@ public class YAMLmodulesOptimizerParser {
          // Returning the default value "true" for seeing policies generated
       }
       return true;
+   }
+
+   
+   /**
+    * @param moduleName
+    * @param modulesMap
+    * @return The type of node_template called moduleName
+    */
+   public static String getModuleTypeFromModulesMap(String moduleName, Map<String, Object> modulesMap) {
+      try {
+         Map<String, Object> moduleInternalInfo = (Map<String, Object>) YAMLmodulesOptimizerParser
+               .getModuleInfoFromModulesMap(modulesMap, moduleName).getValue();
+         if (moduleInternalInfo != null) {
+            return YAMLmodulesOptimizerParser.getModuleTypeFromModuleInfo(moduleInternalInfo);
+         } else {
+            return null;
+         }
+      } catch (Exception E) {
+         // Some part was not found in modules map. Logging the event and
+         // returning null
+         log.debug("It was not found the type of module " + moduleName + " in the AAM");
+      }
+      return null;
+   }
+
+   
+   /**
+    * @param moduleInfo (information of the module, excluding the name of the module)
+    * @return The type declared in the node template passed as parameter
+    */
+   public static String getModuleTypeFromModuleInfo(Map<String, Object> moduleInfo) {
+      if (moduleInfo.containsKey(TOSCAkeywords.MODULE_TYPE)) {
+         return (String) moduleInfo.get(TOSCAkeywords.MODULE_TYPE);
+      } else {
+         return null;
+      }
+   }
+
+   
+   /**
+    * @param modulesMap
+    * @param moduleName
+    * @return the information of the node_template with key moduleName (the key is included)
+    */
+   public static Entry<String, Object> getModuleInfoFromModulesMap(Map<String, Object> modulesMap, String moduleName) {
+      if (modulesMap.containsKey(moduleName)) {
+         for (Map.Entry<String, Object> entry : modulesMap.entrySet()) {
+            if (entry.getKey().equals(moduleName)) {
+               if (log.isDebugEnabled()) {
+                  log.debug("return entry that describes module with name '" + entry.getKey() + "'");
+               }
+               return entry;
+            }
+         }
+      }
+      log.warn("Module description not found. Check correcness of name given as group members and modules name");
+      return null;
    }
 
 }
