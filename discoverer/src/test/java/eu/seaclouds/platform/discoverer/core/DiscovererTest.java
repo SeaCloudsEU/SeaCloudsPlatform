@@ -37,4 +37,11 @@ public class DiscovererTest {
         String ofId = d.addOffering(null);
         Assert.assertNull(ofId);
     }
+
+    @Test
+    public void testRemoveInvalidOffering() {
+        Discoverer d = Discoverer.instance();
+        String ofId = null;
+        Assert.assertFalse(d.removeOffering(ofId));
+    }
 }

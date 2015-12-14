@@ -18,6 +18,7 @@
 package eu.seaclouds.platform.discoverer.core;
 
 
+import org.json.simple.parser.ParseException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -44,6 +45,16 @@ public class OfferingTest {
         Assert.assertEquals(sanitizedName.indexOf(' '), -1);
         Assert.assertEquals(sanitizedName.indexOf('+'), -1);
         Assert.assertEquals(sanitizedName.indexOf('-'), -1);
+    }
+
+    @Test
+    public void testOfferingJSON() throws ParseException {
+        Offering of = Offering.fromJSON(offeringJSON);
+        String offeringJSONString = of.toJSON();
+        Assert.assertNotNull(offeringJSONString);
+        Offering parsedOf = Offering.fromJSON(offeringJSONString);
+        Assert.assertNotNull(parsedOf);
+        Assert.assertTrue(of.getName().equals(parsedOf.getName()));
     }
 
 

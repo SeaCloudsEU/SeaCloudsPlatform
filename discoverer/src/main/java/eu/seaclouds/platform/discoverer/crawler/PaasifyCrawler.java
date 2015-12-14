@@ -154,9 +154,9 @@ public class PaasifyCrawler extends SCCrawler {
         Offering offering = null;
 
         if (infrastructures == null || infrastructures.size() == 0) {
-            String offeringName = Offering.sanitizeName(name);
+            String providerName = Offering.sanitizeName(name);
+            offering = this.parseOffering(providerName, providerName, obj);
 
-            offering = this.parseOffering(offeringName, obj);
         } else {
             for (Object element: infrastructures) {
                 JSONObject infrastructure = (JSONObject) element;
@@ -178,9 +178,10 @@ public class PaasifyCrawler extends SCCrawler {
                         fullName = fullName + "." + country;
                 }
 
+                String providerName = Offering.sanitizeName(name);
                 String offeringName = Offering.sanitizeName(fullName);
 
-                offering = this.parseOffering(offeringName, obj);
+                offering = this.parseOffering(providerName, offeringName, obj);
 
                 if (!continent.isEmpty())
                     offering.addProperty("continent", continent);
@@ -194,10 +195,10 @@ public class PaasifyCrawler extends SCCrawler {
     }
 
 
-    private Offering parseOffering(String name, JSONObject obj) {
+    private Offering parseOffering(String providerName, String name, JSONObject obj) {
         Offering offering = new Offering(name);
 
-        offering.setType("seaclouds.Nodes.Platform");
+        offering.setType("seaclouds.Nodes.Platform." + providerName);
         offering.addProperty("resource_type", "platform");
 
         parseRuntimesAndMiddlewares(obj, offering);
