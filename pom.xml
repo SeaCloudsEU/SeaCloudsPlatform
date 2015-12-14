@@ -405,6 +405,11 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.brooklyn</groupId>
+                <artifactId>brooklyn-utils-common</artifactId>
+                <version>${brooklyn.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.brooklyn</groupId>
                 <artifactId>brooklyn-rest-client</artifactId>
                 <version>${brooklyn.version}</version>
             </dependency>

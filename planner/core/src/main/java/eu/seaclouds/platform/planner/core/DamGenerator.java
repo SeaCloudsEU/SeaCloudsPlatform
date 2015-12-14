@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
+import org.apache.brooklyn.util.text.Identifiers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -49,21 +50,28 @@ public class DamGenerator {
     public static final String MEMBERS = "members";
     public static final String ID = "id";
     public static final String APPLICATION = "application";
-    public static final String TYPE = "type";
     public static final String TOPOLOGY_TEMPLATE = "topology_template";
     public static final String NODE_TEMPLATES = "node_templates";
     public static final String NODE_TYPES = "node_types";
     public static final String PROPERTIES = "properties";
     private static final String BROOKLYN_TYPES_MAPPING = "mapping/brooklyn-types-mapping.yaml";
 
+    private static final String IMPORTS = "imports";
+    private static final String TOSCA_NORMATIVE_TYPES = "tosca-normative-types:1.0.0.wd06-SNAPSHOT";
 
-    static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<String, MonitoringInfo>();
+    private static final String TEMPLATE_NAME = "template_name";
+    private static final String TEMPLATE_NAME_PREFIX = "seaclouds.app.";
+    private static final String TEMPLATE_VERSION = "template_version";
+    private static final String DEFAULT_TEMPLATE_VERSION = "1.0.0-SNAPSHOT";
+
+    static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<>();
 
     static Logger log = LoggerFactory.getLogger(DamGenerator.class);
 
     public static String generateDam(String adp, String monitorGenURL, String monitorGenPort, String slaGenURL){
         Yaml yml = new Yaml();
         Map<String, Object> adpYaml = (Map<String, Object>) yml.load(adp);
+        adpYaml = DamGenerator.manageTemplateMetada(adpYaml);
         adpYaml = DamGenerator.translateAPD(adpYaml);
         adpYaml = DamGenerator.addMonitorInfo(yml.dump(adpYaml), monitorGenURL, monitorGenPort);
 
@@ -75,6 +83,24 @@ public class DamGenerator {
         return adpStr;
     }
 
+    public static Map<String, Object> manageTemplateMetada(Map<String, Object> adpYaml){
+        if(adpYaml.containsKey(IMPORTS)){
+            List<String> imports =(List<String>) adpYaml.get(IMPORTS);
+            if (!imports.contains(TOSCA_NORMATIVE_TYPES)){
+                imports.add(TOSCA_NORMATIVE_TYPES);
+            }
+        }
+
+        if(!adpYaml.containsKey(TEMPLATE_NAME)){
+            adpYaml.put(TEMPLATE_NAME, TEMPLATE_NAME_PREFIX + Identifiers.makeRandomId(8));
+        }
+
+        if(!adpYaml.containsKey(TEMPLATE_VERSION)){
+            adpYaml.put(TEMPLATE_VERSION, DEFAULT_TEMPLATE_VERSION);
+        }
+
+        return adpYaml;
+    }
 
     public static Map<String, Object> addMonitorInfo(String adp, String monitorUrl, String monitorPort){      
         
