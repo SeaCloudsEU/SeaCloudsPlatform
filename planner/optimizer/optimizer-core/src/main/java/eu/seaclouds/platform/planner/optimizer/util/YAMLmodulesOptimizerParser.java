@@ -29,11 +29,9 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 //Version of September 2015
 public class YAMLmodulesOptimizerParser {
 
-   static Logger                log      = LoggerFactory.getLogger(YAMLmodulesOptimizerParser.class);
-
+   static Logger log = LoggerFactory.getLogger(YAMLmodulesOptimizerParser.class);
 
    public static boolean moduleHasModuleRequirements(String moduleName, Map<String, Object> groups) {
-
 
       Map<String, Object> dependeciesInfoOfGroupOfModule = YAMLgroupsOptimizerParser
             .getDependenciesInfoOfMemberName(moduleName, groups);
@@ -200,7 +198,8 @@ public class YAMLmodulesOptimizerParser {
       // execution time
       // machine tested
       if (log.isDebugEnabled()) {
-         log.debug("Module had qos info but it did not contain information of the time it took to execute in isolation");
+         log.debug(
+               "Module had qos info but it did not contain information of the time it took to execute in isolation");
       }
 
       return 0.0;
@@ -348,6 +347,25 @@ public class YAMLmodulesOptimizerParser {
          return null;
       }
       return availabilityMapValue;
+   }
+
+   public static boolean getScalabilityCapabilitiesOfModule(Map<String, Object> modules, String elementName) {
+      try {
+         Map<String, Object> moduleInfo = (Map<String, Object>) modules.get(elementName);
+         Map<String, Object> moduleProperties = (Map<String, Object>) moduleInfo
+               .get(TOSCAkeywords.MODULE_PROPERTIES_TAG);
+         boolean moduleCanScale = (boolean) moduleProperties.get(TOSCAkeywords.MODULE_AUTOSCALE_PROPERTY);
+         return moduleCanScale;
+      } catch (Exception e) {
+         // Some part did not work looking in the definition of scaling.
+         // Probably because it was not defined.
+         if (log.isDebugEnabled()) {
+            log.debug("For module " + elementName
+                  + " it was not found information in the AAM regarding its possibility to scale");
+         }
+         // Returning the default value "true" for seeing policies generated
+      }
+      return true;
    }
 
 }

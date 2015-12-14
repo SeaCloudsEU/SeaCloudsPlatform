@@ -58,7 +58,7 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
       // solution will be based on the current deployment
 
       cloudOffers.sortDescendingPerformance();
-      Solution[] bestSols = super.findInitialRandomSolutions(cloudOffers, numPlansToGenerate);
+      Solution[] bestSols = super.findInitialRandomSolutions(cloudOffers, numPlansToGenerate, topology);
       super.setFitnessOfSolutions(bestSols, requirements, topology, cloudOffers);
       if (logHill.isDebugEnabled()) {
          logHill.debug(
@@ -73,33 +73,38 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
                                                                     // finds a
                                                                     // peak
 
-         Solution currentSol = super.findRandomSolution(cloudOffers);
+         Solution currentSol = super.findRandomSolution(cloudOffers, topology);
          currentSol.setSolutionFitness(super.fitness(currentSol, requirements, topology, cloudOffers));
 
          boolean neighborsImprove = true;
          int pathLengthTraversed = 0;
          while (neighborsImprove) {
-            Solution[] candidates = findNeighbors(currentSol, cloudOffers, topology);
-
-            logHill.debug(
-                  "Found " + candidates.length + " neighbors of the solution: Are " + Arrays.toString(candidates));
-
-            super.setFitnessOfSolutions(candidates, requirements, topology, cloudOffers);
-            Solution bestCandidate = super.getSolutionWithMaximumFitness(candidates);
-            if (bestCandidate.getSolutionFitness() > currentSol.getSolutionFitness()) {
-               currentSol = bestCandidate;
-               pathLengthTraversed++;
-
-               if (pathLengthTraversed > 100) {
-                  logHill.debug("Something weird is happening, iteration: " + pathLengthTraversed
-                        + "without finding local maxima: Fitness: " + currentSol.getSolutionFitness() + " Solution: "
-                        + currentSol.toString());
-               }
-
-            } else {// there is not any better neighbor. See if this solution
-                    // can be included among the set of best solutions
+            Solution[] candidates = super.findNeighbors(currentSol, cloudOffers, topology);
+            if (candidates == null) {
+               logHill.debug("New candidates not found");
                neighborsImprove = false;
                pathLengthTraversed = 0;
+            } else {
+               logHill.debug(
+                     "Found " + candidates.length + " neighbors of the solution: Are " + Arrays.toString(candidates));
+
+               super.setFitnessOfSolutions(candidates, requirements, topology, cloudOffers);
+               Solution bestCandidate = super.getSolutionWithMaximumFitness(candidates);
+               if (bestCandidate.getSolutionFitness() > currentSol.getSolutionFitness()) {
+                  currentSol = bestCandidate;
+                  pathLengthTraversed++;
+
+                  if (pathLengthTraversed > 100) {
+                     logHill.debug("Something weird is happening, iteration: " + pathLengthTraversed
+                           + "without finding local maxima: Fitness: " + currentSol.getSolutionFitness() + " Solution: "
+                           + currentSol.toString());
+                  }
+
+               } else {// there is not any better neighbor. See if this solution
+                       // can be included among the set of best solutions
+                  neighborsImprove = false;
+                  pathLengthTraversed = 0;
+               }
             }
          }
 
@@ -140,123 +145,5 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
 
    }
 
-   /**
-    * @param currentSol
-    * @param cloudOffers
-    *           - Sorted by performance
-    * @param topology
-    * @return an array of solutuions that are neighbors of currentSol
-    */
-   private Solution[] findNeighbors(Solution currentSol, SuitableOptions cloudOffers, Topology topology) {
-
-      ArrayList<Solution> neighbors = new ArrayList<Solution>();
-      // neighbors are:
-
-      // For each module
-      for (String modulename : currentSol) {
-
-         // Same cloud provider and same machines, change the number of
-         // instances of one module (+1 o -1 (in case there is more than one))
-         findNeighborsByNumInstances(neighbors, currentSol, modulename, topology);
-
-         // Same cloud provider, change the type of machine with the same
-         // instances (+1 o -1 if sorted by peformance or cost)
-         // Here is the thing of single step or two steps heuristic
-         findNeighborsByTypeInstanceInSameProvider(neighbors, currentSol, modulename, cloudOffers);
-
-         // Change the cloud provider (to +1 -1 in availability) and choose the
-         // most similar type of machines for them as the currently
-         // used (1 st step of the current) for performance or cost
-         findNeighborsByCloudProvider(neighbors, currentSol, modulename, cloudOffers);
-      }
-
-      return neighbors.toArray(new Solution[neighbors.size()]);
-   }
-
-   private void findNeighborsByCloudProvider(ArrayList<Solution> neighbors, Solution currentSol, String modulename,
-         SuitableOptions cloudOffers) {
-
-      Solution neighborSol;
-      String currentCloudOffer = currentSol.getCloudOfferNameForModule(modulename);
-      // +1
-      if (cloudOffers.existsAlternativeCloudProviderForModuleWithHigherAvailability(modulename, currentCloudOffer)) {
-         neighborSol = currentSol.clone();
-         neighborSol.modifyCloudOfferOfModule(modulename, cloudOffers
-               .getOfferImmediateHigherAvailabilityOfSameProviderSimilarPerformance(modulename, currentCloudOffer));
-         neighbors.add(neighborSol);
-      }
-      // -1
-      if (cloudOffers.existsAlternativeCloudProviderForModuleWithLowerAvailability(modulename, currentCloudOffer)) {
-         neighborSol = currentSol.clone();
-         neighborSol.modifyCloudOfferOfModule(modulename, cloudOffers
-               .getOfferImmediateLowerAvailabilityOfSameProviderSimilarPerformance(modulename, currentCloudOffer));
-         neighbors.add(neighborSol);
-      }
-   }
-
-   private void findNeighborsByTypeInstanceInSameProvider(ArrayList<Solution> neighbors, Solution currentSol,
-         String modulename, SuitableOptions cloudOffers) {
-
-      Solution neighborSol;
-      String currentCloudOffer = currentSol.getCloudOfferNameForModule(modulename);
-      // +1
-      if (cloudOffers.existsOfferWithBetterPerformanceOfSameProvider(modulename, currentCloudOffer)) {
-         neighborSol = currentSol.clone();
-
-         neighborSol.modifyCloudOfferOfModule(modulename,
-               cloudOffers.getOfferImmediateHigherPerformanceOfSameProvider(modulename, currentCloudOffer));
-         neighbors.add(neighborSol);
-      }
-      // -1
-      if (cloudOffers.existsOfferWithWorsePerformanceOfSameProvider(modulename, currentCloudOffer)) {
-         neighborSol = currentSol.clone();
-         neighborSol.modifyCloudOfferOfModule(modulename,
-               cloudOffers.getOfferImmediateLowerPerformanceOfSameProvider(modulename, currentCloudOffer));
-         neighbors.add(neighborSol);
-      }
-
-   }
-
-   /**
-    * @param neighbors
-    * @param currentSol
-    * @param modulename
-    *           Uses same cloud provider and same machines, change the number of
-    *           instances of one module (+1 o -1 (in case there is more than
-    *           one))
-    * @param topology
-    */
-   private void findNeighborsByNumInstances(ArrayList<Solution> neighbors, Solution currentSol, String modulename,
-         Topology topology) {
-      Solution neighborSol;
-
-      // +1
-      // TODO: Here it should be checked if there is a maximum number of
-      // replicas allowed for a module (see calculation thresholds)
-      // At this point it is a boolean that specifies whether a module can scale
-      // out.
-      if (topology.getModule(modulename).canScale()) {
-         neighborSol = currentSol.clone();
-         try {
-            neighborSol.modifyNumInstancesOfModule(modulename, currentSol.getCloudInstancesForModule(modulename) + 1);
-         } catch (Exception E) {
-            neighborSol.modifyNumInstancesOfModule(modulename, 0);
-
-         }
-         neighbors.add(neighborSol);
-      }
-
-      // -1
-      try {
-         if (currentSol.getCloudInstancesForModule(modulename) > 1) {
-            neighborSol = currentSol.clone();
-            neighborSol.modifyNumInstancesOfModule(modulename, currentSol.getCloudInstancesForModule(modulename) - 1);
-            neighbors.add(neighborSol);
-         }
-      } catch (Exception E) {// nothing to do
-
-      }
-
-   }
 
 }
