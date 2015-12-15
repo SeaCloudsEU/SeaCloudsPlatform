@@ -17,11 +17,10 @@
 		</layout>
 	</appender>
 
-	<logger
-		name="eu.seaclouds.platform.planner.optimizer.Topology">
+	<logger name="eu.seaclouds.platform.planner.optimizer.Topology">
 		<level value="info" />
 	</logger>
-	
+
 	<logger
 		name="eu.seaclouds.platform.planner.optimizer.heuristics.AbstractHeuristic">
 		<level value="info" />
@@ -50,9 +49,20 @@
 	</logger>
 
 	<logger
+		name="eu.seaclouds.platform.planner.optimizer.util.YAMLtypesOptimizerParser">
+		<level value="info" />
+	</logger>
+
+	<logger
 		name="eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser">
 		<level value="info" />
 	</logger>
+	
+		<logger
+		name="eu.seaclouds.platform.planner.optimizer.util.ComputeType">
+		<level value="info" />
+	</logger>
+	
 	<logger
 		name="eu.seaclouds.platform.planner.optimizer.OptimizerInitialDeployment">
 		<level value="info" />
