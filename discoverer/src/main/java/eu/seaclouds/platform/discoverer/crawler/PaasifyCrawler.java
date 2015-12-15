@@ -198,7 +198,7 @@ public class PaasifyCrawler extends SCCrawler {
     private Offering parseOffering(String providerName, String name, JSONObject obj) {
         Offering offering = new Offering(name);
 
-        offering.setType("seaclouds.Nodes.Platform." + providerName);
+        offering.setType("seaclouds.nodes.Platform." + providerName);
         offering.addProperty("resource_type", "platform");
 
         parseRuntimesAndMiddlewares(obj, offering);

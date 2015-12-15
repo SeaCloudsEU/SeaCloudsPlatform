@@ -265,7 +265,7 @@ public class CloudHarmonyCrawler extends SCCrawler {
         String name = Offering.sanitizeName(providerName + "_" + instanceId + "_" + locationCode);
 
         Offering offering = new Offering(name);
-        offering.setType("seaclouds.Nodes.Compute." + Offering.sanitizeName(providerName));
+        offering.setType("seaclouds.nodes.Compute." + Offering.sanitizeName(providerName));
 
         offering.addProperty("resource_type", "compute");
         offering.addProperty("hardwareId", instanceId);
@@ -328,7 +328,7 @@ public class CloudHarmonyCrawler extends SCCrawler {
 
         Offering offering = new Offering(name);
 
-        offering.setType("seaclouds.Nodes.Platform." + Offering.sanitizeName(chs.name));
+        offering.setType("seaclouds.nodes.Platform." + Offering.sanitizeName(chs.name));
 
         /* resource type  */
         offering.addProperty("resource_type", "platform");
