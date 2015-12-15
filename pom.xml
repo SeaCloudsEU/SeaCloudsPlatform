@@ -63,10 +63,6 @@
             <url>https://github.com/szenzaro</url>
         </developer>
         <developer>
-            <name>Simone Zenzaro</name>
-            <url>https://github.com/szenzaro</url>
-        </developer>
-        <developer>
             <name>Diego Perez</name>
             <url>https://github.com/perezp</url>
         </developer>
@@ -77,10 +73,6 @@
         <developer>
             <name>Roman Sosa Gonzalez</name>
             <url>https://github.com/rosogon</url>
-        </developer>
-        <developer>
-            <name>Andrea Turli</name>
-            <url>https://github.com/andreaturli</url>
         </developer>
     </developers>
 

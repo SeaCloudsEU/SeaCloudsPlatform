@@ -16,25 +16,28 @@
  */
 package eu.seaclouds.common.tosca;
 
-import alien4cloud.tosca.model.ArchiveRoot;
-import alien4cloud.tosca.parser.ParsingException;
-import alien4cloud.tosca.parser.ParsingResult;
-import com.google.common.io.Resources;
-import org.junit.Test;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import org.testng.annotations.Test;
 
+import com.google.common.io.Resources;
+
+import alien4cloud.tosca.model.ArchiveRoot;
+import alien4cloud.tosca.parser.ParsingException;
+import alien4cloud.tosca.parser.ParsingResult;
+
+@Test(groups = {"Live"})
 public class ToscaSerializerTest {
 
-    @Test
-    public void ToscaSerializationTests() throws URISyntaxException, ParsingException, FileNotFoundException, IOException {
+    public void ToscaSerializationTests() throws URISyntaxException, ParsingException, IOException {
         ParsingResult<ArchiveRoot> pr = ToscaSerializer.fromTOSCA(Paths.get(Resources.getResource("toscaTestFiles/t.yml").toURI()));
         assertNotNull(pr);
         assertEquals(pr.getResult().getTopology().getNodeTemplates().size(), 6);
