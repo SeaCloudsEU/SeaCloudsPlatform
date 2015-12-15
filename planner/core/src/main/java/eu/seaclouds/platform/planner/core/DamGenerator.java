@@ -56,13 +56,14 @@ public class DamGenerator {
     public static final String PROPERTIES = "properties";
     private static final String BROOKLYN_TYPES_MAPPING = "mapping/brooklyn-types-mapping.yaml";
 
-    private static final String IMPORTS = "imports";
-    private static final String TOSCA_NORMATIVE_TYPES = "tosca-normative-types:1.0.0.wd06-SNAPSHOT";
+    public static final String IMPORTS = "imports";
+    public static final String TOSCA_NORMATIVE_TYPES = "tosca-normative-types";
+    public static final String TOSCA_NORMATIVE_TYPES_VERSION = "1.0.0.wd06-SNAPSHOT";
 
-    private static final String TEMPLATE_NAME = "template_name";
-    private static final String TEMPLATE_NAME_PREFIX = "seaclouds.app.";
-    private static final String TEMPLATE_VERSION = "template_version";
-    private static final String DEFAULT_TEMPLATE_VERSION = "1.0.0-SNAPSHOT";
+    public static final String TEMPLATE_NAME = "template_name";
+    public static final String TEMPLATE_NAME_PREFIX = "seaclouds.app.";
+    public static final String TEMPLATE_VERSION = "template_version";
+    public static final String DEFAULT_TEMPLATE_VERSION = "1.0.0-SNAPSHOT";
 
     static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<>();
 
@@ -86,8 +87,18 @@ public class DamGenerator {
     public static Map<String, Object> manageTemplateMetada(Map<String, Object> adpYaml){
         if(adpYaml.containsKey(IMPORTS)){
             List<String> imports =(List<String>) adpYaml.get(IMPORTS);
-            if (!imports.contains(TOSCA_NORMATIVE_TYPES)){
-                imports.add(TOSCA_NORMATIVE_TYPES);
+            if(imports != null){
+                String importedNormativeTypes=null;
+                for(String dependency: imports){
+                    if(dependency.contains(TOSCA_NORMATIVE_TYPES)){
+                        importedNormativeTypes = dependency;
+                    }
+                }
+                if((importedNormativeTypes!=null)&&(!importedNormativeTypes.equals(TOSCA_NORMATIVE_TYPES+":"+TOSCA_NORMATIVE_TYPES_VERSION))){
+                    //TODO: an log war message should be necessary here
+                    imports.remove(importedNormativeTypes);
+                    imports.add(TOSCA_NORMATIVE_TYPES+":"+TOSCA_NORMATIVE_TYPES_VERSION);
+                }
             }
         }
 
@@ -195,7 +206,7 @@ public class DamGenerator {
         //get brookly location from host
         for(String group: groups.keySet()){
             HashMap<String, Object> policyGroup = new HashMap<>();
-            policyGroup.put(MEMBERS, groups.get(group));
+            policyGroup.put(MEMBERS, group);
 
             HashMap<String, Object> cloudOffering = (HashMap<String, Object>) nodeTemplates.get(group);
             HashMap<String, Object> properties = (HashMap<String, Object>) cloudOffering.get(PROPERTIES);

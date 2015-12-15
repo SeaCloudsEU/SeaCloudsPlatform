@@ -3,14 +3,17 @@ package eu.seaclouds.platform.planner.core;
 import com.google.common.io.Resources;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
@@ -39,15 +42,23 @@ public class DamGeneratorTest {
     @Test
     public void  damBrooklynTest() throws Exception {
         String adp = new Scanner(new File(Resources.getResource("generated_adp.yml").toURI())).useDelimiter("\\Z").next();
-        Yaml yml = new Yaml();
+
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+        Yaml yml = new Yaml(options);
         Map<String, Object> adpYaml = (HashMap<String, Object>) yml.load(adp);
-        int adpGroupsNumber = ((Map<Object, Object>) adpYaml.get("groups")).size();
 
-        Map<String, Object> translatedAdp = DamGenerator.translateAPD(adpYaml);
-        assertNotNull(translatedAdp);
-        Map<Object, Object> translatedGroups = (Map<Object, Object>) translatedAdp.get("groups");
+        adpYaml = DamGenerator.manageTemplateMetada(adpYaml);
+        adpYaml = DamGenerator.translateAPD(adpYaml);
 
-        assertTrue(adpGroupsNumber < ((Map) translatedAdp.get("groups")).size());
+        Map groups = (Map) adpYaml.remove(DamGenerator.GROUPS);
+
+        ((Map) adpYaml.get(DamGenerator.TOPOLOGY_TEMPLATE))
+                .put(DamGenerator.GROUPS, groups);
+
+        String dam = yml.dump(adpYaml);
+        assertNotNull(adpYaml);
     }
 
     @Test
@@ -163,5 +174,37 @@ public class DamGeneratorTest {
         String finalDam = yml.dump(adpYaml);
         assertNotNull(finalDam);
     }
+
+
+    @Test
+    public void testManagingTemplateMetadata() throws Exception{
+        String adp = new Scanner(new File(Resources.getResource("generated_adp.yml").toURI())).useDelimiter("\\Z").next();
+
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+        Yaml yml = new Yaml(options);
+        Map<String, Object> adpYaml = (HashMap<String, Object>) yml.load(adp);
+
+        adpYaml = DamGenerator.manageTemplateMetada(adpYaml);
+        adpYaml = DamGenerator.translateAPD(adpYaml);
+
+
+        assertNotNull(adpYaml);
+        assertNotNull(adpYaml.get(DamGenerator.TEMPLATE_NAME));
+        assertTrue(((String) adpYaml.get(DamGenerator.TEMPLATE_NAME)).contains(DamGenerator.TEMPLATE_NAME_PREFIX));
+
+        assertNotNull(adpYaml.get(DamGenerator.TEMPLATE_VERSION));
+        assertTrue(((String) adpYaml.get(DamGenerator.TEMPLATE_VERSION)).contains(DamGenerator.DEFAULT_TEMPLATE_VERSION));
+
+        assertNotNull(adpYaml.get(DamGenerator.IMPORTS));
+        assertTrue(adpYaml.get(DamGenerator.IMPORTS) instanceof List);
+        List imports = (List) adpYaml.get(DamGenerator.IMPORTS);
+        assertEquals(imports.size(), 1);
+        assertEquals(imports.get(0), DamGenerator.TOSCA_NORMATIVE_TYPES+":"+DamGenerator.TOSCA_NORMATIVE_TYPES_VERSION);
+
+    }
+
+
 
 }
