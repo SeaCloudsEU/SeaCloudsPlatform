@@ -47,4 +47,10 @@ public class YAMLtypesOptimizerParser {
       return null;
    }
 
+   public static void addComputeType(Map<String, Object> typesMap) {
+      
+      ComputeType.addComputeToTypes(typesMap);
+      
+   }
+
 }

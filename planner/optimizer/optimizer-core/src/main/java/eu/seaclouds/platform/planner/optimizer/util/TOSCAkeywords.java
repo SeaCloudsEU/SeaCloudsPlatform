@@ -98,7 +98,19 @@ public class TOSCAkeywords {
    public static final String AUTOSCALE_METRIC_UPPERBOUND                      = "metricUpperBound";
    public static final String AUTOSCALE_POOL_MINIMUM_SIZE                      = "minPoolSize";
    public static final String AUTOSCALE_POOL_MAXIMUM_SIZE                      = "maxPoolSize";
-
+   
+   //This is to define the Compute node type
+   public static final String COMPUTE_TYPE = "seaclouds.nodes.Compute";
+   public static final String TOSCA_COMPUTE_TYPE = "tosca.nodes.Compute";
+   public static final String TYPE_DESCRIPTION_TAG= "description";
+   public static final String TYPE_DESCRIPTION_CONTENT = "Custom compute";
+   public static final String TYPE_PROPERTIES = "properties";
+   public static final String TYPE_PROPERTIES_HARDWARE_ID= "hardwareId";
+   public static final String TYPE_PROPERTIES_REQUIRED = "required";
+   public static final String TYPE_TAG_IN_TYPES_DESCRIPTION = "type";
+   public static final String TYPE_OF_HARDWARE_ID = "string";
+   public static final boolean IS_HARDWARE_PROPERTY_REQUIRED= false;
+   
    public static final String CLOUD_OFFER_PROVIDER_NAME_SEPARATOR = "\\.";
    public static final String LOG_LEVEL                           = "TRACE";
 

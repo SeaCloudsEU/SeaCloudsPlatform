@@ -753,4 +753,9 @@ public class YAMLoptimizerParser {
 
    }
 
+   public static void addComputeTypeToTypes(Map<String, Object> appMap) {
+     YAMLtypesOptimizerParser.addComputeType(YAMLoptimizerParser.getTypesMapFromAppMap(appMap));
+      
+   }
+
 }
