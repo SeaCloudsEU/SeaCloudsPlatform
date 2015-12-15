@@ -16,13 +16,16 @@
  */
 package eu.seaclouds.common.tosca;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
+
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import com.google.common.io.Resources;
 
@@ -31,6 +34,7 @@ import alien4cloud.tosca.parser.ParsingException;
 import alien4cloud.tosca.parser.ParsingResult;
 import alien4cloud.tosca.parser.ToscaParser;
 
+@Test(groups = {"Live"})
 public class ToscaParserSupplierTest {
 
     private static final String TOSCA_VERSION = "tosca_simple_yaml_1_0_0_wd03";
@@ -48,9 +52,9 @@ public class ToscaParserSupplierTest {
         ParsingResult<ArchiveRoot> parsingResult = toscaParser.parseFile(Paths.get(Resources.getResource("tosca/SimpleProfile_wd03/parsing/tosca-node-type.yml").toURI()));
         ArchiveRoot archiveRoot = parsingResult.getResult();
         assertNotNull(archiveRoot);
-        Assert.assertNotNull(archiveRoot.getArchive());
-        Assert.assertEquals(TOSCA_VERSION, archiveRoot.getArchive().getToscaDefinitionsVersion());
-        Assert.assertEquals(1, archiveRoot.getNodeTypes().size());
-        Assert.assertNull(archiveRoot.getRelationshipTypes());
+        assertNotNull(archiveRoot.getArchive());
+        assertEquals(TOSCA_VERSION, archiveRoot.getArchive().getToscaDefinitionsVersion());
+        assertEquals(1, archiveRoot.getNodeTypes().size());
+        assertNull(archiveRoot.getRelationshipTypes());
     }
 }

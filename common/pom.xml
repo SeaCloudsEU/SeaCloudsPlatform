@@ -40,23 +40,6 @@
     </repositories>
 
     <dependencies>
-        <dependency>
-            <groupId>org.apache.brooklyn</groupId>
-            <artifactId>brooklyn-launcher</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.brooklyn</groupId>
-            <artifactId>brooklyn-software-base</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.brooklyn</groupId>
-            <artifactId>brooklyn-software-database</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.brooklyn</groupId>
-            <artifactId>brooklyn-software-webapp</artifactId>
-        </dependency>
-
         <!-- a4c tosca -->
         <dependency>
             <groupId>alien4cloud</groupId>
@@ -88,45 +71,9 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>org.apache.brooklyn</groupId>
-            <artifactId>brooklyn-test-support</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.brooklyn</groupId>
-            <artifactId>brooklyn-core</artifactId>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.brooklyn</groupId>
-            <artifactId>brooklyn-launcher</artifactId>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.jclouds.provider</groupId>
-                    <artifactId>softlayer</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.jclouds.labs</groupId>
-                    <artifactId>docker</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.jclouds.labs</groupId>
-                    <artifactId>vcloud-director</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.jclouds.labs</groupId>
-                    <artifactId>dmtf</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
         </dependency>
     </dependencies>
 
