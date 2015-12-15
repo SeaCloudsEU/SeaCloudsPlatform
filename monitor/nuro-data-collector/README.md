@@ -1,36 +1,39 @@
-#SeaClouds - NURO Data Collector
+SeaClouds - NURO Data Collector
+==================
 
-This is a Tower 4Clouds Data Collector specifically developed for the NURO case study,
-which basically collects metrics from NURO sensor.php and feed Tower 4Clouds with these.
-It is exploitable for both the IaaS and PaaS monitoring of the NURO case study. 
+This is a Tower 4Clouds Data Collector developed in the context of SeaClouds to supply application level metrics that are not provided by already existing Data Collectors.
+You can download [here](https://oss.sonatype.org/content/repositories/snapshots/eu/seaclouds-project/monitor/nuro-data-collector/0.8.0-SNAPSHOT/) one of the available builds.
+
 This Data Collector takes as input a .properties configuration file whose path is passed using standard java arguments.
 
-In the following we report an example of the .properties configuration file with all the required properties to be set (in round brackets a description of the meaning of the property is reported):
+In the following we report the list of all the required environmental variables that need to be specified in the .properties file (in round brackets a description of the meaning of the property is reported)
 
 
-    MANAGER_IP: 127.0.0.1 (the IP of the machine hosting the running instance of Tower 4Clouds Manager)
-    MANAGER_PORT: 8170 (the port on which Tower 4Clouds Manager is listening)
-    NURO_INSTANCE_IP= 127.0.0.1 (the IP of machine hosting the NURO sensor.php)
-    NURO_INSTANCE_PORT= 8080 (the port on which the NURO sensor.php is exposed)
-    NURO_INSTANCE_USERNAME=seaclouds (NURO sensor.php user id)
-    NURO_INSTANCE_PASSWORD=preview (NURO sensor.php user password)
-    DC_SYNC_PERIOD=10 (tells the Data Collector how often to synchronize with Tower 4Clouds Manager)
-    RESOURCES_KEEP_ALIVE_PERIOD=25 (tells to Tower 4Clouds Manager how long to wait an acknowledgement from the data collector before considering it and its resources expired)
-    INTERNAL_COMPONENT_TYPE=NuroApplication (tells the Data Collector the type of the resource it is monitoring)
-    INTERNAL_COMPONENT_ID=NuroApplicationId (tells the Data Collector the ID of the resource it is monitoring)
++ MANAGER_IP: 127.0.0.1 (the IP of the machine hosting the running instance of Tower 4Clouds Manager)
++ MANAGER_PORT: 8170 (the port on which Tower 4Clouds Manager is listening)
++ NURO_INSTANCE_IP= 127.0.0.1 (the IP of machine hosting the NURO sensor.php)
++ NURO_INSTANCE_PORT= 8080 (the port on which the NURO sensor.php is exposed)
++ NURO_INSTANCE_USERNAME=seaclouds (NURO sensor.php user id)
++ NURO_INSTANCE_PASSWORD=preview (NURO sensor.php user password)
++ DC_SYNC_PERIOD=10 (tells the Data Collector how often to synchronize with Tower 4Clouds Manager)
++ RESOURCES_KEEP_ALIVE_PERIOD=25 (tells to Tower 4Clouds Manager how long to wait an acknowledgement from the data collector before considering it and its resources expired)
++ INTERNAL_COMPONENT_TYPE=NuroApplication (tells the Data Collector the type of the resource it is monitoring)
++ INTERNAL_COMPONENT_ID=NuroApplicationId (tells the Data Collector the ID of the resource it is monitoring)
 
-Then it is just necessary to run the compiled .jar file giving as first argument the path to the .properties configuration file (i.e java -jar nuro-data-collector.jar path/to/config.properties).
+Then it is just necessary to run the compiled .jar file giving as first argument the path to the .properties configuration file:
 
-The NURO Data Collector provides the following metrics, which names are quite self-descriptive:
+    java -jar nuro-data-collector-0.8.0.jar ./config.properties
 
-    NUROServerLastMinuteAverageRunTime
-    NUROServerLastMinuteAverageThroughput
-    NUROServerLastMinutePlayerCount
-    NUROServerLastMinuteRequestCount
-    NUROServerLastTenSecondsAverageRunTime
-    NUROServerLastTenSecondsAverageThroughput
-    NUROServerLastTenSecondsPlayerCount
-    NUROServerLastTenSecondsRequestCount
+The SeaClouds Data Collector currently provides the following metrics:
+
++ NUROServerLastMinuteAverageRunTime
++ NUROServerLastMinuteAverageThroughput
++ NUROServerLastMinutePlayerCount
++ NUROServerLastMinuteRequestCount
++ NUROServerLastTenSecondsAverageRunTime
++ NUROServerLastTenSecondsAverageThroughput
++ NUROServerLastTenSecondsPlayerCount
++ NUROServerLastTenSecondsRequestCount
 
 Finally here is an example of a monitoring rule to install into Tower 4Clouds in order to get data from the NURO Data Collector:
 

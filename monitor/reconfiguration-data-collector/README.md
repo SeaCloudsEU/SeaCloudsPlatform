@@ -1,23 +1,29 @@
-#SeaClouds - Reconfiguration Data Collector
+SeaClouds - Reconfiguration Data Collector
+==================
 
-This is a Tower 4Clouds Data Collector developed in order to
-collects metrics from the SeaClouds Deployer about the deployed application and to feed Tower 4Clouds with these.
+
+This is a Tower 4Clouds Data Collector developed in order to collects metrics from the SeaClouds Deployer about the deployed application and to feed Tower 4Clouds with these.
+
+You can download [here](https://oss.sonatype.org/content/repositories/snapshots/eu/seaclouds-project/monitor/reconfiguration-data-collector/0.8.0-SNAPSHOT/) one of the available builds.
+
 This Data Collector takes as input a .properties configuration file whose path is passed using standard java arguments.
 
-In the following we report an example of the .properties configuration file with all the required properties to be set (in round brackets a description of the meaning of the property is reported):
+In the following we report the list of all the required environmental variables that need to be specified in the .properties file (in round brackets a description of the meaning of the property is reported)
 
-    MANAGER_IP: 127.0.0.1 (the IP of the machine hosting the running instance of Tower 4Clouds Manager)
-    MANAGER_PORT: 8170 (the port on which Tower 4Clouds Manager is listening)
-    DEPLOYER_INSTANCE_IP=127.0.0.1 (the IP of the machine hosting the SeaClouds Deployer instance)
-    DEPLOYER_INSTANCE_PORT=8081 (the port on which SeaClouds Deployer is listening)
-    DC_SYNC_PERIOD=10 (tells the Data Collector how often to synchronize with Tower 4Clouds Manager)
-    RESOURCES_KEEP_ALIVE_PERIOD=25 (tells to Tower 4Clouds Manager how long to wait an acknowledgement from the data collector before considering it and its resources expired)
++ MANAGER_IP: 127.0.0.1 (the IP of the machine hosting the running instance of Tower 4Clouds Manager)
++ MANAGER_PORT: 8170 (the port on which Tower 4Clouds Manager is listening)
++ DEPLOYER_INSTANCE_IP=127.0.0.1 (the IP of the machine hosting the SeaClouds Deployer instance)
++ DEPLOYER_INSTANCE_PORT=8081 (the port on which SeaClouds Deployer is listening)
++ DC_SYNC_PERIOD=10 (tells the Data Collector how often to synchronize with Tower 4Clouds Manager)
++ RESOURCES_KEEP_ALIVE_PERIOD=25 (tells to Tower 4Clouds Manager how long to wait an acknowledgement from the data collector before considering it and its resources expired)
 
-Then it is just necessary to run the compiled .jar file giving as first argument the path to the .properties configuration file (i.e java -jar nuro-data-collector.jar path/to/config.properties).
+Then it is just necessary to run the compiled .jar file giving as first argument the path to the .properties configuration file:
+
+    java -jar reconfiguration-data-collector-0.8.0.jar ./config.properties
 
 The Reconfiguration Data Collector provides the following metrics, which names are quite self-descriptive:
 
-IsAppInFire
++ IsAppOnFire
 
 Finally here is an example of a monitoring rule to install in order to get data from the NURO Data Collector:
 
