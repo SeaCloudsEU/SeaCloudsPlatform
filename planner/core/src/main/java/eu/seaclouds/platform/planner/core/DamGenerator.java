@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
+import org.apache.brooklyn.util.text.Identifiers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -49,21 +50,29 @@ public class DamGenerator {
     public static final String MEMBERS = "members";
     public static final String ID = "id";
     public static final String APPLICATION = "application";
-    public static final String TYPE = "type";
     public static final String TOPOLOGY_TEMPLATE = "topology_template";
     public static final String NODE_TEMPLATES = "node_templates";
     public static final String NODE_TYPES = "node_types";
     public static final String PROPERTIES = "properties";
     private static final String BROOKLYN_TYPES_MAPPING = "mapping/brooklyn-types-mapping.yaml";
 
+    public static final String IMPORTS = "imports";
+    public static final String TOSCA_NORMATIVE_TYPES = "tosca-normative-types";
+    public static final String TOSCA_NORMATIVE_TYPES_VERSION = "1.0.0.wd06-SNAPSHOT";
 
-    static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<String, MonitoringInfo>();
+    public static final String TEMPLATE_NAME = "template_name";
+    public static final String TEMPLATE_NAME_PREFIX = "seaclouds.app.";
+    public static final String TEMPLATE_VERSION = "template_version";
+    public static final String DEFAULT_TEMPLATE_VERSION = "1.0.0-SNAPSHOT";
+
+    static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<>();
 
     static Logger log = LoggerFactory.getLogger(DamGenerator.class);
 
     public static String generateDam(String adp, String monitorGenURL, String monitorGenPort, String slaGenURL){
         Yaml yml = new Yaml();
         Map<String, Object> adpYaml = (Map<String, Object>) yml.load(adp);
+        adpYaml = DamGenerator.manageTemplateMetada(adpYaml);
         adpYaml = DamGenerator.translateAPD(adpYaml);
         adpYaml = DamGenerator.addMonitorInfo(yml.dump(adpYaml), monitorGenURL, monitorGenPort);
 
@@ -75,6 +84,34 @@ public class DamGenerator {
         return adpStr;
     }
 
+    public static Map<String, Object> manageTemplateMetada(Map<String, Object> adpYaml){
+        if(adpYaml.containsKey(IMPORTS)){
+            List<String> imports =(List<String>) adpYaml.get(IMPORTS);
+            if(imports != null){
+                String importedNormativeTypes=null;
+                for(String dependency: imports){
+                    if(dependency.contains(TOSCA_NORMATIVE_TYPES)){
+                        importedNormativeTypes = dependency;
+                    }
+                }
+                if((importedNormativeTypes!=null)&&(!importedNormativeTypes.equals(TOSCA_NORMATIVE_TYPES+":"+TOSCA_NORMATIVE_TYPES_VERSION))){
+                    //TODO: an log war message should be necessary here
+                    imports.remove(importedNormativeTypes);
+                    imports.add(TOSCA_NORMATIVE_TYPES+":"+TOSCA_NORMATIVE_TYPES_VERSION);
+                }
+            }
+        }
+
+        if(!adpYaml.containsKey(TEMPLATE_NAME)){
+            adpYaml.put(TEMPLATE_NAME, TEMPLATE_NAME_PREFIX + Identifiers.makeRandomId(8));
+        }
+
+        if(!adpYaml.containsKey(TEMPLATE_VERSION)){
+            adpYaml.put(TEMPLATE_VERSION, DEFAULT_TEMPLATE_VERSION);
+        }
+
+        return adpYaml;
+    }
 
     public static Map<String, Object> addMonitorInfo(String adp, String monitorUrl, String monitorPort){      
         
@@ -169,7 +206,7 @@ public class DamGenerator {
         //get brookly location from host
         for(String group: groups.keySet()){
             HashMap<String, Object> policyGroup = new HashMap<>();
-            policyGroup.put(MEMBERS, groups.get(group));
+            policyGroup.put(MEMBERS, group);
 
             HashMap<String, Object> cloudOffering = (HashMap<String, Object>) nodeTemplates.get(group);
             HashMap<String, Object> properties = (HashMap<String, Object>) cloudOffering.get(PROPERTIES);
