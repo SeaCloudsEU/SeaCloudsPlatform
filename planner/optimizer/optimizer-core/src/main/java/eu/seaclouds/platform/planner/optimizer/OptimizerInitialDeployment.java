@@ -124,9 +124,7 @@ public class OptimizerInitialDeployment {
 
       Map<String, Object>[] appMapSolutions = hashMapOfFoundSolutionsWithThresholds(solutions, appMap, topology,
             appInfoSuitableOptions, numPlansToGenerate, requirements, suitableCloudOffer, hyst);
-      
-      
-      
+
       log.debug("Before ReplaceSuitableServiceByHost and adding the seaclouds.nodes.Compute type information");
 
       String[] stringSolutions = new String[numPlansToGenerate];

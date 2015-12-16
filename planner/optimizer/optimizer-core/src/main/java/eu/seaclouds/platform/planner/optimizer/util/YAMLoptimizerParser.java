@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import eu.seaclouds.platform.planner.optimizer.CloudOffer;
 import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.Topology;
@@ -124,7 +123,6 @@ public class YAMLoptimizerParser {
 
    }
 
-   @SuppressWarnings("unchecked")
    public static void addQualityOfSolution(Solution sol, Map<String, Object> applicationMapComplete) {
 
       // 1 get name of initial element. 2) getGroupOfinitial element, 3) get its
@@ -284,6 +282,9 @@ public class YAMLoptimizerParser {
    public static String fromMAPtoYAMLstring(Map<String, Object> appMap) {
       DumperOptions options = new DumperOptions();
       options.setLineBreak(DumperOptions.LineBreak.getPlatformLineBreak());
+      options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+      Yaml yml = new Yaml(options);
 
       Yaml yamlApp = new Yaml(options);
 
@@ -487,6 +488,7 @@ public class YAMLoptimizerParser {
       newelement.setExecTimeMillis(
             YAMLmodulesOptimizerParser.getMeasuredExecTimeMillis(elementName, groups) * hostPerformance);
 
+      newelement.setCanScale(elementCanScale);
       // The module does not have requiremetns
       if (!YAMLmodulesOptimizerParser.moduleHasModuleRequirements(elementName, groups)) {
          // Include it directly
@@ -498,32 +500,25 @@ public class YAMLoptimizerParser {
       for (String moduleReqName : YAMLmodulesOptimizerParser.moduleRequirementsOfAModule(elementName, groups)) {
          // For each requiremnt of teh element (that is not its host but it's a
          // module in the system)
-         if (topology.contains(moduleReqName)) {
 
-            // The dependence may already exist as well... Check it.
-            // (Correction: if the topology is creted in the proper way, the
-            // dependence cannot exist yet)
-            // Read the operational profile for the number of calls.
-
-            double opProfileBetweenModules = YAMLgroupsOptimizerParser.getOpProfileWithModule(elementName,
-                  moduleReqName, groups);
-            // create the dependence between these two modules by
-            // addelementcalled.
-            newelement.addElementCalled(
-                  new TopologyElementCalled(topology.getModule(moduleReqName), opProfileBetweenModules));
-
-         } else {
-            // Recursive call for the moduleReqNAme, and this element and
-            // associate with this element.
+         if (!topology.contains(moduleReqName)) {
+            // Recursive call for the moduleReqNAme to add the elements to
+            // topology.
             topology = getApplicationTopologyRecursive(moduleReqName, (Map<String, Object>) modules.get(moduleReqName),
                   topology, modules, groups, appInfoSuitableOptions);
-            double opProfileBetweenModules = YAMLgroupsOptimizerParser.getOpProfileWithModule(elementName,
-                  moduleReqName, groups);
-            // create the dependence between these two modules by
-            // addelementcalled.
-            newelement.addElementCalled(
-                  new TopologyElementCalled(topology.getModule(moduleReqName), opProfileBetweenModules));
          }
+
+         // If the input AAM is correctly defined, at this point the requested
+         // module must exist in the topology.
+
+         // Read the operational profile for the number of calls.
+         double opProfileBetweenModules = YAMLgroupsOptimizerParser.getOpProfileWithModule(elementName, moduleReqName,
+               groups);
+         // create the dependence between these two modules by
+         // addelementcalled.
+         newelement
+               .addElementCalled(new TopologyElementCalled(topology.getModule(moduleReqName), opProfileBetweenModules));
+
       }
 
       // add it as a element of the topology (only if it is not already
@@ -661,8 +656,6 @@ public class YAMLoptimizerParser {
       return null;
    }
 
-
-
    @SuppressWarnings("unchecked")
    public static Map<String, Object> getModuleMapFromAppMap(Map<String, Object> appMap) {
 
@@ -701,9 +694,9 @@ public class YAMLoptimizerParser {
    public static Map<String, Object> getTypesMapFromAppMap(Map<String, Object> appMap) {
       Map<String, Object> typesMap;
       try {
-         if (log.isDebugEnabled()) {
-            log.debug("Opening TOSCA for obtaining types");
-         }
+
+         log.debug("Opening TOSCA for obtaining types");
+
          typesMap = (Map<String, Object>) appMap.get(TOSCAkeywords.NODE_TYPES);
 
       } catch (NullPointerException E) {
@@ -742,9 +735,9 @@ public class YAMLoptimizerParser {
 
    public static void changeModuleToScalableType(String moduleName, Map<String, Object> appMap) {
       Map<String, Object> modulesMap = YAMLoptimizerParser.getModuleMapFromAppMap(appMap);
-      
+
       String typeOfModule = YAMLmodulesOptimizerParser.getModuleTypeFromModulesMap(moduleName, modulesMap);
-      
+
       Map<String, Object> typesMap = (Map<String, Object>) YAMLoptimizerParser.getTypesMapFromAppMap(appMap);
 
       if (typesMap != null) {
@@ -754,8 +747,8 @@ public class YAMLoptimizerParser {
    }
 
    public static void addComputeTypeToTypes(Map<String, Object> appMap) {
-     YAMLtypesOptimizerParser.addComputeType(YAMLoptimizerParser.getTypesMapFromAppMap(appMap));
-      
+      YAMLtypesOptimizerParser.addComputeType(YAMLoptimizerParser.getTypesMapFromAppMap(appMap));
+
    }
 
 }

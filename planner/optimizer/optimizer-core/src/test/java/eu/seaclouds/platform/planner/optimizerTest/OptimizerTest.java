@@ -17,16 +17,7 @@
 
 package eu.seaclouds.platform.planner.optimizerTest;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import org.junit.Assert;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -36,13 +27,7 @@ import eu.seaclouds.platform.planner.optimizer.Optimizer;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
 
-public class OptimizerTest {
-
-   private static Optimizer optimizer;
-   private static String appModel;
-   private static String suitableCloudOffer;
-
-   static Logger log;
+public class OptimizerTest extends AbstractTest {
 
    @BeforeClass
    public void createObjects() {
@@ -50,28 +35,8 @@ public class OptimizerTest {
       log = LoggerFactory.getLogger(OptimizerTest.class);
       log.info("Starting TEST optimizer");
 
-      final String dir = System.getProperty("user.dir");
-      log.debug("Trying to open files: current executino dir = " + dir);
+      openInputFiles();
 
-      try {
-         appModel = filenameToString(TestConstants.APP_MODEL_FILENAME);
-      } catch (IOException e) {
-         log.error("File for APPmodel not found");
-         e.printStackTrace();
-      }
-
-      try {
-         suitableCloudOffer = filenameToString(TestConstants.CLOUD_OFFER_FILENAME_IN_JSON);
-      } catch (IOException e) {
-         log.error("File for Cloud Offers not found");
-         e.printStackTrace();
-      }
-
-   }
-
-   private static String filenameToString(String path) throws IOException {
-      byte[] encoded = Files.readAllBytes(Paths.get(path));
-      return new String(encoded, StandardCharsets.UTF_8);
    }
 
    @Test(enabled = TestConstants.EnabledTest)
@@ -175,27 +140,6 @@ public class OptimizerTest {
          }
       }
       Assert.assertEquals("Optimizer did not find any of the services", numServices, numSuitableServicesFound);
-
-   }
-
-   private void saveFile(String outputFilename, String dam) {
-      PrintWriter out = null;
-      try {
-         File file = new File(outputFilename);
-         log.debug("Created file: " + outputFilename);
-         if (!file.exists()) {
-            file.getParentFile().mkdirs();
-            file.createNewFile();
-         }
-         out = new PrintWriter(new FileWriter(file));
-         out.println(dam);
-      } catch (IOException e) {
-         e.printStackTrace();
-      } finally {
-         if (out != null) {
-            out.close();
-         }
-      }
 
    }
 

@@ -17,38 +17,21 @@
 
 package eu.seaclouds.platform.planner.optimizerTest;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.slf4j.Logger;
+
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.yaml.snakeyaml.Yaml;
 
 import eu.seaclouds.platform.planner.optimizer.Optimizer;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
-import eu.seaclouds.platform.planner.optimizer.util.YAMLgroupsOptimizerParser;
-import eu.seaclouds.platform.planner.optimizer.util.YAMLmodulesOptimizerParser;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
-import eu.seaclouds.platform.planner.optimizer.util.YAMLtypesOptimizerParser;
 
-public class OptimizerComputeTypeTest {
-
-   private static Optimizer optimizer;
-   private static String    appModel;
-   private static String    suitableCloudOffer;
-
-   static Logger log;
+public class OptimizerComputeTypeTest extends AbstractTest {
 
    @BeforeClass
    public void createObjects() {
@@ -57,32 +40,12 @@ public class OptimizerComputeTypeTest {
 
       log.info("Starting TEST optimizer for the TOSCA syntax of September 2015");
 
-      final String dir = System.getProperty("user.dir");
-      log.debug("Trying to open files: current executino dir = " + dir);
+      openInputFiles();
 
-      try {
-         appModel = filenameToString(TestConstants.APP_MODEL_FILENAME);
-      } catch (IOException e) {
-         log.error("File for APPmodel not found");
-         e.printStackTrace();
-      }
-
-      try {
-         suitableCloudOffer = filenameToString(TestConstants.CLOUD_OFFER_FILENAME_IN_JSON);
-      } catch (IOException e) {
-         log.error("File for Cloud Offers not found");
-         e.printStackTrace();
-      }
-
-   }
-
-   private static String filenameToString(String path) throws IOException {
-      byte[] encoded = Files.readAllBytes(Paths.get(path));
-      return new String(encoded, StandardCharsets.UTF_8);
    }
 
    @Test(enabled = true)
-   public void testPresenceSolutionBlind() {
+   public void testPresenceOfComputeTypeInSolutionBlind() {
 
       log.info("=== TESTS FOR OPTIMIZER INCLUSION OF 'COMPUTE' TYPE IN TYPES STARTED===");
 
@@ -94,7 +57,8 @@ public class OptimizerComputeTypeTest {
          try {
             checkPresenceComputeType(arrayDam[damnum]);
          } catch (Exception e) {
-            log.error("There was an error in the check of seaclouds.nodes.Compute type in node_types. Solution was: " + arrayDam[damnum]);
+            log.error("There was an error in the check of seaclouds.nodes.Compute type in node_types. Solution was: "
+                  + arrayDam[damnum]);
             throw e;
          }
          saveFile(TestConstants.OUTPUT_FILENAME + SearchMethodName.BLINDSEARCH + damnum + ".yaml", arrayDam[damnum]);
@@ -105,7 +69,7 @@ public class OptimizerComputeTypeTest {
    }
 
    @Test(enabled = true)
-   public void testPresenceSolutionHillClimb() {
+   public void testPresenceOfComputeTypeInSolutionClimb() {
 
       log.info("=== TEST for SOLUTION GENERATION of HILLCLIMB optimizer STARTED ===");
 
@@ -117,7 +81,8 @@ public class OptimizerComputeTypeTest {
          try {
             checkPresenceComputeType(arrayDam[damnum]);
          } catch (Exception e) {
-            log.error("There was an error in the check of seaclouds.nodes.Compute type in node_types. Solution was: " + arrayDam[damnum]);
+            log.error("There was an error in the check of seaclouds.nodes.Compute type in node_types. Solution was: "
+                  + arrayDam[damnum]);
             throw e;
          }
          saveFile(TestConstants.OUTPUT_FILENAME + SearchMethodName.HILLCLIMB + damnum + ".yaml", arrayDam[damnum]);
@@ -129,7 +94,7 @@ public class OptimizerComputeTypeTest {
    }
 
    @Test(enabled = true)
-   public void testPresenceSolutionAnneal() {
+   public void testPresenceOfComputeTypeInSolutionAnneal() {
 
       log.info("=== TEST for SOLUTION GENERATION of ANNEAL optimizer STARTED ===");
 
@@ -141,7 +106,8 @@ public class OptimizerComputeTypeTest {
          try {
             checkPresenceComputeType(arrayDam[damnum]);
          } catch (Exception e) {
-            log.error("There was an error in the check of seaclouds.nodes.Compute type in node_types. Solution was: " + arrayDam[damnum]);
+            log.error("There was an error in the check of seaclouds.nodes.Compute type in node_types. Solution was: "
+                  + arrayDam[damnum]);
             throw e;
          }
          saveFile(TestConstants.OUTPUT_FILENAME + SearchMethodName.ANNEAL + damnum + ".yaml", arrayDam[damnum]);
@@ -161,30 +127,8 @@ public class OptimizerComputeTypeTest {
 
       Map<String, Object> appMap = YAMLoptimizerParser.getMAPofAPP(dam);
       Map<String, Object> typesMap = YAMLoptimizerParser.getTypesMapFromAppMap(appMap);
-      
+
       Assert.assertTrue(typesMap.containsKey(TOSCAkeywords.COMPUTE_TYPE));
-
-
-   }
-
-
-   private void saveFile(String outputFilename, String dam) {
-      PrintWriter out = null;
-      try {
-         File file = new File(outputFilename);
-         if (!file.exists()) {
-            file.getParentFile().mkdirs();
-            file.createNewFile();
-         }
-         out = new PrintWriter(new FileWriter(file));
-         out.println(dam);
-      } catch (IOException e) {
-         e.printStackTrace();
-      } finally {
-         if (out != null) {
-            out.close();
-         }
-      }
 
    }
 
