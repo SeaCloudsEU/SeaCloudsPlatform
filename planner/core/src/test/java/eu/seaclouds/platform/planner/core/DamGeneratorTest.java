@@ -206,22 +206,27 @@ public class DamGeneratorTest {
     @Test
     public void testGroupsAsTopologyChild() throws Exception{
 
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
         String adp = new Scanner(new File(Resources.getResource("generated_adp.yml").toURI())).useDelimiter("\\Z").next();
-        Yaml yml = new Yaml();
+        Yaml yml = new Yaml(options);
         Map<String, Object> adpYaml = (HashMap<String, Object>) yml.load(adp);
 
+        adpYaml = DamGenerator.manageTemplateMetada(adpYaml);
         adpYaml = DamGenerator.translateAPD(adpYaml);
         adpYaml = DamGenerator.addMonitorInfo(yml.dump(adpYaml), "127.0.0.1", "8080");
 
         Map groups = (Map) adpYaml.remove(DamGenerator.GROUPS);
-        ((Map)adpYaml.get(DamGenerator.TOPOLOGY_TEMPLATE)).put(DamGenerator.GROUPS, groups);
+
+        DamGenerator.addPoliciesTypeIfNotPresent(groups);
+        ((Map) adpYaml.get(DamGenerator.TOPOLOGY_TEMPLATE)).put(DamGenerator.GROUPS, groups);
 
         Map<String, Object> topologyGroups =
                 (Map<String, Object>) ((Map<String, Object>)adpYaml.get(DamGenerator.TOPOLOGY_TEMPLATE)).get(DamGenerator.GROUPS);
 
         assertNotNull(topologyGroups);
         assertEquals(topologyGroups.size(), 7);
-        //assertEquals(topologyGroups.size(), 6);
         assertTrue(topologyGroups.containsKey("operation_www"));
         assertTrue(topologyGroups.containsKey("operation_webservices"));
         assertTrue(topologyGroups.containsKey("operation_db1"));

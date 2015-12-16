@@ -41,6 +41,7 @@ public class DamGenerator {
     private static final String LOCATION = "location";
     public static final String REGION = "region";
     public static final String HARDWARE_ID = "hardwareId";
+    public static final String TYPE = "type";
     public static final String CLOUD_FOUNDRY = "CloudFoundry";
     public static final String POLICIES = "policies";
     public static final String GROUPS = "groups";
@@ -55,7 +56,7 @@ public class DamGenerator {
     public static final String NODE_TYPES = "node_types";
     public static final String PROPERTIES = "properties";
     private static final String BROOKLYN_TYPES_MAPPING = "mapping/brooklyn-types-mapping.yaml";
-
+    private static final String BROOKLYN_POLICY_TYPE = "brooklyn.location";
     public static final String IMPORTS = "imports";
     public static final String TOSCA_NORMATIVE_TYPES = "tosca-normative-types";
     public static final String TOSCA_NORMATIVE_TYPES_VERSION = "1.0.0.wd06-SNAPSHOT";
@@ -66,7 +67,6 @@ public class DamGenerator {
     public static final String DEFAULT_TEMPLATE_VERSION = "1.0.0-SNAPSHOT";
 
     static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<>();
-
     static Logger log = LoggerFactory.getLogger(DamGenerator.class);
 
     public static String generateDam(String adp, String monitorGenURL, String monitorGenPort, String slaGenURL){
@@ -81,12 +81,15 @@ public class DamGenerator {
         adpYaml = DamGenerator.addApplicationInfo(adpYaml, slaGenURL, SLA_INFO_GROUPNAME);
 
         Map groups = (Map) adpYaml.remove(GROUPS);
+
+        addPoliciesTypeIfNotPresent(groups);
+
         ((Map)adpYaml.get(TOPOLOGY_TEMPLATE)).put(GROUPS, groups);
 
         String adpStr = yml.dump(adpYaml);
         return adpStr;
     }
-
+    
     public static Map<String, Object> manageTemplateMetada(Map<String, Object> adpYaml){
         if(adpYaml.containsKey(IMPORTS)){
             List<String> imports =(List<String>) adpYaml.get(IMPORTS);
@@ -115,7 +118,6 @@ public class DamGenerator {
 
         return adpYaml;
     }
-
     public static Map<String, Object> addMonitorInfo(String adp, String monitorUrl, String monitorPort){      
         
         MonitoringDamGenerator monDamGen = null;
@@ -260,6 +262,58 @@ public class DamGenerator {
             log.error("Error adding " + groupName + " info", e);
         }
         return damYml;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> addPoliciesTypeIfNotPresent(Map<String, Object> groups){
+
+        for(Map.Entry<String, Object> entryGroup: groups.entrySet()){
+            List<Map<String, Object>> policies =
+                    (List<Map<String, Object>>)((Map<String, Object>)entryGroup.getValue()).get(POLICIES);
+            if(policies!=null){
+                for(Map<String, Object> policy:policies){
+                    String policyName = getPolicyName(policy);
+                    if(!isLocationPolicy(policy)
+                            && !(policy.get(policyName) instanceof String)){
+                        Map<String, Object> policyProperties = getPolicyProperties(policy);
+
+                        if(getPolicyType(policyProperties)==null){
+                            policyProperties.put(TYPE, ((Object)"seaclouds.policies."+policyName));
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private static boolean isLocationPolicy(Map<String, Object> policy){
+
+        return policy.containsKey(BROOKLYN_POLICY_TYPE);
+    }
+
+    private static String getPolicyType(Map<String, Object> policyProperties){
+        return (String) policyProperties.get(TYPE);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> getPolicyProperties(Map<String, Object> policy){
+        if(policy!=null) {
+            for (Map.Entry<String, Object> policyEntry : policy.entrySet()) {
+                return (Map<String, Object>) policyEntry.getValue();
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static String getPolicyName(Map<String, Object> policy){
+        if(policy!=null) {
+            for (Map.Entry<String, Object> policyEntry : policy.entrySet()) {
+                return policyEntry.getKey();
+            }
+        }
+        return null;
     }
 
 }
