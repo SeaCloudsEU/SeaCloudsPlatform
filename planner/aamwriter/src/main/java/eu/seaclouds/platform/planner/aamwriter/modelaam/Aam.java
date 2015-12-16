@@ -39,7 +39,7 @@ public class Aam extends LinkedHashMap {
         this.put("description", description);
         ArrayList<String> imports = new ArrayList();
         this.put("imports", imports);
-        imports.add("tosca-normative-types:1.0.0.wd03-SNAPSHOT");
+        imports.add("tosca-normative-types:1.0.0.wd06-SNAPSHOT");
         
         topology_template = new TopologyTemplate();
         this.put("topology_template", topology_template);
