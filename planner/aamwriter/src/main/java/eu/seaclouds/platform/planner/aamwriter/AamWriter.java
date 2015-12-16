@@ -69,6 +69,7 @@ public class AamWriter {
     
     private String dumpYaml(Aam aam) {
         DumperOptions options = new DumperOptions();
+        options.setLineBreak(DumperOptions.LineBreak.getPlatformLineBreak());
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         Yaml yamlParser = new Yaml(options);
         
