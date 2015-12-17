@@ -69,3 +69,21 @@ node_types:
     artifacts:
       - datastore.creation.script.url:
         type: tosca.artifacts.File
+
+  seaclouds.nodes.Datacollector:
+    derived_from: tosca.nodes.Root
+    description: >
+      A simple Tomcat server
+    properties:
+      install_latch:
+        type: string
+        required: false
+      shell.env:
+        type: map
+        required: false
+        entry_schema:
+          type: string
+    requirements:
+      - host: tosca.nodes.Compute
+        type: tosca.relationships.HostedOn
+

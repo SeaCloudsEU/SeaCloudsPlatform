@@ -97,7 +97,7 @@ public class DamGenerator {
     
     public static Map<String, Object> manageTemplateMetada(Map<String, Object> adpYaml){
         if(adpYaml.containsKey(IMPORTS)){
-            List<String> imports =(List<String>) adpYaml.get(IMPORTS);
+            List<String> imports = (List<String>) adpYaml.get(IMPORTS);
             if(imports != null){
                 String importedNormativeTypes=null;
                 for(String dependency: imports){
@@ -123,8 +123,7 @@ public class DamGenerator {
 
         return adpYaml;
     }
-    public static Map<String, Object> addMonitorInfo(String adp, String monitorUrl, String monitorPort){      
-        
+    public static Map<String, Object> addMonitorInfo(String adp, String monitorUrl, String monitorPort){
         MonitoringDamGenerator monDamGen = null;
         try {
             monDamGen = new MonitoringDamGenerator(new URL("http://"+ monitorUrl +":"+ monitorPort +""));
@@ -160,7 +159,7 @@ public class DamGenerator {
 
     public static Map<String, Object> translateAPD(Map<String, Object> adpYaml){
         Yaml yml = new Yaml();
-        DeployerTypesResolver deployerTypesResolver = null;
+        DeployerTypesResolver deployerTypesResolver = getDeployerIaaSTypeResolver();
 
         Map<String, Object> damUsedNodeTypes = new HashMap<>();
         List<Object> groupsToAdd = new ArrayList<>();
@@ -169,13 +168,6 @@ public class DamGenerator {
         Map<String, Object> topologyTemplate = (Map<String, Object>) adpYaml.get(TOPOLOGY_TEMPLATE);
         Map<String, Object> nodeTemplates = (Map<String, Object>) topologyTemplate.get(NODE_TEMPLATES);
         Map<String, Object> nodeTypes = (Map<String, Object>) adpYaml.get(NODE_TYPES);
-
-        try{
-            deployerTypesResolver = new DeployerTypesResolver(Resources
-                    .getResource(BROOKLYN_TYPES_MAPPING).toURI().toString());}
-        catch(Exception e){
-            throw new RuntimeException(e);
-        }
 
         for(String moduleName:nodeTemplates.keySet()){
             Map<String, Object> module = (Map<String, Object>) nodeTemplates.get(moduleName);
@@ -248,6 +240,18 @@ public class DamGenerator {
 
         String finalDam = yml.dump(adpYaml);
         return adpYaml;
+    }
+
+    public static DeployerTypesResolver getDeployerIaaSTypeResolver(){
+        DeployerTypesResolver deployerTypesResolver;
+        try{
+            deployerTypesResolver = new DeployerTypesResolver(Resources
+                    .getResource(BROOKLYN_TYPES_MAPPING).toURI().toString());
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
+        return deployerTypesResolver;
     }
 
     public static Map<String, Object> addApplicationInfo(Map<String, Object> damYml, String serviceResponse, String groupName){
