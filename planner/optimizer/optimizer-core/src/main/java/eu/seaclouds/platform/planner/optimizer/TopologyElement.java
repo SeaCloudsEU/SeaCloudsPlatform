@@ -25,12 +25,12 @@ public class TopologyElement implements Iterable<TopologyElementCalled> {
 
    private String                      name;
    private List<TopologyElementCalled> dependences;
-   private boolean canScale=true;
-   
+   private boolean                     canScale = true;
+
    // the execution time experienced in a machine of performance=1 .
    // It is calculated as the execution time provided multiplied by the
    // discovered performance of the machine. In seconds
-   private double                      execTimeInPowerlessMachine;
+   private double execTimeInPowerlessMachine;
 
    public TopologyElement(String name) {
       this.name = name;
@@ -42,11 +42,11 @@ public class TopologyElement implements Iterable<TopologyElementCalled> {
       this.execTimeInPowerlessMachine = execTime;
       dependences = new ArrayList<TopologyElementCalled>();
    }
-   
+
    public TopologyElement(String name, double execTime, boolean canScale) {
       this.name = name;
       this.execTimeInPowerlessMachine = execTime;
-      this.canScale=canScale;
+      this.canScale = canScale;
       dependences = new ArrayList<TopologyElementCalled>();
    }
 
@@ -105,13 +105,11 @@ public class TopologyElement implements Iterable<TopologyElementCalled> {
    }
 
    public boolean canScale() {
-      // TODO Auto-generated method stub
-      // TODO If it is agreed that some modules cannot scale out and then is
-      // also defined the language in which we represent such characteristic,
-      // this method should implement the checking of whether a module can
-      // scale. Up to now, it is assumed that all can scale out, so the
-      // structure is created.
       return canScale;
+   }
+
+   public void setCanScale(boolean scalability) {
+      canScale = scalability;
    }
 
    // ITERATOR //Iterates over names of modules

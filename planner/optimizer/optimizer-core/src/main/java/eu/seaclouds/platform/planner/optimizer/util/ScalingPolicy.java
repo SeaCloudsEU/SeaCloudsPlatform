@@ -10,7 +10,7 @@ public class ScalingPolicy {
       Map<String, Object> autoscaleValues = new HashMap<String,Object>();
       
       autoscaleValues.put(TOSCAkeywords.AUTOSCALE_TYPE, TOSCAkeywords.BROOKLYN_AUTOSCALER_POLICY);
-      autoscaleValues.put(TOSCAkeywords.AUTOSCALE_METRIC, TOSCAkeywords.BOOKLYN_AUTOSCALER_METRIC_ARRIVALRATE_PER_SECOND);
+      autoscaleValues.put(TOSCAkeywords.AUTOSCALE_METRIC, TOSCAkeywords.AGNOSTIC_AUTOSCALER_METRIC_ARRIVALRATE_PER_SECOND);
       autoscaleValues.put(TOSCAkeywords.AUTOSCALE_METRIC_LOWERBOUND, wklLowerBound);
       autoscaleValues.put(TOSCAkeywords.AUTOSCALE_METRIC_UPPERBOUND, wklUpperBound);
       autoscaleValues.put(TOSCAkeywords.AUTOSCALE_POOL_MINIMUM_SIZE, minPoolSize);

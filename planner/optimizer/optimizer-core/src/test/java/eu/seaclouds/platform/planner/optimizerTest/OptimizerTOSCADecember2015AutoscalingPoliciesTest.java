@@ -20,7 +20,6 @@ package eu.seaclouds.platform.planner.optimizerTest;
 import java.util.Map;
 
 import org.junit.Assert;
-
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -30,25 +29,25 @@ import eu.seaclouds.platform.planner.optimizer.Optimizer;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 import eu.seaclouds.platform.planner.optimizer.util.TOSCAkeywords;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLgroupsOptimizerParser;
+import eu.seaclouds.platform.planner.optimizer.util.YAMLmodulesOptimizerParser;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
+import eu.seaclouds.platform.planner.optimizer.util.YAMLtypesOptimizerParser;
 
-@Test(enabled = false)
-public class OptimizerTOSCASeptember2015Test extends AbstractTest {
+public class OptimizerTOSCADecember2015AutoscalingPoliciesTest extends AbstractTest {
 
    @BeforeClass
    public void createObjects() {
 
-      log = LoggerFactory.getLogger(OptimizerTOSCASeptember2015Test.class);
+      log = LoggerFactory.getLogger(OptimizerTOSCADecember2015AutoscalingPoliciesTest.class);
 
       log.info("Starting TEST optimizer for the TOSCA syntax of September 2015");
-
       openInputFiles();
-
    }
 
-   public void testPresenceSolutionBlind() {
+   @Test(enabled = true)
+   public void testPresenceAutoscalingPoliciesInSolutionBlind() {
 
-      log.info("=== TEST for SOLUTION GENERATION of BLIND optimizer STARTED (syntax September 2015)===");
+      log.info("=== TEST for SOLUTION GENERATION of BLIND optimizer STARTED (syntax December 2015)===");
 
       optimizer = new Optimizer(TestConstants.NUM_PLANS_TO_GENERATE, SearchMethodName.BLINDSEARCH);
 
@@ -56,19 +55,20 @@ public class OptimizerTOSCASeptember2015Test extends AbstractTest {
       for (int damnum = 0; damnum < arrayDam.length; damnum++) {
 
          try {
-            checkCorrectness(arrayDam[damnum]);
+            checkAutoscalingPolicies(arrayDam[damnum]);
          } catch (Exception e) {
-            log.error("There was an error in the check of correctness. Solution was: " + arrayDam[damnum]);
+            log.error("There was an error in the check of policies. Solution was: " + arrayDam[damnum]);
             throw e;
          }
          saveFile(TestConstants.OUTPUT_FILENAME + SearchMethodName.BLINDSEARCH + damnum + ".yaml", arrayDam[damnum]);
       }
 
-      log.info("=== TEST for SOLUTION GENERATION of BLIND optimizer FINISEHD ===");
+      log.info("=== TEST for SOLUTION GENERATION with POLICIES of BLIND optimizer FINISEHD ===");
 
    }
 
-   public void testPresenceSolutionHillClimb() {
+   @Test(enabled = true)
+   public void testPresenceAutoscalingPoliciesInSolutionHillClimb() {
 
       log.info("=== TEST for SOLUTION GENERATION of HILLCLIMB optimizer STARTED ===");
 
@@ -78,20 +78,21 @@ public class OptimizerTOSCASeptember2015Test extends AbstractTest {
       for (int damnum = 0; damnum < arrayDam.length; damnum++) {
 
          try {
-            checkCorrectness(arrayDam[damnum]);
+            checkAutoscalingPolicies(arrayDam[damnum]);
          } catch (Exception e) {
-            log.error("There was an error in the check of correctness. Solution was: " + arrayDam[damnum]);
+            log.error("There was an error in the check of policies. Solution was: " + arrayDam[damnum]);
             throw e;
          }
          saveFile(TestConstants.OUTPUT_FILENAME + SearchMethodName.HILLCLIMB + damnum + ".yaml", arrayDam[damnum]);
 
       }
 
-      log.info("=== TEST for SOLUTION GENERATION of HILLCLIMB optimizer FINISEHD ===");
+      log.info("=== TEST for SOLUTION GENERATION with POLICIES of HILLCLIMB optimizer FINISEHD ===");
 
    }
 
-   public void testPresenceSolutionAnneal() {
+   @Test(enabled = true)
+   public void testPresenceAutoscalingPoliciesInSolutionAnneal() {
 
       log.info("=== TEST for SOLUTION GENERATION of ANNEAL optimizer STARTED ===");
 
@@ -101,64 +102,51 @@ public class OptimizerTOSCASeptember2015Test extends AbstractTest {
       for (int damnum = 0; damnum < arrayDam.length; damnum++) {
 
          try {
-            checkCorrectness(arrayDam[damnum]);
+            checkAutoscalingPolicies(arrayDam[damnum]);
          } catch (Exception e) {
-            log.error("There was an error in the check of correctness. Solution was: " + arrayDam[damnum]);
+            log.error("There was an error in the check of policies. Solution was: " + arrayDam[damnum]);
             throw e;
          }
          saveFile(TestConstants.OUTPUT_FILENAME + SearchMethodName.ANNEAL + damnum + ".yaml", arrayDam[damnum]);
 
       }
 
-      log.info("=== TEST for SOLUTION GENERATION of ANNEAL optimizer FINISEHD ===");
+      log.info("=== TEST for SOLUTION GENERATION with POLICIES of ANNEAL optimizer FINISEHD ===");
 
    }
 
-   private void checkCorrectness(String dam) {
+   private void checkAutoscalingPolicies(String dam) {
 
       Assert.assertFalse("Dam was not created, optimize method returns null", dam == null);
       String damLines[] = dam.split(System.getProperty("line.separator"));
 
       Assert.assertTrue("Dam was not created", damLines.length > 1);
 
-      int numServices = 0;
-      int numSuitableServicesFound = 0;
-
-      for (String line : damLines) {
-         if ((line != null) && (line.contains(TOSCAkeywords.SUITABLE_SERVICES))) {
-
-            numServices++;
-            String suitableServicesLine[] = line.split(TestConstants.OPEN_SQUARE_BRACKET);
-
-            for (String suitableLine : suitableServicesLine) {
-               if ((suitableLine != null) && suitableLine.contains(TestConstants.CLOSE_SQUARE_BRACKET)) {
-                  String suitableService = suitableLine.substring(0,
-                        suitableLine.indexOf(TestConstants.CLOSE_SQUARE_BRACKET));
-                  Assert.assertTrue("Suitable service is the empty string", suitableService != "");
-                  Assert.assertTrue("Suitable service chosen does not belong to the cloud offer",
-                        suitableCloudOffer.contains(suitableService));
-                  numSuitableServicesFound++;
-               }
-            }
-
-         }
-      }
-      Assert.assertEquals("Optimizer did not find any of the services", numServices, numSuitableServicesFound);
-
-      checkPoliciesIfAndOnlyCanScale(dam);
-
-   }
-
-   private void checkPoliciesIfAndOnlyCanScale(String dam) {
-
       Map<String, Object> appMap = YAMLoptimizerParser.getMAPofAPP(dam);
       Map<String, Object> nodesMap = YAMLoptimizerParser.getModuleMapFromAppMap(appMap);
+      Map<String, Object> typesMap = YAMLoptimizerParser.getTypesMapFromAppMap(appMap);
       Map<String, Object> groupsMap = YAMLoptimizerParser.getGroupMapFromAppMap(appMap);
 
       for (Map.Entry<String, Object> entry : nodesMap.entrySet()) {
-         if (canScale((Map<String, Object>) entry.getValue()) && (requirementsSatisfied(appMap, groupsMap))) {
-            Assert.assertNotNull(
-                  getAutoScalingPolicy(YAMLgroupsOptimizerParser.findGroupOfMemberName(entry.getKey(), groupsMap)));
+         if (canScale(entry) && (requirementsSatisfied(appMap, groupsMap))) {
+            Map<String, Object> autoscalingPolicy = getAutoScalingPolicy(
+                  YAMLgroupsOptimizerParser.findGroupOfMemberName(entry.getKey(), groupsMap));
+            if (autoscalingPolicy != null) {
+               Assert.assertTrue(autoscalingPolicy.containsKey(TOSCAkeywords.AUTOSCALE_POOL_MAXIMUM_SIZE));
+               Assert.assertTrue(autoscalingPolicy.containsKey(TOSCAkeywords.AUTOSCALE_METRIC));
+               Assert.assertTrue(autoscalingPolicy.containsKey(TOSCAkeywords.AUTOSCALE_METRIC_LOWERBOUND));
+               Assert.assertTrue(autoscalingPolicy.containsKey(TOSCAkeywords.AUTOSCALE_METRIC_UPPERBOUND));
+               Assert.assertTrue(autoscalingPolicy.containsKey(TOSCAkeywords.AUTOSCALE_POOL_MINIMUM_SIZE));
+
+               String typeOfNode = YAMLmodulesOptimizerParser.getModuleTypeFromModulesMap(entry.getKey(), nodesMap);
+               Assert.assertNotNull("Type of node " + entry.getKey() + " was NULL", typeOfNode);
+               Assert.assertTrue(
+                     "Types in node_types were not created well for module " + entry.getKey()
+                           + " type found for it was: "
+                           + YAMLtypesOptimizerParser.getDerivedTypeFromTypesMap(typeOfNode, typesMap),
+                     TOSCAkeywords.NODE_TYPE_AUTOSCALABLE
+                           .equals(YAMLtypesOptimizerParser.getDerivedTypeFromTypesMap(typeOfNode, typesMap)));
+            }
          }
       }
 
@@ -170,34 +158,36 @@ public class OptimizerTOSCASeptember2015Test extends AbstractTest {
                YAMLgroupsOptimizerParser.findGroupOfMemberName(YAMLoptimizerParser.getInitialElementName(appMap),
                      groupsMap),
                TOSCAkeywords.EXPECTED_QUALITY_PROPERTIES);
-         return (boolean) qualitySol.get(TOSCAkeywords.OVERALL_QOS_FITNESS);
+         return (boolean) (((Double) qualitySol.get(TOSCAkeywords.OVERALL_QOS_FITNESS)) > 1.0);
       } catch (Exception E) {
          // Something among the many pieces of information for specifying the
          // expected QoS was not present
          // So the it was not specified that the requirements were satisfied.
+         log.info("Checking if requirements were satisfied we have received the exception: " + E.getClass());
          return false;
       }
    }
 
-   private Object getAutoScalingPolicy(Map<String, Object> groupMap) {
+   private Map<String, Object> getAutoScalingPolicy(Map<String, Object> groupMap) {
       return YAMLgroupsOptimizerParser.getPolicySubInfoFromGroupInfo(groupMap, TOSCAkeywords.AUTOSCALING_TAG);
    }
 
    @SuppressWarnings("unchecked")
-   private boolean canScale(Map<String, Object> node) {
+   private boolean canScale(Map.Entry<String, Object> module) {
+      Map<String, Object> moduleInfo = (Map<String, Object>) module.getValue();
       try {
-         return (boolean) ((Map<String, Object>) node.get(TOSCAkeywords.MODULE_PROPERTIES_TAG))
+         return (boolean) ((Map<String, Object>) moduleInfo.get(TOSCAkeywords.MODULE_PROPERTIES_TAG))
                .get(TOSCAkeywords.MODULE_AUTOSCALE_PROPERTY);
 
       } catch (Exception E) {
-
+         log.info("It was not found autoscale definition for module " + module.getKey());
          return false;
       }
    }
 
    @AfterClass
    public void testFinishced() {
-      log.info("===== ALL TESTS FOR OPTIMIZER USING SEPTEMBER (last update in DECEMBER) 2015 TOSCA FINISHED ===");
+      log.info("===== ALL TESTS FOR OPTIMIZER USING DECEMBER 2015 TOSCA FINISHED ===");
    }
 
 }
