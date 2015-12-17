@@ -66,6 +66,11 @@ public class DamGenerator {
     public static final String TEMPLATE_VERSION = "template_version";
     public static final String DEFAULT_TEMPLATE_VERSION = "1.0.0-SNAPSHOT";
 
+    public static final String SEACLOUDS_MONITORING_RULES_ID_POLICY = "seaclouds.policies." +
+            "monitoringrules";
+    public static final String MONITORING_RULES_POLICY_NAME = "monitoringrules.information.policy";
+
+
     static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<>();
     static Logger log = LoggerFactory.getLogger(DamGenerator.class);
 
@@ -132,13 +137,18 @@ public class DamGenerator {
         monitoringInfoByApplication.put(generatedApplicationId, generated);
 
         HashMap<String, Object> appGroup = new HashMap<>();
-        appGroup.put(MEMBERS, new String[]{APPLICATION});
+        appGroup.put(MEMBERS, Arrays.asList(APPLICATION));
+        Map<String, Object> policy = new HashMap<>();
 
-        ArrayList<HashMap<String, String>> l = new ArrayList<>();
-        HashMap<String, String> m = new HashMap<>();
-        m.put(ID, generatedApplicationId);
-        l.add(m);
-        appGroup.put(POLICIES, l);
+        HashMap<String, String> policyProperties = new HashMap<>();
+        policyProperties.put(ID, generatedApplicationId);
+        policyProperties.put(TYPE, SEACLOUDS_MONITORING_RULES_ID_POLICY);
+        policy.put(MONITORING_RULES_POLICY_NAME, policyProperties);
+
+        ArrayList<Map<String, Object>> policiesList = new ArrayList<>();
+        policiesList.add(policy);
+
+        appGroup.put(POLICIES, policiesList);
 
         Yaml yml = new Yaml();
         Map<String, Object> adpYaml = (Map<String, Object>) yml.load(generated.getReturnedAdp());
