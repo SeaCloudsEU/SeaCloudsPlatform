@@ -47,6 +47,7 @@ public class DamGeneratorTest {
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
         Yaml yml = new Yaml(options);
+
         Map<String, Object> adpYaml = (HashMap<String, Object>) yml.load(adp);
 
         adpYaml = DamGenerator.manageTemplateMetada(adpYaml);
@@ -68,11 +69,10 @@ public class DamGeneratorTest {
         Map<String, Object> adpYaml = (HashMap<String, Object>) yml.load(adp);
 
         adpYaml = DamGenerator.translateAPD(adpYaml);
-        adpYaml = DamGenerator.addMonitorInfo(adp, "127.0.0.1", "8080");
+        adpYaml = DamGenerator.addMonitorInfo(yml.dump(adpYaml), "127.0.0.1", "8080");
 
         String dam = yml.dump(adpYaml);
         Assert.assertNotNull(adpYaml);
-
     }
 
     @Test
@@ -115,10 +115,10 @@ public class DamGeneratorTest {
                 if (targetType != null) {
                     module.put("type", targetType);
                     if(deployerTypesResolver.getNodeTypeDefinition(targetType)!=null){
-                    damUsedNodeTypes.put(targetType,
-                            deployerTypesResolver.getNodeTypeDefinition(targetType));
+                        damUsedNodeTypes.put(targetType,
+                                deployerTypesResolver.getNodeTypeDefinition(targetType));
                     } else {
-                     //error
+                        //error
                     }
                 } else {
                     damUsedNodeTypes.put(moduleType, nodeTypes.get(moduleType));
@@ -175,7 +175,6 @@ public class DamGeneratorTest {
         assertNotNull(finalDam);
     }
 
-
     @Test
     public void testManagingTemplateMetadata() throws Exception{
         String adp = new Scanner(new File(Resources.getResource("generated_adp.yml").toURI())).useDelimiter("\\Z").next();
@@ -202,9 +201,40 @@ public class DamGeneratorTest {
         List imports = (List) adpYaml.get(DamGenerator.IMPORTS);
         assertEquals(imports.size(), 1);
         assertEquals(imports.get(0), DamGenerator.TOSCA_NORMATIVE_TYPES+":"+DamGenerator.TOSCA_NORMATIVE_TYPES_VERSION);
-
     }
 
+    @Test
+    public void testGroupsAsTopologyChild() throws Exception{
+
+        String adp = new Scanner(new File(Resources.getResource("generated_adp.yml").toURI())).useDelimiter("\\Z").next();
+        Yaml yml = new Yaml();
+        Map<String, Object> adpYaml = (HashMap<String, Object>) yml.load(adp);
+
+        adpYaml = DamGenerator.translateAPD(adpYaml);
+        adpYaml = DamGenerator.addMonitorInfo(yml.dump(adpYaml), "127.0.0.1", "8080");
+
+        Map groups = (Map) adpYaml.remove(DamGenerator.GROUPS);
+        ((Map)adpYaml.get(DamGenerator.TOPOLOGY_TEMPLATE)).put(DamGenerator.GROUPS, groups);
+
+        Map<String, Object> topologyGroups =
+                (Map<String, Object>) ((Map<String, Object>)adpYaml.get(DamGenerator.TOPOLOGY_TEMPLATE)).get(DamGenerator.GROUPS);
+
+        assertNotNull(topologyGroups);
+        assertEquals(topologyGroups.size(), 7);
+        //assertEquals(topologyGroups.size(), 6);
+        assertTrue(topologyGroups.containsKey("operation_www"));
+        assertTrue(topologyGroups.containsKey("operation_webservices"));
+        assertTrue(topologyGroups.containsKey("operation_db1"));
+        assertTrue(topologyGroups.containsKey("add_brooklyn_location_Vultr_64gb_mc_atlanta"));
+        assertTrue(topologyGroups.containsKey("add_brooklyn_location_Rapidcloud_io_Asia_HK"));
+        assertTrue(topologyGroups.containsKey("add_brooklyn_location_App42_PaaS_America_US"));
+        assertTrue(topologyGroups.containsKey("monitoringInformation"));
+
+
+        String dam = yml.dump(adpYaml);
+        Assert.assertNotNull(adpYaml);
+
+    }
 
 
 }

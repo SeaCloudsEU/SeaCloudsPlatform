@@ -285,7 +285,7 @@ public class YAMLMonitorParser {
         try {
             for (String key : group.keySet()) {
                 if (key.equals(MEMBERS_KEY)) {
-                    return (List<String>) group.get(key);
+                    return coerceStringList((ArrayList)group.get(key));
                 }
             }
 
@@ -297,5 +297,15 @@ public class YAMLMonitorParser {
                     "The parser was not able to retrieve the 'members' field from one of the 'group' in the current ADP.");
         }
 
+    }
+
+    private List<String> coerceStringList(List list){
+        List<String> result = new ArrayList<>();
+        if(list!=null){
+            for(Object item: list){
+                result.add((String)item);
+            }
+        }
+        return result;
     }
 }

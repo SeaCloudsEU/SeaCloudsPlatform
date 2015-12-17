@@ -80,6 +80,9 @@ public class DamGenerator {
         checkNotNull(slaInfoResponse, "Error getting SLA info");
         adpYaml = DamGenerator.addApplicationInfo(adpYaml, slaGenURL, SLA_INFO_GROUPNAME);
 
+        Map groups = (Map) adpYaml.remove(GROUPS);
+        ((Map)adpYaml.get(TOPOLOGY_TEMPLATE)).put(GROUPS, groups);
+
         String adpStr = yml.dump(adpYaml);
         return adpStr;
     }
@@ -206,7 +209,7 @@ public class DamGenerator {
         //get brookly location from host
         for(String group: groups.keySet()){
             HashMap<String, Object> policyGroup = new HashMap<>();
-            policyGroup.put(MEMBERS, group);
+            policyGroup.put(MEMBERS, Arrays.asList(group));
 
             HashMap<String, Object> cloudOffering = (HashMap<String, Object>) nodeTemplates.get(group);
             HashMap<String, Object> properties = (HashMap<String, Object>) cloudOffering.get(PROPERTIES);
