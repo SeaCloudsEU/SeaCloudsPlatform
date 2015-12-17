@@ -65,10 +65,9 @@ public class DamGenerator {
     public static final String TEMPLATE_NAME_PREFIX = "seaclouds.app.";
     public static final String TEMPLATE_VERSION = "template_version";
     public static final String DEFAULT_TEMPLATE_VERSION = "1.0.0-SNAPSHOT";
-
-    public static final String SEACLOUDS_MONITORING_RULES_ID_POLICY = "seaclouds.policies." +
-            "monitoringrules";
+    public static final String SEACLOUDS_MONITORING_RULES_ID_POLICY = "seaclouds.policies.monitoringrules";
     public static final String MONITORING_RULES_POLICY_NAME = "monitoringrules.information.policy";
+    public static final String SEACLOUDS_DC_TYPE = "seaclouds.nodes.Datacollector";
 
 
     static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<>();
@@ -125,6 +124,8 @@ public class DamGenerator {
     }
     public static Map<String, Object> addMonitorInfo(String adp, String monitorUrl, String monitorPort){
         MonitoringDamGenerator monDamGen = null;
+        DeployerTypesResolver deployerTypesResolver = getDeployerIaaSTypeResolver();
+
         try {
             monDamGen = new MonitoringDamGenerator(new URL("http://"+ monitorUrl +":"+ monitorPort +""));
         } catch (MalformedURLException e) {
@@ -153,6 +154,10 @@ public class DamGenerator {
         Map<String, Object> adpYaml = (Map<String, Object>) yml.load(generated.getReturnedAdp());
         Map<String, Object> groups = (Map<String, Object>) adpYaml.get(GROUPS);
         groups.put(MONITOR_INFO_GROUPNAME, appGroup);
+
+        //Adding DC NodeType Definition.
+        ((Map<String, Object>)adpYaml.get(NODE_TYPES))
+                .put(SEACLOUDS_DC_TYPE, deployerTypesResolver.getNodeTypeDefinition(SEACLOUDS_DC_TYPE));
 
         return adpYaml;
     }

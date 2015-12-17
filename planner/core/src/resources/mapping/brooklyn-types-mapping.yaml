@@ -73,7 +73,7 @@ node_types:
   seaclouds.nodes.Datacollector:
     derived_from: tosca.nodes.Root
     description: >
-      A simple Tomcat server
+      A simple Datacollector
     properties:
       install_latch:
         type: string
