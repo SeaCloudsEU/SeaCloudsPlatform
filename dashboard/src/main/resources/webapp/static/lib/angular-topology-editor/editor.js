@@ -97,6 +97,12 @@ var Editor = (function() {
         "FOLLOW_KILOWATT": "Follow the kilowatt",
     };
 
+    var qos_metrics = {
+        "AverageResponseTime": "Average Response Time",
+        "AverageThroughput": "Average Throughput",
+        "AppAvailable": "Availability",
+    };
+
     var qos_operators = {
         "": "",
         "less_than": "<",
@@ -145,7 +151,7 @@ var Editor = (function() {
         },
 
         popovercontent: function(i) {
-            var location = this.location;
+            var location = this.properties.location;
             if (location !== undefined && location !== "") {
                 location = location + " - " + this.location_option;
             }
@@ -157,11 +163,11 @@ var Editor = (function() {
                 [ "Language", this.properties.language],
                 [ "Min version", this.properties.min_version],
                 [ "Max version", this.properties.max_version],
-                [ "Artifact", this.artifact],
-                [ "Cost", this.cost],
+                [ "Artifact", this.properties.artifact],
+                [ "Cost", this.properties.cost],
                 [ "Location", location],
-                [ "QoS", this.qos],
-                [ "Infrastructure", this.infrastructure]
+                [ "QoS", this.properties.qos],
+                [ "Infrastructure", this.properties.infrastructure]
             ];
 
             var content = "";
@@ -485,6 +491,7 @@ var Editor = (function() {
 
     nonfunctionalset.nonfunctionalset = function(fieldsetid) {
         this.setup(fieldsetid);
+        Forms.populate_select($("#nf-qos-metric"), qos_metrics);
         Forms.populate_select($("#nf-qos-operator"), qos_operators);
         Forms.populate_select($("#nf-benchmark-platform"), benchmark_platforms);
         /*

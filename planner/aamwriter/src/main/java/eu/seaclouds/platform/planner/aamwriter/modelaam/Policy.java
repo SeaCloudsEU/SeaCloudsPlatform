@@ -53,18 +53,20 @@ public interface Policy {
         }
     }
 
-    public static class QoSRequirements extends AbstractPolicy<Constraint> {
+    public static class AppQoSRequirements extends AbstractPolicy<Constraint> {
         private static final long serialVersionUID = 1L;
+        
+        private ConstraintBuilder constraintBuilder = new ConstraintBuilder();
     
         public static class Attributes {
-            public static final String NAME = "QoSRequirements";
+            public static final String NAME = "AppQoSRequirements";
             public static final String RESPONSE_TIME = "response_time";
             public static final String AVAILABILITY = "availability";
             public static final String COST = "cost";
             public static final String WORKLOAD = "workload";
         }
         
-        public QoSRequirements(double rt, double availability, double cost, double workload) {
+        public AppQoSRequirements(double rt, double availability, double cost, double workload) {
             super(Attributes.NAME);
             
             getProperties().put(Attributes.RESPONSE_TIME, buildConstraint(Constraint.Names.LT, rt, "ms"));
@@ -74,14 +76,30 @@ public interface Policy {
         }
         
         private Constraint buildConstraint(String operator, double threshold, String unit) {
-            Constraint c;
-            if ("".equals(unit)) {
-                c = new Constraint(operator, threshold);
-            }
-            else {
-                c = new Constraint(operator, threshold + " " + unit);
-            }
-            return c;
+            return constraintBuilder.buildConstraint(operator, threshold, unit);
+        }
+    }
+    
+    public static class ModuleQoSRequirements extends AbstractPolicy<Constraint> {
+        private static final long serialVersionUID = 1L;
+
+        private ConstraintBuilder constraintBuilder = new ConstraintBuilder();
+        
+        public static class Attributes {
+            public static final String NAME = "QoSRequirements";
+        }
+        
+        public ModuleQoSRequirements() {
+            super(Attributes.NAME);
+            
+        }
+        
+        public void addConstraint(String metricName, String operator, double threshold, String unit) {
+            getProperties().put(metricName, buildConstraint(operator, threshold, unit));
+        }
+
+        private Constraint buildConstraint(String operator, double threshold, String unit) {
+            return constraintBuilder.buildConstraint(operator, threshold, unit);
         }
     }
 
@@ -116,4 +134,18 @@ public interface Policy {
         public String getCalls() {
             return calls;
         }
-    } }
+    }
+    
+    static class ConstraintBuilder {
+        private Constraint buildConstraint(String operator, double threshold, String unit) {
+            Constraint c;
+            if ("".equals(unit)) {
+                c = new Constraint(operator, threshold);
+            }
+            else {
+                c = new Constraint(operator, threshold + " " + unit);
+            }
+            return c;
+        }
+    }
+}

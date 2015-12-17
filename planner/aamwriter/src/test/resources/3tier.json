@@ -10,18 +10,6 @@
                 "artifact": "",
                 "min_version": "7",
                 "max_version": "8",
-                "qos": [
-                    {
-                        "metric": "throughput",
-                        "operator": "LT",
-                        "threshold": "10"
-                    },
-                    {
-                        "metric": "responsetime",
-                        "operator": "LT",
-                        "threshold": "5000"
-                    }
-                ],
                 "location": "DYNAMIC",
                 "location_option": "FOLLOW_SUN",
                 "infrastructure": "platform",
@@ -42,7 +30,18 @@
                 "max_version": "8",
                 "location": "STATIC",
                 "location_option": "EUROPE",
-                "qos": [],
+                "qos": [
+                    {
+                        "metric": "AverageResponseTime",
+                        "operator": "less_than",
+                        "threshold": "1000"
+                    },
+                    {
+                        "metric": "AppAvailable",
+                        "operator": "greater_than",
+                        "threshold": 99.8
+                    }
+                ],
                 "infrastructure": "compute",
                 "num_cpus": "4",
                 "disk_size": "256",

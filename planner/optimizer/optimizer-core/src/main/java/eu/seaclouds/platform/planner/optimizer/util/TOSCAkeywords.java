@@ -36,6 +36,7 @@ public class TOSCAkeywords {
    //NODE TYPES PROPERTIES 
    public static final String IS_TYPE_DERIVED_TAG               = "derived_from";
    
+
    // AUTOSCALING PROPERTIES
    public static final String MODULE_PROPERTIES_TAG     = "properties";
    public static final String MODULE_AUTOSCALE_PROPERTY = "autoscale";
@@ -45,6 +46,7 @@ public class TOSCAkeywords {
    public static final String GROUP_ELEMENT_QOS_EXECUTIONTIME        = "execution_time";
    public static final String GROUP_ELEMENT_QOS_BENCHMARK_PLATFORM   = "benchmark_platform";
    public static final String GROUP_POLICY_DEPENDENCIES              = "dependencies";
+
    public static final String GROUP_ELEMENT_DEPENDENCIES_MODULES_TAG = "other_modules";
 
    public static final String GROUP_POLICY_QOSREQUIREMENTS_RESPONSETIME    = "response_time";
