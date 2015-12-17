@@ -63,10 +63,6 @@ brooklyn.catalog:
         sla.port: 1234
         monitor.manager.host: 127.0.0.1
         monitor.manager.port: 8170
-        monitor.graphite.host: 127.0.0.1
-        monitor.graphite.port: 80
-        monitor.grafana.host: 127.0.0.1
-        monitor.grafana.host: 3000
         planner.host: 127.0.0.1
         planner.port: 1234
 
@@ -81,10 +77,6 @@ brooklyn.catalog:
         MONITOR_PORT: $brooklyn:config("monitor.manager.port")
         PLANNER_HOST: $brooklyn:config("planner.host")
         PLANNER_PORT: $brooklyn:config("planner.port")
-        GRAPHITE_HOST: $brooklyn:config("monitor.graphite.host")
-        GRAPHITE_PORT: $brooklyn:config("monitor.graphite.port")
-        GRAFANA_HOST: $brooklyn:config("monitor.grafana.host")
-        GRAFANA_PORT: $brooklyn:config("monitor.grafana.host")
 
       provisioning.properties:
         osFamily: ubuntu
@@ -103,13 +95,9 @@ brooklyn.catalog:
         deployer:
           host: ${DEPLOYER_HOST}
           port: ${DEPLOYER_PORT}
-        monitor:
+        monitor.manager:
           host: ${MONITOR_HOST}
           port: ${MONITOR_PORT}
-          graphiteHost: ${GRAPHITE_HOST}
-          graphitePort: ${GRAPHITE_PORT}
-          grafanaHost: ${GRAFANA_HOST}
-          grafanaPort: ${GRAFANA_PORT}
         sla:
           host: ${SLA_HOST}
           port: ${SLA_PORT}

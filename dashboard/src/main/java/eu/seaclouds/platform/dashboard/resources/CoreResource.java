@@ -47,12 +47,26 @@ public class CoreResource {
     public Response getSeaCloudsInformation(){
         JsonObject jsonResponse = new JsonObject();
 
-        jsonResponse.addProperty("deployerEndpoint", deployerFactory.getEndpoint());
-        jsonResponse.addProperty("monitoringManagerEndpoint", monitorFactory.getEndpoint());
-        jsonResponse.addProperty("graphiteEndpoint", monitorFactory.getGraphiteEndpoint());
-        jsonResponse.addProperty("grafanaEndpoint", monitorFactory.getGrafanaEndpoint());
-        jsonResponse.addProperty("plannerEndpoint", plannerFactory.getEndpoint());
-        jsonResponse.addProperty("slaEndpoint", slaFactory.getEndpoint());
+        JsonObject deployerObject = new JsonObject();
+        JsonObject monitorObject = new JsonObject();
+        JsonObject plannerObject = new JsonObject();
+        JsonObject slaObject = new JsonObject();
+
+
+        deployerObject.addProperty("url", deployerFactory.getEndpoint());
+        jsonResponse.add("deployer", deployerObject);
+
+        plannerObject.addProperty("url", plannerFactory.getEndpoint());
+        jsonResponse.add("planner", plannerObject);
+
+        slaObject.addProperty("url", slaFactory.getEndpoint());
+        jsonResponse.add("sla", slaObject);
+
+        JsonObject tower4CloudsObject = new JsonObject();
+        tower4CloudsObject.addProperty("url", monitorFactory.getEndpoint());
+        monitorObject.add("manager", tower4CloudsObject);
+        jsonResponse.add("monitor", monitorObject);
+
 
         return Response.ok(jsonResponse.toString()).build();
     }
