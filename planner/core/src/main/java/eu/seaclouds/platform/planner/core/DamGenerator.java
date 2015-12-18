@@ -68,6 +68,8 @@ public class DamGenerator {
     public static final String SEACLOUDS_MONITORING_RULES_ID_POLICY = "seaclouds.policies.monitoringrules";
     public static final String MONITORING_RULES_POLICY_NAME = "monitoringrules.information.policy";
     public static final String SEACLOUDS_DC_TYPE = "seaclouds.nodes.Datacollector";
+    public static final String SEACLOUDS_APPLICATION_INFORMATION_POLICY_TYPE = "seaclouds.policies.app.information";
+    public static final String SEACLOUDS_APPLICATION_POLICY_NAME = "seaclouds.app.information";
 
 
     static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<>();
@@ -267,14 +269,18 @@ public class DamGenerator {
             ApplicationMonitorId i = mapper.readValue(serviceResponse, ApplicationMonitorId.class);
 
             HashMap<String, Object> appGroup = new HashMap<>();
-            appGroup.put(MEMBERS, new String[]{APPLICATION});
+            appGroup.put(MEMBERS, Arrays.asList(APPLICATION));
 
-            ArrayList<HashMap<String, String>> l = new ArrayList<>();
-            HashMap<String, String> m = new HashMap<>();
-            m.put(ID, i.id);
-            l.add(m);
-            appGroup.put(POLICIES, l);
+            Map<String, Object> policy = new HashMap<>();
+            HashMap<String, String> policyProperties = new HashMap<>();
+            policyProperties.put(ID, i.id);
+            policyProperties.put(TYPE, SEACLOUDS_APPLICATION_INFORMATION_POLICY_TYPE);
+            policy.put(SEACLOUDS_APPLICATION_POLICY_NAME, policyProperties);
 
+            ArrayList<Map<String, Object>> policiesList = new ArrayList<>();
+            policiesList.add(policy);
+
+            appGroup.put(POLICIES, policiesList);
             groups.put(groupName, appGroup);
 
         }catch(Exception e){
