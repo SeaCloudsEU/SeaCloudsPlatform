@@ -89,6 +89,7 @@ public class TOSCAkeywords {
    // These ones are for the autoscaling policies
    public static final String AUTOSCALING_TAG                                  = "autoscaling";
    public static final String AUTOSCALE_TYPE                                   = "type";
+   public static final String AGNOSTIC_AUTOSCALER_POLICY                       = "seaclouds.policies.autoscalling.AutoscalerPolicy";
    public static final String BROOKLYN_AUTOSCALER_POLICY                       = "org.apache.brooklyn.policy.autoscaling.AutoScalerPolicy";
    public static final String NODE_TYPE_AUTOSCALABLE                           = "seaclouds.nodes.ControlledDynamicWebAppCluster";
    public static final String AUTOSCALE_METRIC                                 = "metric";
