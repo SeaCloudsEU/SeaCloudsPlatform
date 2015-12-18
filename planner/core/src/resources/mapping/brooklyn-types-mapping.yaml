@@ -19,6 +19,8 @@ mapping.node_ypes:
   seaclouds.nodes.nosql.redis.RedisStore: org.apache.brooklyn.entity.nosql.redis.RedisStore
   seaclouds.nodes.SoftwareComponent: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
 
+mapping.policy_types:
+  seaclouds.policies.autoscaling.AutoScalerPolicy: org.apache.brooklyn.policy.autoscaling.AutoScalerPolicy
 
 node_types:
   seaclouds.nodes.Compute:

@@ -9,6 +9,10 @@ mapping.relationship_types:
   source.RelationshipType1: target.RelationshipType1
   source.RelationshipType2: target.RelationshipType2
 
+mapping.policy_types:
+  source.policy1: target.policy1
+  source.policy2: target.policy2
+
 node_types:
   target.NodeType1:
     derived_from: tosca.nodes.Root

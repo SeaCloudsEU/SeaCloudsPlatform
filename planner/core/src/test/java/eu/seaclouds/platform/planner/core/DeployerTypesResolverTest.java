@@ -90,4 +90,17 @@ public class DeployerTypesResolverTest {
     }
 
 
+    public void testResolvingPolicyType() throws URISyntaxException, IOException {
+        DeployerTypesResolver typesResolver = new DeployerTypesResolver(Resources
+                .getResource(TYPES_TEST_MAPPING).toURI().toString());
+
+        assertEquals(typesResolver.resolvePolicyType("source.policy1"), "target.policy1");
+        assertEquals(typesResolver.resolvePolicyType("source.policy2"), "target.policy2");
+        assertNull(typesResolver.resolvePolicyType("source.policyX"));
+
+
+    }
+
+
+
 }
