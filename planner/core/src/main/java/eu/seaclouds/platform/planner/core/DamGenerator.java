@@ -1,6 +1,7 @@
 package eu.seaclouds.platform.planner.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
@@ -12,6 +13,7 @@ import static com.google.common.base.Preconditions.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Pattern;
 
 
 /**
@@ -31,6 +33,8 @@ import java.util.*;
  * limitations under the License.
  */
 public class DamGenerator {
+
+    static Logger log = LoggerFactory.getLogger(DamGenerator.class);
 
     private static final String SLA_GEN_OP = "/seaclouds/templates";
     private static final String SLA_INFO_GROUPNAME = "sla_gen_info";
@@ -70,10 +74,10 @@ public class DamGenerator {
     public static final String SEACLOUDS_DC_TYPE = "seaclouds.nodes.Datacollector";
     public static final String SEACLOUDS_APPLICATION_INFORMATION_POLICY_TYPE = "seaclouds.policies.app.information";
     public static final String SEACLOUDS_APPLICATION_POLICY_NAME = "seaclouds.app.information";
+    public static final String SEACLOUDS_NODE_PREFIX = "seaclouds.nodes";
 
-
+    private static DeployerTypesResolver deployerTypesResolver;
     static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<>();
-    static Logger log = LoggerFactory.getLogger(DamGenerator.class);
 
     public static String generateDam(String adp, String monitorGenURL, String monitorGenPort, String slaGenURL){
         Yaml yml = new Yaml();
@@ -250,10 +254,10 @@ public class DamGenerator {
     }
 
     public static DeployerTypesResolver getDeployerIaaSTypeResolver(){
-        DeployerTypesResolver deployerTypesResolver;
         try{
-            deployerTypesResolver = new DeployerTypesResolver(Resources
-                    .getResource(BROOKLYN_TYPES_MAPPING).toURI().toString());
+            if(deployerTypesResolver==null){
+                deployerTypesResolver = new DeployerTypesResolver(Resources
+                        .getResource(BROOKLYN_TYPES_MAPPING).toURI().toString());}
         }
         catch(Exception e){
             throw new RuntimeException(e);
@@ -304,6 +308,8 @@ public class DamGenerator {
 
                         if(getPolicyType(policyProperties)==null){
                             policyProperties.put(TYPE, ((Object)"seaclouds.policies."+policyName));
+                        } else {
+                            translatePolicyToDeployerPolicy(policyProperties);
                         }
                     }
                 }
@@ -339,6 +345,42 @@ public class DamGenerator {
             }
         }
         return null;
+    }
+
+    private static Map<String, Object> translatePolicyToDeployerPolicy(Map<String, Object> policyProperties){
+        String deployerPolicyType = getDeployerIaaSTypeResolver()
+                .resolvePolicyType(getPolicyType(policyProperties));
+        if(deployerPolicyType!=null){
+            policyProperties = resolverDeployerTypesInProperties(policyProperties);
+            policyProperties.remove(TYPE);
+            policyProperties.put(TYPE, deployerPolicyType);
+        }
+        return policyProperties;
+    }
+
+    private static Map<String, Object> resolverDeployerTypesInProperties(Map<String, Object> properties){
+        String property, propertyName;
+        for(Map.Entry<String, Object>entry: ImmutableMap.copyOf(properties).entrySet()){
+            if(entry.getValue() instanceof String){
+                property = (String) entry.getValue();
+                propertyName = (String) entry.getKey();
+                if(property.contains(SEACLOUDS_NODE_PREFIX)){
+                    properties.remove(propertyName);
+                    properties.put(propertyName, resolverDeployerTypesInAProperty(property));
+                }
+            }
+        }
+        return properties;
+    }
+
+    private static String resolverDeployerTypesInAProperty(String property){
+        String[] slices = property.split("\"|\\s+|-|\\(|\\)|,");
+        for(String slice: slices){
+            if(getDeployerIaaSTypeResolver().resolveNodeType(slice)!=null){
+                property = property.replaceAll(slice, getDeployerIaaSTypeResolver().resolveNodeType(slice));
+            }
+        }
+        return property;
     }
 
 }

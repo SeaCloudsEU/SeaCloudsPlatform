@@ -18,6 +18,7 @@ mapping.node_ypes:
   seaclouds.nodes.nosql.mongodb.MongoDBServer: org.apache.brooklyn.entity.nosql.mongodb.MongoDBServer
   seaclouds.nodes.nosql.redis.RedisStore: org.apache.brooklyn.entity.nosql.redis.RedisStore
   seaclouds.nodes.SoftwareComponent: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
+  seaclouds.nodes.ControlledDynamicWebAppCluster: org.apache.brooklyn.entity.webapp.ControlledDynamicWebAppCluster
 
 mapping.policy_types:
   seaclouds.policies.autoscaling.AutoScalerPolicy: org.apache.brooklyn.policy.autoscaling.AutoScalerPolicy
