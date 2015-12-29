@@ -6,3 +6,5 @@ server:
     port: 8177
 monitorIp: ${MONITOR_IP}
 monitorPort: ${MONITOR_PORT}
+influxdbIp: ${INFLUXDB_IP}
+influxdbPort: ${INFLUXDB_PORT}

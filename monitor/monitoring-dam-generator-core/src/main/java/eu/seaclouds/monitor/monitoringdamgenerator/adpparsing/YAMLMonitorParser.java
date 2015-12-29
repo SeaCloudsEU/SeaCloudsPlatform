@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
+import eu.seaclouds.monitor.monitoringdamgenerator.DeploymentType;
+
 @SuppressWarnings("unchecked")
 public class YAMLMonitorParser {
 
@@ -61,12 +63,12 @@ public class YAMLMonitorParser {
             if (type.startsWith(COMPUTE_NODE_PREFIX)) {
                 tempHost = new Host();
                 tempHost.setHostName(nodeTemplate);
-                tempHost.setDeploymentType("IaaS");
+                tempHost.setDeploymentType(DeploymentType.IaaS);
                 hosts.put(tempHost.getHostName(), tempHost);
             } else if (type.startsWith(PLATFORM_NODE_PREFIX)) {
                 tempHost = new Host();
                 tempHost.setHostName(nodeTemplate);
-                tempHost.setDeploymentType("PaaS");
+                tempHost.setDeploymentType(DeploymentType.PaaS);
                 hosts.put(tempHost.getHostName(), tempHost);
             }
         }

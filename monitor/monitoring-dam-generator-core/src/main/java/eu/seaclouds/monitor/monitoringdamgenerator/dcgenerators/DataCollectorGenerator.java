@@ -5,6 +5,8 @@ import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
 public interface DataCollectorGenerator {
     public static final String MODACLOUDS_TOWER4CLOUDS_MANAGER_IP = "MODACLOUDS_TOWER4CLOUDS_MANAGER_IP";
     public static final String MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT = "MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT";
+    public static final String MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP = "MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP";
+    public static final String MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT = "MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT";
     public static final String MODACLOUDS_TOWER4CLOUDS_DC_SYNC_PERIOD = "MODACLOUDS_TOWER4CLOUDS_DC_SYNC_PERIOD";
     public static final String MODACLOUDS_TOWER4CLOUDS_RESOURCES_KEEP_ALIVE_PERIOD = "MODACLOUDS_TOWER4CLOUDS_RESOURCES_KEEP_ALIVE_PERIOD";
     public static final String MODACLOUDS_TOWER4CLOUDS_CLOUD_PROVIDER_ID = "MODACLOUDS_TOWER4CLOUDS_CLOUD_PROVIDER_ID";
@@ -19,5 +21,5 @@ public interface DataCollectorGenerator {
     public static final String MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE = "MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE";
 
     public void addDataCollector(Module moduleInfo, String monitoringManagerIp,
-            int monitoringManagerPort);
+            int monitoringManagerPort, String influxdbIp, int influxdbPort);
 }

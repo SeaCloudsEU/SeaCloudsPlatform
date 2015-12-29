@@ -1,4 +1,4 @@
-package eu.seaclouds.monitor.monitoringdamgenerator.tests;
+package eu.seaclouds.monitor.monitoringdamgenerator.adpparsing;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -8,6 +8,7 @@ import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import eu.seaclouds.monitor.monitoringdamgenerator.DeploymentType;
 import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
 import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.YAMLMonitorParser;
 
@@ -33,7 +34,7 @@ public class AdpParsingTest {
                 Assert.assertEquals(m.getResponseTime(), 2000.0);
                 Assert.assertTrue(m.isJavaApp());
                 Assert.assertEquals(m.getHost().getHostName(), "CloudFoundry");
-                Assert.assertEquals(m.getHost().getDeploymentType(), "PaaS");
+                Assert.assertEquals(m.getHost().getDeploymentType(), DeploymentType.PaaS);
 
                 break;
             
@@ -43,7 +44,7 @@ public class AdpParsingTest {
                 Assert.assertTrue(m.isJavaApp());
                 Assert.assertEquals(m.getPort(), "8080");
                 Assert.assertEquals(m.getHost().getHostName(), "Amazon_EC2_i2_xlarge_us_west_1");
-                Assert.assertEquals(m.getHost().getDeploymentType(), "IaaS");
+                Assert.assertEquals(m.getHost().getDeploymentType(), DeploymentType.IaaS);
                 break;
             
             case "db1":
@@ -51,7 +52,7 @@ public class AdpParsingTest {
                 Assert.assertEquals(m.getResponseTime(), 0.0);
                 Assert.assertFalse(m.isJavaApp());
                 Assert.assertEquals(m.getHost().getHostName(), "Amazon_EC2_i2_xlarge_us_west_2");
-                Assert.assertEquals(m.getHost().getDeploymentType(), "IaaS");
+                Assert.assertEquals(m.getHost().getDeploymentType(), DeploymentType.IaaS);
                 
                 break;
 

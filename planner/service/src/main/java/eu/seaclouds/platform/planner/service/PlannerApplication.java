@@ -32,7 +32,9 @@ public class PlannerApplication extends Application<PlannerConfiguration> {
                                                 plannerConfiguration.getDeployableProviders());
         DamGenResource dgr = new DamGenResource(plannerConfiguration.getMonitorGeneratorURL(),
                                                 plannerConfiguration.getMonitorGeneratorPort(),
-                                                plannerConfiguration.getSlaGeneratorURL());
+                                                plannerConfiguration.getSlaGeneratorURL(),
+                                                plannerConfiguration.getInfluxdbURL(),
+                                                plannerConfiguration.getInfluxdbPort());
 
         environment.jersey().register(pr);
         environment.jersey().register(rpr);

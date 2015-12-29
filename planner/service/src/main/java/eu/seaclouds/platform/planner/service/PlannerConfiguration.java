@@ -32,6 +32,12 @@ public class PlannerConfiguration extends Configuration{
 
     @NotEmpty
     private  String monitorGeneratorPort;
+    
+    @NotEmpty
+    private String influxdbURL;
+
+    @NotEmpty
+    private  String influxdbPort;
 
     @NotEmpty
     private String slaGeneratorURL;
@@ -44,6 +50,12 @@ public class PlannerConfiguration extends Configuration{
 
     @JsonProperty("monitorGeneratorPort")
     public String getMonitorGeneratorPort() { return this.monitorGeneratorPort; }
+    
+    @JsonProperty("influxdbPort")
+    public void setInfluxdbPort(String influxdbPort) { this.influxdbPort = influxdbPort; }
+
+    @JsonProperty("influxdbPort")
+    public String getInfluxdbPort() { return this.influxdbPort; }
 
     @JsonProperty("deployableProviders")
     public void setDeployableProviders(String[] deployableProviders) { this.deployableProviders = deployableProviders; }
@@ -56,6 +68,12 @@ public class PlannerConfiguration extends Configuration{
 
     @JsonProperty("monitorGeneratorURL")
     public String getMonitorGeneratorURL() { return this.monitorGeneratorURL; }
+    
+    @JsonProperty("influxdbURL")
+    public void setInfluxdbURL(String influxdbURL) { this.influxdbURL = influxdbURL; }
+
+    @JsonProperty("influxdbURL")
+    public String getInfluxdbURL() { return this.influxdbURL; }
 
     @JsonProperty("slaGeneratorURL")
     public void setSlaGeneratorURL(String slaGeneratorURL) { this.slaGeneratorURL = slaGeneratorURL; }

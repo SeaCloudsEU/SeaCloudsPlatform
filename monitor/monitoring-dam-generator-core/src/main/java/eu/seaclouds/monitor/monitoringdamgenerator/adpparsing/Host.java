@@ -1,9 +1,11 @@
 package eu.seaclouds.monitor.monitoringdamgenerator.adpparsing;
 
+import eu.seaclouds.monitor.monitoringdamgenerator.DeploymentType;
+
 public class Host {
 
     private String hostName;
-    private String deploymentType;
+    private DeploymentType deploymentType;
     
     public String getHostName() {
         return hostName;
@@ -13,11 +15,11 @@ public class Host {
         this.hostName = hostName;
     }
 
-    public String getDeploymentType() {
+    public DeploymentType getDeploymentType() {
         return deploymentType;
     }
 
-    public void setDeploymentType(String deploymentType) {
+    public void setDeploymentType(DeploymentType deploymentType) {
         this.deploymentType = deploymentType;
     }
 }

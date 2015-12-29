@@ -1,13 +1,12 @@
 package eu.seaclouds.monitor.monitoringdamgenerator.dcgenerators;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.seaclouds.monitor.monitoringdamgenerator.DeploymentType;
 import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
 import eu.seaclouds.monitor.monitoringdamgenerator.dcgenerators.DataCollectorGenerator;
 
@@ -17,73 +16,62 @@ public class MODACloudsDcGenerator implements DataCollectorGenerator {
             .getLogger(MODACloudsDcGenerator.class);
 
     private static final String MODACLOUDS_DC_ID = "modacloudsDc";
-    private static final String START_SCRIPT_URL = "http://start.sh/";
+    private static final String START_SCRIPT_URL = "https://s3-eu-west-1.amazonaws.com/modacloudsdc-start-script/installModacloudsDc.sh";
 
     public void addDataCollector(Module module, String monitoringManagerIp,
-            int monitoringManagerPort) {
+            int monitoringManagerPort, String influxdbIp, int influxdbPort) {
 
-        if(module.getHost().getDeploymentType().equals("IaaS")){
+        if(module.getHost().getDeploymentType().equals(DeploymentType.IaaS)){
 
             logger.info("Generating required deployment script for the MODAClouds Data Collector.");
 
             Map<String, Object> dataCollector = this.generateDcNodeTemplate(this
                     .getRequiredEnvVars(module, monitoringManagerIp,
-                            monitoringManagerPort), module);
+                            monitoringManagerPort, influxdbIp, influxdbPort), module);
 
             module.addDataCollector(dataCollector);
         }
 
     }
 
-    private List<Map<String, String>> getRequiredEnvVars(Module module,
-            String monitoringManagerIp, int monitoringManagerPort) {
+    private Map<String, String> getRequiredEnvVars(Module module,
+            String monitoringManagerIp, int monitoringManagerPort,
+            String influxdbIp, int influxdbPort) {
 
-        List<Map<String, String>> toReturn = new ArrayList<Map<String, String>>();
-        Map<String, String> temp;
+        Map<String, String> toReturn = new HashMap<String, String>();
 
-        temp = new HashMap<String, String>();
-        temp.put(MODACLOUDS_TOWER4CLOUDS_MANAGER_IP, monitoringManagerIp);
-        toReturn.add(temp);
+        toReturn.put(MODACLOUDS_TOWER4CLOUDS_MANAGER_IP, monitoringManagerIp);
 
-        temp = new HashMap<String, String>();
-        temp.put(MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT,
+        toReturn.put(MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT,
                 String.valueOf(monitoringManagerPort));
-        toReturn.add(temp);
+        
+        toReturn.put(MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP, influxdbIp);
 
-        temp = new HashMap<String, String>();
-        temp.put(MODACLOUDS_TOWER4CLOUDS_DC_SYNC_PERIOD, "10");
-        toReturn.add(temp);
+        toReturn.put(MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT,
+                String.valueOf(influxdbPort));
 
-        temp = new HashMap<String, String>();
-        temp.put(MODACLOUDS_TOWER4CLOUDS_RESOURCES_KEEP_ALIVE_PERIOD, "25");
-        toReturn.add(temp);
+        toReturn.put(MODACLOUDS_TOWER4CLOUDS_DC_SYNC_PERIOD, "10");
 
-        temp = new HashMap<String, String>();
-        temp.put(MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE,
+        toReturn.put(MODACLOUDS_TOWER4CLOUDS_RESOURCES_KEEP_ALIVE_PERIOD, "25");
+
+        toReturn.put(MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE,
                 module.getModuleName());
-        toReturn.add(temp);
 
-        temp = new HashMap<String, String>();
-        temp.put(MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID,
+        toReturn.put(MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID,
                 module.getModuleName() + "_ID");
-        toReturn.add(temp);
 
-        temp = new HashMap<String, String>();
-        temp.put(MODACLOUDS_TOWER4CLOUDS_VM_TYPE, module.getHost()
+        toReturn.put(MODACLOUDS_TOWER4CLOUDS_VM_TYPE, module.getHost()
                 .getHostName());
-        toReturn.add(temp);
 
-        temp = new HashMap<String, String>();
-        temp.put(MODACLOUDS_TOWER4CLOUDS_VM_ID, module.getHost().getHostName()
+        toReturn.put(MODACLOUDS_TOWER4CLOUDS_VM_ID, module.getHost().getHostName()
                 + "_ID");
-        toReturn.add(temp);
 
         return toReturn;
 
     }
 
     private Map<String, Object> generateDcNodeTemplate(
-            List<Map<String, String>> requiredEnvVars, Module module) {
+            Map<String, String> requiredEnvVars, Module module) {
 
         Map<String, Object> toSet;
         Map<String, Object> dataCollector;
@@ -106,7 +94,7 @@ public class MODACloudsDcGenerator implements DataCollectorGenerator {
                 "$brooklyn:component(\"" + module.getModuleName()
                         + "\").attributeWhenReady(\"service.isUp\")");
 
-        properties.put("env", requiredEnvVars);
+        properties.put("shell.env", requiredEnvVars);
 
         dataCollector.put("type", "seaclouds.nodes.Datacollector");
         dataCollector.put("properties", properties);
