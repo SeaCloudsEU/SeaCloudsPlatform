@@ -32,11 +32,13 @@ public class DeployerTypesResolver {
 
     final private static String NODE_TYPES_MAPPING_SECTION = "mapping.node_types";
     final private static String RELATIONSHIP_TYPES_MAPPING_SECTION = "mapping.relationship_types";
+    final private static String POLICY_TYPES_MAPPING_SECTION = "mapping.policy_types";
     final private static String NODE_TYPES_DEFINITIONS = "node_types";
 
     Map<String, Object> mapping;
     Map<String, String> nodeTypesMapping;
     Map<String, String> relationshipTypesMapping;
+    Map<String, String> policyTypesMapping;
     Map<String, Object> nodeTypesDefinitions;
 
     public DeployerTypesResolver(String mappingFile) throws IOException {
@@ -53,6 +55,7 @@ public class DeployerTypesResolver {
     /**
      * Initialize the different types mapping.
      */
+    @SuppressWarnings("unchecked")
     private void initTypesMapping() {
         if (mapping == null) {
             throw new IllegalStateException("Mapping does contain any information in " +
@@ -73,6 +76,11 @@ public class DeployerTypesResolver {
         if(mapping.containsKey(NODE_TYPES_DEFINITIONS)){
             log.debug("Mapping contains NodeTypes description");
             nodeTypesDefinitions = (Map<String, Object>) mapping.get(NODE_TYPES_DEFINITIONS);
+        }
+
+        if(mapping.containsKey(POLICY_TYPES_MAPPING_SECTION)){
+            log.debug("Mapping contains Policy mapping");
+            policyTypesMapping = (Map<String, String>) mapping.get(POLICY_TYPES_MAPPING_SECTION);
         }
     }
 
@@ -98,6 +106,14 @@ public class DeployerTypesResolver {
             return null;
         }
         return nodeTypesDefinitions.get(nodeType);
+    }
+
+    public String resolvePolicyType(String sourcePolicyType) {
+        if (policyTypesMapping == null) {
+            log.debug("Policy mapping was not initialized for " + this);
+            return null;
+        }
+        return policyTypesMapping.get(sourcePolicyType);
     }
 
 }
