@@ -88,7 +88,7 @@
         <!-- Dependencies -->
         <guava.version>18.0</guava.version>
         <javatuples.version>1.2</javatuples.version>
-        <brooklyn.version>0.8.0-incubating</brooklyn.version>
+        <brooklyn.version>0.9.0-SNAPSHOT</brooklyn.version>
         <jetty.version>9.2.4.v20141103</jetty.version>
         <dropwizard.version>0.8.1</dropwizard.version>
         <httpcomponents.version>4.3.6</httpcomponents.version>
