@@ -43,7 +43,11 @@ public class Operation extends LinkedHashMap<String, Object> {
         return name;
     }
     
-    public void addQoSRequirement(Policy.QoSRequirements requirements) {
+    public void addAppQoSRequirement(Policy.AppQoSRequirements requirements) {
+        this.policies().add(requirements);
+    }
+    
+    public void addModuleQoSRequirement(Policy.ModuleQoSRequirements requirements) {
         this.policies().add(requirements);
     }
     

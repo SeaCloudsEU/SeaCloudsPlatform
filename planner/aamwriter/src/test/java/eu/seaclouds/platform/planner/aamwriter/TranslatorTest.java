@@ -27,6 +27,8 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import eu.seaclouds.platform.planner.aamwriter.modelaam.Aam;
+import eu.seaclouds.platform.planner.aamwriter.modelaam.Constraint;
+import eu.seaclouds.platform.planner.aamwriter.modelaam.Policy;
 import eu.seaclouds.platform.planner.aamwriter.modeldesigner.DGraph;
 import static org.testng.AssertJUnit.*;
 
@@ -72,7 +74,7 @@ public class TranslatorTest {
         Map<String, Map> topology = deserializedYaml.get("topology_template");
         nodeTemplates = topology.get("node_templates");
         nodeTypes = deserializedYaml.get("node_types");
-        groups = topology.get("groups");
+        groups = deserializedYaml.get("groups");
         
         n1 = nodeTemplates.get(N1);
         n2 = nodeTemplates.get(N2);
@@ -166,6 +168,49 @@ public class TranslatorTest {
         assertNull(getProperty(n2, "qos"));
         assertNull(getProperty(n3, "qos"));
     }
+    
+    @Test
+    public void testApplicationQoSInAppQoSRequirements() {
+
+        List<Map> frontend_policies = (List<Map>) groups.get("operation_www").get("policies");
+        String reqname = Policy.AppQoSRequirements.Attributes.NAME;
+        Map reqs = searchArray(frontend_policies, reqname);
+        
+        if (reqs == null) {
+            fail("Requirements " + reqname + " not found");
+        }
+
+        checkQoSConstraint(
+                (Map<String, Object>)reqs.get(reqname),
+                "response_time", graph.getRequirements().getResponseTime(), Constraint.Names.LT);
+        checkQoSConstraint(
+                (Map<String, Object>)reqs.get(reqname),
+                "availability", graph.getRequirements().getAvailability(), Constraint.Names.GT);
+        checkQoSConstraint(
+                (Map<String, Object>)reqs.get(reqname),
+                "cost", graph.getRequirements().getCost(), Constraint.Names.LE);
+        checkQoSConstraint(
+                (Map<String, Object>)reqs.get(reqname),
+                "workload", graph.getRequirements().getWorkload(), Constraint.Names.LE);
+    }
+    
+    @Test
+    public void testModuleQoSInQoSRequirements() {
+        
+        List<Map> frontend_policies = (List<Map>) groups.get("operation_webservices").get("policies");
+        String reqname = Policy.ModuleQoSRequirements.Attributes.NAME;
+        Map reqs = searchArray(frontend_policies, reqname);
+        
+        if (reqs == null) {
+            fail("Requirements " + reqname + " not found");
+        }
+        checkQoSConstraint(
+                (Map<String, Object>)reqs.get(reqname),
+                MonitoringMetrics.AVERAGE_RESPONSE_TIME.getMetricName(), 1000, Constraint.Names.LT);
+        checkQoSConstraint(
+                (Map<String, Object>)reqs.get(reqname),
+                MonitoringMetrics.APP_AVAILABLE.getMetricName(), 99.8, Constraint.Names.GT);
+    }
 
     private Object getProperty(Map<String, Object> nodeTemplate, String propertyName) {
         Map properties = (Map)nodeTemplate.get("properties");
@@ -182,6 +227,24 @@ public class TranslatorTest {
     private void checkProperty(Map<String, Object> nodeTemplate, String propertyName, Object expected) {
         Object actual = getProperty(nodeTemplate, propertyName);
         assertEquals(expected, actual);
+    }
+    
+    private void checkQoSConstraint(Map<String, Object> requirements,
+            String expectedName, double expectedValue, String expectedOperator) {
+        
+        assertTrue(requirements.containsKey(expectedName));
+        Map<String, String> constraint = (Map<String, String>)requirements.get(expectedName);
+        assertTrue(constraint.containsKey(expectedOperator));
+        Object constraintValue = constraint.get(expectedOperator);
+        
+        Double actualValue;
+        if (constraintValue instanceof String) {
+            String[] parts = ((String) constraintValue).split(" ");
+            actualValue = Double.parseDouble(parts[0]);
+        } else {
+            actualValue = (Double) constraintValue;
+        }
+        assertEquals(expectedValue, actualValue);
     }
 
     private void checkConnection(Map from, String to) {
