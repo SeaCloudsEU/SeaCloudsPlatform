@@ -36,12 +36,18 @@ public class PlanResource {
 
     static Logger log = LoggerFactory.getLogger(PlanResource.class);
     private final boolean filterOfferings;
+    private Planner planner;
 
     public PlanResource(PlannerConfiguration conf)
     {
         this.discovererURL = conf.getDiscovererURL();
         this.deployableProviders = conf.getDeployableProviders();
         this.filterOfferings = new Boolean(conf.getFilterOfferings());
+        if (filterOfferings) {
+            this.planner = new Planner(discovererURL, Arrays.asList(deployableProviders));
+        } else {
+            this.planner = new Planner(discovererURL);
+        }
     }
 
     @POST
@@ -55,11 +61,10 @@ public class PlanResource {
     }
 
     private PlannerResponse getPlans(String aam){
-        Planner p = new Planner(discovererURL, aam);
         String[] resp = new String[0];
         try {
 
-            resp = filterOfferings? p.plan(Arrays.asList(deployableProviders)) : p.plan();
+            resp = planner.fetchAndPlan(aam);
 
         } catch (IOException e) {
             log.error(e.getCause().getMessage(), e);

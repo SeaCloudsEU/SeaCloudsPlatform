@@ -1,0 +1,60 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description:
+template_name:
+template_version: 1.0.0-SNAPSHOT
+imports:
+  - tosca-normative-types:1.0.0.wd03-SNAPSHOT
+
+topology_template:
+  node_templates:
+
+    Microsoft_Azure_Virtual_Machines_D13_v2_japan_west:
+      type: seaclouds.nodes.Compute.Microsoft_Azure_Virtual_Machines
+      properties:
+        num_cpus: 8
+        country: Japan
+        hardwareId: D13_v2
+        city: OSAKA
+        disk_type: ssd
+        resource_type: compute
+        disk_size: 400
+        location: azurecompute
+        num_disks: 1
+        availability: 0.99950
+        region: japan-west
+        ram: 56
+        performance: 157
+        cost: 0.71
+
+    OpenShift_Origin:
+      type: seaclouds.nodes.Platform.OpenShift_Origin
+      properties:
+        postgresql_support: true
+        php_version: 5.5
+        auto_scaling: true
+        jboss_support: true
+        postgresql_version: 9.2
+        horizontal_scaling: true
+        python_version: 3.3
+        vertical_scaling: true
+        jboss_version: 8.0
+        php_support: true
+        node_support: true
+        tomcat_version: 7
+        private_hosting: true
+        mongodb_version: 2.4
+        resource_type: platform
+        node_version: 0.10
+        ruby_version: 2.0
+        tomcat_support: true
+        mongodb_support: true
+        public_hosting: false
+        mysql_version: 5.5
+        java_support: true
+        python_support: true
+        ruby_support: true
+        java_version: 7
+        mysql_support: true
+        performance: 80
+        availability: 0.99825
+        cost: 0.02

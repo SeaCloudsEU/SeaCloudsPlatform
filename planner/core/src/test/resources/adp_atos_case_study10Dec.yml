@@ -1,0 +1,190 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: 3tier example
+imports:
+- tosca-normative-types:1.0.0.wd03-SNAPSHOT
+topology_template:
+  node_templates:
+    www:
+      type: sc_req.www
+      properties:
+        language: JAVA
+        location: DYNAMIC
+        location_option: FOLLOW_SUN
+        autoscale: true
+      requirements:
+      - endpoint: webservices
+      - instancesPOC: 6
+        host: OpenShift_Origin
+    webservices:
+      type: sc_req.webservices
+      properties:
+        language: JAVA
+        location: STATIC
+        location_option: EUROPE
+        autoscale: false
+        java_version:
+          constraints:
+          - greater_or_equal: '7'
+          - less_or_equal: '8'
+      requirements:
+      - endpoint: db1
+      - instancesPOC: 3
+        host: Microsoft_Azure_Virtual_Machines_D13_v2_japan_west
+    db1:
+      type: sc_req.db1
+      properties:
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5.0'
+          - less_or_equal: '5.6'
+      requirements:
+      - instancesPOC: 2
+        host: OpenShift_Origin
+    Microsoft_Azure_Virtual_Machines_D13_v2_japan_west:
+      type: seaclouds.nodes.Compute.Microsoft_Azure_Virtual_Machines
+      properties:
+        num_cpus: 8
+        country: Japan
+        hardwareId: D13_v2
+        city: OSAKA
+        disk_type: ssd
+        resource_type: compute
+        disk_size: 400
+        location: azurecompute
+        num_disks: 1
+        availability: 0.9995
+        region: japan-west
+        ram: 56
+        performance: 157
+        cost: 0.71
+    OpenShift_Origin:
+      type: seaclouds.nodes.Platform.OpenShift_Origin
+      properties:
+        postgresql_support: true
+        php_version: 5.5
+        auto_scaling: true
+        jboss_support: true
+        postgresql_version: 9.2
+        horizontal_scaling: true
+        python_version: 3.3
+        vertical_scaling: true
+        jboss_version: 8.0
+        php_support: true
+        node_support: true
+        tomcat_version: 7
+        private_hosting: true
+        mongodb_version: 2.4
+        resource_type: platform
+        node_version: 0.1
+        ruby_version: 2.0
+        tomcat_support: true
+        mongodb_support: true
+        public_hosting: false
+        mysql_version: 5.5
+        java_support: true
+        python_support: true
+        ruby_support: true
+        java_version: 7
+        mysql_support: true
+        performance: 80
+        availability: 0.99825
+        cost: 0.02
+node_types:
+  sc_req.www:
+    derived_from: seaclouds.nodes.webapp.tomcat.TomcatServer
+    properties:
+      java_support:
+        constraints:
+        - equal: true
+      tomcat_support:
+        constraints:
+        - equal: true
+      java_version:
+        constraints:
+        - greater_or_equal: '7'
+        - less_or_equal: '8'
+      resource_type:
+        constraints:
+        - equal: platform
+  sc_req.webservices:
+    derived_from: seaclouds.nodes.ControlledDynamicWebAppCluster
+    properties:
+      num_cpus:
+        constraints:
+        - greater_or_equal: '4'
+      disk_size:
+        constraints:
+        - greater_or_equal: '256'
+      resource_type:
+        constraints:
+        - equal: compute
+  sc_req.db1:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      mysql_support:
+        constraints:
+        - equal: true
+      mysql_version:
+        constraints:
+        - greater_or_equal: '5.0'
+        - less_or_equal: '5.6'
+  seaclouds.nodes.Compute:
+    derived_from: tosca.nodes.Compute
+    description: Custom compute
+    properties:
+      hardwareId:
+        type: string
+        required: false
+groups:
+  operation_www:
+    members:
+    - www
+    policies:
+    - QoSInfo:
+        execution_time: 200 ms
+        benchmark_platform: Amazon_EC2_m3_xlarge_eu_central_1
+    - dependencies:
+        operation_webservices: '2'
+    - AppQoSRequirements:
+        response_time:
+          less_than: 2000.0 ms
+        availability:
+          greater_than: 0.98
+        cost:
+          less_or_equal: 2000.0 euros_per_month
+        workload:
+          less_or_equal: 50.0 req_per_min
+    - ExpectedQualityPOC:
+        fitnessPOC: 41.21300339640951
+        expectedCostPOC: 1648.8
+        expectedAvailabilityPOC: 0.9999969373750003
+  operation_webservices:
+    members:
+    - webservices
+    policies:
+    - QoSInfo:
+        execution_time: 100 ms
+        benchmark_platform: Amazon_EC2_m3_xlarge_eu_central_1
+    - dependencies:
+        operation_db1: '1'
+    - QoSRequirements:
+        AverageResponseTime:
+          less_than: 1000.0 ms
+        AppAvailable:
+          greater_than: 99.8
+    - autoscaling:
+        metricLowerBound: .inf
+        metricUpperBound: .inf
+        minPoolSize: 1
+        metric: $brooklyn:sensor("seaclouds.nodes.ControlledDynamicWebAppCluster", "webapp.reqs.perSec.windowed.perNode")
+        type: seaclouds.policies.autoscalling.AutoscalerPolicy
+        maxPoolSize: 4
+  operation_db1:
+    members:
+    - db1
+    policies:
+    - dependencies: {}
+    - QoSInfo:
+        execution_time: 50 ms
+        benchmark_platform: Amazon_EC2_m3_xlarge_eu_central_1
+
