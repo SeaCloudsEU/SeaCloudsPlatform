@@ -17,3 +17,5 @@
 # under the License.
 #
 org.apache.brooklyn.location.cloudfoundry.CloudFoundryPaasLocationResolver
+org.apache.brooklyn.location.openshift.OpenShiftPaasLocationResolver
+

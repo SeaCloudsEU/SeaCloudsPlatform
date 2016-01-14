@@ -115,6 +115,7 @@
         <jaxb.version>2.2.6</jaxb.version>
         <castor.version>1.2</castor.version>
         <cloudfloundry.client.version>1.1.2</cloudfloundry.client.version>
+        <openshift.client.version>2.7.0.Final</openshift.client.version>
 
         <!-- Test dependencies -->
         <junit.version>4.11</junit.version>
@@ -405,6 +406,11 @@
                 <artifactId>brooklyn-rest-client</artifactId>
                 <version>${brooklyn.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.brooklyn</groupId>
+                <artifactId>brooklyn-software-database</artifactId>
+                <version>${brooklyn.version}</version>
+            </dependency>
 
             <!-- Jersey -->
             <dependency>
@@ -483,6 +489,11 @@
                 <groupId>org.cloudfoundry</groupId>
                 <artifactId>cloudfoundry-client-lib</artifactId>
                 <version>${cloudfloundry.client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.openshift</groupId>
+                <artifactId>openshift-java-client</artifactId>
+                <version>${openshift.client.version}</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>

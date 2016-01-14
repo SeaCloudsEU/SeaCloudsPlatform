@@ -1,0 +1,22 @@
+name: App-OS-DB-AWS
+services:
+- type: brooklyn.entity.openshift.webapp.OpenShiftWebApp
+  name: Web AppServer HelloWorld
+  id: webapp
+  location: openshift-instance
+  brooklyn.config:
+    application-name: testbrooklynapplication
+    git-url-repo: https://github.com/kiuby88/Chat-Application-Pivotal-Example.git
+    env:
+      myDbName: visitors
+      myDbHostName: $brooklyn:component("db").attributeWhenReady("host.address")
+      myDbUser: brooklyn
+      myDbPassword: br00k11n
+      myDbPort: $brooklyn:component("db").attributeWhenReady("mysql.port")
+
+- type: brooklyn.entity.database.mysql.MySqlNode
+  id: db
+  name: My DB
+  location: aws-ec2:us-west-2
+  brooklyn.config:
+    creationScriptUrl: https://bit.ly/brooklyn-visitors-creation-script
