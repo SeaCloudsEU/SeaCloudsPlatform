@@ -1,0 +1,11 @@
+server:
+  applicationContextPath: /
+  type: simple
+  connector:
+    type: http
+    port: 8010
+
+logging:
+  level: INFO
+  loggers:
+    eu.seaclouds: DEBUG

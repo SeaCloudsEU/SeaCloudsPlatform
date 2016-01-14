@@ -29,6 +29,7 @@
         <module>monitor</module>
 	<module>dashboard</module>
         <module>sla</module>
+        <module>repository</module>
         <module>qa</module>
     </modules>
     <packaging>pom</packaging>
@@ -585,6 +586,11 @@
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-assets</artifactId>
+                <version>${dropwizard.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard</groupId>
+                <artifactId>dropwizard-forms</artifactId>
                 <version>${dropwizard.version}</version>
             </dependency>
 
