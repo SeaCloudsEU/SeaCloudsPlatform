@@ -31,19 +31,17 @@ public class DiscovererTest {
         Assert.assertNotNull(d);
     }
 
-
     @Test
-    public void testOfferingDirectoryExists() {
+    public void testAddInvalidOffering() {
         Discoverer d = Discoverer.instance();
-        File od = d.offeringManager.getOfferingDirectory();
-        Assert.assertTrue(od.exists());
+        String ofId = d.addOffering(null);
+        Assert.assertNull(ofId);
     }
 
-
     @Test
-    public void testMetaDirectoryExists() {
+    public void testRemoveInvalidOffering() {
         Discoverer d = Discoverer.instance();
-        File md = d.offeringManager.getMetaDirectory();
-        Assert.assertTrue(md.exists());
+        String ofId = null;
+        Assert.assertFalse(d.removeOffering(ofId));
     }
 }

@@ -41,94 +41,26 @@ public class UniqueFileGen {
     private File offeringDirectory;
     private File metaDirectory;
 
-
-
-    /* ************************************** */
-    /* **          PRIVATE UTILS           ** */
-    /* ************************************** */
-
-    private static boolean allowedChar(char ch) {
-        if(ch >= 'a' && ch <= 'z') return true; // lowercase chars. allowed
-        if(ch >= 'A' && ch <= 'Z') return true; // uppercase chars. allowed
-        if(ch >= '0' && ch <= '9') return true; // digits from 0 to 9 allowed
-        return ch == '_';
-    }
-
-
-
-    private static String sanitizePrefix(String prefix) {
-        /* checking null */
-        if(prefix == null)
-            throw new NullPointerException("Parameter \"prefix\" cannot be null.");
-
-        /* checking length */
-        prefix = prefix.trim();
-        if(prefix.length() == 0)
-            throw new IllegalArgumentException("Parameter \"prefix\" cannot be the empty string.");
-
-        /* checking valid chars */
-        int N = prefix.length();
-        for(int i=0; i<N; i++) {
-            if( allowedChar(prefix.charAt(i)) == false ) {
-                String allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
-                throw new IllegalArgumentException("Parameter \"prefix\" cannot have the char. '"
-                                                   + prefix.charAt(i) + "'. Allowed chars. are "
-                                                   + allowedChars);
-            }
-        }
-
-        /* returning sanitized prefix */
-        return prefix;
-    }
-
-
-
-    private static String sanitizeSuffix(String suffix) {
-        /* checking null */
-        if(suffix == null)
-            throw new NullPointerException("Parameter \"suffix\" cannot be null.");
-
-        /* checking length */
-        suffix = suffix.trim();
-        if(suffix.length() < 2)
-            throw new IllegalArgumentException("Parameter \"suffix\" is not a valid suffix.");
-
-        /* expecting extension */
-        if( suffix.charAt(0) != '.' )
-            throw new IllegalArgumentException("Parameter \"suffix\" is not a valid suffix.");
-
-        /* checking valid chars */
-        int N = suffix.length();
-        for(int i=1; i<N; i++) {
-            if( allowedChar(suffix.charAt(i)) == false ) {
-                String allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
-                throw new IllegalArgumentException("Parameter \"suffix\" cannot have the char. '"
-                        + suffix.charAt(i) + "'. Allowed chars. are " + allowedChars);
-            }
-        }
-
-        /* returning sanitized suffix */
-        return suffix;
-    }
-
-
-
     /* ************************************** */
     /* **              C.TOR               ** */
     /* ************************************** */
 
-    public UniqueFileGen(String prefix, String offeringSuffix, String metaSuffix, String dir) {
+    public UniqueFileGen(String prefix, String offeringSuffix, String metaSuffix, String path) {
 
         /* input consistency check */
-        if(dir == null) throw new NullPointerException("Parameter \"dir\" cannot be null.");
-        this.prefix = sanitizePrefix(prefix);
-        this.offeringSuffix = sanitizeSuffix(offeringSuffix);
-        this.metaSuffix = sanitizeSuffix(metaSuffix);
+        if(path == null) throw new NullPointerException("Parameter \"dir\" cannot be null.");
+        this.prefix = prefix;
+        this.offeringSuffix = offeringSuffix;
+        this.metaSuffix = metaSuffix;
+
+        if (path.startsWith("~" + File.separator)) {
+            path = System.getProperty("user.home") + path.substring(1);
+        }
 
         /* filesystem check */
-        this.currentDirectory = this.createDirectory(dir);
-        this.offeringDirectory = this.createDirectory(dir + "/offering_directory");
-        this.metaDirectory = this.createDirectory(dir + "/meta_directory");
+        this.currentDirectory = this.createDirectory(path);
+        this.offeringDirectory = this.createDirectory(path + "/offering_directory");
+        this.metaDirectory = this.createDirectory(path + "/meta_directory");
     }
 
     private File createDirectory(String directoryName) {
@@ -142,8 +74,6 @@ public class UniqueFileGen {
 
         return directory;
     }
-
-
 
     /* ************************************** */
     /* **          PUBLIC METHODS          ** */
@@ -159,7 +89,6 @@ public class UniqueFileGen {
     public String getPrefix() {
         return this.prefix;
     }
-
 
     public String getOfferingSuffix() {
         return this.offeringSuffix;
@@ -188,8 +117,6 @@ public class UniqueFileGen {
         return files;
     }
 
-
-
     public String extractUniqueCode(String cleanFileName) {
         int startIndex = this.prefix.length();
         int endIndex = cleanFileName.indexOf(this.offeringSuffix);
@@ -200,4 +127,3 @@ public class UniqueFileGen {
         return cleanFileName.substring(startIndex, endIndex);
     }
 }
-

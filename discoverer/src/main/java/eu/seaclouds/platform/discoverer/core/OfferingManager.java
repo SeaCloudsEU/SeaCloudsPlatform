@@ -17,15 +17,14 @@
 
 package eu.seaclouds.platform.discoverer.core;
 
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class OfferingManager {
 
@@ -39,13 +38,12 @@ public class OfferingManager {
     /* *************************************************************** */
     /* **                     subparts initialization               ** */
     /* *************************************************************** */
-    public OfferingManager() {
+    public OfferingManager(String repositoryPath) {
         String prefix = "offer_",
                 offeringSuffix = ".yaml",
-                metaSuffix = ".json",
-                dir = System.getProperty("user.home") + "/offerings_repo";
+                metaSuffix = ".json";
 
-        this.ufg = new UniqueFileGen(prefix, offeringSuffix, metaSuffix, dir); // offerings ID generator
+        this.ufg = new UniqueFileGen(prefix, offeringSuffix, metaSuffix, repositoryPath); // offerings ID generator
     }
 
     public File getOfferingDirectory() {
@@ -147,8 +145,6 @@ public class OfferingManager {
 
             /* now that the offeringId is know it is possible to set it */
             offering.setId(offeringId);
-            /* it is also possible to set the path of the offering file */
-            offering.setOfferingPath(offeringFile.getAbsolutePath());
 
             /* flushing the meta information into the meta file */
             fos = new FileOutputStream(metaFile);
@@ -283,5 +279,70 @@ public class OfferingManager {
 
         return ret;
     }
+
+    public void initializeRepository() {
+        File metaDirectory = this.getMetaDirectory();
+        File offeringDirectory = this.getOfferingDirectory();
+        InputStream is = null;
+        ZipInputStream zin = null;
+
+        try {
+            is = this.getClass().getClassLoader().getResourceAsStream("initialization.zip");
+            zin = new ZipInputStream(is);
+            /* Zip file has been downloaded, clear curreny repository directory to fill it with new information */
+            this.emptyRepository();
+            ZipEntry zipEntry = null;
+
+            while ((zipEntry = zin.getNextEntry()) != null) {
+                if (!zipEntry.isDirectory()) { /* Taking only files */
+                    String filePath = zipEntry.getName();
+                    String fileName = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1);
+                    if (filePath.startsWith("meta_directory/")) { /* meta file (.json) */
+                        this.extractFile(zin, fileName, metaDirectory);
+                    } else if (filePath.startsWith("offering_directory/")) { /* offering file (.yaml) */
+                        this.extractFile(zin, fileName, offeringDirectory);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (is != null)
+                    is.close();
+
+                if (zin != null)
+                    zin.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void extractFile(ZipInputStream zin, String fileName, File outdir) {
+        OutputStream out = null;
+
+        try {
+            out = new FileOutputStream(outdir.getAbsolutePath() + File.separator + fileName);
+
+            byte[] buffer = new byte[8192];
+            int len;
+            while ((len = zin.read(buffer)) != -1) {
+                out.write(buffer, 0, len);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
+
 

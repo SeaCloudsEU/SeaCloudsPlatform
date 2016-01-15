@@ -73,9 +73,10 @@ public class CrawlerManager implements Runnable {
     public void run() {
         try {
             this.crawl();
-            this.discoverer.setRefreshing(false);
         } catch(Exception ex) {
             ex.printStackTrace();
+        } finally {
+            this.discoverer.setRefreshing(false);
         }
     }
 }

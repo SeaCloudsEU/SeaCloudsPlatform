@@ -33,24 +33,17 @@ public class DiscovererConfiguration extends Configuration {
 
     @Valid
     @NotNull
-    @JsonProperty("crawlOnStartup")
-    private boolean crawlOnStartup;
-
-    @Valid
     @JsonProperty("activeCrawlers")
     private ArrayList<String> activeCrawlers = new ArrayList<String>();
 
-    @JsonProperty("refreshInterval")
-    public void setRefreshInterval(int refreshInterval) { this.refreshInterval = refreshInterval; }
+    @Valid
+    @NotNull
+    @JsonProperty("repositoryPath")
+    private String repositoryPath = "~/offerings_repo/";
 
-    @JsonProperty("refreshInterval")
-    public int getRefreshInterval() { return this.refreshInterval; }
-
-    @JsonProperty("crawlOnStartup")
-    public void setCrawlOnStartup(boolean crawlOnStartup) { this.crawlOnStartup = crawlOnStartup; }
-
-    @JsonProperty("crawlOnStartup")
-    public boolean getCrawlOnStartup() { return this.crawlOnStartup; }
+    @Valid
+    @JsonProperty("initializeRepository")
+    private boolean initializeRepository;
 
     @JsonProperty("activeCrawlers")
     public void setActiveCrawlers(ArrayList<String> activeCrawlers) {
@@ -61,5 +54,17 @@ public class DiscovererConfiguration extends Configuration {
 
     @JsonProperty("activeCrawlers")
     public ArrayList<String> getActiveCrawlers() { return this.activeCrawlers; }
+
+    @JsonProperty("repositoryPath")
+    public void setRepositoryPath(String repositoryPath) { this.repositoryPath = repositoryPath; }
+
+    @JsonProperty("repositoryPath")
+    public String getRepositoryPath() { return this.repositoryPath; }
+
+    @JsonProperty("initializeRepository")
+    public void setInitializeRepository(boolean initializeRepository) { this.initializeRepository = initializeRepository; }
+
+    @JsonProperty("initializeRepository")
+    public boolean getInitializeRepository() { return this.initializeRepository; }
 }
 

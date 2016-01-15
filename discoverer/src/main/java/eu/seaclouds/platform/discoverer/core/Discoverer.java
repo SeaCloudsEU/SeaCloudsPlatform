@@ -18,10 +18,12 @@
 package eu.seaclouds.platform.discoverer.core;
 
 import eu.seaclouds.platform.discoverer.api.*;
+import eu.seaclouds.platform.discoverer.crawler.CloudHarmonySPECint;
 import eu.seaclouds.platform.discoverer.crawler.CrawlerManager;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -43,13 +45,6 @@ public class Discoverer extends Application<DiscovererConfiguration> {
     /* vars */
     public OfferingManager offeringManager;
 
-    /* *************************************************************** */
-    /* **                     subparts initialization               ** */
-    /* *************************************************************** */
-    public Discoverer() {
-        this.offeringManager = new OfferingManager();
-    }
-
     public synchronized void setRefreshing(boolean refreshing) {
         this.refreshing = refreshing;
     }
@@ -58,17 +53,6 @@ public class Discoverer extends Application<DiscovererConfiguration> {
         return refreshing;
     }
 
-    /* *************************************************************** */
-    /* **                       PUBLIC UTILS                        ** */
-    /* *************************************************************** */
-    public void emptyRepository() {
-        offeringManager.emptyRepository();
-    }
-
-
-    /* *************************************************************** */
-    /* **                   INTERFACE IMPLEMENTATION                ** */
-    /* *************************************************************** */
     /**
      * Reads an offering from the local repository.
      * @param cloudOfferingId The ID of the offering to read.
@@ -164,26 +148,38 @@ public class Discoverer extends Application<DiscovererConfiguration> {
         }
     }
 
+    private void initializeResources() {
+        /* Location map */
+        InputStream locationMap = this.getClass().getClassLoader().getResourceAsStream("location_mapping");
+        if (locationMap != null)
+            LocationMapping.initializeMap(locationMap);
+
+        /* SPECint map */
+        InputStream SPECintMap = this.getClass().getClassLoader().getResourceAsStream("SPECint_mapping");
+        if (SPECintMap != null)
+            CloudHarmonySPECint.initializeMap(SPECintMap);
+    }
+
     @Override
     public void run(DiscovererConfiguration configuration, Environment environment) {
-        if (configuration.getCrawlOnStartup() == false) {
-            this.initializeOfferings();
-        } else {
-            this.emptyRepository();
+        this.offeringManager = new OfferingManager(configuration.getRepositoryPath());
+        this.initializeResources();
+
+        /* if remoteInitializationPath configuration variable is set */
+        if (configuration.getInitializeRepository()) {
+            /* remoteInitializationPath is valid, then empty current repository and tries to restore from remote path */
+            this.offeringManager.initializeRepository();
         }
+
+        this.initializeOfferings();
 
         this.activeCrawlers = configuration.getActiveCrawlers();
-
-        if (configuration.getCrawlOnStartup()) {
-            this.refreshRepository();
-        }
 
         environment.jersey().register(new FetchAPI());          /* /fetchOffer */
         environment.jersey().register(new FetchAllAPI());       /* /fetch_all */
         environment.jersey().register(new DeleteAPI());         /* /delete */
         environment.jersey().register(new StatisticsAPI());     /* /statistics */
         environment.jersey().register(new RefreshAPI());        /* /refresh */
-
     }
 
     public static void main(String[] args) throws Exception {

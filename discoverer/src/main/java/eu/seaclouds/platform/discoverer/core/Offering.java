@@ -21,6 +21,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -37,7 +38,7 @@ public class Offering {
     private HashMap<String, String> properties = new HashMap<>();
 
     private String toscaString = null;
-    private String offeringPath = null;
+    private boolean isStored = false;
 
     private static JSONParser parser = new JSONParser();
 
@@ -53,17 +54,18 @@ public class Offering {
         this.lastCrawl = lastCrawl;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    /**
+     * Used to know if current offering is present in the repository path
+     *
+     * @param isStored true if the offering is stored, false otherwise
+     */
+
+    public void setIsStored(boolean isStored) {
+        this.isStored = isStored;
     }
 
-    /**
-     * Used to set the path of the offering file (containing TOSCA)
-     *
-     * @param offeringPath the path of the offering file
-     */
-    public void setOfferingPath(String offeringPath) {
-        this.offeringPath = offeringPath;
+    public void setType(String type) {
+        this.type = type;
     }
 
     /**
@@ -161,7 +163,6 @@ public class Offering {
         obj.put("offering_name", this.offeringName);
         obj.put("type", this.type);
         obj.put("last_crawl", this.lastCrawl.getTime());
-        obj.put("offering_path", this.offeringPath);
 
         return obj.toJSONString();
     }
@@ -171,12 +172,17 @@ public class Offering {
         if (this.toscaString != null)
             return this.toscaString;
 
-        /* otherwise, if there is the path of the file where the offering is stored, the file is read */
-        if (this.offeringPath != null) {
+        /* otherwise, if the offering is stored in the repository, it is possible to read it from file */
+        if (this.isStored) {
             try {
-                this.toscaString = new String(Files.readAllBytes(Paths.get(this.offeringPath)));
+                String offeringDirectory = Discoverer.instance().offeringManager.getOfferingDirectory().getAbsolutePath();
+                String offeringFileName = "offer_" + this.offeringId + ".yaml";
+                this.toscaString = new String(Files.readAllBytes(Paths.get(offeringDirectory + File.separatorChar + offeringFileName)));
                 return this.toscaString;
-            } catch (IOException e) { }
+            } catch (IOException e) {
+                /* Cannot read the offering from repository */
+                e.printStackTrace();
+            }
         }
         /* otherwise this is a new offering, crawled, but neved stored in the local repository */
         this.toscaString = Offering.getPreamble() + this.getNodeTemplate();
@@ -240,11 +246,9 @@ public class Offering {
 
         Date lastCrawl = new Date(lastCrawlMilliseconds);
 
-        String offeringPath = (String) obj.get("offering_path");
-
         Offering offering = new Offering(offeringName, offeringId, lastCrawl);
         offering.setType(type);
-        offering.setOfferingPath(offeringPath);
+        offering.setIsStored(true);
 
         return offering;
     }
@@ -279,4 +283,5 @@ public class Offering {
 
         return ret.toString();
     }
+
 }
