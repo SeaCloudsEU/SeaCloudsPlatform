@@ -17,13 +17,8 @@
 
 package eu.seaclouds.platform.discoverer.core;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.bson.Document;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,15 +26,10 @@ import java.util.HashMap;
 public class Offering {
     Date lastCrawl;
     String offeringName;
-    String offeringId = null;
+    public String toscaString = null;
 
     private String type;
     private HashMap<String, String> properties = new HashMap<>();
-
-    private String toscaString = null;
-    private String offeringPath = null;
-
-    private static JSONParser parser = new JSONParser();
 
 
     public Offering(String offeringName) {
@@ -47,23 +37,13 @@ public class Offering {
         this.lastCrawl = Calendar.getInstance().getTime();
     }
 
-    private Offering (String offeringName, String offeringId, Date lastCrawl) {
+    private Offering (String offeringName, Date lastCrawl) {
         this(offeringName);
-        this.offeringId = offeringId;
         this.lastCrawl = lastCrawl;
     }
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    /**
-     * Used to set the path of the offering file (containing TOSCA)
-     *
-     * @param offeringPath the path of the offering file
-     */
-    public void setOfferingPath(String offeringPath) {
-        this.offeringPath = offeringPath;
     }
 
     /**
@@ -92,50 +72,9 @@ public class Offering {
      */
     public static boolean validateOfferingId(String cloudOfferingId) {
         /* input checks */
-        if(cloudOfferingId == null)
-            return false;
-        if( cloudOfferingId.trim().length() != cloudOfferingId.length() )
-            return false;
-        if( cloudOfferingId.length() == 0 )
+        if(cloudOfferingId == null || cloudOfferingId.length() == 0)
             return false;
 
-        /* input check: we do NOT allow dots, slashes and backslashes */
-        int n = cloudOfferingId.length();
-        for(int i=0; i<n; i++) {
-            char ch = cloudOfferingId.charAt(i);
-            if( ch == '.' || ch == '/' || ch == '\\' )
-                return false;
-        }
-
-        /* all good */
-        return true;
-    }
-
-    /**
-     * Gets the ID of the Offering.
-     * @return The ID of the Offering.
-     */
-    public String getId() {
-        if(this.offeringId == null)
-            throw new NullPointerException("The offering has not been assigned any ID. "
-                    + "See Offering.setId(String).");
-        return this.offeringId;
-    }
-
-    /**
-     * Assigns a unique ID to the Offering.
-     * @param uniqueId The ID to assign.
-     * @return <code>true</code> if the assignment is successful,
-     * <code>false</code> otherwise.
-     */
-    public boolean setId(String uniqueId) {
-        /* input check */
-        boolean validId = validateOfferingId(uniqueId);
-        if( !validId )
-            return false;
-
-        /* assignment */
-        this.offeringId = uniqueId;
         return true;
     }
 
@@ -147,39 +86,11 @@ public class Offering {
         return this.offeringName;
     }
 
-    public boolean moreRecent(Offering offering) {
-        Date oldDate = offering.lastCrawl;
-        Date myDate = this.lastCrawl;
-
-        return myDate.compareTo(oldDate) > 0;
-    }
-
-    public String toJSON() {
-        JSONObject obj = new JSONObject();
-
-        obj.put("offering_id", this.offeringId);
-        obj.put("offering_name", this.offeringName);
-        obj.put("type", this.type);
-        obj.put("last_crawl", this.lastCrawl.getTime());
-        obj.put("offering_path", this.offeringPath);
-
-        return obj.toJSONString();
-    }
-
     public String toTosca() {
-        /* if the TOSCA string is already present it is returned */
-        if (this.toscaString != null)
-            return this.toscaString;
-
-        /* otherwise, if there is the path of the file where the offering is stored, the file is read */
-        if (this.offeringPath != null) {
-            try {
-                this.toscaString = new String(Files.readAllBytes(Paths.get(this.offeringPath)));
-                return this.toscaString;
-            } catch (IOException e) { }
+        if (this.toscaString == null) {
+            this.toscaString = getPreamble() + this.getNodeTemplate();
         }
-        /* otherwise this is a new offering, crawled, but neved stored in the local repository */
-        this.toscaString = Offering.getPreamble() + this.getNodeTemplate();
+
         return this.toscaString;
     }
 
@@ -223,32 +134,6 @@ public class Offering {
         return sb.toString();
     }
 
-    public static Offering fromJSON(String json) {
-        JSONObject obj;
-
-        try {
-            obj = (JSONObject) Offering.parser.parse(json);
-        } catch (ParseException e) {
-            return null;
-        }
-
-        String offeringId = (String) obj.get("offering_id");
-        String offeringName = (String) obj.get("offering_name");
-        String type = (String) obj.get("type");
-
-        Long lastCrawlMilliseconds = (Long) obj.get("last_crawl");
-
-        Date lastCrawl = new Date(lastCrawlMilliseconds);
-
-        String offeringPath = (String) obj.get("offering_path");
-
-        Offering offering = new Offering(offeringName, offeringId, lastCrawl);
-        offering.setType(type);
-        offering.setOfferingPath(offeringPath);
-
-        return offering;
-    }
-
     /**
      * Sanitizes a name by replacing every not alphanumeric character with '_'
      *
@@ -278,5 +163,32 @@ public class Offering {
         }
 
         return ret.toString();
+    }
+
+    public static Offering fromDB(Document dbOjb) {
+        if (dbOjb == null)
+            return null;
+
+        String offeringName = (String) dbOjb.get("offering_name");
+        String type = (String) dbOjb.get("type");
+
+        String lastCrawlMilliseconds = (String) dbOjb.get("last_crawl");
+        Date lastCrawl = new Date(Long.parseLong(lastCrawlMilliseconds));
+        Offering offering = new Offering(offeringName, lastCrawl);
+        offering.setType(type);
+
+        offering.toscaString = (String) dbOjb.get("tosca_string");
+        return offering;
+    }
+
+    public Document toDBObject() {
+        Document document = new Document();
+
+        document.put("offering_name", this.offeringName);
+        document.put("type", this.type);
+        document.put("last_crawl", Long.toString(this.lastCrawl.getTime()));
+        document.put("tosca_string", this.toTosca());
+
+        return document;
     }
 }

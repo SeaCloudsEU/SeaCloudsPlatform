@@ -116,6 +116,7 @@
         <castor.version>1.2</castor.version>
         <cloudfloundry.client.version>1.1.2</cloudfloundry.client.version>
         <openshift.client.version>2.7.0.Final</openshift.client.version>
+        <mongod.version>3.2.0</mongod.version>
 
         <!-- Test dependencies -->
         <junit.version>4.11</junit.version>
@@ -123,6 +124,7 @@
         <slf4j.version>1.7.12</slf4j.version>
         <snakeyaml.version>1.11</snakeyaml.version>
         <logback.version>1.0.7</logback.version>
+        <fakemongo.version>2.0.4</fakemongo.version>
 
         <!-- Plugins -->
         <maven-jar-plugin.version>2.4</maven-jar-plugin.version>
@@ -772,6 +774,19 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongo-java-driver</artifactId>
+                <version>${mongod.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.fakemongo</groupId>
+                <artifactId>fongo</artifactId>
+                <version>${fakemongo.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

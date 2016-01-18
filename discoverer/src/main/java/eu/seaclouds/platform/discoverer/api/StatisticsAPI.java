@@ -34,8 +34,8 @@ public class StatisticsAPI {
     /* vars */
     private Discoverer discoverer;
 
-    public StatisticsAPI() {
-        this.discoverer = Discoverer.instance();
+    public StatisticsAPI(Discoverer discoverer) {
+        this.discoverer = discoverer;
     }
 
     @GET

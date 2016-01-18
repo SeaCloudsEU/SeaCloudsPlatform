@@ -34,8 +34,8 @@ public class FetchAPI {
     /* vars */
     private Discoverer discoverer;
 
-    public FetchAPI() {
-        this.discoverer = Discoverer.instance();
+    public FetchAPI(Discoverer discoverer) {
+        this.discoverer = discoverer;
     }
 
     @GET
@@ -63,13 +63,14 @@ public class FetchAPI {
 
         /* fetching the offering */
         Offering offering = this.discoverer.fetchOffer(offerId);
-        String offeringTOSCA = "";
 
-        if(offering != null) {
-            offeringTOSCA = offering.toTosca();
+        String toscaString = null;
+
+        if (offering != null) {
+            toscaString = offering.toscaString;
         }
 
-        return new FetchRepresentation(offerId, offeringTOSCA);
+        return new FetchRepresentation(offerId, toscaString);
     }
 
     private class FetchRepresentation {

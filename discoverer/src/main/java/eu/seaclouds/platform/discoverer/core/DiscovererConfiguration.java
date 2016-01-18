@@ -28,29 +28,19 @@ import java.util.ArrayList;
 public class DiscovererConfiguration extends Configuration {
     @Valid
     @NotNull
-    @JsonProperty("refreshInterval")
-    private int refreshInterval;
-
-    @Valid
-    @NotNull
-    @JsonProperty("crawlOnStartup")
-    private boolean crawlOnStartup;
-
-    @Valid
     @JsonProperty("activeCrawlers")
     private ArrayList<String> activeCrawlers = new ArrayList<String>();
 
-    @JsonProperty("refreshInterval")
-    public void setRefreshInterval(int refreshInterval) { this.refreshInterval = refreshInterval; }
+    @Valid
+    @JsonProperty("databaseURL")
+    private String databaseURL;
 
-    @JsonProperty("refreshInterval")
-    public int getRefreshInterval() { return this.refreshInterval; }
+    @Valid
+    @JsonProperty("databasePort")
+    private Integer databasePort;
 
-    @JsonProperty("crawlOnStartup")
-    public void setCrawlOnStartup(boolean crawlOnStartup) { this.crawlOnStartup = crawlOnStartup; }
-
-    @JsonProperty("crawlOnStartup")
-    public boolean getCrawlOnStartup() { return this.crawlOnStartup; }
+    @JsonProperty("activeCrawlers")
+    public ArrayList<String> getActiveCrawlers() { return this.activeCrawlers; }
 
     @JsonProperty("activeCrawlers")
     public void setActiveCrawlers(ArrayList<String> activeCrawlers) {
@@ -59,7 +49,24 @@ public class DiscovererConfiguration extends Configuration {
         }
     }
 
-    @JsonProperty("activeCrawlers")
-    public ArrayList<String> getActiveCrawlers() { return this.activeCrawlers; }
+    @JsonProperty("databaseURL")
+    public String getDatabaseURL() {
+        return this.databaseURL;
+    }
+
+    @JsonProperty("databaseURL")
+    public void setDatabaseURL(String databaseURL) {
+        this.databaseURL = databaseURL;
+    }
+
+    @JsonProperty("databasePort")
+    public Integer getDatabasePort() {
+        return 27017;
+    }
+
+    @JsonProperty("databasePort")
+    public Integer setDatabasePort(Integer port) {
+        return this.databasePort = port;
+    }
 }
 

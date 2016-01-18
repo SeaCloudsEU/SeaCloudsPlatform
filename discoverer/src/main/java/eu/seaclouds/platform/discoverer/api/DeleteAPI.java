@@ -36,8 +36,8 @@ public class DeleteAPI {
     /* vars */
     private Discoverer discoverer;
 
-    public DeleteAPI() {
-        this.discoverer = Discoverer.instance();
+    public DeleteAPI(Discoverer discoverer) {
+        this.discoverer = discoverer;
     }
 
     @POST
@@ -48,7 +48,7 @@ public class DeleteAPI {
 
         /* if the offering id is valid and the discoverer is able to remove the offering associated
          * then the offering id is added to the list of removed offering  */
-        if(Offering.validateOfferingId(offerId) && this.discoverer.removeOffering(offerId)) {
+        if(this.discoverer.removeOffering(offerId)) {
             removedOfferingIds.add(offerId);
         }
 

@@ -19,6 +19,7 @@ package eu.seaclouds.platform.discoverer.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.seaclouds.platform.discoverer.core.Discoverer;
+import eu.seaclouds.platform.discoverer.core.Offering;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -33,8 +34,8 @@ public class FetchAllAPI {
     /* vars */
     private Discoverer discoverer;
 
-    public FetchAllAPI() {
-        this.discoverer = Discoverer.instance();
+    public FetchAllAPI(Discoverer discoverer) {
+        this.discoverer = discoverer;
     }
 
     @GET
@@ -47,13 +48,18 @@ public class FetchAllAPI {
             ids.add(offeringId);
         }
 
-        String offering = this.discoverer.getSingleOffering();
+        Offering offering = this.discoverer.fetchOffer("all");
+        String offeringTOSCA = "";
 
-        if (offering == null) {
-            return new FetchAllRepresentation(new ArrayList<String>(), "");
-        } else {
-            return new FetchAllRepresentation(ids, offering);
+        if(offering != null) {
+            offeringTOSCA = offering.toscaString;
         }
+
+        if (offeringTOSCA.isEmpty()) {
+            ids.clear();
+        }
+
+        return new FetchAllRepresentation(ids, offeringTOSCA);
     }
 
     private class FetchAllRepresentation {

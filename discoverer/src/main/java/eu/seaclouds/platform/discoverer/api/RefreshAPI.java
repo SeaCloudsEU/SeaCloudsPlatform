@@ -31,8 +31,8 @@ public class RefreshAPI {
     /* vars */
     private Discoverer discoverer;
 
-    public RefreshAPI() {
-        this.discoverer = Discoverer.instance();
+    public RefreshAPI(Discoverer discoverer) {
+        this.discoverer = discoverer;
     }
 
     @GET
