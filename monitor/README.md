@@ -68,6 +68,28 @@ After that, you need to untar the downlaoded files and start the the two service
 
 After that you can check that the platform is up and running by connecting to http://<MONITOR-MANAGER-HOST-IP>:8170/webapp to see the Monitor Manager web console.
 
+Finally, according with the current status of Tower 4Clouds, it is necessary to install an initial static monitoring rule enabling the monitoring of the response time for application modules. You can use the following curl in order to do that, properly replacing the Monitoring Mnagaer endpoint information (IP and port):
+
+    curl -X POST -H "Content-type: application/xml" http://${MONITOR_MANAGER_HOST}:${MONITOR_MANAGER_PORT}/v1/monitoring-rules -d '
+    <ns2:monitoringRules>
+        <ns2:monitoringRule id="internalComponentRTRule" timeStep="2" timeWindow="2">
+            <ns2:monitoredTargets>
+                <ns2:monitoredTarget class="Method"/>
+            </ns2:monitoredTargets>
+            <ns2:collectedMetric metricName="EffectiveResponseTime">
+                <ns2:parameter name="samplingProbability">1</ns2:parameter>
+            </ns2:collectedMetric>
+            <ns2:metricAggregation groupingClass="InternalComponent" aggregateFunction="Average"/>
+            <ns2:actions>
+                <ns2:action name="OutputMetric">
+                    <ns2:parameter name="metric">AverageResponseTimeInternalComponent</ns2:parameter>
+                    <ns2:parameter name="value">METRIC</ns2:parameter>
+                    <ns2:parameter name="resourceId">ID</ns2:parameter>
+                </ns2:action>
+            </ns2:actions>
+        </ns2:monitoringRule>
+    </ns2:monitoringRules>
+    '    
 
 ###InfluxDB
 
