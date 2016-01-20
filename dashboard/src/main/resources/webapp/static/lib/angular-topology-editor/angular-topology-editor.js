@@ -23,7 +23,7 @@
                 restrict: 'E',
                 scope: {dam: '=bind'},
                 replace: true,
-                templateUrl: 'static/lib/angular-topology-editor/credential-view.html',
+                templateUrl: 'static/lib/angular-topology-editor/credentials-view.html',
                 controller: function ($scope) {
                     var randLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
                     $scope.randomId = randLetter + Date.now();
