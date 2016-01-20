@@ -34,7 +34,7 @@
                         var canvasOptions = {
                             addlinkcallback: Credentials.addlinkcallback,
                             changehandler: function (model) {
-                                Credentials.store_credentials_in_dam(scope.dam);
+                                scope.dam = Credentials.store_credentials_in_dam(model);
                             }
                         };
 
