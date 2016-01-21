@@ -18,12 +18,14 @@ package eu.atos.sla.parser.data;
 
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -36,26 +38,43 @@ import eu.atos.sla.parser.DateTimeSerializerJSON;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "violation")
+@JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class Violation  {
 
     @XmlElement(name = "id")
     private Long id;
+    
+    @JsonProperty("uuid")
     @XmlElement(name = "uuid")
     private String uuid;
+    
+    @JsonProperty("contract_uuid")
     @XmlElement(name = "contract_uuid")
     private String contractUUID;
+    
+    @JsonProperty("service_name")
     @XmlElement(name = "service_name")
     private String serviceName;
+    
+    @JsonProperty("service_scope")
     @XmlElement(name = "service_scope")
     private String serviceScope;
+    
+    @JsonProperty("metric_name")
     @XmlElement(name = "metric_name")
     private String metricName;
+    
     @JsonSerialize(using=DateTimeSerializerJSON.class)
     @JsonDeserialize(using=DateTimeDeserializerJSON.class)
+    @JsonProperty("datetime")
     @XmlElement(name = "datetime")
     private Date datetime;
+
+    @JsonProperty("expected_value")
     @XmlElement(name = "expected_value")
     private String expectedValue;
+    
+    @JsonProperty("actual_value")
     @XmlElement(name = "actual_value")
     private String actualValue;
 
@@ -102,7 +121,6 @@ public class Violation  {
         this.serviceScope = serviceScope;
     }
 
-    @Column(name = "metric_name")
     public String getKpiName() {
         return metricName;
     }

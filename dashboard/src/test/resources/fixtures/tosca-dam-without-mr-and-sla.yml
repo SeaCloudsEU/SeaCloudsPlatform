@@ -1,0 +1,121 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: Sample 3-tier application
+imports: ['tosca-normative-types:1.0.0.wd06-SNAPSHOT']
+
+template_name: example
+template_version: 1.0.0-SNAPSHOT
+
+node_types:
+
+  seaclouds.Nodes.Compute:
+    derived_from: tosca.nodes.Compute
+    description: Custom compute
+    properties:
+      hardwareId:
+        type: string
+        required: false
+
+  org.apache.brooklyn.entity.database.mysql.MySqlNode:
+    derived_from: tosca.nodes.Root
+    description: |
+      A MySQL server
+    properties:
+      datastore.creation.script.url: {type: string, required: false}
+    requirements:
+    - {host: tosca.nodes.Compute, type: tosca.relationships.HostedOn}
+    artifacts:
+    - {datastore.creation.script.url: null, type: tosca.artifacts.File}
+  org.apache.brooklyn.entity.webapp.tomcat.TomcatServer:
+    derived_from: tosca.nodes.Root
+    description: |
+      A simple Tomcat server
+    properties:
+      wars.root: {type: string, required: false}
+      http.port:
+        type: list
+        required: false
+        entry_schema: {type: string}
+      java.sysprops:
+        type: map
+        required: false
+        entry_schema: {type: string}
+    requirements:
+    - {host: tosca.nodes.Compute, type: tosca.relationships.HostedOn}
+    #artifacts:
+    #- {wars.root: null, type: tosca.artifacts.File}
+
+topology_template:
+  description: Web Server Sample with Script
+  node_templates:
+    www:
+      type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
+      requirements:
+    #  - {endpoint: webservices}
+      - {host: Rapidcloud_io_Asia_HK}
+    webservices:
+      type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
+      #properties:
+        #java_version:
+          #constraints:
+          #- {greater_or_equal: '7'}
+          #- {less_or_equal: '8'}
+      requirements:
+      #- {endpoint: db1}
+      - {host: Vultr_64gb_mc_atlanta}
+    db1:
+      type: org.apache.brooklyn.entity.database.mysql.MySqlNode
+      #properties:
+        #mysql_version:
+          #constraints:
+          #- {greater_or_equal: '5.0'}
+          #- {less_or_equal: '5.6'}
+      requirements:
+      - {host: App42_PaaS_America_US}
+    Vultr_64gb_mc_atlanta:
+      type: seaclouds.Nodes.Compute
+      properties: {num_cpus: 24, country: United States, cost: 0.893 USD/hour, hardwareId: 64gb-mc,
+        city: ATLANTA, disk_type: ssd, resource_type: compute, disk_size: 800, location: 'vultr:compute',
+        region: atlanta, ram: 64}
+    App42_PaaS_America_US:
+      type: seaclouds.Nodes.Compute
+      properties: {num_cpus: 24, country: United States, cost: 0.893 USD/hour, hardwareId: 64gb-mc,
+        city: ATLANTA, disk_type: ssd, resource_type: compute, disk_size: 800, location: 'vultr:compute',
+        region: atlanta, ram: 64}
+    Rapidcloud_io_Asia_HK:
+      type: seaclouds.Nodes.Compute
+      properties: {num_cpus: 24, country: United States, cost: 0.893 USD/hour, hardwareId: 64gb-mc,
+        city: ATLANTA, disk_type: ssd, resource_type: compute, disk_size: 800, location: 'vultr:compute',
+        region: atlanta, ram: 64}
+  groups:
+    operation_www:
+      members: [www]
+      policies:
+      - QoSInfo: {execution_time: 200 ms, benchmark_platform: hp_cloud_services.2xl}
+      - dependencies: {operation_webservices: '2'}
+      - QoSRequirements:
+          response_time: {less_than: 2000.0 ms}
+          availability: {greater_than: 0.98}
+          cost: {less_or_equal: 200.0 euros_per_month}
+          workload: {less_or_equal: 50.0 req_per_min}
+      - ExpectedQualityPOC: {expectedExecutionTimePOC: .NaN, fitnessPOC: .NaN, expectedCostPOC: 2571.84}
+    operation_webservices:
+      members: [webservices]
+      policies:
+      - QoSInfo: {execution_time: 100 ms, benchmark_platform: hp_cloud_services.2xl}
+      - dependencies: {operation_db1: '1'}
+    operation_db1:
+      members: [db1]
+      policies:
+      - dependencies: {}
+    add_brooklyn_location_Vultr_64gb_mc_atlanta:
+      policies:
+      - {brooklyn.location: 'vultr:compute:atlanta'}
+      members: [webservices]
+    add_brooklyn_location_Rapidcloud_io_Asia_HK:
+      policies:
+      - {brooklyn.location: Rapidcloud_io_Asia_HK}
+      members: [www]
+    add_brooklyn_location_App42_PaaS_America_US:
+      policies:
+      - {brooklyn.location: App42_PaaS_America_US}
+      members: [db1]

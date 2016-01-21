@@ -28,6 +28,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.datatype.Duration;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+
 /**
  * According to wsag spec, this element allows the definition of domain specific customized business values.
  * 
@@ -45,15 +49,19 @@ import javax.xml.datatype.Duration;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="CustomBusinessValue")
+@JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class CustomBusinessValue {
     private static final Date START_INSTANT = new Date(0);
 
+    @JsonProperty("count")
     @XmlAttribute(name="count")
     private Integer count = 1;
-    
+
+    @JsonProperty("duration")
     @XmlAttribute(name="duration")
     private Duration duration;
 
+    @JsonProperty("penalties")
     @XmlElement(name="Penalty")
     private List<Penalty> penalties;
 

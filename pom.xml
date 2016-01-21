@@ -90,7 +90,8 @@
         <javatuples.version>1.2</javatuples.version>
         <brooklyn.version>0.9.0-SNAPSHOT</brooklyn.version>
         <jetty.version>9.2.4.v20141103</jetty.version>
-        <dropwizard.version>0.8.1</dropwizard.version>
+        <dropwizard.version>0.8.5</dropwizard.version>
+        <dropwizard-swagger.version>0.7.0</dropwizard-swagger.version>
         <httpcomponents.version>4.3.6</httpcomponents.version>
         <gson.version>2.3</gson.version>
         <json.version>20140107</json.version>
@@ -120,6 +121,8 @@
         <!-- Test dependencies -->
         <junit.version>4.11</junit.version>
         <testng.version>6.8.8</testng.version>
+        <mockito.version>1.10.19</mockito.version>
+        <mockwebserver.version>2.7.0</mockwebserver.version>
         <slf4j.version>1.7.12</slf4j.version>
         <snakeyaml.version>1.11</snakeyaml.version>
         <logback.version>1.0.7</logback.version>
@@ -409,6 +412,10 @@
             <dependency>
                 <groupId>org.apache.brooklyn</groupId>
                 <artifactId>brooklyn-software-database</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.brooklyn</groupId>
+                <artifactId>brooklyn-rest-api</artifactId>
                 <version>${brooklyn.version}</version>
             </dependency>
 
@@ -467,6 +474,11 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-joda</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-jaxb-annotations</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
 
@@ -584,8 +596,33 @@
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
+                <artifactId>dropwizard-jersey</artifactId>
+                <version>${dropwizard.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-assets</artifactId>
                 <version>${dropwizard.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard</groupId>
+                <artifactId>dropwizard-client</artifactId>
+                <version>${dropwizard.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard</groupId>
+                <artifactId>dropwizard-forms</artifactId>
+                <version>${dropwizard.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard</groupId>
+                <artifactId>dropwizard-auth</artifactId>
+                <version>${dropwizard.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.federecio</groupId>
+                <artifactId>dropwizard-swagger</artifactId>
+                <version>${dropwizard-swagger.version}</version>
             </dependency>
 
             <dependency>
@@ -672,6 +709,7 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
@@ -693,11 +731,34 @@
                 <version>${commons-httpclient.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.mapdb</groupId>
+                <artifactId>mapdb</artifactId>
+                <version>1.0.8</version>
+            </dependency>
+
             <!-- Test dependencies -->
+            <dependency>
+                <groupId>io.dropwizard</groupId>
+                <artifactId>dropwizard-testing</artifactId>
+                <version>${dropwizard.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
                 <version>${testng.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okhttp</groupId>
+                <artifactId>mockwebserver</artifactId>
+                <version>${mockwebserver.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

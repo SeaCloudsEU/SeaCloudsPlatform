@@ -1,0 +1,19 @@
+<monitoringRules xmlns="http://www.modaclouds.eu/xsd/1.0/monitoring_rules_schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.modaclouds.eu/xsd/1.0/monitoring_rules_schema">
+    <monitoringRule id="nuroTestPcRuleViol" timeStep="2" timeWindow="2">
+        <monitoredTargets>
+            <monitoredTarget class="InternalComponent" type="NuroApplication"/>
+        </monitoredTargets>
+        <collectedMetric metricName="NUROServerLastTenSecondsAverageRunTime">
+            <parameter name="samplingTime">1</parameter>
+        </collectedMetric>
+        <metricAggregation groupingClass="InternalComponent" aggregateFunction="Average"/>
+        <condition>METRIC &gt; 0.5</condition>
+        <actions>
+            <action name="OutputMetric">
+                <parameter name="resourceId">ID</parameter>
+                <parameter name="metric">NUROServerLastThirtySecondsAverageRunTime_Violation</parameter>
+                <parameter name="value">METRIC</parameter>
+            </action>
+        </actions>
+    </monitoringRule>
+</monitoringRules>

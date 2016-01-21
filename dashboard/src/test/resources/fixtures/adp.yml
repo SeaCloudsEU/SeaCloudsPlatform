@@ -1,0 +1,94 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: WebChat application
+imports:
+- tosca-normative-types:1.0.0.wd03-SNAPSHOT
+topology_template:
+  node_templates:
+    WebChat-Module:
+      type: seaclouds.nodes.webapp.tomcat.TomcatServer
+      artifacts:
+      - war: "http://search.maven.org/remotecontent?filepath=io/brooklyn/example/brooklyn-example-hello-world-sql-webapp/0.6.0/brooklyn-example-hello-world-sql-webapp-0.6.0.war"
+        type: tosca.artifacts.File
+      requirements:
+      - endpoint: MessageDatabase
+      - host: webservice_offering
+
+
+    MessageDatabase:
+      type: seaclouds.nodes.database.mysql.MySqlNode
+      artifacts:
+      - db_create: https://bit.ly/brooklyn-visitors-creation-script
+        type: tosca.artifacts.File
+      properties:
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5.0'
+          - less_or_equal: '5.0'
+      requirements:
+      - host: My-DB-Compute
+
+    MessageDatabase-Compute:
+      type: seaclouds.Nodes.Compute
+      properties:
+        resource_type: compute
+        hardwareId: i2.xlarge
+        location: "aws:ec2"
+        region: "eu-west-1"
+        performance: 90
+        availability: 0.99950
+        country: Ireland
+        city: Dublig
+        cost: 1.001 USD/hour
+        disk_size: 800
+        num_disks: 1
+        num_cpus: 4
+        ram: 30.5
+        disk_type: ssd
+
+    webservice_offering:
+      type: seaclouds.Nodes.Compute
+      properties:
+        resource_type: compute
+        location: "hpcloud-compute"
+        region: "region-b.geo-1"
+        performance: 80
+        availability: 0.99550
+        country: EEUU
+        city: Oregon
+        cost: 1.101 USD/hour
+        disk_size: 700
+        num_disks: 2
+        num_cpus: 4
+        ram: 16.5
+        disk_type: ssd
+
+
+groups:
+  operation_Chat:
+    members:
+    - WebChat-Module
+    policies:
+    - QoSInfo:
+        execution_time: 50 ms
+        benchmark_platform: hp_cloud_services.2xl
+    - dependencies:
+        operation_MessageDatabase: '2'
+    - QoSRequirements:
+        response_time:
+          less_than: 2000.0 ms
+        availability:
+          greater_than: 0.998
+        cost:
+          less_or_equal: 200.0 euros_per_month
+        workload:
+          less_or_equal: 50.0 req_per_min
+      - ExpectedQuality: {expectedWorkload: 50.0, expectedAvailability: 0.9994997551225, expectedCost: 190.8, expectedExecutionTime: 0.10079721294968995}
+
+  operation_MessageDatabase:
+    members:
+    - MessageDatabase
+    policies:
+    - QoSInfo:
+        execution_time: 30 ms
+        benchmark_platform: hp_cloud_services.2xl
+    - dependencies: {}

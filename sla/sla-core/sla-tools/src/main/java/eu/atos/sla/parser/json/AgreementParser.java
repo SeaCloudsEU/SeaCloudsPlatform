@@ -38,6 +38,12 @@ import eu.atos.sla.parser.data.wsag.Agreement;
 public class AgreementParser implements IParser<Agreement> {
     private static Logger logger = LoggerFactory.getLogger(AgreementParser.class);
 
+    private ObjectMapper mapper;
+    
+    public AgreementParser() {
+        mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS , false);
+    }
     /*
      * getWsagObject receives in serializedData the object information in json 
      * must returns a eu.atos.sla.parser.data.wsag.Agreement 
@@ -47,7 +53,6 @@ public class AgreementParser implements IParser<Agreement> {
         Agreement agreement = null;
         try{
             logger.info("Will parse {}", serializedData);
-            ObjectMapper mapper = new ObjectMapper();
             agreement = mapper.readValue(serializedData, Agreement.class);
             logger.info("Agreement parsed {}", agreement);
         } catch (JsonProcessingException e) {
@@ -89,8 +94,6 @@ public class AgreementParser implements IParser<Agreement> {
                 JAXBContext jaxbContext = JAXBContext.newInstance(Agreement.class);
                 Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
                 Agreement agreement = (Agreement)jaxbUnmarshaller.unmarshal(new StringReader(wsagSerialized));
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS , false);
                 String result = mapper.writeValueAsString(agreement);
                 return result;
             } catch (JsonProcessingException e) {
