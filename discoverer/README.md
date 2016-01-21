@@ -2,7 +2,7 @@ SeaClouds Discoverer
 ====================
 
 The SeaClouds Discoverer module is able to provide information about cloud offerings through its RESTful API.
-Those information are a TOSCA YAML representation of the offerings retrieved by the crawlers from [CloudHarmony](https://cloudharmony.com) and [PaaSify](http://www.paasify.it).
+Those information are a TOSCA YAML representation (following the [SeaClouds Discovery design and orchestration functionalities](http://www.seaclouds-project.eu/deliverables/SEACLOUDS-D3.2%20Discovery_design_and_orchestration_functionalities.pdf) specification) of the offerings retrieved by the crawlers from [CloudHarmony](https://cloudharmony.com) and [PaaSify](http://www.paasify.it).
 
 # Installing and running SeaClouds Discoverer
 The easiest way to install and run this component is explained in SeaClouds [README.md](../README.md).

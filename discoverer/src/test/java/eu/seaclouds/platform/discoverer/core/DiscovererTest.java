@@ -94,10 +94,10 @@ public class DiscovererTest {
         of.addProperty("num_cpus", "8");
         d.addOffering(of);
 
-        DiscovererAPI.FetchIfRepresentation fir = (new DiscovererAPI(d)).getOfferingsIf("{ \"num_cpus\": \"8\" }");
-        Assert.assertEquals(fir.getOfferingIds().size(), 1);
+        ArrayList<DiscovererAPI.OfferingRepresentation> offerings = (new DiscovererAPI(d)).getOfferingsIf("{ \"num_cpus\": \"8\" }");
+        Assert.assertEquals(offerings.size(), 1);
 
-        String fetchedOffering = fir.getOfferings().get(0);
+        String fetchedOffering = offerings.get(0).getOffering();
         Assert.assertEquals(fetchedOffering, of.toTosca());
 
     }

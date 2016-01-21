@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,21 +47,18 @@ public class DiscovererAPI {
         this.JSONParser = new JSONParser();
     }
 
-    @POST
-    @Path("/delete")
-    @Produces(MediaType.APPLICATION_JSON)
-    public DeleteRepresentation deleteOfferingById(@QueryParam("oid") String offerId)
+    @DELETE
+    @Path("/delete/{oid}")
+    public Response deleteOfferingById(@PathParam("oid") String offerId)
             throws IOException {
 
-        ArrayList<String> removedOfferingIds = new ArrayList<>();
-
-        /* if the offering id is valid and the discoverer is able to remove the offering associated
-         * then the offering id is added to the list of removed offering  */
-        if(this.discoverer.removeOffering(offerId)) {
-            removedOfferingIds.add(offerId);
+        /* return if the offering id is valid and the discoverer is able to remove the offering associated */
+        if (this.discoverer.removeOffering(offerId)) {
+            return Response.ok("Offering deleted").build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).entity("Offering not found").build();
         }
 
-        return new DeleteRepresentation(removedOfferingIds);
     }
 
     @GET
@@ -94,8 +92,8 @@ public class DiscovererAPI {
     @Produces(MediaType.APPLICATION_JSON)
     public ArrayList<String> getOfferingIds()
             throws IOException {
-        /* collecting all the ids within the repository */
 
+        /* collecting all the ids within the repository */
         ArrayList<String> ids = new ArrayList<String>();
         Collection<String> offeringIds = discoverer.getAllOfferingIds();
         for (String offeringId : offeringIds) {
@@ -105,37 +103,33 @@ public class DiscovererAPI {
         return ids;
     }
 
-    @POST
-    @Path("/fetch")
+    @GET
+    @Path("/fetch/{oid}")
     @Produces(MediaType.APPLICATION_JSON)
-    public FetchRepresentation getOfferingById(@QueryParam("oid") String offerId)
-            throws IOException {
+    public Response getOfferingById(@PathParam("oid") String offerId) {
 
         /* input check */
         if(!Offering.validateOfferingId(offerId)) {
-            return new FetchRepresentation("", "");
+            return Response.status(Response.Status.NOT_FOUND).entity("Offering not found.").build();
         }
 
         /* fetching the offering */
         Offering offering = this.discoverer.fetchOffer(offerId);
 
-        String toscaString = null;
+        if (offering == null)
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
 
-        if (offering != null) {
-            toscaString = offering.toscaString;
-        }
-
-        return new FetchRepresentation(offerId, toscaString);
+        return Response.ok(new OfferingRepresentation(offerId, offering.toTosca())).build();
     }
 
     @GET
     @Path("/fetchif")
     @Produces(MediaType.APPLICATION_JSON)
-    public FetchIfRepresentation getOfferingsIf(@QueryParam("constraints") String constraints)
+    public ArrayList<OfferingRepresentation> getOfferingsIf(@QueryParam("constraints") String constraints)
             throws IOException {
 
-        ArrayList<String> validOfferingIds = new ArrayList<>();
-        ArrayList<String> validOfferings = new ArrayList<>();
+        ArrayList<OfferingRepresentation> offerings = new ArrayList<>();
+
         JSONObject constraintsObject;
 
         try {
@@ -145,8 +139,7 @@ public class DiscovererAPI {
             for (String offeringId : offeringIds) {
                 Offering offering = this.discoverer.fetchOffer(offeringId);
                 if (this.satisfyAllConstraints(constraintsObject, offering)) {
-                    validOfferingIds.add(offeringId);
-                    validOfferings.add(offering.toTosca());
+                    offerings.add(new OfferingRepresentation(offeringId, offering.toTosca()));
                 }
             }
         } catch (ParseException e) {
@@ -154,15 +147,14 @@ public class DiscovererAPI {
             log.error(e.getMessage());
         }
 
-        return new FetchIfRepresentation(validOfferingIds, validOfferings);
+        return offerings;
     }
 
-    @GET
+    @PUT
     @Path("/refresh")
     @Produces(MediaType.APPLICATION_JSON)
-    public Boolean refreshRepository() {
+    public void refreshRepository() {
         this.discoverer.refreshRepository();
-        return true;
     }
 
     @GET
@@ -174,20 +166,6 @@ public class DiscovererAPI {
         Date lastCrawl = discoverer.lastCrawl;
 
         return new StatisticsRepresentation(crawledTimes, totalCrawledOfferings, lastCrawl);
-    }
-
-    private class DeleteRepresentation {
-
-        private ArrayList<String> removedOfferingIds;
-
-        public DeleteRepresentation(ArrayList<String> removedOfferingIds) {
-            this.removedOfferingIds = removedOfferingIds;
-        }
-
-        @JsonProperty("deleted_offerings")
-        public ArrayList<String> getDeletedOfferings() {
-            return removedOfferingIds;
-        }
     }
 
     private class FetchAllRepresentation {
@@ -211,12 +189,12 @@ public class DiscovererAPI {
         }
     }
 
-    private class FetchRepresentation {
+    public class OfferingRepresentation {
 
         private String offeringId;
         private String offering;
 
-        public FetchRepresentation(String offeringId, String offering) {
+        public OfferingRepresentation(String offeringId, String offering) {
             this.offeringId = offeringId;
             this.offering = offering;
         }
@@ -259,27 +237,6 @@ public class DiscovererAPI {
         if (toscaString.charAt(i) == ' ') i++;
 
         return toscaString.substring(i).startsWith(constraintValue);
-    }
-
-    public class FetchIfRepresentation {
-
-        private ArrayList<String> offeringIds;
-        private ArrayList<String> offerings;
-
-        public FetchIfRepresentation(ArrayList<String> offeringIds, ArrayList<String> offerings) {
-            this.offeringIds = offeringIds;
-            this.offerings = offerings;
-        }
-
-        @JsonProperty("offering_ids")
-        public ArrayList<String> getOfferingIds() {
-            return offeringIds;
-        }
-
-        @JsonProperty("offerings")
-        public ArrayList<String> getOfferings() {
-            return offerings;
-        }
     }
 
     private class StatisticsRepresentation {
