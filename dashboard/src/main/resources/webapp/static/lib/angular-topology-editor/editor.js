@@ -65,6 +65,7 @@ var Editor = (function() {
     }
 
     var database_options = {
+        "": "",
         "database.mysql.MySqlNode": "MySql",
         "database.mariadb.MariaDbNode": "mariadb",
         "database.postgresql.PostgreSqlNode": "PostgreSQL",
