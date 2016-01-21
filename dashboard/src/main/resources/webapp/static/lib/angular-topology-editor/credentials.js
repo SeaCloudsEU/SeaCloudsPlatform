@@ -253,17 +253,18 @@ var Credentials = (function() {
      * Assumes there is a group LOCATION_GROUP_<nodename> where nodename is the
      * name of a node template in the topology_template.
      */
-    function store_credentials_in_dam(dam) {
+    function store_credentials_in_dam(rawdam) {
         var LOCATION_GROUP = "add_brooklyn_location_";
         var LOCATION_POLICY = "brooklyn.location";
 
+        var dam = jsyaml.safeLoad(rawdam);
         var canvas = this.canvas;
-        Object.keys(dam.groups).
+        Object.keys(dam.topology_template.groups).
             filter(function(groupname) {
                 return groupname.startsWith(LOCATION_GROUP);
             }).
             forEach(function(groupname) {
-                var group = dam.groups[groupname];
+                var group = dam.topology_template.groups[groupname];
                 var tnodename = groupname.substr(LOCATION_GROUP.length);
                 if (group.policies) {
                     for (var i = 0; i < group.policies.length; i++) {
@@ -278,7 +279,7 @@ var Credentials = (function() {
                 }
             });
         var rawDam = jsyaml.safeDump(dam);
-        return dam;
+        return rawDam;
     }
 
     return {
