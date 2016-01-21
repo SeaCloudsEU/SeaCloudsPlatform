@@ -27,6 +27,7 @@ import org.apache.brooklyn.launcher.camp.SimpleYamlLauncher;
 import org.apache.brooklyn.test.Asserts;
 import org.testng.annotations.Test;
 
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 @Test( groups={"Live"} )
@@ -43,6 +44,7 @@ public class OpenShiftYamlTest {
 
         Asserts.succeedsEventually(new Runnable() {
             public void run() {
+                assertNotNull(server);
 
                 assertTrue(server.getAttribute(Startable.SERVICE_UP));
                 assertTrue(server.getAttribute(OpenShiftWebApp
