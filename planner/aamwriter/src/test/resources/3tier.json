@@ -67,12 +67,15 @@
             "target": "webservices",
             "properties": {
                 "calls": "2"
+                "operation_type": "seaclouds.relation.connection.endpoint.host",
             }
         },
         {
             "source": "webservices",
             "target": "db1",
             "properties": {
+                "credentials_file": "db.props",
+                "operation_type": "seaclouds.relations.databaseconnections.jdbc",
                 "calls": "1"
             }
         }

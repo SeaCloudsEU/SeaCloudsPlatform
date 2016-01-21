@@ -73,7 +73,7 @@ groups:
         benchmark_platform: hp_cloud_services.2xl
     - dependencies:
         operation_webservices: '2'
-    - QoSRequirements:
+    - AppQoSRequirements:
         response_time:
           less_than: 2000.0 ms
         availability:

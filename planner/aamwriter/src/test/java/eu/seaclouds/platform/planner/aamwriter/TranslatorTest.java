@@ -30,6 +30,7 @@ import eu.seaclouds.platform.planner.aamwriter.modelaam.Aam;
 import eu.seaclouds.platform.planner.aamwriter.modelaam.Constraint;
 import eu.seaclouds.platform.planner.aamwriter.modelaam.Policy;
 import eu.seaclouds.platform.planner.aamwriter.modeldesigner.DGraph;
+import eu.seaclouds.platform.planner.aamwriter.modeldesigner.DLink;
 import static org.testng.AssertJUnit.*;
 
 @SuppressWarnings({"unused", "rawtypes", "unchecked"})
@@ -140,8 +141,13 @@ public class TranslatorTest {
     
     @Test
     public void testConnections() {
-        checkConnection(n1, N2);
-        checkConnection(n2, N3);
+        DLink l1;
+        DLink l2;
+        
+        l1 = graph.getLinksFrom(graph.getNode(N1)).get(0);
+        checkConnection(n1, N2, l1);
+        l2 = graph.getLinksFrom(graph.getNode(N2)).get(0);
+        checkConnection(n2, N3, l2);
     }
     
     @Test
@@ -211,7 +217,19 @@ public class TranslatorTest {
                 (Map<String, Object>)reqs.get(reqname),
                 MonitoringMetrics.APP_AVAILABLE.getMetricName(), 99.8, Constraint.Names.GT);
     }
-
+    
+    @Test
+    public void testCredentialsFileInPropertiesOfFromNode() {
+        for (DLink l : graph.getLinks()) {
+            String credsFile = l.getCredentialsFile();
+            
+            Map<String, Object> from = nodeTemplates.get(l.getSource().getName());
+            if (!credsFile.isEmpty()) {
+                checkProperty(from, DLink.Attributes.CREDENTIALS_FILE, credsFile);
+            }
+        }
+    }
+    
     private Object getProperty(Map<String, Object> nodeTemplate, String propertyName) {
         Map properties = (Map)nodeTemplate.get("properties");
         Object actual = properties.get(propertyName);
@@ -247,10 +265,13 @@ public class TranslatorTest {
         assertEquals(expectedValue, actualValue);
     }
 
-    private void checkConnection(Map from, String to) {
+    private void checkConnection(Map from, String to, DLink l) {
         List<Map> requirements = (List)from.get("requirements");
         Map endpoint = searchArray(requirements, "endpoint");
         assertEquals(to, endpoint.get("endpoint"));
+        if (!l.getOperationType().isEmpty()) {
+            assertEquals(l.getOperationType(), endpoint.get("type"));
+        }
     }
     
     private Map<String, Object> searchArray(List<Map> array, String key) {

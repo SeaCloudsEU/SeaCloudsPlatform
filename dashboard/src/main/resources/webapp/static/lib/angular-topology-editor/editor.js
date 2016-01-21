@@ -59,7 +59,8 @@ var Editor = (function() {
                 "": ""
             },
         "PHP": {
-                "": ""
+                "": "",
+                "php.httpd.PhpHttpdServer": "Apache"
             }
     }
 
@@ -119,7 +120,9 @@ var Editor = (function() {
     };
 
     var operation_types = {
-        "seaclouds.relationships.Configure": "Configure"
+        "seaclouds.relations.databaseconnections.jdbc": "JDBC connection",
+        "seaclouds.relations.databaseconnections.php": "PHP-db connection",
+        "seaclouds.relation.connection.endpoint.host": "HTTP connection"
     };
 
     /*
