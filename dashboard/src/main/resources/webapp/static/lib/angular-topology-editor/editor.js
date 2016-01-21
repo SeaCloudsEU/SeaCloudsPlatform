@@ -118,6 +118,10 @@ var Editor = (function() {
         "hp_cloud_services.2xl": "hp_cloud_services.2xl"
     };
 
+    var operation_types = {
+        "seaclouds.relationships.Configure": "Configure"
+    };
+
     /*
      * Override some Link and Node methods regarding Canvas.
      */
@@ -479,7 +483,6 @@ var Editor = (function() {
         );
         $("#database-min-version").val(node.properties.min_version);
         $("#database-max-version").val(node.properties.max_version);
-
     };
 
     databasetechset.store = function(node) {
@@ -645,15 +648,20 @@ var Editor = (function() {
     operationsset.operationsset = function(fieldsetid) {
         this.setup(fieldsetid);
 
+        Forms.populate_select($("#operation-type"), operation_types);
         return this;
     }
 
     operationsset.load = function(link) {
         $("#operation-calls").val(link.properties.calls);
+        $("#operation-credentials-file").val(link.properties.credentials_file);
+        $("#operation-type").val(link.properties.operation_type);
     };
 
     operationsset.store = function(link) {
         link.properties.calls = $("#operation-calls").val();
+        link.properties.credentials_file = $("#operation-credentials-file").val();
+        link.properties.operation_type = $("#operation-type").val();
     };
 
     var fromjson = function(json) {
