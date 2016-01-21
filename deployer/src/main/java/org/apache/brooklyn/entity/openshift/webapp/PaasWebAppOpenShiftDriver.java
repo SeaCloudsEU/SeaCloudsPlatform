@@ -146,7 +146,6 @@ public class PaasWebAppOpenShiftDriver extends PaasEntityOpenShiftDriver
         ApplicationScale scale1 = ApplicationScale.NO_SCALE;
 
         //TODO fix this call, probably we use the second alternativa which allows to selec a cartridge from a id
-        IStandaloneCartridge car1 = LatestVersionOf.jbossAs().get(user);
         StandaloneCartridge cartridge = new StandaloneCartridge(getEntity().getCartridge());
 
         deployedApp = new ApplicationBuilder(domain)

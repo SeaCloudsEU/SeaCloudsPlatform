@@ -1,2 +1,0 @@
-brooklyn.location.cloudfoundry.CloudFoundryPaasLocationResolver
-brooklyn.location.openshift.OpenShiftPaasLocationResolver
