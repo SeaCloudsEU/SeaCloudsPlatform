@@ -25,6 +25,7 @@ import org.apache.brooklyn.core.config.ConfigKeys;
 import org.apache.brooklyn.core.config.MapConfigKey;
 import org.apache.brooklyn.entity.webapp.WebAppService;
 import org.apache.brooklyn.util.core.flags.SetFromFlag;
+import org.apache.brooklyn.util.text.Identifiers;
 
 
 public interface PhpWebAppService extends WebAppService {
@@ -40,7 +41,7 @@ public interface PhpWebAppService extends WebAppService {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @SetFromFlag("app.name")
     public static final ConfigKey<String> APP_NAME = new BasicConfigKey(
-            String.class, "php.app.name", "The name of the PHP application");
+            String.class, "php.app.name", "The name of the PHP application", Identifiers.makeRandomId(8));
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @SetFromFlag("main.file")
