@@ -34,7 +34,9 @@
             "source": "Chat",
             "target": "MessageDatabase",
             "properties": {
-                "calls": "2"
+                "calls": "2",
+                "credentials_file": "",
+                "operation_type": "seaclouds.relations.databaseconnections.jdbc"
             }
         },
     ],

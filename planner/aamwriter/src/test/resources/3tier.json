@@ -66,8 +66,8 @@
             "source": "www",
             "target": "webservices",
             "properties": {
-                "calls": "2"
-                "operation_type": "seaclouds.relation.connection.endpoint.host",
+                "calls": "2",
+                "operation_type": "seaclouds.relation.connection.endpoint.host"
             }
         },
         {
