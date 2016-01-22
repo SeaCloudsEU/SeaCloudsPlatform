@@ -18,7 +18,46 @@
     'use strict';
 
     angular.module('angularTopologyEditor', [])
+        .directive('credentialsEditor', function ($window, $timeout) {
+            return {
+                restrict: 'E',
+                scope: {dam: '=bind'},
+                replace: true,
+                templateUrl: 'static/lib/angular-topology-editor/credentials-view.html',
+                controller: function ($scope) {
+                    var randLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+                    $scope.randomId = randLetter + Date.now();
 
+                },
+                link: function (scope, elem, attrs) {
+                    scope.drawCanvas = function () {
+                        var canvasOptions = {
+                            addlinkcallback: Credentials.addlinkcallback,
+                            changehandler: function (model) {
+                                scope.dam = Credentials.store_credentials_in_dam(scope.dam);
+                            }
+                        };
+
+                        canvasOptions.height = document.getElementById(scope.randomId).parentNode.offsetHeight
+                        canvasOptions.width = document.getElementById(scope.randomId).parentNode.offsetWidth
+
+                        var canvas = Canvas();
+                        canvas.init(scope.randomId, canvasOptions);
+
+                        var topology = Credentials.to_topology(scope.dam);
+                        Credentials.init(canvas);
+                        Credentials.fromjson(topology);
+                        canvas.restart();
+                    };
+
+
+                    $timeout(function () {
+                        scope.drawCanvas();
+                    });
+
+                }
+            };
+        })
         .directive('topologyEditor', function ($window, $timeout) {
             return {
                 restrict: 'E',
@@ -94,4 +133,3 @@
             };
         });
 })(window, document, angular);
-
