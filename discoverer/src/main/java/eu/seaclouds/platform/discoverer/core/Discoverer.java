@@ -17,38 +17,50 @@
 
 package eu.seaclouds.platform.discoverer.core;
 
-import eu.seaclouds.platform.discoverer.api.*;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import eu.seaclouds.platform.discoverer.crawler.CloudHarmonySPECint;
 import eu.seaclouds.platform.discoverer.crawler.CrawlerManager;
-import io.dropwizard.Application;
-import io.dropwizard.setup.Environment;
+import org.bson.Document;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
 
-public class Discoverer extends Application<DiscovererConfiguration> {
+public class Discoverer {
     /* singleton */
-    private static final Discoverer singleInstance = new Discoverer();
     private ArrayList<String> offeringNodeTemplates = new ArrayList<>();
     private boolean refreshing = false;
     private ArrayList<String> activeCrawlers;
+
+    private String databaseName = "DrACO_DB";
+    private String collectionName = "offerings";
 
     public int totalCrawledOfferings;
     public int crawledTimes;
     public Date lastCrawl;
 
-    public static Discoverer instance() { return singleInstance; }
+    public Discoverer(MongoClient mongoClient, ArrayList<String> activeCrawlers) {
+        this.initializeResources();
+
+        MongoDatabase db = mongoClient.getDatabase(this.databaseName);
+        MongoCollection<Document> coll = db.getCollection(this.collectionName);
+
+        this.offeringManager = new OfferingManager(coll);
+        this.offeringManager.initializeOfferings();
+
+        this.activeCrawlers = activeCrawlers;
+    }
+
+    public Discoverer(MongoClient mongoClient) {
+        this(mongoClient, new ArrayList<String>());
+    }
 
     /* vars */
     public OfferingManager offeringManager;
-
-    /* *************************************************************** */
-    /* **                     subparts initialization               ** */
-    /* *************************************************************** */
-    public Discoverer() {
-        this.offeringManager = new OfferingManager();
-    }
 
     public synchronized void setRefreshing(boolean refreshing) {
         this.refreshing = refreshing;
@@ -58,32 +70,16 @@ public class Discoverer extends Application<DiscovererConfiguration> {
         return refreshing;
     }
 
-    /* *************************************************************** */
-    /* **                       PUBLIC UTILS                        ** */
-    /* *************************************************************** */
-    public void emptyRepository() {
-        offeringManager.emptyRepository();
-    }
-
-
-    /* *************************************************************** */
-    /* **                   INTERFACE IMPLEMENTATION                ** */
-    /* *************************************************************** */
     /**
      * Reads an offering from the local repository.
      * @param cloudOfferingId The ID of the offering to read.
      * @return The <code>Offering</code> object instance for the fetchOffer'ed ID.
      */
     public Offering fetchOffer(String cloudOfferingId) {
-        Offering offering;
-        try {
-            offering = offeringManager.getOffering(cloudOfferingId);
-        } catch(Exception ex) {
-            ex.printStackTrace();
-            offering = null;
-        }
+        if (cloudOfferingId == null)
+            return null;
 
-        return offering;
+        return offeringManager.getOffering(cloudOfferingId);
     }
 
     /**
@@ -96,26 +92,20 @@ public class Discoverer extends Application<DiscovererConfiguration> {
         if (newOffering == null)
             return null;
 
-        String offeringId = offeringManager.getOfferingId(newOffering.getName());
+        String offeringName = newOffering.getName();
 
-        /* The offering was already present in the repository */
-        if (offeringId != null) {
-            Offering oldOffering = offeringManager.getOffering(offeringId);
-
-            /* In case we are updating an already present offering */
-            if (newOffering.moreRecent(oldOffering)) {
-                offeringManager.removeOffering(offeringId);
-                offeringId = offeringManager.addOffering(newOffering);
-            }
-        } else { // new offering, not present yet
-            offeringId = offeringManager.addOffering(newOffering);
+        /* if the offering was already present in the repository it is removed */
+        if (offeringManager.getOffering(offeringName) != null) {
+            offeringManager.removeOffering(offeringName);
         }
+
+        offeringManager.addOffering(newOffering);
 
         /* updates the list of all node templates */
         this.offeringNodeTemplates.add(newOffering.getNodeTemplate());
         totalCrawledOfferings++;
 
-        return offeringId;
+        return offeringName;
     }
 
     /**
@@ -137,10 +127,6 @@ public class Discoverer extends Application<DiscovererConfiguration> {
         return offeringManager.getAllOfferingIds();
     }
 
-    public void initializeOfferings() {
-        offeringManager.initializeOfferings();
-    }
-
     public void generateSingleOffering() {
         String nodeTemplates = Offering.getPreamble() + "\n";
 
@@ -152,42 +138,24 @@ public class Discoverer extends Application<DiscovererConfiguration> {
         this.offeringNodeTemplates.clear();
     }
 
-    public String getSingleOffering() {
-        return this.offeringManager.getSingleOffering();
-    }
-
     public void refreshRepository() {
         if (this.getRefreshing() == false) {
             this.setRefreshing(true);
-            CrawlerManager cm = new CrawlerManager(this.activeCrawlers);
+            CrawlerManager cm = new CrawlerManager(this, this.activeCrawlers);
             new Thread(cm).start();
         }
     }
 
-    @Override
-    public void run(DiscovererConfiguration configuration, Environment environment) {
-        if (configuration.getCrawlOnStartup() == false) {
-            this.initializeOfferings();
-        } else {
-            this.emptyRepository();
-        }
+    private void initializeResources() {
+        /* Location map */
+        InputStream locationMap = this.getClass().getClassLoader().getResourceAsStream("location_mapping");
+        if (locationMap != null)
+            LocationMapping.initializeMap(locationMap);
 
-        this.activeCrawlers = configuration.getActiveCrawlers();
-
-        if (configuration.getCrawlOnStartup()) {
-            this.refreshRepository();
-        }
-
-        environment.jersey().register(new FetchAPI());          /* /fetchOffer */
-        environment.jersey().register(new FetchAllAPI());       /* /fetch_all */
-        environment.jersey().register(new DeleteAPI());         /* /delete */
-        environment.jersey().register(new StatisticsAPI());     /* /statistics */
-        environment.jersey().register(new RefreshAPI());        /* /refresh */
-
-    }
-
-    public static void main(String[] args) throws Exception {
-        Discoverer.instance().run(args);
+        /* SPECint map */
+        InputStream SPECintMap = this.getClass().getClassLoader().getResourceAsStream("SPECint_mapping");
+        if (SPECintMap != null)
+            CloudHarmonySPECint.initializeMap(SPECintMap);
     }
 }
 

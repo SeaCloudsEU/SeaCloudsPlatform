@@ -18,27 +18,51 @@
 
 package eu.seaclouds.platform.discoverer.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 import java.util.HashMap;
 
 public class LocationMapping {
 
-    private static HashMap<String, String> map;
+    private static HashMap<String, String> map = new HashMap<>();
+    static Logger log = LoggerFactory.getLogger(LocationMapping.class);
 
-    static {
-        HashMap<String, String> initializedMap = new HashMap<>();
+    public static void initializeMap(InputStream resource) {
+        InputStreamReader isr = null;
+        BufferedReader br = null;
+        try {
+            isr = new InputStreamReader(resource);
+            br = new BufferedReader(isr);
+            String line;
 
-        initializedMap.put("Amazon_EC2", "aws-ec2");
-        initializedMap.put("SoftLayer_Cloud_Servers", "softlayer");
-        initializedMap.put("Microsoft_Azure_Virtual_Machines", "azurecompute");
-        initializedMap.put("Google_Compute_Engine", "google-compute-engine");
-        initializedMap.put("HP_Cloud_Compute", "hpcloud-compute");
-        initializedMap.put("Cloud_Foundry", "CloudFoundry");
+            while ((line = br.readLine()) != null) {
+                String parts[] = line.split("=");
+                map.put(parts[0], parts[1]);
+            }
 
-        //initializedMap.put("Rackspace_Cloud_Servers", "");
-        // Rackspace provides more location so it is not yes possible to make an unique mapping
+        } catch (IOException e) {
+            log.error("Cannot open location mapping file");
+            log.error(e.getMessage());
+        } finally {
+            try {
+                if (isr != null) {
+                    isr.close();
+                }
+                if (br != null) {
+                    br.close();
+                }
 
-        map = initializedMap;
+                if (resource != null) {
+                    resource.close();
+                }
+            } catch (IOException e) {
+                log.error(e.getMessage());
+            }
+        }
     }
+
 
     /**
      * Gets the sanitized location of an offering

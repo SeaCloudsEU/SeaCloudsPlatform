@@ -27,6 +27,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -51,6 +53,7 @@ public class CloudHarmonyCrawler extends SCCrawler {
     private Hashtable<String, String> strings;
     private DecimalFormat slaFormat = new DecimalFormat("0.00000");
     CloseableHttpClient httpclient;
+    static Logger log = LoggerFactory.getLogger(CloudHarmonyCrawler.class);
 
     public static String Name = "CloudHarmonyCrawler";
 
@@ -265,7 +268,7 @@ public class CloudHarmonyCrawler extends SCCrawler {
         String name = Offering.sanitizeName(providerName + "_" + instanceId + "_" + locationCode);
 
         Offering offering = new Offering(name);
-        offering.setType("seaclouds.Nodes.Compute");
+        offering.setType("seaclouds.nodes.Compute." + Offering.sanitizeName(providerName));
 
         offering.addProperty("resource_type", "compute");
         offering.addProperty("hardwareId", instanceId);
@@ -328,7 +331,7 @@ public class CloudHarmonyCrawler extends SCCrawler {
 
         Offering offering = new Offering(name);
 
-        offering.setType("seaclouds.Nodes.Platform");
+        offering.setType("seaclouds.nodes.Platform." + Offering.sanitizeName(chs.name));
 
         /* resource type  */
         offering.addProperty("resource_type", "platform");
@@ -399,7 +402,7 @@ public class CloudHarmonyCrawler extends SCCrawler {
                 if (chService != null)
                     generateOfferings(chService);
             } catch(Exception ex) {
-                ex.printStackTrace();
+                log.warn(ex.getMessage());
             }
         }
     }
@@ -421,7 +424,7 @@ public class CloudHarmonyCrawler extends SCCrawler {
                 CloudHarmonyService chService = getService(serviceId, CloudTypes.PAAS);
                 generateOfferings(chService);
             } catch(Exception e) {
-                e.printStackTrace();
+                log.warn(e.getMessage());
             }
         }
     }

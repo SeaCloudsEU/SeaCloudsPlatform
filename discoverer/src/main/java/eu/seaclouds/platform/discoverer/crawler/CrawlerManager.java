@@ -41,8 +41,8 @@ public class CrawlerManager implements Runnable {
     public Date lastCrawl;
 
 
-    public CrawlerManager(ArrayList<String> activeCrawlers) {
-        this.discoverer = Discoverer.instance();
+    public CrawlerManager(Discoverer discoverer, ArrayList<String> activeCrawlers) {
+        this.discoverer = discoverer;
         /* stats */
         crawledTimes = 0;
         totalCrawledOfferings = 0;
@@ -50,6 +50,7 @@ public class CrawlerManager implements Runnable {
 
         for (String crawlerName : activeCrawlers) {
             SCCrawler crawler = availableCrawlers.get(crawlerName);
+            crawler.discoverer = discoverer;
 
             if (crawler != null)
                 this.activeCrawlers.add(crawler);
@@ -71,11 +72,7 @@ public class CrawlerManager implements Runnable {
 
     @Override
     public void run() {
-        try {
-            this.crawl();
-            this.discoverer.setRefreshing(false);
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
+        this.crawl();
+        this.discoverer.setRefreshing(false);
     }
 }

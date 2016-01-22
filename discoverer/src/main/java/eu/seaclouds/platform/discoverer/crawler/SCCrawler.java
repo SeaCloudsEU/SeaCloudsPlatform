@@ -25,6 +25,7 @@ import java.util.HashMap;
 public abstract class SCCrawler {
 
     protected static HashMap<String, String> externaltoSCTag;
+
     static {
         externaltoSCTag = new HashMap<>();
 
@@ -54,9 +55,11 @@ public abstract class SCCrawler {
         externaltoSCTag.put("couchbase", "couchbase");
     }
 
+    protected Discoverer discoverer;
+
     public abstract void crawl();
 
-    public static void addOffering(Offering offering) {
-        Discoverer.instance().addOffering(offering);
+    public void addOffering(Offering offering) {
+        discoverer.addOffering(offering);
     }
 }

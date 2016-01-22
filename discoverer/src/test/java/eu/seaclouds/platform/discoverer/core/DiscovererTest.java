@@ -17,33 +17,88 @@
 
 package eu.seaclouds.platform.discoverer.core;
 
+import com.github.fakemongo.Fongo;
+import eu.seaclouds.platform.discoverer.api.DiscovererAPI;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class DiscovererTest {
+    @Test
+    public void testAddOffering() {
+        Fongo fongo = new Fongo("Mongo DB");
+        Discoverer d = new Discoverer(fongo.getMongo());
+
+        String ofId = "EC2";
+        d.addOffering(new Offering(ofId));
+        Offering of = d.fetchOffer(ofId);
+
+        Assert.assertNotNull(of);
+        Assert.assertEquals(of.getName(), ofId);
+    }
 
     @Test
-    public void testSignificantInstance() {
-        Discoverer d = Discoverer.instance();
-        Assert.assertNotNull(d);
+    public void testRemoveOffering() {
+        Fongo fongo = new Fongo("Mongo DB");
+        Discoverer d = new Discoverer(fongo.getMongo());
+
+        String ofId = "NonPresentOfferings";
+        Assert.assertFalse(d.removeOffering(ofId));
+
+        ofId = "EC2";
+        d.addOffering(new Offering(ofId));
+        Assert.assertTrue(d.removeOffering(ofId));
     }
 
 
     @Test
-    public void testOfferingDirectoryExists() {
-        Discoverer d = Discoverer.instance();
-        File od = d.offeringManager.getOfferingDirectory();
-        Assert.assertTrue(od.exists());
+    public void testFetch() throws IOException {
+        Fongo fongo = new Fongo("Mongo DB");
+        Discoverer d = new Discoverer(fongo.getMongo());
+
+        ArrayList<String> offerings = new ArrayList<String>();
+        offerings.add("EC2");
+        offerings.add("Azure");
+        offerings.add("Openshift");
+
+        for (String name: offerings) {
+            d.addOffering(new Offering(name));
+        }
+
+        ArrayList<String> offeringIds = (new DiscovererAPI(d)).getOfferingIds();
+        Assert.assertEquals(offeringIds.size(), offerings.size());
+
+        for (String id: offeringIds) {
+            Assert.assertTrue(offerings.contains(id));
+        }
     }
 
-
     @Test
-    public void testMetaDirectoryExists() {
-        Discoverer d = Discoverer.instance();
-        File md = d.offeringManager.getMetaDirectory();
-        Assert.assertTrue(md.exists());
+    public void testFetchIf() throws IOException {
+        Fongo fongo = new Fongo("Mongo DB");
+        Discoverer d = new Discoverer(fongo.getMongo());
+
+        ArrayList<String> offeringNames = new ArrayList<String>();
+        offeringNames.add("EC2");
+        offeringNames.add("Azure");
+        offeringNames.add("Openshift");
+
+        for (String name: offeringNames) {
+            d.addOffering(new Offering(name));
+        }
+
+        Offering of = new Offering("Example");
+        of.addProperty("num_cpus", "8");
+        d.addOffering(of);
+
+        ArrayList<DiscovererAPI.OfferingRepresentation> offerings = (new DiscovererAPI(d)).getOfferingsIf("{ \"num_cpus\": \"8\" }");
+        Assert.assertEquals(offerings.size(), 1);
+
+        String fetchedOffering = offerings.get(0).getOffering();
+        Assert.assertEquals(fetchedOffering, of.toTosca());
+
     }
 }

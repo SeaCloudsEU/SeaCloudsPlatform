@@ -1,0 +1,6 @@
+Amazon_EC2=aws-ec2
+SoftLayer_Cloud_Servers=softlayer
+Microsoft_Azure_Virtual_Machines=azurecompute
+Google_Compute_Engine=google-compute-engine
+HP_Cloud_Compute=hpcloud-compute
+Cloud_Foundry=CloudFoundry

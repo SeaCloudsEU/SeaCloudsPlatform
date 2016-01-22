@@ -5,6 +5,6 @@ server:
  connector:
    type: http
    port: 1236
-refreshInterval: 24
-crawlOnStartup: true
 activeCrawlers: ["CloudHarmonyCrawler", "PaasifyCrawler"]
+databaseURL: "localhost"
+databasePort: 27017
