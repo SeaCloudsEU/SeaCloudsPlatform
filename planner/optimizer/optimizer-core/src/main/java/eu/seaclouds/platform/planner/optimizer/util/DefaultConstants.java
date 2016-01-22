@@ -14,28 +14,11 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package eu.seaclouds.platform.planner.optimizer.nfp;
 
-public class MonitoringConditions extends QualityInformation {
+package eu.seaclouds.platform.planner.optimizer.util;
 
-   public MonitoringConditions() {
-      // TODO Auto-generated constructor stub
-   }
+public class DefaultConstants {
 
-   private String moduleName;
-
-   public String getModuleName() {
-      return moduleName;
-   }
-
-   public void setModuleName(String moduleNane) {
-      this.moduleName = moduleNane;
-   }
-   
-   
-  @Override
-  public String toString(){
-     return "moduleName=" + moduleName + " RespTime=" + super.getResponseTime() + " Availability="
-           + super.getAvailability() ;
-  }
+   public static final String DEFAULT_BENCHMARK_INFORMATION_PATH    = "./src/main/resources/benchmark-platforms.yml";
+   public static final String DEFAULT_BENCHMARK_INFORMATION_PACKAGE    = "benchmark-platforms.yml";
 }

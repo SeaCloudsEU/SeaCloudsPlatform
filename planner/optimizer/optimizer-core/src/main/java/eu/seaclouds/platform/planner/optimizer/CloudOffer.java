@@ -45,6 +45,7 @@ public class CloudOffer {
       // (it works because, although it is not very modular to store
       // info here, CloudOffers are members of a list of SuitableSolutions for
       // module).
+   // in service rate
       this.performanceForExecutionUnit = performance;
       this.availability = availability;
       this.cost = cost;
@@ -60,12 +61,9 @@ public class CloudOffer {
    }
 
    public CloudOffer(String name) {
-      this.name = name;
-      // in service rate
-      this.performanceForExecutionUnit = 0;
-      this.availability = 0;
-      this.cost = 0;
+       this(name, 0,0,0);
    }
+  
 
    public static String providerNameOfCloudOffer(String cloudOfferName) {
       return cloudOfferName

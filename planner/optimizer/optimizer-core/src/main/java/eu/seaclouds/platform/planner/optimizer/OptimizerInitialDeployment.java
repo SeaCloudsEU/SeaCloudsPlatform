@@ -17,6 +17,10 @@
 
 package eu.seaclouds.platform.planner.optimizer;
 
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +35,7 @@ import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethod;
 import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
+import eu.seaclouds.platform.planner.optimizer.util.DefaultConstants;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLmatchmakerToOptimizerParser;
 import eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser;
 
@@ -68,27 +73,64 @@ public class OptimizerInitialDeployment {
 
    }
 
-   public String[] optimize(String appModel, String suitableCloudOffer, int numPlansToGenerate, double hyst) {
+   private String openBenchmarkOffersDefaultFile() {
+      byte[] encoded;
+      try {
+         encoded = Files.readAllBytes(Paths.get(DefaultConstants.DEFAULT_BENCHMARK_INFORMATION_PATH));
+         return new String(encoded, StandardCharsets.UTF_8);
+      } catch (Exception e) {
+         log.debug("File with the information of Benchmark Platforms not found");
+         log.debug(
+               "Exception type " + e.getClass() + " message: " + e.getMessage() + " Exception cause: " + e.getCause());
+         log.debug("Current execution dir=" + System.getProperty("user.dir") + " and looking for file: "
+               + DefaultConstants.DEFAULT_BENCHMARK_INFORMATION_PATH);
+
+      }
+
+      try {
+         
+         InputStream in = this.getClass().getClassLoader()
+               .getResourceAsStream(DefaultConstants.DEFAULT_BENCHMARK_INFORMATION_PACKAGE);
+         byte[] buffer = new byte[in.available()];
+         in.read(buffer);
+         return new String(buffer, StandardCharsets.UTF_8);
+      } catch (Exception e) {
+         log.error("Packaged File with the information of Benchmark Platforms not found");
+         log.error(
+               "Exception type " + e.getClass() + " message: " + e.getMessage() + " Exception cause: " + e.getCause());
+         log.error("Current execution dir=" + System.getProperty("user.dir") );
+
+      }
+      return null;
+   }
+
+   public String[] optimize(String appModel, String suitableCloudOffer, String benchmarkPlatformsYaml,
+         int numPlansToGenerate, double hyst) {
 
       log.debug("Optimization method started. Inputs received");
       log.debug("AAM is: " + appModel);
       log.debug("Suitable offers are: " + suitableCloudOffer);
+      log.debug("Informaton of Benchmark platform is: " + benchmarkPlatformsYaml);
 
       // Get app characteristics
       Map<String, Object> appMap = YAMLoptimizerParser.getMAPofAPP(appModel);
 
       // Get cloud offers
 
-      log.debug("Getting cloud optoins and characteristics");
+      log.debug("Getting cloud options and characteristics");
 
       SuitableOptions appInfoSuitableOptions = YAMLmatchmakerToOptimizerParser
             .getSuitableCloudOptionsAndCharacteristicsForModules(appModel, suitableCloudOffer);
+
+      // Get benchmark platform
+      log.debug("Getting the benchmark Platform");
+      Map<String, CloudOffer> benchmarkPlatforms = getBenchmarkPlatforms(benchmarkPlatformsYaml);
 
       log.debug("Getting application Topology");
 
       Topology topology = null;
       try {
-         topology = YAMLoptimizerParser.getApplicationTopology(appMap, appInfoSuitableOptions);
+         topology = YAMLoptimizerParser.getApplicationTopology(appMap, appInfoSuitableOptions, benchmarkPlatforms);
       } catch (Exception E) {
          log.error("There was an exception while reading topology. More errors ahead");
       }
@@ -135,6 +177,21 @@ public class OptimizerInitialDeployment {
       }
 
       return stringSolutions;
+   }
+
+   /**
+    * @param benchmarkPlatformsYaml
+    * @return a Map of benchmark platforms containing both the default ones and
+    *         the obtained from the discoverer.
+    */
+   private Map<String, CloudOffer> getBenchmarkPlatforms(String benchmarkPlatformsYaml) {
+      Map<String, CloudOffer> benchmarkPlatforms = YAMLmatchmakerToOptimizerParser
+            .createBenchmarkPlatforms(openBenchmarkOffersDefaultFile());
+      if (benchmarkPlatformsYaml != null) {
+         benchmarkPlatforms.putAll(YAMLmatchmakerToOptimizerParser.createBenchmarkPlatforms(benchmarkPlatformsYaml));
+      }
+
+      return benchmarkPlatforms;
    }
 
    private Map<String, Object>[] hashMapOfFoundSolutionsWithThresholds(Solution[] bestSols,
@@ -283,7 +340,7 @@ public class OptimizerInitialDeployment {
     *           the thresholds to reconfigure modules of the system until
     *           expiring the cost
     */
-   public HashMap<String, ArrayList<Double>> createReconfigurationThresholds(Solution sol,
+   private HashMap<String, ArrayList<Double>> createReconfigurationThresholds(Solution sol,
          Map<String, Object> applicationMap, Topology topology, SuitableOptions cloudCharacteristics,
          QualityInformation requirements) {
 

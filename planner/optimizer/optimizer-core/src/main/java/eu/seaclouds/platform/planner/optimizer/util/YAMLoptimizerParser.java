@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
+import eu.seaclouds.platform.planner.optimizer.CloudOffer;
 import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.Topology;
@@ -416,7 +417,8 @@ public class YAMLoptimizerParser {
    }
 
    @SuppressWarnings("unchecked")
-   public static Topology getApplicationTopology(Map<String, Object> appMap, SuitableOptions appInfoSuitableOptions) {
+   public static Topology getApplicationTopology(Map<String, Object> appMap, SuitableOptions appInfoSuitableOptions,
+         Map<String, CloudOffer> benchmarkPlatforms) {
 
       Map.Entry<String, Object> initialElement = getInitialElement(appMap);
 
@@ -426,7 +428,7 @@ public class YAMLoptimizerParser {
       topology = getApplicationTopologyRecursive(initialElement.getKey(),
             (Map<String, Object>) initialElement.getValue(), topology,
             YAMLoptimizerParser.getModuleMapFromAppMap(appMap), YAMLoptimizerParser.getGroupMapFromAppMap(appMap),
-            appInfoSuitableOptions);
+            appInfoSuitableOptions, benchmarkPlatforms);
       if (log.isDebugEnabled()) {
          log.debug("Reading topology. Next step: replace the module name by the name of the host");
       }
@@ -473,16 +475,22 @@ public class YAMLoptimizerParser {
 
    private static Topology getApplicationTopologyRecursive(String elementName, Map<String, Object> element,
          Topology topology, Map<String, Object> modules, Map<String, Object> groups,
-         SuitableOptions appInfoSuitableOptions) {
+         SuitableOptions appInfoSuitableOptions, Map<String, CloudOffer> benchmarkPlatforms) {
 
       if (topology.contains(elementName)) {
          return topology;
       }
 
       TopologyElement newelement = new TopologyElement(elementName);
-      double hostPerformance = appInfoSuitableOptions.getCloudCharacteristics(elementName,
-            YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups)).getPerformance();
 
+      double hostPerformance = benchmarkPlatforms
+            .get(YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups)).getPerformance();
+
+      if (log.isDebugEnabled()) {
+         log.debug("Found performance of benchmark platform "
+               + YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups) + "=" + benchmarkPlatforms
+                     .get(YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups)).getPerformance());
+      }
       boolean elementCanScale = YAMLmodulesOptimizerParser.getScalabilityCapabilitiesOfModule(modules, elementName);
 
       newelement.setExecTimeMillis(
@@ -505,7 +513,7 @@ public class YAMLoptimizerParser {
             // Recursive call for the moduleReqNAme to add the elements to
             // topology.
             topology = getApplicationTopologyRecursive(moduleReqName, (Map<String, Object>) modules.get(moduleReqName),
-                  topology, modules, groups, appInfoSuitableOptions);
+                  topology, modules, groups, appInfoSuitableOptions, benchmarkPlatforms);
          }
 
          // If the input AAM is correctly defined, at this point the requested
@@ -602,9 +610,8 @@ public class YAMLoptimizerParser {
       for (Map.Entry<String, Object> entry : groupsMap.entrySet()) {
          String potentialGroupName = entry.getKey();
 
-         if (log.isDebugEnabled()) {
-            log.debug("checking if group '" + potentialGroupName + "' is an element which receceives user requests");
-         }
+         log.debug("checking if group '{}' is an element which receceives user requests", potentialGroupName);
+
          // If it has requirements but nobody requires it..
          if (YAMLgroupsOptimizerParser.groupHasQoSRequirements(entry.getValue())) {
             // group found.
@@ -661,9 +668,9 @@ public class YAMLoptimizerParser {
 
       Map<String, Object> modulesMap;
       try {
-         if (log.isDebugEnabled()) {
-            log.debug("Opening TOSCA for obtaining modules");
-         }
+
+         log.debug("Opening TOSCA for obtaining modules");
+
          modulesMap = (Map<String, Object>) appMap.get(TOSCAkeywords.TOPOLOGY_TEMPLATE);
          modulesMap = (Map<String, Object>) modulesMap.get(TOSCAkeywords.NODE_TEMPLATE);
       } catch (NullPointerException E) {

@@ -40,4 +40,32 @@
 			<artifactId>slf4j-log4j12</artifactId>
 		</dependency>
 	</dependencies>
+	<build>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.rat</groupId>
+				<artifactId>apache-rat-plugin</artifactId>
+				<version>0.11</version>
+				<executions>
+					<execution>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<excludes combine.children="append">
+						<!-- TODO: Include propietary files -->
+						<exclude>**/.checkstyle</exclude>
+						 <exclude>**/WEB-INF/**</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
+
+
+		</plugins>
+	</build>
 </project>
