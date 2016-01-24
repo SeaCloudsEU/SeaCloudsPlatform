@@ -1,0 +1,166 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: Sample 3-tier application
+imports:
+- tosca-normative-types:1.0.0.wd06-SNAPSHOT
+topology_template:
+  node_templates:
+    php:
+      type: org.apache.brooklyn.entity.php.httpd.PhpHttpdServer
+      properties:
+        language: PHP
+        autoscale: false
+        php.app.name: nuro
+        php_version:
+          constraints:
+          - greater_or_equal: '5.1'
+          - less_or_equal: '5.5'
+      artifacts:
+        php.git.url:
+          implementation: "https://seaclDem:seaclouds@bitbucket.org/seaclDem/nuro-casestudy.git"
+          type: tosca.artifacts.File
+      requirements:
+      - endpoint: db1
+      - host: Amazon_EC2_i2_xlarge_us_west_1
+    db1:
+      type: org.apache.brooklyn.entity.database.mysql.MySqlNode
+      properties:
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5.0'
+          - less_or_equal: '5.6'
+      requirements:
+      - host: Amazon_EC2_m3_xlarge_eu_central_1
+    Amazon_EC2_i2_xlarge_us_west_1:
+      type: seaclouds.nodes.Compute
+      properties:
+        resource_type: compute
+        hardwareId: i2.xlarge
+        location: aws-ec2
+        region: us-west-1
+        performance: 90
+        availability: 0.9995
+        country: United States
+        city: SAN JOSE
+        cost: 1.001 USD/hour
+        disk_size: 800
+        num_disks: 1
+        num_cpus: 4
+        ram: 30.5
+        disk_type: ssd
+    Amazon_EC2_m3_xlarge_eu_central_1:
+      type: seaclouds.nodes.Compute
+      properties:
+        resource_type: compute
+        hardwareId: m3.xlarge
+        location: aws-ec2
+        region: eu-central-1
+        performance: 90
+        availability: 0.9995
+        country: Germany
+        city: FRANKFURT
+        cost: 0.385 USD/hour
+        disk_size: 80
+        num_disks: 2
+        num_cpus: 4
+        ram: 15
+        disk_type: ssd
+
+  groups:
+    operation_php:
+      members:
+      - php
+      policies:
+      - QoSInfo:
+          execution_time: 200 ms
+          benchmark_platform: hp_cloud_services.2xl
+          type: seaclouds.policies.QoSInfo
+      - dependencies:
+          operation_webservices: '2'
+          type: seaclouds.policies.dependencies
+      - QoSRequirements:
+          response_time:
+            less_than: 2000.0 ms
+          availability:
+            greater_than: 0.98
+          cost:
+            less_or_equal: 200.0 euros_per_month
+          workload:
+            less_or_equal: 50.0 req_per_min
+          type: seaclouds.policies.QoSRequirements
+      - ExpectedQualityPOC:
+          expectedExecutionTimePOC: .NaN
+          fitnessPOC: .NaN
+          expectedCostPOC: 2571.84
+          type: seaclouds.policies.ExpectedQualityPOC
+    operation_db1:
+      members:
+      - db1
+      policies:
+      - dependencies:
+          type: seaclouds.policies.dependencies
+    add_brooklyn_location_Amazon_EC2_i2_xlarge_us_west_1:
+      policies:
+      - brooklyn.location: aws-ec2:us-west-1
+      members:
+      - Amazon_EC2_i2_xlarge_us_west_1
+    add_brooklyn_location_Amazon_EC2_m3_xlarge_eu_central_1:
+      policies:
+      - brooklyn.location: aws-ec2:eu-central-1
+      members:
+      - Amazon_EC2_m3_xlarge_eu_central_1
+    monitoringInformation:
+      policies:
+      - monitoringrules.information.policy:
+          id: 601f5579-c71d-47e1-aaa1-2e179591cf48
+          type: seaclouds.policies.monitoringrules
+      members:
+      - application
+node_types:
+  org.apache.brooklyn.entity.database.mysql.MySqlNode:
+    derived_from: tosca.nodes.Root
+    description: |
+      A MySQL server
+    properties:
+      datastore.creation.script.url:
+        type: string
+        required: false
+    requirements:
+    - host: tosca.nodes.Compute
+      type: tosca.relationships.HostedOn
+    artifacts:
+    - datastore.creation.script.url: null
+      type: tosca.artifacts.File
+  org.apache.brooklyn.entity.php.httpd.PhpHttpdServer:
+    derived_from: tosca.nodes.Root
+    description: |
+      A simple Tomcat server
+    properties:
+      php.app.name:
+        type: string
+        required: false
+    requirements:
+    - host: seaclouds.nodes.Compute
+      type: tosca.relationships.HostedOn
+    artifacts:
+    - php.git.url: null
+      type: tosca.artifacts.File
+    - php.tarball.url: null
+      type: tosca.artifacts.File
+  seaclouds.nodes.Datacollector:
+    derived_from: tosca.nodes.Root
+    description: |
+      A simple Datacollector
+    properties:
+      install_latch:
+        type: string
+        required: false
+      shell.env:
+        type: map
+        required: false
+        entry_schema:
+          type: string
+    requirements:
+    - host: tosca.nodes.Compute
+      type: tosca.relationships.HostedOn
+template_name: seaclouds.app.yEQvA0mV
+template_version: 1.0.0-SNAPSHOT
