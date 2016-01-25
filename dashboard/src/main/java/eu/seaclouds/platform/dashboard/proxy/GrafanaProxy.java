@@ -15,21 +15,7 @@
  *      limitations under the License.
  */
 
-package eu.seaclouds.platform.dashboard.rest;
+package eu.seaclouds.platform.dashboard.proxy;
 
-import eu.seaclouds.platform.dashboard.proxy.GrafanaProxy;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertNotNull;
-
-public class CoreResourceTest extends AbstractResourceTest<CoreResource> {
-
-    private final CoreResource coreResource = new CoreResource(getDeployerProxy(), getMonitorProxy(), getGrafanaProxy(), getPlannerProxy(), getSlaProxy());
-
-    @Test
-    public void testGetSeaCloudsInformation() throws Exception {
-        assertNotNull(coreResource.getSeaCloudsInformation().getEntity());
-    }
-
-
+public class GrafanaProxy extends AbstractProxy {
 }

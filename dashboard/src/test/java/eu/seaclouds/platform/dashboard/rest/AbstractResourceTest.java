@@ -22,10 +22,7 @@ import eu.atos.sla.parser.data.Violation;
 import eu.atos.sla.parser.data.wsag.Agreement;
 import eu.atos.sla.parser.data.wsag.GuaranteeTerm;
 import eu.seaclouds.platform.dashboard.model.SeaCloudsApplicationDataStorage;
-import eu.seaclouds.platform.dashboard.proxy.DeployerProxy;
-import eu.seaclouds.platform.dashboard.proxy.MonitorProxy;
-import eu.seaclouds.platform.dashboard.proxy.PlannerProxy;
-import eu.seaclouds.platform.dashboard.proxy.SlaProxy;
+import eu.seaclouds.platform.dashboard.proxy.*;
 import eu.seaclouds.platform.dashboard.util.ObjectMapperHelpers;
 import eu.seaclouds.platform.dashboard.utils.TestFixtures;
 import eu.seaclouds.platform.dashboard.utils.TestUtils;
@@ -53,6 +50,7 @@ public abstract class AbstractResourceTest<T extends Resource> {
     protected static final String RANDOM_STRING = UUID.randomUUID().toString();
     private static final String DEPLOYER_ENDPOINT = "http://localhost:8081";
     private static final String MONITOR_ENDPOINT = "http://localhost:8170";
+    private static final String GRAFANA_ENDPOINT = "http://localhost:3000";
     private static final String PLANNER_ENDPOINT = "http://localhost:1234";
     private static final String SLA_ENDPOINT = "http://localhost:8080";
 
@@ -75,6 +73,7 @@ public abstract class AbstractResourceTest<T extends Resource> {
     private final MonitorProxy monitorProxy = mock(MonitorProxy.class);
     private final PlannerProxy plannerProxy = mock(PlannerProxy.class);
     private final SlaProxy slaProxy = mock(SlaProxy.class);
+    private final GrafanaProxy grafanaProxy = mock(GrafanaProxy.class);
 
     private void initObjects() throws IOException, JAXBException {
         applicationSummary = ObjectMapperHelpers.JsonToObject(
@@ -108,6 +107,7 @@ public abstract class AbstractResourceTest<T extends Resource> {
 
         when(deployerProxy.getEndpoint()).thenReturn(DEPLOYER_ENDPOINT);
         when(monitorProxy.getEndpoint()).thenReturn(MONITOR_ENDPOINT);
+        when(grafanaProxy.getEndpoint()).thenReturn(GRAFANA_ENDPOINT);
         when(plannerProxy.getEndpoint()).thenReturn(PLANNER_ENDPOINT);
         when(slaProxy.getEndpoint()).thenReturn(SLA_ENDPOINT);
 
@@ -206,6 +206,10 @@ public abstract class AbstractResourceTest<T extends Resource> {
 
     public MonitorProxy getMonitorProxy() {
         return monitorProxy;
+    }
+
+    public GrafanaProxy getGrafanaProxy(){
+        return grafanaProxy;
     }
 
     public PlannerProxy getPlannerProxy() {

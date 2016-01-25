@@ -16,6 +16,9 @@ deployer:
 monitor.manager:
   host: ${MONITOR_HOST}
   port: ${MONITOR_PORT}
+monitor.grafana:
+  host: ${GRAFANA_HOST}
+  port: ${GRAFANA_PORT}
 sla:
   host: ${SLA_HOST}
   port: ${SLA_PORT}

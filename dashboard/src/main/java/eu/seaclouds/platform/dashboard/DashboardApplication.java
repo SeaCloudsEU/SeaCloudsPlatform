@@ -79,12 +79,12 @@ public class DashboardApplication extends Application<DashboardConfiguration> {
 
         // Configuring HealthChecks
         DashboardHealthCheck healthCheck = new DashboardHealthCheck(configuration.getDeployerProxy(),
-                configuration.getMonitorProxy(), configuration.getSlaProxy(), configuration.getPlannerProxy());
+                configuration.getMonitorProxy(), configuration.getGrafanaProxy(), configuration.getSlaProxy(), configuration.getPlannerProxy());
         environment.healthChecks().register(healthCheck.getName(), healthCheck);
 
         // Registering REST API Endpoints
         environment.jersey().register(new CoreResource(configuration.getDeployerProxy(),
-                configuration.getMonitorProxy(), configuration.getPlannerProxy(),
+                configuration.getMonitorProxy(), configuration.getGrafanaProxy(), configuration.getPlannerProxy(),
                 configuration.getSlaProxy()));
         environment.jersey().register(new DeployerResource(configuration.getDeployerProxy(), configuration.getMonitorProxy(), configuration.getSlaProxy(), configuration.getPlannerProxy()));
         environment.jersey().register(new MonitorResource(configuration.getMonitorProxy(), configuration.getDeployerProxy()));

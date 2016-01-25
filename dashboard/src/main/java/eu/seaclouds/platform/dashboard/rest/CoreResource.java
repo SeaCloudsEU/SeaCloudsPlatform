@@ -21,10 +21,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.gson.JsonObject;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
-import eu.seaclouds.platform.dashboard.proxy.DeployerProxy;
-import eu.seaclouds.platform.dashboard.proxy.MonitorProxy;
-import eu.seaclouds.platform.dashboard.proxy.PlannerProxy;
-import eu.seaclouds.platform.dashboard.proxy.SlaProxy;
+import eu.seaclouds.platform.dashboard.proxy.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,12 +38,14 @@ public class CoreResource implements Resource{
 
     private final DeployerProxy deployerProxy;
     private final MonitorProxy monitorProxy;
+    private final GrafanaProxy grafanaProxy;
     private final PlannerProxy plannerProxy;
     private final SlaProxy slaProxy;
 
-    public CoreResource(DeployerProxy deployerProxy, MonitorProxy monitorProxy, PlannerProxy plannerProxy, SlaProxy slaProxy) {
+    public CoreResource(DeployerProxy deployerProxy, MonitorProxy monitorProxy, GrafanaProxy grafanaProxy, PlannerProxy plannerProxy, SlaProxy slaProxy) {
         this.deployerProxy = deployerProxy;
         this.monitorProxy = monitorProxy;
+        this.grafanaProxy = grafanaProxy;
         this.plannerProxy = plannerProxy;
         this.slaProxy = slaProxy;
     }
@@ -77,7 +76,12 @@ public class CoreResource implements Resource{
 
         JsonObject tower4CloudsObject = new JsonObject();
         tower4CloudsObject.addProperty("url", monitorProxy.getEndpoint());
+
+        JsonObject grafanaObject = new JsonObject();
+        grafanaObject.addProperty("url", grafanaProxy.getEndpoint());
+
         monitorObject.add("manager", tower4CloudsObject);
+        monitorObject.add("grafana", grafanaObject);
         jsonResponse.add("monitor", monitorObject);
 
         return Response.ok(jsonResponse.toString()).build();
