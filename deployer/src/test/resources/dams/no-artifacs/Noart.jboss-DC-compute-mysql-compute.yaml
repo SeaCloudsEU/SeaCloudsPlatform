@@ -3,10 +3,10 @@ tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
 imports:
   - tosca-normative-types:1.0.0.wd06-SNAPSHOT
 
-template_name: web-chat.jboss.dc-compute.mysql-compute.na
+template_name: web-chat.jboss.dc-compu.mysql.compute
 template_version: 1.0.0-SNAPSHOT
 
-description: Chat Application using JBoss. No artifacts. All component are hosted
+description: Chat Application using JBoss
 
 node_types:
   org.apache.brooklyn.entity.webapp.jboss.JBoss7Server:

@@ -70,12 +70,13 @@ node_types:
     derived_from: tosca.nodes.Root
     description: |
       A MySQL server
+    properties:
+      creationScriptUrl:
+        type: string
+        required: false
     requirements:
     - host: tosca.nodes.Compute
       type: tosca.relationships.HostedOn
-    artifacts:
-    - creationScriptUrl: null
-      type: tosca.artifacts.File
 
   org.apache.brooklyn.entity.php.httpd.PhpHttpdServer:
     derived_from: tosca.nodes.Root
