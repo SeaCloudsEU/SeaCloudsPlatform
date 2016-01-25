@@ -1,0 +1,69 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: Nuro app. PHP is hosted. No DB
+template_name: nuro.php-compute.no-db
+template_version: 1.0.0-SNAPSHOT
+imports:
+- tosca-normative-types:1.0.0.wd06-SNAPSHOT
+topology_template:
+  node_templates:
+    php:
+      type: org.apache.brooklyn.entity.php.httpd.PhpHttpdServer
+      properties:
+        language: PHP
+        autoscale: false
+        php.app.name: nuro
+        php_version:
+          constraints:
+          - greater_or_equal: '5.1'
+          - less_or_equal: '5.5'
+      artifacts:
+        git.url:
+          implementation: "https://<USER>:<PASS>@bitbucket.org/seaclDem/nuro-casestudy.git"
+          type: tosca.artifacts.File
+      requirements:
+      - host: Amazon_EC2_i2_xlarge_us_west_1
+
+    Amazon_EC2_i2_xlarge_us_west_1:
+      type: tosca.nodes.Compute
+      properties:
+        resource_type: compute
+        hardwareId: i2.xlarge
+        location: aws-ec2
+        region: us-west-1
+        performance: 90
+        availability: 0.9995
+        country: United States
+        city: SAN JOSE
+        cost: 1.001 USD/hour
+        disk_size: 800
+        num_disks: 1
+        num_cpus: 4
+        ram: 30.5
+        disk_type: ssd
+
+  groups:
+    add_brooklyn_location:
+      members: [ Amazon_EC2_i2_xlarge_us_west_1 ]
+      policies:
+      - brooklyn.location: aws-ec2:us-west-2
+
+
+node_types:
+
+  org.apache.brooklyn.entity.php.httpd.PhpHttpdServer:
+    derived_from: tosca.nodes.Root
+    description: |
+      A simple Tomcat server
+    properties:
+      php.app.name:
+        type: string
+        required: false
+    requirements:
+    - host: tosca.nodes.Compute
+      type: tosca.relationships.HostedOn
+    artifacts:
+    - git.url: null
+      type: tosca.artifacts.File
+    - tarball.url: null
+      type: tosca.artifacts.File
+

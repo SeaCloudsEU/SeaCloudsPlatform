@@ -1,0 +1,50 @@
+
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: Nuro. PHP without DB.
+template_name: nuro.php.no.db
+template_version: 1.0.0-SNAPSHOT
+imports:
+- tosca-normative-types:1.0.0.wd06-SNAPSHOT
+
+node_types:
+  org.apache.brooklyn.entity.php.httpd.PhpHttpdServer:
+    derived_from: tosca.nodes.Root
+    description: |
+      A simple Tomcat server
+    properties:
+      php.app.name:
+        type: string
+        required: false
+
+    artifacts:
+    - git.url: null
+      type: tosca.artifacts.File
+    - tarball.url: null
+      type: tosca.artifacts.File
+
+
+topology_template:
+  node_templates:
+    php:
+      type: org.apache.brooklyn.entity.php.httpd.PhpHttpdServer
+      properties:
+        language: PHP
+        autoscale: false
+        php.app.name: nuro
+        php_version:
+          constraints:
+          - greater_or_equal: '5.1'
+          - less_or_equal: '5.5'
+      artifacts:
+        git.url:
+          implementation: "https://<USER>:<PASS>@bitbucket.org/seaclDem/nuro-casestudy.git"
+          type: tosca.artifacts.File
+
+
+
+  groups:
+    add_brooklyn_location:
+      members: [ php ]
+      policies:
+      - brooklyn.location: aws-ec2:us-west-2
+
