@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<wsag:Agreement xmlns:wsag="http://www.ggf.org/namespaces/ws-agreement" xmlns:sla="http://sla.atos.eu" wsag:AgreementId="e6a34ed1-e026-4859-8e5a-8898f2a840ba">
+  <wsag:Name>user-seaclouds-WebChat application</wsag:Name>
+  <wsag:Context>
+    <wsag:AgreementInitiator>user</wsag:AgreementInitiator>
+    <wsag:AgreementResponder>seaclouds</wsag:AgreementResponder>
+    <wsag:ServiceProvider>AgreementResponder</wsag:ServiceProvider>
+    <wsag:ExpirationTime>2016-12-10T16:21:29CET</wsag:ExpirationTime>
+    <wsag:TemplateId>e8123d07-6ba4-4c30-bab6-78e55396f44f</wsag:TemplateId>
+    <sla:Service>WebChat application</sla:Service>
+  </wsag:Context>
+  <wsag:Terms>
+    <wsag:All>
+      <wsag:ServiceDescriptionTerm/>
+      <wsag:GuaranteeTerm wsag:Name="respTimeSLARule_tomcat_server">
+        <wsag:ServiceScope wsag:ServiceName="service">tomcat_server</wsag:ServiceScope>
+        <wsag:ServiceLevelObjective>
+          <wsag:KPITarget>
+            <wsag:KPIName>tomcat_server/AvarageResponseTimeInternalComponent</wsag:KPIName>
+            <wsag:CustomServiceLevel>{"constraint": "AvarageResponseTime_tomcat_server_Violation NOT_EXISTS", "qos": "METRIC LE 2.0" }</wsag:CustomServiceLevel>
+          </wsag:KPITarget>
+        </wsag:ServiceLevelObjective>
+      </wsag:GuaranteeTerm>
+      <wsag:GuaranteeTerm wsag:Name="vmAvailableSLARule_tomcat_server">
+        <wsag:ServiceScope wsag:ServiceName="service">tomcat_server</wsag:ServiceScope>
+        <wsag:ServiceLevelObjective>
+          <wsag:KPITarget>
+            <wsag:KPIName>tomcat_server/AppAvailable</wsag:KPIName>
+            <wsag:CustomServiceLevel>{"constraint": "AvarageAppAvailability_tomcat_server_Violation NOT_EXISTS", "qos": "METRIC GE 0.998" }</wsag:CustomServiceLevel>
+          </wsag:KPITarget>
+        </wsag:ServiceLevelObjective>
+      </wsag:GuaranteeTerm>
+    </wsag:All>
+  </wsag:Terms>
+</wsag:Agreement>

@@ -131,7 +131,7 @@ public class TemplateGenerator {
             KPITarget kpi = new KPITarget();
             kpi.setKpiName(kpiName);
             kpi.setCustomServiceLevel(String.format(
-                    "{\"constraint\": \"%s NOT_EXISTS\", \"qos\": %s }",
+                    "{\"constraint\": \"%s NOT_EXISTS\", \"qos\": \"%s\" }",
                     outputMetric,
                     buildQos(rule.getCondition())
                     ));

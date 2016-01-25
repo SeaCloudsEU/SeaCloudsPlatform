@@ -128,12 +128,13 @@ public class TemplateHelperE  {
         try {
             ITemplate templateStored = null;
 
+            String serializedTemplate = Utils.removeXmlHeader(originalSerializedTemplate);
             if (templateXML != null) {
                 // add field TemplateId if it doesn't exist
                 if (templateXML.getTemplateId() == null) {
                     String templateId = UUID.randomUUID().toString();
                     logger.debug("createTemplate template has no uuid, {} will be assigned", templateId ); 
-                    originalSerializedTemplate = setTemplateIdInSerializedTemplate(originalSerializedTemplate, templateId);    
+                    serializedTemplate = setTemplateIdInSerializedTemplate(serializedTemplate, templateId);    
                     templateXML.setTemplateId(templateId);
                 }
     
@@ -153,7 +154,7 @@ public class TemplateHelperE  {
                     
                     if (provider==null) throw new DBMissingHelperException("Provider with UUID "+providerUUID+" doesn't exist in the database");
 
-                    ITemplate template = modelConverter.getTemplateFromTemplateXML(templateXML, originalSerializedTemplate);
+                    ITemplate template = modelConverter.getTemplateFromTemplateXML(templateXML, serializedTemplate);
                     logger.info("Template uuid is {} - Template id is {} - Template text is {}", 
                             template.getUuid(), template.getId(), template.getText());
                     templateStored = templateDAO.save(template);
@@ -248,5 +249,4 @@ public class TemplateHelperE  {
                 "<wsag:Template xmlns:wsag=\"http://www.ggf.org/namespaces/ws-agreement\" xmlns:sla=\"http://sla.atos.eu\" wsag:TemplateId=\""+ templateId + "\">");
     }
 
-    
 }

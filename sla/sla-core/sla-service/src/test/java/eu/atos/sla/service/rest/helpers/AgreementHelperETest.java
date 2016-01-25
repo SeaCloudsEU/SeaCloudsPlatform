@@ -95,6 +95,17 @@ public class AgreementHelperETest {
     }
 
     @Test
+    public void changeIdDoesNotChangeAgreementInitiator() {
+        String initiator = "<wsag:AgreementInitiator>user</wsag:AgreementInitiator>";
+        String xml = "<wsag:Agreement xmlns:wsag=\"http://www.ggf.org/namespaces/ws-agreement\"" +    
+                "xmlns:sla=\"http://sla.atos.eu\">" + initiator + "</wsag:Agreement>";
+            
+        String newId = "fixed";
+        String result = AgreementHelperE.AgreementIdModifier.run(xml, newId);
+        assertTrue(result.contains(initiator));
+    }
+    
+    @Test
     public void changeIdInAgreementWithoutId() {
         String xml;
         String newId = "fixed";

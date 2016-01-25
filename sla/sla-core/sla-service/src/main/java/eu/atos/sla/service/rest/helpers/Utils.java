@@ -28,11 +28,11 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Deprecated
 public class Utils<T> {
 
     private static final String PATH_SEP = "/";
 
+    @Deprecated
     public String parseToXML(T elements, Class<T> classElem)
             throws JAXBException {
 
@@ -48,6 +48,7 @@ public class Utils<T> {
         return out.toString();
     }
 
+    @Deprecated
     public String parseToJson(T elements) throws JAXBException {
 
         ObjectMapper mapper = new ObjectMapper();
@@ -78,4 +79,10 @@ public class Utils<T> {
         }
         return result;
     }
+    
+    public static String removeXmlHeader(String serialized) {
+        
+        return serialized.replaceFirst("<?[^>]*?>", "");
+    }
+    
 }

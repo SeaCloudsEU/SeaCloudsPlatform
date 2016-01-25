@@ -72,16 +72,39 @@ public class SlaInfo {
 
                 Map<String, MonitoringRules> monitoringRules = rulesExtractor.extract(doc);
 
-                String provider = "seaclouds";
-                String consumer = "user";
-                String service = doc.containsKey("description")? (String) doc.get("description") : "service";
-                ContextInfo context = new ContextInfo(provider, consumer, service, DEFAULT_VALIDITY);
-                
-                return new SlaInfo(context, monitoringRules);
+                return buildImpl(doc, monitoringRules);
             } catch (JAXBException e) {
                 
                 throw new SlaGeneratorException(e.getMessage(), e);
             }
         }
+
+        public SlaInfo build(String dam, String rulesString) {
+            
+            try {
+                
+                Yaml yaml = new Yaml();
+                @SuppressWarnings("rawtypes")
+                Map doc = (Map) yaml.load(new StringReader(dam));
+
+                Map<String, MonitoringRules> monitoringRules = rulesExtractor.fromSerializedRules(rulesString);
+                
+                return buildImpl(doc, monitoringRules);
+            } catch (JAXBException e) {
+                
+                throw new SlaGeneratorException(e.getMessage(), e);
+            }
+        }
+
+        private SlaInfo buildImpl(@SuppressWarnings("rawtypes") Map doc,
+                Map<String, MonitoringRules> monitoringRules) {
+            String provider = "seaclouds";
+            String consumer = "user";
+            String service = doc.containsKey("description")? (String) doc.get("description") : "service";
+            ContextInfo context = new ContextInfo(provider, consumer, service, DEFAULT_VALIDITY);
+            
+            return new SlaInfo(context, monitoringRules);
+        }
+        
     }
 }

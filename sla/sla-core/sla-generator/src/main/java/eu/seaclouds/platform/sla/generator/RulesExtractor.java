@@ -30,7 +30,8 @@ import org.yaml.snakeyaml.Yaml;
 import it.polimi.tower4clouds.rules.MonitoringRules;
 
 /**
- * Extracts the monitoring rules from a DAM. The rules are returned as a map 
+ * Extracts the monitoring rules from a DAM or directly from a serialized representation. 
+ * The rules are returned as a map 
  * (key: component name, value: MonitoringRules object) 
  */
 @SuppressWarnings("rawtypes")
@@ -71,12 +72,26 @@ public class RulesExtractor {
             String rulesString = getRules(groupPolicies);
             
             if (!"".equals(rulesString)) {
-                StringReader reader = new StringReader(rulesString);
-                MonitoringRules rules = JaxbUtils.load(MonitoringRules.class, reader);
+                MonitoringRules rules = deserializeRules(rulesString);
                 result.put(memberName, rules);
             }
         }
         return result;
+    }
+
+    public Map<String, MonitoringRules> fromSerializedRules(String rulesString) throws JAXBException {
+        Map<String, MonitoringRules> result = new HashMap<String, MonitoringRules>();
+        MonitoringRules rules = deserializeRules(rulesString);
+        result.put("application", rules);
+        
+        return result;
+    }
+    
+    private MonitoringRules deserializeRules(String rulesString)
+            throws JAXBException {
+        StringReader reader = new StringReader(rulesString);
+        MonitoringRules rules = JaxbUtils.load(MonitoringRules.class, reader);
+        return rules;
     }
     
     private List getPolicies(Map group) {
