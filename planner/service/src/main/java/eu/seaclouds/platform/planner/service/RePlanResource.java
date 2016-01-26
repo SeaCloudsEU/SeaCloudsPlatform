@@ -37,10 +37,13 @@ public class RePlanResource {
 
     static Logger log = LoggerFactory.getLogger(RePlanResource.class);
 
+    private Planner planner;
+
     public RePlanResource(String discovererURL, String[] deployableProviders)
     {
         this.discovererURL = discovererURL;
         this.deployableProviders = deployableProviders;
+        this.planner = new Planner(discovererURL, Arrays.asList(deployableProviders));
     }
 
     @GET
@@ -51,10 +54,9 @@ public class RePlanResource {
 
 
     private PlannerResponse getPlans(String aam, String adp, String[] failingModules){
-        Planner p = new Planner(discovererURL, aam, adp);
         String[] resp = new String[0];
         try {
-            resp = p.rePlan(Arrays.asList(this.deployableProviders), Arrays.asList(failingModules));
+            resp = planner.fetchAndRePlan(aam, Arrays.asList(failingModules));
         } catch (IOException e) {
             log.error(e.getCause().getMessage(), e);
         } catch (ParsingException e) {

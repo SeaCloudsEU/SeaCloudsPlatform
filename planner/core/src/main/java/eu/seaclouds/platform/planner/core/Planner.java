@@ -23,7 +23,6 @@ import alien4cloud.tosca.parser.ParsingResult;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.io.Resources;
 import eu.seaclouds.common.tosca.ToscaSerializer;
 import eu.seaclouds.planner.matchmaker.Matchmaker;
 import eu.seaclouds.planner.matchmaker.Pair;
@@ -34,41 +33,30 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 import eu.seaclouds.platform.planner.optimizer.Optimizer;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.*;
 
 public class Planner {
-    static Logger log = LoggerFactory.getLogger(ToscaSerializer.class);
+    static Logger log = LoggerFactory.getLogger(Planner.class);
     private static final String DISCOVERER_PATH = "discoverer/";
 
     private final String discovererURL;
+    private List<String> deployableProviders = null;
     private HttpHelper discovererClient;
-    private final String aam;
-    private final String dam;
-    private final String adp;
 
     public Planner() {
-        this(null, null, null, null);
+        this.discovererURL = null;
     }
 
-    //Replan ctor
-    public Planner(String discovererURL, String aam, String adp){
-        this(discovererURL, aam, adp, null);
-    }
-
-    //Plan ctor
-    public Planner(String discovererURL, String aam){
-        this(discovererURL, aam, null, null);
-    }
-
-    private Planner(String discovererURL, String aam, String adp, String dam) {
+    public Planner(String discovererURL) {
         this.discovererURL = discovererURL + DISCOVERER_PATH;
         this.discovererClient = new HttpHelper(this.discovererURL);
-        this.aam = aam;
-        this.dam = dam;
-        this.adp = adp;
+    }
+
+    public Planner(String discovererURL, List<String> deployableProviders) {
+        this(discovererURL);
+        this.deployableProviders = deployableProviders;
+
     }
 
     private String generateMMOutput2(Map<String, HashSet<String>> mmResult, Map<String, Pair<NodeTemplate, String>> offerings) throws JsonProcessingException {
@@ -131,62 +119,44 @@ public class Planner {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(singleRes);
     }
 
-    public String[] plan() throws ParsingException, IOException {
-        log.info("Planning for aam: \n" + aam);
-
-        //Get offerings
-        log.info("Getting Offeing Step: Start");
-        Map<String, Pair<NodeTemplate, String>> offerings = getOfferings(); // getOfferingsFromDiscoverer();
-        log.info("Getting Offeing Step: Complete");
-
-        log.info("Got " + offerings.size() + " offerings from discoverer:");
-        for(String s: offerings.keySet()){
-            log.info("\n" + s + "\n\t" +offerings.get(s).second);
-        }
-
-        //Matchmake
-        log.info("Matchmaking Step: Start");
-        Matchmaker mm = new Matchmaker();
-        Map<String, HashSet<String>> matchingOfferings = mm.match(ToscaSerializer.fromTOSCA(aam), offerings);
-        log.info("Matchmaking Step: Complete");
-        //Optimize
-        String mmOutput = "";
-        try {
-            mmOutput = generateMMOutput2(matchingOfferings, offerings);
-        }catch(JsonProcessingException e){
-            log.error("Error preparing matchmaker output for optimization", e);
-        }
-
-        for(String s:matchingOfferings.keySet()){
-            log.info("Module " + s + "has matching offerings: " + matchingOfferings.get(s));
-        }
-
-        log.info("Optimization Step: Start");
-        log.info("Calling optimizer with suitable offerings: \n" + mmOutput);
-        Optimizer optimizer = new Optimizer();
-        String[] outputPlans = optimizer.optimize(aam, mmOutput);
-        log.info("Optimzer result: " + Arrays.asList(outputPlans));
-        log.info("Optimization Step: Complete");
-
-        return outputPlans;
+    /**
+     * Fetches offerings from the Discoverer and makes plans
+     *
+     * @param aam the String representing the AAM
+     *
+     * @return the generated plans
+     * @throws ParsingException
+     * @throws IOException
+     */
+    public String[] fetchAndPlan(String aam) throws ParsingException, IOException {
+        String offerings = this.fetchOfferings();
+        return this.plan(aam, offerings);
     }
 
-    public String[] plan(List<String> deployableOfferings) throws ParsingException, IOException {
+    /**
+     * Makes plans starting from the AAM and a String containing the TOSCA of the
+     * offerings available to generate the plans
+     *
+     * @param aam the String representing the AAM
+     * @param uniqueOfferingsTosca the String containing the Tosca representation of the available offerings
+     *
+     * @return the generated plans
+     * @throws ParsingException
+     * @throws IOException
+     */
+    public String[] plan(String aam, String uniqueOfferingsTosca) throws ParsingException, IOException {
 
         log.info("Planning for aam: \n" + aam);
 
         //Get offerings
         log.info("Getting Offeing Step: Start");
-        Map<String, Pair<NodeTemplate, String>> offerings = getOfferings(deployableOfferings); // getOfferingsFromDiscoverer();
+        Map<String, Pair<NodeTemplate, String>> offerings = parseOfferings(uniqueOfferingsTosca); // getOfferingsFromDiscoverer();
         log.info("Getting Offeing Step: Complete");
 
         log.info("\nNot deployable offering have been filtered!");
-        log.info("\nDeployable offerings have location: " + deployableOfferings);
+        log.info("\nDeployable offerings have location: " + deployableProviders);
 
         log.info("Got " + offerings.size() + " offerings from discoverer:");
-        for(String s: offerings.keySet()){
-            log.info("\n" + s + "\n\t" +offerings.get(s).second);
-        }
 
         //Matchmake
         log.info("Matchmaking Step: Start");
@@ -220,10 +190,24 @@ public class Planner {
         throw new UnsupportedOperationException();
     }
 
-    public String[] rePlan(List<String> deployableOfferings, List<String> modulesToFilter) throws ParsingException, IOException {
+    /**
+     * Fetches offerings from the Discoverer and replan
+     *
+     * @param aam the String representing the AAM
+     * @param modulesToFilter
+     * @return
+     * @throws ParsingException
+     * @throws IOException
+     */
+    public String[] fetchAndRePlan(String aam, List<String> modulesToFilter) throws ParsingException, IOException {
+        String offerings = this.fetchOfferings();
+        return this.rePlan(aam, offerings, modulesToFilter);
+    }
+
+    public String[] rePlan(String aam, String uniqueOfferingsTosca, List<String> modulesToFilter) throws ParsingException, IOException {
         //Get offerings
         log.info("Getting Offeing Step: Start");
-        Map<String, Pair<NodeTemplate, String>> offerings = getOfferings(deployableOfferings); // getOfferingsFromDiscoverer();
+        Map<String, Pair<NodeTemplate, String>> offerings = parseOfferings(uniqueOfferingsTosca); // getOfferingsFromDiscoverer();
         log.info("Getting Offeing Step: Complete");
 
         //Matchmake
@@ -258,48 +242,28 @@ public class Planner {
         return reqParams;
     }
 
-
-    public Map<String, Pair<NodeTemplate, String>> getOfferings(){
-        Map<String, Pair<NodeTemplate, String>> map = new HashMap<>();
+    /**
+     * Fetches the list offerings from the Discoverer
+     *
+     * @return the String containing a unique Tosca representation of all available offerings
+     */
+    private String fetchOfferings() {
+        DiscovererFetchallResult allOfferings = null;
         try {
             String discovererOutput = discovererClient.getRequest("fetch_all", Collections.EMPTY_LIST);
-
             ObjectMapper mapper = new ObjectMapper();
-            DiscovererFetchallResult allOfferings = mapper.readValue(discovererOutput, DiscovererFetchallResult.class);
-            String offerings = allOfferings.offering;
-
-            ParsingResult<ArchiveRoot> offeringRes = ToscaSerializer.fromTOSCA(offerings);
-            Map<String, NodeTemplate> offering = offeringRes.getResult().getTopology().getNodeTemplates();
-            Yaml yml = new Yaml();
-            Map<String, Map<String, Object>> adpYaml = (Map<String, Map<String, Object>>) yml.load(offerings);
-            Map<String, Object> nodeTemplates = (Map<String, Object>) adpYaml.get("topology_template").get("node_templates");
-
-            for (String node : offering.keySet()) {
-
-                NodeTemplate nt = offering.get(node);
-                HashMap<String, Object> offerMap = new HashMap<>();
-                offerMap.put(node, nodeTemplates.get(node));
-                String offerDump = yml.dump(offerMap);
-
-                map.put(node, new Pair<NodeTemplate, String>(nt, offerDump));
-            }
-        }catch (Exception e){
-            log.error(e.getCause().getMessage());
+            allOfferings = mapper.readValue(discovererOutput, DiscovererFetchallResult.class);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        String offerings = allOfferings.offering;
 
-
-        return map;
+        return offerings;
     }
 
-    public Map<String, Pair<NodeTemplate, String>> getOfferings(List<String> deployableOfferings){
+    private Map<String, Pair<NodeTemplate, String>> parseOfferings(String offerings){
         Map<String, Pair<NodeTemplate, String>> map = new HashMap<>();
         try {
-            String discovererOutput = discovererClient.getRequest("fetch_all", Collections.EMPTY_LIST);
-
-            ObjectMapper mapper = new ObjectMapper();
-            DiscovererFetchallResult allOfferings = mapper.readValue(discovererOutput, DiscovererFetchallResult.class);
-            String offerings = allOfferings.offering;
-
             ParsingResult<ArchiveRoot> offeringRes = ToscaSerializer.fromTOSCA(offerings);
             Map<String, NodeTemplate> offering = offeringRes.getResult().getTopology().getNodeTemplates();
             Yaml yml = new Yaml();
@@ -311,20 +275,19 @@ public class Planner {
                 Map<String, Object> properties = ((Map<String, Map<String, Object>>) nodeTemplates.get(node)).get("properties");
                 String location = (String) properties.get("location");
 
-                if(deployableOfferings.contains(location)){
+                if (deployableProviders == null || deployableProviders.contains(location)) {
 
                     NodeTemplate nt = offering.get(node);
-                    String s= nt.getProperties().get("location").toString();
                     HashMap<String, Object> offerMap = new HashMap<>();
                     offerMap.put(node, nodeTemplates.get(node));
-
                     String offerDump = yml.dump(offerMap);
 
                     map.put(node, new Pair<NodeTemplate, String>(nt, offerDump));
                 }
             }
-        }catch (Exception e){ }
-
+        }catch (Exception e){
+            log.error(e.getCause().getMessage());
+        }
 
         return map;
     }
