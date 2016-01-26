@@ -1,4 +1,4 @@
-package eu.seaclouds.monitor.monitoringdamgenerator.tests;
+package eu.seaclouds.monitor.monitoringdamgenerator;
 
 import it.polimi.tower4clouds.rules.MonitoringRule;
 import it.polimi.tower4clouds.rules.Parameter;

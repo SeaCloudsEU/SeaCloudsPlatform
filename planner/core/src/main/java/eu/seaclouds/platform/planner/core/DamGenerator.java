@@ -79,12 +79,12 @@ public class DamGenerator {
     private static DeployerTypesResolver deployerTypesResolver;
     static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<>();
 
-    public static String generateDam(String adp, String monitorGenURL, String monitorGenPort, String slaGenURL){
+    public static String generateDam(String adp, String monitorGenURL, String monitorGenPort, String slaGenURL, String influxdbURL, String influxdbPort){
         Yaml yml = new Yaml();
         Map<String, Object> adpYaml = (Map<String, Object>) yml.load(adp);
         adpYaml = DamGenerator.manageTemplateMetada(adpYaml);
         adpYaml = DamGenerator.translateAPD(adpYaml);
-        adpYaml = DamGenerator.addMonitorInfo(yml.dump(adpYaml), monitorGenURL, monitorGenPort);
+        adpYaml = DamGenerator.addMonitorInfo(yml.dump(adpYaml), monitorGenURL, monitorGenPort, influxdbURL, influxdbPort);
 
         String slaInfoResponse = new HttpHelper(slaGenURL).postInBody(SLA_GEN_OP, yml.dump(adpYaml));
         checkNotNull(slaInfoResponse, "Error getting SLA info");
@@ -128,12 +128,14 @@ public class DamGenerator {
 
         return adpYaml;
     }
-    public static Map<String, Object> addMonitorInfo(String adp, String monitorUrl, String monitorPort){
+
+    public static Map<String, Object> addMonitorInfo(String adp, String monitorUrl, String monitorPort, String influxdbUrl, String influxdbPort){      
+        
         MonitoringDamGenerator monDamGen = null;
         DeployerTypesResolver deployerTypesResolver = getDeployerIaaSTypeResolver();
 
         try {
-            monDamGen = new MonitoringDamGenerator(new URL("http://"+ monitorUrl +":"+ monitorPort +""));
+            monDamGen = new MonitoringDamGenerator(new URL("http://"+ monitorUrl +":"+ monitorPort +""), new URL("http://"+ influxdbUrl +":"+ influxdbPort +""));
         } catch (MalformedURLException e) {
             log.error(e.getMessage());
         }

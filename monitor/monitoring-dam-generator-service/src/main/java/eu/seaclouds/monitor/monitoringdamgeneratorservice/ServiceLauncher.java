@@ -6,29 +6,25 @@ import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
-public class ServiceLauncher extends Application<ServiceConfiguration>  {
+public class ServiceLauncher extends Application<ServiceConfiguration> {
 
-    
-    public static void main(String[] args) throws Exception  {
+    public static void main(String[] args) throws Exception {
 
         new ServiceLauncher().run(args);
 
     }
-    
+
     @Override
     public void initialize(Bootstrap<ServiceConfiguration> bootstrap) {
         // Setting configuration from env variables
-        bootstrap.setConfigurationSourceProvider(
-                new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(),
-                        new EnvironmentVariableSubstitutor(false)
-                )
-        );
+        bootstrap.setConfigurationSourceProvider(new SubstitutingSourceProvider(
+                bootstrap.getConfigurationSourceProvider(), new EnvironmentVariableSubstitutor(false)));
     }
 
     @Override
-    public void run(ServiceConfiguration configuration, Environment environment)
-            throws Exception {
-        environment.jersey().register(new Service(configuration.getHost(), configuration.getPort()));
+    public void run(ServiceConfiguration configuration, Environment environment) throws Exception {
+        environment.jersey().register(new Service(configuration.getMonitorHost(), configuration.getMonitorPort(),
+                configuration.getInfluxdbHost(), configuration.getInfluxdbPort()));
 
     }
 }

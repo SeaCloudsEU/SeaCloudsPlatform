@@ -23,12 +23,31 @@ import eu.seaclouds.monitor.monitoringdamgenerator.rulesgenerators.Infrastructur
 public class MonitoringDamGenerator {
     private static final Logger logger = LoggerFactory
             .getLogger(MonitoringDamGenerator.class);
+    
+    private static final String DATA_COLLECTOR_NODE_TYPE = ""
+            + "derived_from: tosca.nodes.Root\n"
+            + "description: >\n"
+            + " A simple Tomcat server\n"
+            + "properties:\n"
+            + " install_latch:\n"
+            + "  type: string\n"
+            + "  required: false\n"
+            + " shell.env:\n"
+            + "  type: map\n"
+            + "  required: false\n"
+            + "  entry_schema:\n"
+            + "   type: string\n"
+            + "requirements:\n"
+            + " - host: tosca.nodes.Compute\n"
+            + "   type: tosca.relationships.HostedOn\n";
 
     private URL monitoringManagerUrl;
+    private URL influxdbUrl;
 
-    public MonitoringDamGenerator(URL monitoringManagerUrl) {
+    public MonitoringDamGenerator(URL monitoringManagerUrl, URL influxdbUrl) {
 
             this.monitoringManagerUrl = monitoringManagerUrl;
+            this.influxdbUrl = influxdbUrl;
 
     }
 
@@ -57,7 +76,9 @@ public class MonitoringDamGenerator {
                 
                 modacloudsDcScriptGen.addDataCollector(mainModule,
                         this.monitoringManagerUrl.getHost(),
-                        this.monitoringManagerUrl.getPort());
+                        this.monitoringManagerUrl.getPort(),
+                        this.influxdbUrl.getHost(),
+                        this.influxdbUrl.getPort());
             }
 
             for (Module module : modules) {
@@ -69,7 +90,9 @@ public class MonitoringDamGenerator {
 
                 javaDcScriptGen.addDataCollector(module,
                         this.monitoringManagerUrl.getHost(),
-                        this.monitoringManagerUrl.getPort());
+                        this.monitoringManagerUrl.getPort(),
+                        this.influxdbUrl.getHost(),
+                        this.influxdbUrl.getPort());
             }
 
             return this.buildMonitoringInfo(modules, adp);
@@ -136,15 +159,19 @@ public class MonitoringDamGenerator {
                 }
             }
         }
+        
              
         topology.put("node_templates", nodeTemplates);
         
-        appMap.put("topology_template", topology);
+        Map<String, Object> nodeTypes = (Map<String, Object>) appMap.get("node_types");
         
+        nodeTypes.put("seaclouds.nodes.Datacollector", DATA_COLLECTOR_NODE_TYPE);
+        
+        appMap.put("node_types", nodeTypes);
+                
         enrichedAdp = yamlApp.dump(appMap);
         
         return new MonitoringInfo(applicationRules, enrichedAdp);
         
     }
-
 }

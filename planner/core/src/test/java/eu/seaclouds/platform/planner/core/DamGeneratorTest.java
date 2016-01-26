@@ -69,7 +69,7 @@ public class DamGeneratorTest {
         Map<String, Object> adpYaml = (HashMap<String, Object>) yml.load(adp);
 
         adpYaml = DamGenerator.translateAPD(adpYaml);
-        adpYaml = DamGenerator.addMonitorInfo(yml.dump(adpYaml), "127.0.0.1", "8080");
+        adpYaml = DamGenerator.addMonitorInfo(adp, "127.0.0.1", "8080", "127.0.0.1", "8083");
 
         String dam = yml.dump(adpYaml);
         Assert.assertNotNull(adpYaml);
@@ -215,7 +215,7 @@ public class DamGeneratorTest {
 
         adpYaml = DamGenerator.manageTemplateMetada(adpYaml);
         adpYaml = DamGenerator.translateAPD(adpYaml);
-        adpYaml = DamGenerator.addMonitorInfo(yml.dump(adpYaml), "127.0.0.1", "8080");
+        adpYaml = DamGenerator.addMonitorInfo(yml.dump(adpYaml), "127.0.0.1", "8080", "127.0.0.1", "8083");
 
         Map groups = (Map) adpYaml.remove(DamGenerator.GROUPS);
 

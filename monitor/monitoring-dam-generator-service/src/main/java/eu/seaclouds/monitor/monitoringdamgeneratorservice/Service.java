@@ -25,25 +25,27 @@ import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
 
 @Path("/")
-public class Service{
+public class Service {
 
-    
     static Logger log = LoggerFactory.getLogger(Service.class);
 
     private static String monitoringManagerIp;
     private static String monitoringManagerPort;
 
-    private static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<String, MonitoringInfo>();
-    
-    public Service(String monitorUrl,
-            String monitorPort)
-        {
+    private static String influxdbIp;
+    private static String influxdbPort;
+
+    private static Map<String, MonitoringInfo> monitoringInfoByApplication = new HashMap<String, MonitoringInfo>();
+
+    public Service(String monitorUrl, String monitorPort, String influxIp, String influxPort) {
         monitoringManagerIp = monitorUrl;
         monitoringManagerPort = monitorPort;
-      
-        }
-    
-    
+
+        influxdbIp = influxIp;
+        influxdbPort = influxPort;
+
+    }
+
     @POST
     @Path("/generateDamMonitoringInfo")
     @Produces(MediaType.APPLICATION_JSON)
@@ -53,39 +55,41 @@ public class Service{
         MonitoringDamGenerator monDamGen;
 
         try {
-            monDamGen = new MonitoringDamGenerator(new URL("http://"+ monitoringManagerIp +":"+ monitoringManagerPort +""));
+            monDamGen = new MonitoringDamGenerator(
+                    new URL("http://" + monitoringManagerIp + ":" + monitoringManagerPort + ""),
+                    new URL("http://" + influxdbIp + ":" + influxdbPort + ""));
+
             String generatedApplicationId = UUID.randomUUID().toString();
             MonitoringInfo generated = monDamGen.generateMonitoringInfo(adp);
-            
-            monitoringInfoByApplication.put(generatedApplicationId, generated);   
-            
+
+            monitoringInfoByApplication.put(generatedApplicationId, generated);
+
             return new ApplicationId(generatedApplicationId);
         } catch (MalformedURLException e) {
             log.error(e.getMessage());
         }
-        
-        return null;
-        
 
+        return null;
 
     }
-    
-    
+
     /**
-     * @param applicationId the id of an application previously obtained calling the /generateDamMonitoringInfo endpoint
-     * @return              all the monitoring rules that need to be installed into Tower 4Cloud
+     * @param applicationId
+     *            the id of an application previously obtained calling the
+     *            /generateDamMonitoringInfo endpoint
+     * @return all the monitoring rules that need to be installed into Tower
+     *         4Cloud
      */
     @GET
     @Path("/{id}/monitoringRules/")
     @Produces(MediaType.APPLICATION_JSON)
-    public ApplicationRules getMonitoringRulesByApplication(@PathParam("id") String applicationId){
-        
+    public ApplicationRules getMonitoringRulesByApplication(@PathParam("id") String applicationId) {
+
         StringWriter sw = new StringWriter();
-        
+
         JAXBContext context;
         try {
-            context = JAXBContext
-                    .newInstance("it.polimi.tower4clouds.rules");
+            context = JAXBContext.newInstance("it.polimi.tower4clouds.rules");
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty("jaxb.formatted.output", Boolean.TRUE);
             marshaller.marshal(monitoringInfoByApplication.get(applicationId).getApplicationMonitoringRules(), sw);
@@ -96,17 +100,20 @@ public class Service{
 
         return new ApplicationRules(sw.toString());
     }
-    
+
     /**
-     * @param applicationId the id of an application previously obtained calling the /generateDamMonitoringInfo endpoint
-     * @return              the list of all the node templates that need to be added to the DAM 
-     *                      in order to deploy the data collectors associated which applicationId
+     * @param applicationId
+     *            the id of an application previously obtained calling the
+     *            /generateDamMonitoringInfo endpoint
+     * @return the list of all the node templates that need to be added to the
+     *         DAM in order to deploy the data collectors associated which
+     *         applicationId
      */
     @GET
     @Path("/{id}/generatedAdp")
     @Produces(MediaType.APPLICATION_JSON)
-    public GeneratedAdp getGeneratedAdp(@PathParam("id") String applicationId){
-        
+    public GeneratedAdp getGeneratedAdp(@PathParam("id") String applicationId) {
+
         return new GeneratedAdp(monitoringInfoByApplication.get(applicationId).getReturnedAdp());
     }
 

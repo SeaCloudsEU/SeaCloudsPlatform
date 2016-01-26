@@ -29,17 +29,23 @@ public class DamGenResource {
 
     private final String monitorGeneratorURL;
     private final String slaGeneratorURL;
+    private final String influxdbURL;
 
     private final String[] genURLs;
     private final String monitorGeneratorPort;
+    private final String influxdbPort;
 
     public DamGenResource(String monitorGeneratorURL,
                           String monitorGeneratorPort,
-                          String slaGeneratorURL)
+                          String slaGeneratorURL,
+                          String influxdbURL,
+                          String influxdbPort)
     {
         this.monitorGeneratorURL = monitorGeneratorURL;
         this.slaGeneratorURL = slaGeneratorURL;
         this.monitorGeneratorPort = monitorGeneratorPort;
+        this.influxdbURL = influxdbURL;
+        this.influxdbPort = influxdbPort;
 
         this.genURLs = new String[] {
                 monitorGeneratorURL,
@@ -51,13 +57,13 @@ public class DamGenResource {
     @POST
     @Timed
     public DamGeneratorResponse damGenPost(String adp){
-        return new DamGeneratorResponse(DamGenerator.generateDam(adp, monitorGeneratorURL, monitorGeneratorPort, slaGeneratorURL));
+        return new DamGeneratorResponse(DamGenerator.generateDam(adp, monitorGeneratorURL, monitorGeneratorPort, slaGeneratorURL, influxdbURL, influxdbPort));
     }
 
     @GET
     @Timed
     public DamGeneratorResponse damgen(@QueryParam("adp") String adp){
-        return new DamGeneratorResponse(DamGenerator.generateDam(adp, monitorGeneratorURL, monitorGeneratorPort, slaGeneratorURL));
+        return new DamGeneratorResponse(DamGenerator.generateDam(adp, monitorGeneratorURL, monitorGeneratorPort, slaGeneratorURL, influxdbURL, influxdbPort));
     }
 
 }

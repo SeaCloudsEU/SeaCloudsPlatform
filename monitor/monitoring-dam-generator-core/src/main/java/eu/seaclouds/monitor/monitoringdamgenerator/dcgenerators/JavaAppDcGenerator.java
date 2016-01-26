@@ -1,8 +1,6 @@
 package eu.seaclouds.monitor.monitoringdamgenerator.dcgenerators;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -17,17 +15,17 @@ public class JavaAppDcGenerator implements DataCollectorGenerator {
             .getLogger(JavaAppDcGenerator.class);
 
     private static final String JAVA_APP_DC = "javaAppDc";
-    private static final String START_SCRIPT_URL = "http://start.sh/";
+    private static final String START_SCRIPT_URL = "https://s3-eu-west-1.amazonaws.com/java-app-dc-start-script/installJavaAppDc.sh";
 
     public void addDataCollector(Module module, String monitoringManagerIp,
-            int monitoringManagerPort) {
+            int monitoringManagerPort, String influxdbIp, int influxdbPort) {
 
         if (module.isJavaApp()) {
             logger.info("Generating required deployment script for the java-app-level Data Collector.");
 
             Map<String, Object> dataCollector = this.generateDcNodeTemplate(this
                     .getRequiredEnvVars(module, monitoringManagerIp,
-                            monitoringManagerPort), module);
+                            monitoringManagerPort, influxdbIp, influxdbPort), module);
 
             module.addDataCollector(dataCollector);           
         }
@@ -35,32 +33,31 @@ public class JavaAppDcGenerator implements DataCollectorGenerator {
 
     }
 
-    private List<Map<String, String>> getRequiredEnvVars(Module module,
-            String monitoringManagerIp, int monitoringManagerPort) {
+    private Map<String, String> getRequiredEnvVars(Module module,
+            String monitoringManagerIp, int monitoringManagerPort,
+            String influxdbIp, int influxdbPort) {
 
-        List<Map<String, String>> toReturn = new ArrayList<Map<String, String>>();
-        Map<String, String> temp;
+        Map<String, String> toReturn = new HashMap<String, String>();
 
-        temp = new HashMap<String, String>();
-        temp.put(MODACLOUDS_TOWER4CLOUDS_MANAGER_IP, monitoringManagerIp);
-        toReturn.add(temp);
+        toReturn.put(MODACLOUDS_TOWER4CLOUDS_MANAGER_IP, monitoringManagerIp);
 
-        temp = new HashMap<String, String>();
-        temp.put(MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT,
+        toReturn.put(MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT,
                 String.valueOf(monitoringManagerPort));
-        toReturn.add(temp);
         
-        temp = new HashMap<String, String>();
-        temp.put("MODULE_ID",
+        toReturn.put(MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP, monitoringManagerIp);
+
+        toReturn.put(MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT,
+                String.valueOf(monitoringManagerPort));
+        
+        toReturn.put("MODULE_ID",
                 module.getModuleName());
-        toReturn.add(temp);
 
         return toReturn;
 
     }
 
     private Map<String, Object> generateDcNodeTemplate(
-            List<Map<String, String>> requiredEnvVars, Module module) {
+            Map<String, String> requiredEnvVars, Module module) {
 
         Map<String, Object> toSet;
         Map<String, Object> dataCollector;
