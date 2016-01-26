@@ -19,10 +19,7 @@ package eu.seaclouds.platform.dashboard;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import eu.seaclouds.platform.dashboard.proxy.DeployerProxy;
-import eu.seaclouds.platform.dashboard.proxy.MonitorProxy;
-import eu.seaclouds.platform.dashboard.proxy.PlannerProxy;
-import eu.seaclouds.platform.dashboard.proxy.SlaProxy;
+import eu.seaclouds.platform.dashboard.proxy.*;
 import io.dropwizard.Configuration;
 import io.dropwizard.client.JerseyClientConfiguration;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
@@ -50,7 +47,11 @@ public class DashboardConfiguration extends Configuration {
     @Valid
     @NotNull
     private MonitorProxy monitor = new MonitorProxy();
-    
+
+    @Valid
+    @NotNull
+    private GrafanaProxy grafana;
+
     @Valid
     @NotNull
     private SlaProxy sla = new SlaProxy();
@@ -88,6 +89,16 @@ public class DashboardConfiguration extends Configuration {
     @JsonProperty("monitor.manager")
     public MonitorProxy getMonitorProxy() {
         return monitor;
+    }
+
+    @JsonProperty("monitor.grafana")
+    public void setGrafanaProxy(GrafanaProxy factory) {
+        grafana = factory;
+    }
+
+    @JsonProperty("monitor.grafana")
+    public GrafanaProxy getGrafanaProxy() {
+        return grafana;
     }
 
     @JsonProperty("monitor.manager")

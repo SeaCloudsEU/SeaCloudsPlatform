@@ -31,20 +31,18 @@ Make sure you have [Vagrant](https://www.vagrantup.com/), [Virtualbox](https://w
 
 ## Deploying SeaClouds on BYON
 
-### Deploying SeaClouds on the cloud
-
 - Configure your local environment:
 ```bash
 cd $SEACLOUDS_HOME/byon
 vagrant up
 ```
-This spins up a virtual environment, made up of 2 VMs `brooklyn` and `seaclouds1`, that are accessible at `10.10.10.100` and `10.10.10.101`, respectively.
+This spins up a virtual environment, made up of 2 VMs `brooklyn` and `seaclouds1`, that are accessible at `10.10.10.100` and `10.10.10.101`, respectively. 
+**Note that deploying on BYON requires at least 4 GB of RAM available and a quad-core CPU with hardware virtualization support.**
 
 - Point your favourite browser at `http://10.10.10.100:8081`
 - Select `SeaClouds Platform on BYON` application from Apache Brooklyn dropdown menu
 - Click on `Finish` button.
 
-### Deploying SeaClouds on BYON
 
 ## Deploying SeaClouds on the cloud
 

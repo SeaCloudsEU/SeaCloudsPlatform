@@ -63,6 +63,8 @@ brooklyn.catalog:
         sla.port: 1234
         monitor.manager.host: 127.0.0.1
         monitor.manager.port: 8170
+        monitor.grafana.host: 127.0.0.1
+        monitor.grafana.host: 3000
         planner.host: 127.0.0.1
         planner.port: 1234
 
@@ -75,6 +77,8 @@ brooklyn.catalog:
         SLA_PORT: $brooklyn:config("sla.port")
         MONITOR_HOST: $brooklyn:config("monitor.manager.host")
         MONITOR_PORT: $brooklyn:config("monitor.manager.port")
+        GRAFANA_HOST: $brooklyn:config("monitor.grafana.host")
+        GRAFANA_PORT: $brooklyn:config("monitor.grafana.host")
         PLANNER_HOST: $brooklyn:config("planner.host")
         PLANNER_PORT: $brooklyn:config("planner.port")
 
@@ -200,6 +204,109 @@ brooklyn.catalog:
 
       provisioning.properties:
         osFamily: ubuntu
+  - id: seaclouds-influxdb
+    name: InfluxDB
+    description: InfluxDB Server
+    item:
+      type: org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess
+      id: influxdb
+      name: InfluxDB Server
+
+      brooklyn.config:
+        influxdb.port: 8086
+        influxdb.config.db.name: tower4clouds
+        influxdb.config.db.password: root
+
+      shell.env:
+        INFLUXDB_DB_NAME: $brooklyn:config("influxdb.config.db.name")
+        INFLUXDB_DB_USER: "root"
+        INFLUXDB_DB_PASSWORD: $brooklyn:config("influxdb.config.db.password")
+
+      provisioning.properties:
+        osFamily: ubuntu
+        required.ports:
+        - 22
+        - 8083
+        - 8086
+        - 8090
+        - 8099
+
+      install.command: |
+        sudo apt-get update -y
+        sudo apt-get install -y adduser libfontconfig wget
+        wget http://get.influxdb.org.s3.amazonaws.com/influxdb_0.8.9_amd64.deb
+        sudo dpkg -i influxdb_0.8.9_amd64.deb
+
+
+      customize.command: |
+        sudo service influxdb start
+        tee ./customize-influxdb.sh <<EOF
+        curl -X POST 'http://localhost:8086/cluster_admins/root?u=root&p=root' -d '{"password": "$INFLUXDB_DB_PASSWORD"}'
+        curl -X POST 'http://localhost:8086/db?u=$INFLUXDB_DB_USER&p=$INFLUXDB_DB_PASSWORD' -d '{"name": "$INFLUXDB_DB_NAME"}'
+        EOF
+        sleep 30s
+        sh customize-influxdb.sh
+        sudo service influxdb stop
+
+      launch.command: |
+        sudo service influxdb start
+        pidof influxdb > $PID_FILE
+
+      stop.command: |
+        sudo service influxdb stop
+  - id: seaclouds-grafana
+    name: Grafana Dashboard
+    description: Grafana Monitoring Dashboard
+    item:
+      type: org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess
+      id: grafana
+      name: Grafana Server
+
+      brooklyn.config:
+        grafana.port: 3000
+        grafana.config.user: admin
+        grafana.config.password: admin
+        grafana.config.influxdb.url: http://localhost:8086
+        grafana.config.influxdb.db.name: tower4clouds
+        grafana.config.influxdb.db.password: root
+
+      shell.env:
+        GRAFANA_PORT: $brooklyn:config("grafana.port")
+        GRAFANA_USER: $brooklyn:config("grafana.config.user")
+        GRAFANA_PASSWORD: $brooklyn:config("grafana.config.password")
+        INFLUX_DB_URL: $brooklyn:config("grafana.config.influxdb.url")
+        INFLUXDB_DB_NAME: $brooklyn:config("grafana.config.influxdb.db.name")
+        INFLUXDB_DB_USER: "root"
+        INFLUXDB_DB_PASSWORD: $brooklyn:config("grafana.config.influxdb.db.password")
+
+      provisioning.properties:
+        osFamily: ubuntu
+        required.ports:
+        - 22
+        - 3000
+
+      install.command: |
+        sudo apt-get update -y
+        sudo apt-get install -y adduser libfontconfig wget
+        wget https://grafanarel.s3.amazonaws.com/builds/grafana_2.5.0_amd64.deb
+        sudo dpkg -i grafana_2.5.0_amd64.deb
+
+      customize.command: |
+        sudo service grafana-server start
+        tee ./customize-grafana.sh <<EOF
+        curl -H "Content-Type: application/json" -X PUT -d '{"oldPassword": "admin", "newPassword": "$GRAFANA_PASSWORD", "confirmNew": "$GRAFANA_PASSWORD"}' http://admin:admin@localhost:$GRAFANA_PORT/api/user/password
+        curl -H "Content-Type: application/json" -X POST -d '{"name": "InfluxDB", "url": "$INFLUX_DB_URL", "type": "influxdb_08", "database": "$INFLUXDB_DB_NAME", "user": "$INFLUXDB_DB_USER", "password":"$INFLUXDB_DB_PASSWORD", "access": "proxy", "isDefault": true}' http://$GRAFANA_USER:$GRAFANA_PASSWORD@localhost:$GRAFANA_PORT/api/datasources
+        EOF
+        sleep 30s
+        sh customize-grafana.sh
+        sudo service grafana-server stop
+
+      launch.command: |
+        sudo service grafana-server start
+        pidof grafana-server > $PID_FILE
+
+      stop.command: |
+        sudo service grafana-server stop
 
   - id: seaclouds-platform-on-byon
     name: "SeaClouds Platform on BYON"
@@ -228,6 +335,8 @@ brooklyn.catalog:
             sla.port: $brooklyn:component("sla-core").attributeWhenReady("http.port")
             monitor.manager.host: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
             monitor.manager.port: $brooklyn:component("monitor-manager").config("monitor.manager.port")
+            monitor.grafana.host: $brooklyn:component("grafana").attributeWhenReady("host.address")
+            monitor.grafana.port: $brooklyn:component("grafana").config("grafana.port")            
             planner.host: $brooklyn:component("planner").attributeWhenReady("host.address")
             planner.port: $brooklyn:component("planner").config("planner.config.port")
           launch.latch: $brooklyn:component("planner").attributeWhenReady("service.isUp")
@@ -264,6 +373,21 @@ brooklyn.catalog:
           install.latch: $brooklyn:component("monitor-dda").attributeWhenReady("service.isUp")
         - type: seaclouds-monitor-dda
           name: seaclouds-monitor-dda
+          install.latch: $brooklyn:component("grafana").attributeWhenReady("service.isUp")
+        - type: seaclouds-influxdb
+          name: seaclouds-influxdb
+          brooklyn.config:
+            influxdb.config.db.name: tower4clouds
+            influxdb.config.db.password: seaclouds
+        - type: seaclouds-grafana
+          name: seaclouds-grafana
+          brooklyn.config:
+            grafana.config.password: seaclouds
+            grafana.config.influxdb.url: $brooklyn:formatString("http://%s:%s", component("influxdb").attributeWhenReady("host.address"), component("influxdb").config("influxdb.port"))
+            grafana.config.influxdb.db.name: $brooklyn:component("influxdb").config("influxdb.config.db.name")
+            grafana.config.influxdb.db.password: $brooklyn:component("influxdb").config("influxdb.config.db.password")
+          install.latch: $brooklyn:component("influxdb").attributeWhenReady("service.isUp")
+
 
   - id: seaclouds-platform
     name: "SeaClouds Platform"
@@ -288,6 +412,8 @@ brooklyn.catalog:
           sla.port: $brooklyn:component("sla-core").attributeWhenReady("http.port")
           monitor.manager.host: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
           monitor.manager.port: $brooklyn:component("monitor-manager").config("monitor.manager.port")
+          monitor.grafana.host: $brooklyn:component("grafana").attributeWhenReady("host.address")
+          monitor.grafana.port: $brooklyn:component("grafana").config("grafana.port")            
           planner.host: $brooklyn:component("planner").attributeWhenReady("host.address")
           planner.port: $brooklyn:component("planner").config("planner.config.port")
         launch.latch: $brooklyn:component("planner").attributeWhenReady("service.isUp")
@@ -325,3 +451,15 @@ brooklyn.catalog:
         install.latch: $brooklyn:component("monitor-dda").attributeWhenReady("service.isUp")
       - type: seaclouds-monitor-dda
         name: seaclouds-monitor-dda
+      - type: seaclouds-influxdb
+        name: seaclouds-influxdb
+        brooklyn.config:
+          influxdb.config.db.name: tower4clouds
+          influxdb.config.db.password: seaclouds
+      - type: seaclouds-grafana
+        name: seaclouds-grafana
+        brooklyn.config:
+          grafana.config.password: seaclouds
+          grafana.config.influxdb.url: $brooklyn:formatString("http://%s:%s", component("influxdb").attributeWhenReady("host.address"), component("influxdb").config("influxdb.port"))
+          grafana.config.influxdb.db.name: $brooklyn:component("influxdb").config("influxdb.config.db.name")
+          grafana.config.influxdb.db.password: $brooklyn:component("influxdb").config("influxdb.config.db.password")

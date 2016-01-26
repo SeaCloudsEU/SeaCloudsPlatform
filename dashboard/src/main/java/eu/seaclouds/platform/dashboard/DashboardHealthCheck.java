@@ -19,10 +19,7 @@ package eu.seaclouds.platform.dashboard;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheck.Result;
-import eu.seaclouds.platform.dashboard.proxy.DeployerProxy;
-import eu.seaclouds.platform.dashboard.proxy.MonitorProxy;
-import eu.seaclouds.platform.dashboard.proxy.PlannerProxy;
-import eu.seaclouds.platform.dashboard.proxy.SlaProxy;
+import eu.seaclouds.platform.dashboard.proxy.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +35,7 @@ public class DashboardHealthCheck extends HealthCheck {
     private final MonitorProxy monitor;
     private final SlaProxy sla;
     private final PlannerProxy planner;
+    private final GrafanaProxy grafana;
 
     private boolean portIsOpen(String ip, int port) {
         try (Socket socket = new Socket()) {
@@ -49,9 +47,10 @@ public class DashboardHealthCheck extends HealthCheck {
         }
     }
 
-    public DashboardHealthCheck(DeployerProxy deployer, MonitorProxy monitor, SlaProxy sla, PlannerProxy planner){
+    public DashboardHealthCheck(DeployerProxy deployer, MonitorProxy monitor, GrafanaProxy grafana, SlaProxy sla, PlannerProxy planner){
         this.deployer = deployer;
         this.monitor = monitor;
+        this.grafana = grafana;
         this.sla = sla;
         this.planner = planner;
     }
@@ -69,6 +68,10 @@ public class DashboardHealthCheck extends HealthCheck {
         }
 
         if(!portIsOpen(monitor.getHost(), monitor.getPort())){
+            return Result.unhealthy("The Monitor endpoint is not ready");
+        }
+
+        if(!portIsOpen(grafana.getHost(), grafana.getPort())){
             return Result.unhealthy("The Monitor endpoint is not ready");
         }
 

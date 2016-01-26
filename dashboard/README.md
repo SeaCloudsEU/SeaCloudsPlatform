@@ -16,7 +16,7 @@ Running SeaClouds Dashboard only requires Java 7 (or greater) installed on the t
 - A config.yml configuration file.
 
 ### Config.yml configuration file
-SeaClouds Dashboard is packaged as a Dropwizard application. It requires a configuration file to run. This file contain the following user customizable parameters:
+SeaClouds Dashboard is packaged as a DropWizard application. It requires a configuration file to run. This file contain the following user customizable parameters:
 
 - server.connector.port: A positive number which will be used by Dropwizard to expose the Dashboard. Required. Eg. 8000.
 - planner.host: SeaClouds Planner IP. Required. Eg. 127.0.0.1.
@@ -27,6 +27,8 @@ SeaClouds Dashboard is packaged as a Dropwizard application. It requires a confi
 - deployer.password: SeaClouds Deployer Password. Optional. Eg. password.
 - monitor.manager.host: SeaClouds Monitor (Tower4Clouds Monitoring Manager) IP. Required. Eg. 127.0.0.1.
 - monitor.manager.port: SeaClouds Monitor (Tower4Clouds Monitoring Manager) Port. Required. Eg. 8710.
+- monitor.grafana.host: SeaClouds Monitor Dashboard (Grafana) IP. Required. Eg. 127.0.0.1.
+- monitor.grafana.port: SeaClouds Monitor Dashboard (Grafana) Port. Required. Eg. 3000.
 - sla.host: SeaClouds Deployer IP. Required. Eg. 127.0.0.1. 
 - sla.port: SeaClouds SLA Port. Required. Eg. 8080. 
 
