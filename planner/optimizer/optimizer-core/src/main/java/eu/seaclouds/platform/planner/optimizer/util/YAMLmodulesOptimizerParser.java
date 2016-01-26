@@ -145,6 +145,11 @@ public class YAMLmodulesOptimizerParser {
       return false;
    }
 
+   /**
+    * @param moduleName
+    * @param groups
+    * @return the name of the benchmark platform where the module was tested for execution time
+    */
    @SuppressWarnings("unchecked")
    public static String getMeasuredPerformanceHost(String moduleName, Map<String, Object> groups) {
       Map<String, Object> moduleInfo = null;

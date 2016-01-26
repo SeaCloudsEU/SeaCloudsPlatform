@@ -117,7 +117,16 @@ var Editor = (function() {
 
     var benchmark_platforms = {
         "": "",
-        "hp_cloud_services.2xl": "hp_cloud_services.2xl"
+        "Amazon_EC2_m1_small_us_east_1": "Amazon AWS small instance",
+        "Amazon_EC2_m1_medium_us_east_1": "Amazon AWS medium instance",
+        "Amazon_EC2_m1_large_us_east_1": "Amazon AWS large instance",
+        "Microsoft_Azure_Virtual_Machines_A0_eu_north": "Microsoft Azure A0 instance (small, 1 core) ",
+        "Microsoft_Azure_Virtual_Machines_A6_eu_north": "Microsoft Azure A6 instance (large, 4 cores) ",
+        "Microsoft_Azure_Virtual_Machines_D4_eu_north": "Microsoft Azure A0 instance (very large, 8 core) ",
+        "Rackspace_Cloud_Servers_general1_1_ORD": "Rackspace servers general small (1 core)",
+        "Rackspace_Cloud_Servers_general1_2_ORD": "Rackspace servers general medium (2 cores)",
+        "Rackspace_Cloud_Servers_general1_4_ORD": "Rackspace servers general large (4 cores)",
+        "Rackspace_Cloud_Servers_general1_8_ORD": "Rackspace servers general very large (8 cores)"
     };
 
     var operation_types = {

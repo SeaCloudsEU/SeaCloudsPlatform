@@ -115,6 +115,5 @@ public class TOSCAkeywords {
    public static final boolean IS_HARDWARE_PROPERTY_REQUIRED= false;
    
    public static final String CLOUD_OFFER_PROVIDER_NAME_SEPARATOR = "\\.";
-   public static final String LOG_LEVEL                           = "TRACE";
 
 }

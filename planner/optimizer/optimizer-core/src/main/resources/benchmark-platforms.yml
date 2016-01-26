@@ -1,0 +1,189 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description:
+template_name:
+template_version: 1.0.0-SNAPSHOT
+imports:
+  - tosca-normative-types:1.0.0.wd03-SNAPSHOT
+
+topology_template:
+  node_templates:
+
+    Amazon_EC2_m1_small_us_east_1:
+      type: seaclouds.Nodes.Compute
+      properties:
+        num_cpus: 1
+        country: United States
+        cost: 0.081
+        city: ASHBURN
+        resource_type: compute
+        disk_size: 160
+        availability: 0.99950
+        hardwareId: m1.small
+        disk_type: sata
+        location: aws-ec2
+        num_disks: 1
+        region: us-east-1
+        ram: 1.7
+        performance: 120
+
+    Amazon_EC2_m1_medium_us_east_1:
+      type: seaclouds.Nodes.Compute
+      properties:
+        num_cpus: 1
+        country: United States
+        cost: 0.16
+        city: ASHBURN
+        resource_type: compute
+        disk_size: 400
+        availability: 0.99950
+        hardwareId: m1.medium
+        disk_type: sata
+        location: aws-ec2
+        num_disks: 1
+        region: us-east-1
+        ram: 3.75
+        performance: 152
+
+
+    Amazon_EC2_m1_large_us_east_1:
+      type: seaclouds.Nodes.Compute
+      properties:
+        num_cpus: 2
+        country: United States
+        cost: 0.32
+        city: ASHBURN
+        resource_type: compute
+        disk_size: 840
+        availability: 0.99950
+        hardwareId: m1.large
+        disk_type: sata
+        location: aws-ec2
+        num_disks: 2
+        region: us-east-1
+        ram: 7.5
+        performance: 74
+
+
+    Microsoft_Azure_Virtual_Machines_A0_eu_north:
+      type: seaclouds.Nodes.Compute
+      properties:
+        num_cpus: 1
+        country: Ireland
+        cost: 0.018
+        hardwareId: A0
+        city: DUBLIN
+        resource_type: compute
+        disk_size: 20
+        location: azurecompute
+        availability: 0.99950
+        region: eu-north
+        ram: 0.75
+        performance: 45
+
+
+    Microsoft_Azure_Virtual_Machines_A6_eu_north:
+      type: seaclouds.Nodes.Compute
+      properties:
+        num_cpus: 4
+        country: Ireland
+        cost: 0.41
+        hardwareId: A6
+        city: DUBLIN
+        resource_type: compute
+        disk_size: 285
+        location: azurecompute
+        availability: 0.99950
+        region: eu-north
+        ram: 28
+        performance: 147
+
+    Microsoft_Azure_Virtual_Machines_D4_eu_north:
+      type: seaclouds.Nodes.Compute
+      properties:
+        num_cpus: 8
+        country: Ireland
+        cost: 0.63
+        city: DUBLIN
+        resource_type: compute
+        disk_size: 400
+        availability: 0.99950
+        hardwareId: D4
+        disk_type: ssd
+        location: azurecompute
+        num_disks: 1
+        region: eu-north
+        ram: 28
+        performance: 31
+
+    Rackspace_Cloud_Servers_general1_1_ORD:
+      type: seaclouds.Nodes.Compute
+      properties:
+        num_cpus: 1
+        country: United States
+        cost: 0.038
+        city: CHICAGO
+        resource_type: compute
+        disk_size: 20
+        availability: 1.00000
+        hardwareId: general1-1
+        disk_type: ssd
+        location: rackspace:servers
+        num_disks: 1
+        region: ORD
+        ram: 1
+        performance: 183
+
+
+    Rackspace_Cloud_Servers_general1_2_ORD:
+      type: seaclouds.Nodes.Compute
+      properties:
+        num_cpus: 2
+        country: United States
+        cost: 0.076
+        city: CHICAGO
+        resource_type: compute
+        disk_size: 40
+        availability: 1.00000
+        hardwareId: general1-2
+        disk_type: ssd
+        location: rackspace:servers
+        num_disks: 1
+        region: ORD
+        ram: 2
+        performance: 22
+
+    Rackspace_Cloud_Servers_general1_4_ORD:
+      type: seaclouds.Nodes.Compute
+      properties:
+        num_cpus: 4
+        country: United States
+        cost: 0.15
+        city: CHICAGO
+        resource_type: compute
+        disk_size: 80
+        availability: 1.00000
+        hardwareId: general1-4
+        disk_type: ssd
+        location: rackspace:servers
+        num_disks: 1
+        region: ORD
+        ram: 4
+        performance: 52
+
+    Rackspace_Cloud_Servers_general1_8_ORD:
+      type: seaclouds.Nodes.Compute
+      properties:
+        num_cpus: 8
+        country: United States
+        cost: 0.31
+        city: CHICAGO
+        resource_type: compute
+        disk_size: 160
+        availability: 1.00000
+        hardwareId: general1-8
+        disk_type: ssd
+        location: rackspace:servers
+        num_disks: 1
+        region: ORD
+        ram: 8
+        performance: 176

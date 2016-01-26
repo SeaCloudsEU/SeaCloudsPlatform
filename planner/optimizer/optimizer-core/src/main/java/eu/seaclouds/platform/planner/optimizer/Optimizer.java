@@ -32,6 +32,7 @@ public class Optimizer {
    private final double HYSTERESIS_PROPORTION; 
    private static final double DEFAULT_HYSTERESIS_PROPORTION=0.5; 
 
+
    public Optimizer() {
       this(DEFAULT_NUMBER_OF_PLANS_GENERATED,SearchMethodName.BLINDSEARCH,DEFAULT_HYSTERESIS_PROPORTION);
    }
@@ -53,12 +54,14 @@ public class Optimizer {
       searchName = name;
       HYSTERESIS_PROPORTION=hysteresis;
    }
+   
+   
 
    // Optimizer uses its previously generated plan as a source when replanning.
    private String[] previousPlans = null;
-
-   public String[] optimize(String appModel, String suitableCloudOffer) {
-
+   
+   public String[] optimize(String appModel, String suitableCloudOffer, String benchmarkPlatforms) {
+     
       String[] outputPlans = new String[NUMBER_OF_PLANS_GENERATED];
       outputPlans[0] = "Plan generation was not possible";
 
@@ -67,13 +70,13 @@ public class Optimizer {
 
          try {
             outputPlans = initialOptimizer.optimize(appModel,
-                  MMtoOptModelTransformer.transformModel(suitableCloudOffer), NUMBER_OF_PLANS_GENERATED,HYSTERESIS_PROPORTION);
+                  MMtoOptModelTransformer.transformModel(suitableCloudOffer), benchmarkPlatforms, NUMBER_OF_PLANS_GENERATED,HYSTERESIS_PROPORTION);
             previousPlans = outputPlans;
 
          } catch (Exception exc) {
             log.warn(
                   "Optimizer did not work in its expected input. Exception name was " + exc.getClass().getName() +" Trying with the assumption of former versions of Input ");
-            outputPlans = initialOptimizer.optimize(appModel, suitableCloudOffer, NUMBER_OF_PLANS_GENERATED,HYSTERESIS_PROPORTION);
+            outputPlans = initialOptimizer.optimize(appModel, suitableCloudOffer, benchmarkPlatforms, NUMBER_OF_PLANS_GENERATED,HYSTERESIS_PROPORTION);
             previousPlans = outputPlans;
          } catch (Error E) {
             log.error("Error optimizing the initial deployment");
@@ -81,20 +84,21 @@ public class Optimizer {
          }
 
       } else {
-         Reoptimizer optimizerReplanning = new Reoptimizer(searchName);
-
-         try {
-            log.error("Calling a Replanning. The previously generated Plan will be used as a base");
-            outputPlans = optimizerReplanning.optimize(appModel, suitableCloudOffer, NUMBER_OF_PLANS_GENERATED,HYSTERESIS_PROPORTION);
-            previousPlans = outputPlans;
-         } catch (Error E) {
-            log.error("Error optimizing the Replanning");
-            throw E;
-         }
-
+         
+         //TODO: implement Reoptimizer when the flow of the Replanning is clear. 
+         //Nothing to do yet
+         
       }
       return outputPlans;
+   }
 
+   
+
+
+   public String[] optimize(String appModel, String suitableCloudOffer) {
+      
+      return optimize(appModel, suitableCloudOffer, null);
+     
    }
 
 }
