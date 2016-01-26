@@ -1,22 +1,28 @@
 tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
 description: Sample 3-tier application
 imports:
-- tosca-normative-types:1.0.0.wd03-SNAPSHOT
+- tosca-normative-types:1.0.0.wd06-SNAPSHOT
 topology_template:
   node_templates:
     www:
       type: sc_req.www
+      properties:
+        language: JAVA
       requirements:
       - endpoint: webservices
+        type: seaclouds.relation.connection.endpoint.host
     webservices:
       type: sc_req.webservices
       properties:
+        language: JAVA
+        location: ''
         java_version:
           constraints:
           - greater_or_equal: '7'
           - less_or_equal: '8'
       requirements:
       - endpoint: db1
+        type: seaclouds.relations.databaseconnections.jdbc
     db1:
       type: sc_req.db1
       properties:
@@ -73,7 +79,7 @@ groups:
         benchmark_platform: hp_cloud_services.2xl
     - dependencies:
         operation_webservices: '2'
-    - QoSRequirements:
+    - AppQoSRequirements:
         response_time:
           less_than: 2000.0 ms
         availability:
@@ -82,6 +88,11 @@ groups:
           less_or_equal: 200.0 euros_per_month
         workload:
           less_or_equal: 50.0 req_per_min
+    - QoSRequirements:
+        AverageThroughput:
+          less_than: 10.0 req_per_min
+        AverageResponseTime:
+          less_than: 5000.0 ms
   operation_webservices:
     members:
     - webservices
@@ -96,3 +107,4 @@ groups:
     - db1
     policies:
     - dependencies: {}
+

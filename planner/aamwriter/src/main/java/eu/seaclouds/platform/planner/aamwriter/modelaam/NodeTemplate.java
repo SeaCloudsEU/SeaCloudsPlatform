@@ -95,11 +95,12 @@ public class NodeTemplate extends LinkedHashMap {
      * Add an endpoint requirement to a NodeTemplate
      * @return name given to the requirement
      */
-    public String addConnectionRequirement(NodeTemplate target) {
+    public String addConnectionRequirement(NodeTemplate target, String type) {
         Map<String, String> requirement = new LinkedHashMap();
         
         String requirementName = "endpoint";
         requirement.put(requirementName, target.getName());
+        requirement.put("type", type);
         requirements().add(requirement);
         
         return requirementName;

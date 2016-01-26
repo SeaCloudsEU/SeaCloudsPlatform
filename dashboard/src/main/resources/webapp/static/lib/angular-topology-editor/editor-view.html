@@ -115,7 +115,7 @@
                                     <tbody>
                                     <tr>
                                         <td>
-                                            <input type="text" class="form-control" name="metric">
+                                            <select class="form-control" name="metric" id="nf-qos-metric"/>
                                         <td>
                                             <select class="form-control" name="operator" id="nf-qos-operator">
                                                 <option value=""></option>
@@ -126,7 +126,7 @@
                                                 <option value="GT">&gt;</option>
                                             </select>
                                         <td>
-                                            <input type="text" class="form-control" name="threshold">
+                                            <input type="text" class="form-control" id="nf-qos-threshold" name="threshold">
                                         <td>
                                             <select class="form-control" name="action" id="nf-qos-action">
                                                 <option value=""></option>
@@ -227,6 +227,15 @@
                     <form role="form">
                         <fieldset id="set-operations">
                             <legend>Description</legend>
+                            <div class="form-group">
+                                <label for="operation-type">Operation type</label>
+                                <select class="form-control" id="operation-type"> </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="operation-credentials-file">File where to store credentials</label>
+                                <input type="text" class="form-control" id="operation-credentials-file"
+                                       placeholder="database.properties">
+                            </div>
                             <div class="form-group">
                                 <label for="operation-calls">Average number of calls</label>
                                 <input type="text" class="form-control" id="operation-calls" placeholder="1">

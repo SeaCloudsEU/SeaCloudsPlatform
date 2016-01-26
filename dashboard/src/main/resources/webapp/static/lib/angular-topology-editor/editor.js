@@ -59,11 +59,13 @@ var Editor = (function() {
                 "": ""
             },
         "PHP": {
-                "": ""
+                "": "",
+                "php.httpd.PhpHttpdServer": "Apache"
             }
     }
 
     var database_options = {
+        "": "",
         "database.mysql.MySqlNode": "MySql",
         "database.mariadb.MariaDbNode": "mariadb",
         "database.postgresql.PostgreSqlNode": "PostgreSQL",
@@ -116,6 +118,12 @@ var Editor = (function() {
     var benchmark_platforms = {
         "": "",
         "hp_cloud_services.2xl": "hp_cloud_services.2xl"
+    };
+
+    var operation_types = {
+        "seaclouds.relations.databaseconnections.jdbc": "JDBC connection",
+        "seaclouds.relations.databaseconnections.php": "PHP-db connection",
+        "seaclouds.relation.connection.endpoint.host": "HTTP connection"
     };
 
     /*
@@ -479,7 +487,6 @@ var Editor = (function() {
         );
         $("#database-min-version").val(node.properties.min_version);
         $("#database-max-version").val(node.properties.max_version);
-
     };
 
     databasetechset.store = function(node) {
@@ -645,15 +652,20 @@ var Editor = (function() {
     operationsset.operationsset = function(fieldsetid) {
         this.setup(fieldsetid);
 
+        Forms.populate_select($("#operation-type"), operation_types);
         return this;
     }
 
     operationsset.load = function(link) {
         $("#operation-calls").val(link.properties.calls);
+        $("#operation-credentials-file").val(link.properties.credentials_file);
+        $("#operation-type").val(link.properties.operation_type);
     };
 
     operationsset.store = function(link) {
         link.properties.calls = $("#operation-calls").val();
+        link.properties.credentials_file = $("#operation-credentials-file").val();
+        link.properties.operation_type = $("#operation-type").val();
     };
 
     var fromjson = function(json) {

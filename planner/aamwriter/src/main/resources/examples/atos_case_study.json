@@ -12,13 +12,13 @@
                 "max_version": "8",
                 "qos": [
                     {
-                        "metric": "throughput",
-                        "operator": "LT",
+                        "metric": "AverageThroughput",
+                        "operator": "less_than",
                         "threshold": "10"
                     },
                     {
-                        "metric": "responsetime",
-                        "operator": "LT",
+                        "metric": "AverageResponseTime",
+                        "operator": "less_than",
                         "threshold": "5000"
                     }
                 ],
@@ -62,14 +62,18 @@
             "source": "www",
             "target": "webservices",
             "properties": {
-                "calls": "2"
+                "calls": "2",
+                "credentials_file": "",
+                "operation_type": "seaclouds.relation.connection.endpoint.host"
             }
         },
         {
             "source": "webservices",
             "target": "db1",
             "properties": {
-                "calls": "1"
+                "calls": "1",
+                "credentials_file": "",
+                "operation_type": "seaclouds.relations.databaseconnections.jdbc"
             }
         }
     ],
