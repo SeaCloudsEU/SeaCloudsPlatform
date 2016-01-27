@@ -17,13 +17,14 @@
 
 'use strict';
 
-angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', 'angularTopologyEditor', 'ui.codemirror', 'ngFileUpload'])
+angular.module('seacloudsDashboard.wizards.addApplication', ['ngRoute', 'angularTopologyEditor', 'ui.codemirror'])
     .config(['$routeProvider', function ($routeProvider) {
-        $routeProvider.when('/add-application-wizard', {
-            templateUrl: 'projects/add-application-wizard/add-application-wizard.html'
+        $routeProvider.when('/wizards/add-application', {
+            templateUrl: 'wizards/add-application/add-application.html',
+            controller: 'AddApplicationCtrl'
         })
     }])
-    .controller('AddApplicationWizardCtrl', function ($scope, notificationService) {
+    .controller('AddApplicationCtrl', function ($scope, notificationService) {
         $scope.applicationWizardData = {
             name: "",
             id: undefined,
@@ -47,61 +48,9 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
             brooklynApplication: undefined
         }
 
-
-        $scope.deployApplication = function () {
-
-            var damSuccessCb = function (futureEntity) {
-                $scope.applicationWizardData.wizardLog += "Starting the deployment process...";
-                $scope.applicationWizardData.wizardLog += "\t Done. \n";
-                $scope.applicationWizardData.id = futureEntity.entityId;
-            }
-
-            var damFailCb = function () {
-                $scope.applicationWizardData.wizardLog += "Starting the deployment process...";
-                $scope.applicationWizardData.wizardLog += "\t ERROR. \n";
-            }
-
-
-            var rulesSuccessCb = function () {
-                $scope.applicationWizardData.wizardLog += "Installing Monitoring Rules...";
-                $scope.applicationWizardData.wizardLog += "\t Done. \n";
-            }
-
-            var rulesFailCb = function () {
-                $scope.applicationWizardData.wizardLog += "Installing Monitoring Rules...";
-                $scope.applicationWizardData.wizardLog += "\t ERROR. \n";
-            }
-
-            var agreementSuccessCb = function () {
-                $scope.applicationWizardData.wizardLog += "Installing Service Level Agreements...";
-                $scope.applicationWizardData.wizardLog += "\t Done. \n";
-            }
-
-            var agreementFailCb = function () {
-                $scope.applicationWizardData.wizardLog += "Installing Service Level Agreements...";
-                $scope.applicationWizardData.wizardLog += "\t ERROR. \n";
-            }
-
-
-            $scope.SeaCloudsApi.addProject($scope.applicationWizardData.finalDam, damSuccessCb, damFailCb, $scope.applicationWizardData.finalMonitoringRules, rulesSuccessCb, rulesFailCb,
-                $scope.applicationWizardData.finalSlaRules, agreementSuccessCb, agreementFailCb).
-                success(function (data) {
-                    $scope.applicationWizardData.wizardLog += "\n\n";
-                    $scope.applicationWizardData.wizardLog += "The application deployment process was triggered succesfully*. \n";
-                    $scope.applicationWizardData.wizardLog += "* Please notice that although the wizard finished the application runtime" +
-                        "failures could happen please go to the status view in order to verify " +
-                        "that everything is running properly"
-                }).
-                error(function (data) {
-                    $scope.applicationWizardData.wizardLog += "\n\n";
-                    $scope.applicationWizardData.wizardLog += "Something wrong happened!\n";
-                    $scope.applicationWizardData.wizardLog += "Please restart the process and try again\n";
-                    $scope.applicationWizardData.wizardLog += "All the changes were reverted.\n";
-                })
-        }
-
         $scope.steps = ['Application properties', 'Design topology',
             'Optimize & Plan', 'Configuration summary', 'Process Summary & Deploy'];
+
         $scope.currentStep = 1;
         $scope.isSelected = function (step) {
             return $scope.currentStep == step;
@@ -118,11 +67,13 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
                 case 1:
                     break;
                 case 2:
+                    $scope.applicationWizardData.aam = undefined;
                     break;
                 case 3:
                     $scope.applicationWizardData.adpDescriptions = undefined;
                     $scope.applicationWizardData.feasibleAdps = undefined;
                     $scope.applicationWizardData.finalAdp = undefined;
+                    $scope.adpsGenerated = false;
                     break;
                 case 4:
                     $scope.applicationWizardData.finalDam = undefined;
@@ -143,43 +94,81 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
                     $scope.currentStep++;
                     break;
                 case 2:
-                    $scope.applicationWizardData.topology.name = $scope.applicationWizardData.name;
-                    $scope.applicationWizardData.topology.application_requirements = $scope.applicationWizardData.application_requirements;
-
-                    $scope.SeaCloudsApi.getAamFromDesigner($scope.applicationWizardData.topology).
+                    var designPhaseOutput = $scope.applicationWizardData.topology;
+                    designPhaseOutput.name = $scope.applicationWizardData.name;
+                    designPhaseOutput.application_requirements = $scope.applicationWizardData.application_requirements;
+                    designPhaseOutput.application_requirements.workload *= 60; // Fix Issue #182
+                    designPhaseOutput.application_requirements.availability /= 100; // Fix Issue #223
+                    notificationService.info("Generating AAM for the current topology.");
+                    console.log("Topology: " + JSON.stringify(designPhaseOutput));
+                    $scope.lockButtons = true;
+                    $scope.SeaCloudsApi.getAamFromDesigner(designPhaseOutput).
                         success(function (aam) {
                             $scope.applicationWizardData.aam = aam;
-                            $scope.currentStep++;
+                            notificationService.info("Generating ADPs for the current AAM.");
+                            console.log("AAM: " + JSON.stringify(aam));
                             $scope.SeaCloudsApi.getAdpList(aam).
                                 success(function (feasibleAdps) {
-                                    $scope.applicationWizardData.feasibleAdps = feasibleAdps;
-                                    $scope.applicationWizardData.adpDescriptions = feasibleAdps.map(AdpPretifier.adpToObject);
+                                    $scope.applicationWizardData.feasibleAdps = feasibleAdps.adps;
+                                    $scope.applicationWizardData.adpDescriptions = feasibleAdps.adps.map(AdpPretifier.adpToObject);
+                                    $scope.adpsGenerated = true;
+                                    $scope.currentStep++;
+                                    console.log("ADP's: " + JSON.stringify(feasibleAdps));
+                                    $scope.lockButtons = false;
                                 })
                                 .error(function () {
+                                    $scope.adpsGenerated = true;
+                                    $scope.lockButtons = false;
                                     notificationService.error('The Planner failed to generate the feasible ADPs');
+                                    $scope.currentStep++;
                                 });
                         }).
                         error(function () {
+                            $scope.lockButtons = false;
                             notificationService.error('The AMM Writer failed while processing the topology');
                         });
                     break;
                 case 3:
+                    notificationService.info("Generating DAM for the current ADP.");
+                    console.log("ADP: " + JSON.stringify($scope.applicationWizardData.finalAdp));
+                    $scope.lockButtons = true;
                     $scope.SeaCloudsApi.getDam($scope.applicationWizardData.finalAdp).
-                        success(function(dam){
-                            $scope.applicationWizardData.finalDam = dam;
+                        success(function(plannerResponse){
+                            $scope.applicationWizardData.finalDam = plannerResponse.dam;
                             $scope.damGenerated = true;
+                            $scope.currentStep++;
+                            $scope.lockButtons = false;
+                            console.log("DAM: " + JSON.stringify(plannerResponse.dam));
                         }).
                         error(function(){
-                            $scope.applicationWizardData.finalDam = "";
                             $scope.damGenerated = true;
-                            notificationService.error('The DAM failed to generate the DAM, please fill it manually');
+                            $scope.currentStep++;
+                            $scope.lockButtons = false;
+                            notificationService.error('The DAM failed to generate the DAM, please use the API to deploy an usermade DAM');
                         })
                     notificationService.notify('The DAM Generator is still under development. The autogenerated DAM could be not deployable.');
-                    $scope.currentStep++;
                     break;
                 case 4:
-                    $scope.deployApplication();
-                    $scope.currentStep++;
+                    notificationService.info("Starting the deployment process... Please wait.");
+                    $scope.applicationWizardData.wizardLog += "Starting the deployment process... \t Done. \n";
+                    $scope.lockButtons = false;
+                    $scope.SeaCloudsApi.addApplication($scope.applicationWizardData.finalDam).
+                        success(function (application) {
+                            $scope.applicationWizardData.seaCloudsApplicationId = application.seaCloudsApplicationId;
+                            $scope.applicationWizardData.wizardLog += "\n\n";
+                            $scope.applicationWizardData.wizardLog += "The application deployment process was triggered succesfully*. \n";
+                            $scope.applicationWizardData.wizardLog += "* Please notice that although the wizard finished the application runtime" +
+                                "failures could happen please go to the status view in order to verify " +
+                                "that everything is running properly"
+                            $scope.currentStep++;
+                        }).
+                        error(function (data) {
+                            $scope.applicationWizardData.wizardLog += "\n\n";
+                            $scope.applicationWizardData.wizardLog += "Something wrong happened!\n";
+                            $scope.applicationWizardData.wizardLog += "Please restart the process and try again\n";
+                            $scope.applicationWizardData.wizardLog += "All the changes were reverted.\n";
+                            $scope.currentStep++;
+                        })
                     break;
                 case 5:
                 default:
@@ -187,7 +176,13 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
             }
         };
 
+        $scope.lockButtons = false;
         $scope.wizardCanRollback = function () {
+
+            if($scope.lockButtons){
+                return false
+            };
+
             switch ($scope.currentStep) {
                 case 1:
                     return false;
@@ -201,6 +196,10 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
         }
 
         $scope.wizardCanContinue = function () {
+            if($scope.lockButtons){
+                return false
+            };
+
             switch ($scope.currentStep) {
                 case 1:
                     return $scope.applicationWizardData.name && $scope.applicationWizardData.application_requirements.availability &&
@@ -229,28 +228,11 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
             lineNumbers: true,
         };
 
-
-        $scope.codemirrorSlaRulesOptions = {
-            mode: 'xml',
-            lineNumbers: true,
-        };
-
-        $scope.codeMirrorMonitoringRulesOptions = {
-            mode: 'xml',
-            lineNumbers: true,
-        };
-    })
-    .directive('addApplicationWizard', function () {
-        return {
-            restrict: 'E',
-            templateUrl: 'projects/add-application-wizard/add-application-wizard.html',
-            controller: 'AddApplicationWizardCtrl'
-        };
     })
     .directive('wizardStep1', function () {
         return {
             restrict: 'E',
-            templateUrl: 'projects/add-application-wizard/wizard-step-1.html',
+            templateUrl: 'wizards/add-application/wizard-step-1.html',
             scope: true
             //controller: 'AddApplicationWizardCtrl'
         };
@@ -258,20 +240,20 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
     .directive('wizardStep2', function () {
         return {
             restrict: 'E',
-            templateUrl: 'projects/add-application-wizard/wizard-step-2.html',
+            templateUrl: 'wizards/add-application/wizard-step-2.html',
             scope: true,
         };
     })
     .directive('wizardStep3', function () {
         return {
             restrict: 'E',
-            templateUrl: 'projects/add-application-wizard/wizard-step-3.html',
+            templateUrl: 'wizards/add-application/wizard-step-3.html',
             scope: true,
             controller: function ($scope, $element) {
                 var MAX_ITEM_PER_PAGE = 3
                 var currentPage = 0;
 
-                $scope.getCurrentlyVisibleAdpDescriptions = function () {
+                $scope.getCurrentAdpDescriptions = function() {
                     $scope.MAX_PAGES = Math.floor($scope.applicationWizardData.adpDescriptions.length / MAX_ITEM_PER_PAGE);
 
                     return $scope.applicationWizardData.adpDescriptions.slice(currentPage * MAX_ITEM_PER_PAGE,
@@ -305,14 +287,14 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
     .directive('wizardStep4', function () {
         return {
             restrict: 'E',
-            templateUrl: 'projects/add-application-wizard/wizard-step-4.html',
+            templateUrl: 'wizards/add-application/wizard-step-4.html',
             scope: true
         };
     })
     .directive('wizardStep5', function () {
         return {
             restrict: 'E',
-            templateUrl: 'projects/add-application-wizard/wizard-step-5.html',
+            templateUrl: 'wizards/add-application/wizard-step-5.html',
             scope: true,
             controller: function ($scope, $interval, notificationService) {
                 $scope.applicationWizardData.brooklynAppTopology = {
@@ -320,12 +302,12 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
                     "links": []
                 },
 
-                    $scope.$watch('applicationWizardData.id', function (newValue) {
+                    $scope.$watch('applicationWizardData.seaCloudsApplicationId', function (newValue) {
                         if (newValue) {
                             $scope.updateFunction = $interval(function () {
-                                $scope.SeaCloudsApi.getProject($scope.applicationWizardData.id).
-                                    success(function (project) {
-                                        $scope.applicationWizardData.brooklynAppTopology = TopologyEditorUtils.getTopologyFromEntities(project);
+                                $scope.SeaCloudsApi.getApplication($scope.applicationWizardData.seaCloudsApplicationId).
+                                    success(function (application) {
+                                        $scope.applicationWizardData.brooklynAppTopology = TopologyEditorUtils.getTopologyFromEntities(application);
                                     }).error(function () {
                                         //TODO: Handle the error better than showing a notification
                                         notificationService.error("Unable to retrieve the projects");

@@ -14,27 +14,27 @@
   ~      See the License for the specific language governing permissions and
   ~      limitations under the License.
   -->
-<div ng-controller="ProjectCtrl" ng-cloak>
-    <div class="container" ng-if="!project && isLoaded">
+<div ng-cloak>
+    <div class="container" ng-show="!brooklynApplication && isLoaded">
         <span class="text-danger text-center"><h1>This application doesn't exist</h1></span>
     </div>
-    <div class="container" ng-if="project">
+    <div class="container" ng-show="brooklynApplication && isLoaded">
         <div class="row">
             <div class="col-lg-2 col-sm-12">
                 <ul class="nav nav-pills nav-stacked project-pills ">
-                    <li role="presentation" class="title-pill" disabled><a><strong>{{project.name}}</strong></a></li>
+                    <li role="presentation" class="title-pill" disabled><a><strong>{{brooklynApplication.name}}</strong></a></li>
                     <li class="divider">
                         <hr>
                     </li>
-                    <li role="presentation" ng-class="{active:getSelectedTab()==1}">
-                        <a aria-controls="profile" role="tab" data-toggle="tab" ng-click="setSelectedTab(1)">Topology
+                    <li role="presentation" ng-class="{active:getSelectedApplicationTab()==0}">
+                        <a aria-controls="status" role="tab" data-toggle="tab" ng-click="setSelectedApplicationTab(0)">Topology
                             & Status</a></li>
-                    <li role="presentation" ng-class="{active:getSelectedTab()==2}">
-                        <a aria-controls="profile" role="tab" data-toggle="tab" ng-click="setSelectedTab(2)">Application
+                    <li role="presentation" ng-class="{active:getSelectedApplicationTab()==1}">
+                        <a aria-controls="monitor" role="tab" data-toggle="tab" ng-click="setSelectedApplicationTab(1)">Application
                             Monitor</a>
                     </li>
-                    <li role="presentation" ng-class="{active:getSelectedTab()==3}">
-                        <a aria-controls="profile" role="tab" data-toggle="tab" ng-click="setSelectedTab(3)">SLA</a>
+                    <li role="presentation" ng-class="{active:getSelectedApplicationTab()==2}">
+                        <a aria-controls="sla" role="tab" data-toggle="tab" ng-click="setSelectedApplicationTab(2)">SLA</a>
                     </li>
                     <li class="divider">
                         <hr>
@@ -45,12 +45,12 @@
             </div>
 
             <div class="col-lg-10">
-                <status role="tabpanel" class="tab-pane" ng-class="{active:getSelectedTab()==1}" id="status"
-                        ng-show="getSelectedTab()==1"></status>
-                <monitor role="tabpanel" class="tab-pane" ng-class="{active:getSelectedTab()==2}" id="monitor"
-                         ng-show="getSelectedTab()==2"></monitor>
-                <sla role="tabpanel" class="tab-pane" ng-class="{active:getSelectedTab()==3}" id="sla"
-                     ng-show="getSelectedTab()==3"></sla>
+                <status role="tabpanel" class="tab-pane" ng-class="{active:getSelectedApplicationTab()==0}" id="status"
+                        ng-show="getSelectedApplicationTab()==0"></status>
+                <monitor role="tabpanel" class="tab-pane" ng-class="{active:getSelectedApplicationTab()==1}" id="monitor"
+                         ng-show="getSelectedApplicationTab()==1"></monitor>
+                <sla role="tabpanel" class="tab-pane" ng-class="{active:getSelectedApplicationTab()==2}" id="sla"
+                        ng-show="getSelectedApplicationTab()==2"></sla>
             </div>
         </div>
 
@@ -61,7 +61,7 @@
                 <h4 class="modal-title" id="removeModalLabel">Remove application</h4>
             </div>
             <div class="modal-body">
-                <p>You are going to remove <b>{{project.name}}</b>, if you continue the removal process will
+                <p>You are going to remove <b>{{brooklynApplication.name}}</b>, if you continue the removal process will
                     start, freeing all the resources used
                     by the application.</p>
 
@@ -75,4 +75,5 @@
             </div>
         </script>
     </div>
+    <span class="text-center" ng-hide="isLoaded"><h1><small>Loading...</small></h1></span>
 </div>

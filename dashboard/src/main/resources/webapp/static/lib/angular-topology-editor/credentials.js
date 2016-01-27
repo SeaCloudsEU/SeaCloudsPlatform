@@ -178,7 +178,7 @@ var Credentials = (function() {
      * Returns a topology from a DAM.
      */
     function to_topology(rawdam) {
-        var CLOUD_TYPE_PREFIX = "seaclouds.Nodes";
+        var CLOUD_TYPE_PREFIX = "seaclouds.nodes";
         var INSTANCES = "instancesPOC";
         var dam = jsyaml.safeLoad(rawdam);
 
