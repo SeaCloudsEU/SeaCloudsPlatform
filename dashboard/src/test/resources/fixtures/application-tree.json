@@ -1,0 +1,69 @@
+[
+  {
+    "name": "SeaClouds Platform on BYON",
+    "id": "DUkgr9Vb",
+    "type": "org.apache.brooklyn.entity.stock.BasicApplication",
+    "serviceUp": false,
+    "serviceState": "on-fire",
+    "children": [
+      {
+        "name": "SeaClouds Platform",
+        "id": "jfMmOcMw",
+        "type": "org.apache.brooklyn.entity.software.base.SameServerEntity",
+        "serviceUp": false,
+        "serviceState": "on-fire",
+        "children": [
+          {
+            "name": "seaclouds-dashboard",
+            "id": "yIEdelJu",
+            "type": "org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess",
+            "serviceUp": false,
+            "serviceState": "on-fire"
+          },
+          {
+            "name": "seaclouds-planner",
+            "id": "cT99G6sk",
+            "type": "org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess",
+            "serviceUp": false,
+            "serviceState": "on-fire"
+          },
+          {
+            "name": "seaclouds-deployer",
+            "id": "tPZ45N1f",
+            "type": "org.apache.brooklyn.entity.brooklynnode.BrooklynNode",
+            "serviceUp": true,
+            "serviceState": "running"
+          },
+          {
+            "name": "seaclouds-sla-service",
+            "id": "kMm0lZFN",
+            "type": "org.apache.brooklyn.entity.webapp.tomcat.TomcatServer",
+            "serviceUp": true,
+            "serviceState": "running"
+          },
+          {
+            "name": "seaclouds-sla-db",
+            "id": "hfTrfXAd",
+            "type": "org.apache.brooklyn.entity.database.mysql.MySqlNode",
+            "serviceUp": true,
+            "serviceState": "running"
+          },
+          {
+            "name": "seaclouds-monitor-manager",
+            "id": "RmK6lQLz",
+            "type": "org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess",
+            "serviceUp": true,
+            "serviceState": "running"
+          },
+          {
+            "name": "seaclouds-monitor-dda",
+            "id": "z37NIDsV",
+            "type": "org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess",
+            "serviceUp": true,
+            "serviceState": "running"
+          }
+        ]
+      }
+    ]
+  }
+]

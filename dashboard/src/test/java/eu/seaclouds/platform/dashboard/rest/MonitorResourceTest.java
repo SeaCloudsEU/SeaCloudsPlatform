@@ -30,6 +30,7 @@ import java.util.Map;
 import static org.testng.Assert.assertEquals;
 
 public class MonitorResourceTest extends AbstractResourceTest<MonitorResource> {
+    private final DeployerResource deployerResource = new DeployerResource(getDeployerProxy(), getMonitorProxy(), getSlaProxy(), getPlannerProxy());
     private final MonitorResource monitorResource = new MonitorResource(getMonitorProxy(), getDeployerProxy());
     private SeaCloudsApplicationData applicationData;
 
@@ -37,29 +38,32 @@ public class MonitorResourceTest extends AbstractResourceTest<MonitorResource> {
     @BeforeMethod
     public void setUpMethod() throws Exception {
         super.setUpMethod();
-        applicationData = new SeaCloudsApplicationData(getDam());
+
+        applicationData = (SeaCloudsApplicationData) deployerResource.addApplication(getDam()).getEntity();
         SeaCloudsApplicationDataStorage.getInstance().addSeaCloudsApplicationData(applicationData);
     }
 
     @Test
     public void testGetSensors() throws Exception {
+        List<Map<String, Object>> response =
+                (List<Map<String, Object>>) monitorResource.getEntitySensorMapList(applicationData.getSeaCloudsApplicationId()).getEntity();
 
-        Map<EntitySummary, List<SensorSummary>> response =
-                (Map<EntitySummary, List<SensorSummary>>) monitorResource.getSensors(applicationData.getSeaCloudsApplicationId()).getEntity();
-
-        for(EntitySummary key : response.keySet()){
-            assertEquals(response.get(key).size(), 5);
+        for (Map<String, Object> entityMetricsPair : response) {
+            List sensors = (List) entityMetricsPair.get("sensors");
+            assertEquals(sensors.size(), 5);
         }
     }
 
     @Test
     public void testGetMetrics() throws Exception {
-        Map<EntitySummary, List<SensorSummary>> response =
-                (Map<EntitySummary, List<SensorSummary>>) monitorResource.getMetrics(applicationData.getSeaCloudsApplicationId()).getEntity();
+        List<Map<String, Object>> response =
+                (List<Map<String, Object>>) monitorResource.getEntityMetricMapList(applicationData.getSeaCloudsApplicationId()).getEntity();
 
-        for(EntitySummary key : response.keySet()){
-            assertEquals(response.get(key).size(), 2);
-        }    }
+        for (Map<String, Object> entityMetricsPair : response) {
+            List sensors = (List) entityMetricsPair.get("metrics");
+            assertEquals(sensors.size(), 2);
+        }
+    }
 
     @Test
     public void testGetMetricValue() throws Exception {

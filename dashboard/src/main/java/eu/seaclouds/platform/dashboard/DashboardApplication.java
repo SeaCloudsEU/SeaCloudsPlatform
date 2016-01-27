@@ -20,7 +20,6 @@ package eu.seaclouds.platform.dashboard;
 import eu.seaclouds.platform.dashboard.rest.*;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
-import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
@@ -29,6 +28,7 @@ import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 
 public class DashboardApplication extends Application<DashboardConfiguration> {
     @Override
@@ -68,8 +68,7 @@ public class DashboardApplication extends Application<DashboardConfiguration> {
     @Override
     public void run(DashboardConfiguration configuration, Environment environment) throws Exception {
         // Generating  HTTP Clients
-        Client jerseyClient = new JerseyClientBuilder(environment).using(configuration.getJerseyClientConfiguration())
-                .build(getName());
+        Client jerseyClient =  ClientBuilder.newClient();
 
         // Link HTTP Clients with the Factories
         configuration.getDeployerProxy().setJerseyClient(jerseyClient);

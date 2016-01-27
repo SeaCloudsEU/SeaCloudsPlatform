@@ -64,15 +64,11 @@ public class DeployerResourceTest extends AbstractResourceTest<DeployerResource>
         deployerResource.addApplication(getDam());
         deployerResource.addApplication(getDam());
 
-        assertNotNull(deployerResource.getApplication(application.getSeaCloudsApplicationId()).getEntity());
-
         List<SeaCloudsApplicationData> list = (List<SeaCloudsApplicationData>) deployerResource.listApplications().getEntity();
         assertEquals(list.size(), 3);
 
         deployerResource.removeApplication(application.getSeaCloudsApplicationId());
         list = (List<SeaCloudsApplicationData>) deployerResource.listApplications().getEntity();
         assertEquals(list.size(), 2);
-
-        assertNull(deployerResource.getApplication(application.getSeaCloudsApplicationId()).getEntity());
     }
 }

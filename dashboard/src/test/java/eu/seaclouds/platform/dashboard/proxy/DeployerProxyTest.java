@@ -25,6 +25,7 @@ import org.apache.brooklyn.rest.domain.ApplicationSummary;
 import org.apache.brooklyn.rest.domain.EntitySummary;
 import org.apache.brooklyn.rest.domain.SensorSummary;
 import org.apache.brooklyn.rest.domain.TaskSummary;
+import org.codehaus.jackson.JsonNode;
 import org.testng.annotations.*;
 
 import javax.ws.rs.core.MediaType;
@@ -128,5 +129,20 @@ public class DeployerProxyTest extends AbstractProxyTest<DeployerProxy> {
 
         String response = getProxy().getEntitySensorsValue(RANDOM_STRING, RANDOM_STRING, RANDOM_STRING);
         assertEquals("0.7", response);
+    }
+
+    @Test
+    public void testGetApplicationsTree() throws Exception {
+        String json = TestUtils.getStringFromPath(TestFixtures.APPLICATION_TREE);
+
+        getMockWebServer().enqueue(new MockResponse()
+                        .setBody(json)
+                        .setHeader("Accept", MediaType.APPLICATION_JSON)
+                        .setHeader("Content-Type", MediaType.APPLICATION_JSON)
+        );
+        JsonNode response = getProxy().getApplicationsTree();
+
+        JsonNode fixture = ObjectMapperHelpers.JsonToObject(json, JsonNode.class);
+        assertEquals(fixture, response);
     }
 }
