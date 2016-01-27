@@ -1,0 +1,109 @@
+<!--
+  ~  Copyright 2014 SeaClouds
+  ~  Contact: SeaClouds
+  ~
+  ~      Licensed under the Apache License, Version 2.0 (the "License");
+  ~      you may not use this file except in compliance with the License.
+  ~      You may obtain a copy of the License at
+  ~
+  ~          http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~      Unless required by applicable law or agreed to in writing, software
+  ~      distributed under the License is distributed on an "AS IS" BASIS,
+  ~      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~      See the License for the specific language governing permissions and
+  ~      limitations under the License.
+  -->
+
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" ng-class="{active: getSelectedMonitorTab() == 0}">
+        <a aria-controls="metric-viewer" role="tab" data-toggle="tab" ng-click="setSelectedMonitorTab(0)">Brooklyn Metric
+            Viewer</a>
+    </li>
+    <li role="presentation" ng-class="{active: getSelectedMonitorTab() == 1}">
+        <a aria-controls="metric-settings" role="tab" data-toggle="tab" ng-click="setSelectedMonitorTab(1)">Brooklyn
+            Metrics Settings</a>
+    </li>
+
+    <li role="presentation" ng-class="{active: getSelectedMonitorTab() == 2}">
+        <a aria-controls="metric-raw" role="tab" data-toggle="tab" ng-click="setSelectedMonitorTab(2)">View T4C Raw
+            Monitoring Rules</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- Metric Viewer -->
+    <div id="metric-viewer" role="tabpanel" class="tab-pane" ng-class="{active: getSelectedMonitorTab() == 0}"
+         ng-show="getSelectedMonitorTab() == 0">
+        <div class="row" ng-if="!hasMetricsEnabled()">
+            <h1 class="text-center">
+                <small>Please enable some metrics first</small>
+            </h1>
+        </div>
+
+        <div class="row" ng-repeat="entity in entities">
+            <div class="col-lg-6" ng-repeat="metric in entity.metrics | filter:{enabled:true}">
+                <h5>
+                    <small>{{metric.name}}<br> {{entity.name}}</small>
+                </h5>
+                <div class="chart-container">
+                            <span class="text-center" ng-show="metric.data.values.length == 0">
+                                <h3>
+                                    <small>No data available yet</small>
+                                </h3>
+                            </span>
+                    <canvas class="chart chart-line" ng-attr-id="{{entity.id + '-' + metric.name}}"
+                            series="[metric.name + ' - ' + entity.type]" data="[metric.data.values]"
+                            labels="metric.data.labels"
+                            options="chartOptions" ng-show="metric.data.values.length != 0">
+                    </canvas>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Metric Settings -->
+    <div id="metric-settings" role="tabpanel" class="tab-pane" ng-class="{active: getSelectedMonitorTab() == 1}"
+         ng-show="getSelectedMonitorTab() == 1">
+        <div class="row" ng-show="metricsLoaded && availableMetrics.length == 0">
+                    <span class="text-center text-warning">
+                        <h1>
+                            <small>This application doesn't have any Brooklyn metrics</small>
+                        </h1>
+                    </span>
+        </div>
+
+        <table datatable="" dt-options="dtOptions" class="table table-striped"
+               ng-repeat="entity in entities">
+            <legend>{{entity.name}}</legend>
+            <thead>
+            <tr>
+                <th>Metric ID</th>
+                <th>Description</th>
+                <th>Enabled</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="metric in entity.metrics">
+                <td>{{metric.name}}</td>
+                <td>{{metric.description}}</td>
+                <td><input type="checkbox" ng-click="toggleMetric(entity, metric)"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Raw Monitoring Rules -->
+    <div id="metric-raw" role="tabpanel" class="tab-pane" ng-class="{active: getSelectedMonitorTab() == 2}"
+         ng-show="getSelectedMonitorTab() == 2">
+        <h3>
+            <small>View RAW Tower4Clouds Monitoring Rules</small>
+        </h3>
+        <ui-codemirror class="codemirror-height-md" ui-codemirror-opts="rawMonitoringRulesViewerOptions"
+                       ng-model="codemirror.monitoringRules"></ui-codemirror>
+    </div>
+
+</div>
+

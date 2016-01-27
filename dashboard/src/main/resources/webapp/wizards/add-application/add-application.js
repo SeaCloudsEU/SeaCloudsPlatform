@@ -17,13 +17,14 @@
 
 'use strict';
 
-angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', 'angularTopologyEditor', 'ui.codemirror', 'ngFileUpload'])
+angular.module('seacloudsDashboard.wizards.addApplication', ['ngRoute', 'angularTopologyEditor', 'ui.codemirror'])
     .config(['$routeProvider', function ($routeProvider) {
-        $routeProvider.when('/add-application-wizard', {
-            templateUrl: 'projects/add-application-wizard/add-application-wizard.html'
+        $routeProvider.when('/wizards/add-application', {
+            templateUrl: 'wizards/add-application/add-application.html',
+            controller: 'AddApplicationCtrl'
         })
     }])
-    .controller('AddApplicationWizardCtrl', function ($scope, notificationService) {
+    .controller('AddApplicationCtrl', function ($scope, notificationService) {
         $scope.applicationWizardData = {
             name: "",
             id: undefined,
@@ -240,17 +241,10 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
             lineNumbers: true,
         };
     })
-    .directive('addApplicationWizard', function () {
-        return {
-            restrict: 'E',
-            templateUrl: 'projects/add-application-wizard/add-application-wizard.html',
-            controller: 'AddApplicationWizardCtrl'
-        };
-    })
     .directive('wizardStep1', function () {
         return {
             restrict: 'E',
-            templateUrl: 'projects/add-application-wizard/wizard-step-1.html',
+            templateUrl: 'wizards/add-application/wizard-step-1.html',
             scope: true
             //controller: 'AddApplicationWizardCtrl'
         };
@@ -258,14 +252,14 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
     .directive('wizardStep2', function () {
         return {
             restrict: 'E',
-            templateUrl: 'projects/add-application-wizard/wizard-step-2.html',
+            templateUrl: 'wizards/add-application/wizard-step-2.html',
             scope: true,
         };
     })
     .directive('wizardStep3', function () {
         return {
             restrict: 'E',
-            templateUrl: 'projects/add-application-wizard/wizard-step-3.html',
+            templateUrl: 'wizards/add-application/wizard-step-3.html',
             scope: true,
             controller: function ($scope, $element) {
                 var MAX_ITEM_PER_PAGE = 3
@@ -305,14 +299,14 @@ angular.module('seacloudsDashboard.projects.addApplicationWizard', ['ngRoute', '
     .directive('wizardStep4', function () {
         return {
             restrict: 'E',
-            templateUrl: 'projects/add-application-wizard/wizard-step-4.html',
+            templateUrl: 'wizards/add-application/wizard-step-4.html',
             scope: true
         };
     })
     .directive('wizardStep5', function () {
         return {
             restrict: 'E',
-            templateUrl: 'projects/add-application-wizard/wizard-step-5.html',
+            templateUrl: 'wizards/add-application/wizard-step-5.html',
             scope: true,
             controller: function ($scope, $interval, notificationService) {
                 $scope.applicationWizardData.brooklynAppTopology = {

@@ -1,0 +1,75 @@
+<!--
+  ~  Copyright 2014 SeaClouds
+  ~  Contact: SeaClouds
+  ~
+  ~      Licensed under the Apache License, Version 2.0 (the "License");
+  ~      you may not use this file except in compliance with the License.
+  ~      You may obtain a copy of the License at
+  ~
+  ~          http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~      Unless required by applicable law or agreed to in writing, software
+  ~      distributed under the License is distributed on an "AS IS" BASIS,
+  ~      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~      See the License for the specific language governing permissions and
+  ~      limitations under the License.
+  -->
+<div role="tabpanel">
+
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" ng-class="{active: !isSensorViewVisible()}">
+            <a aria-controls="status-viewer" role="tab" data-toggle="tab"
+               ng-click="showSensorView(false)">Topology & Status Diagram</a>
+        </li>
+        <li role="presentation" ng-class="{active: isSensorViewVisible()}">
+            <a aria-controls="status-settings" role="tab" data-toggle="tab"
+               ng-click="showSensorView(true)">Application Sensors</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+
+        <!-- Status Viewer -->
+        <div id="status-viewer" role="tabpanel" class="tab-pane" ng-class="{active: !isSensorViewVisible()}"
+             ng-hide="isSensorViewVisible()">
+            <div class="row">
+                <div class="col-lg-12">
+                    <topology-status ng-if="brooklynApplication" bind="topology"></topology-status>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sensors View -->
+        <div id="status-settings" role="tabpanel" class="tab-pane" ng-class="{active: isSensorViewVisible()}"
+             ng-show="isSensorViewVisible()">
+            <div class="row" ng-repeat="entity in entities">
+                <h4>
+                    <small>{{entity.id}} - {{entity.name}}</small>
+                </h4>
+                <table datatable="" dt-options="dtOptions" class="table table-striped compact" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th>
+                            <small>Sensor</small>
+                        </th>
+                        <th>
+                            <small>Value</small>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="sensor in entity.sensors">
+                        <td>
+                            <small>{{sensor.name}}</small>
+                        </td>
+                        <td>
+                            <small>{{sensor.value}}</small>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

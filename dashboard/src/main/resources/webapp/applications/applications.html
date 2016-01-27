@@ -1,0 +1,64 @@
+<!--
+  ~  Copyright 2014 SeaClouds
+  ~  Contact: SeaClouds
+  ~
+  ~      Licensed under the Apache License, Version 2.0 (the "License");
+  ~      you may not use this file except in compliance with the License.
+  ~      You may obtain a copy of the License at
+  ~
+  ~          http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~      Unless required by applicable law or agreed to in writing, software
+  ~      distributed under the License is distributed on an "AS IS" BASIS,
+  ~      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~      See the License for the specific language governing permissions and
+  ~      limitations under the License.
+  -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-4">
+            <a href="#/wizards/add-application">
+                <div class="panel panel-default project-panel">
+                    <div class="panel-body project-panel-body">
+                        <i class="fa fa-plus-square-o fa-5x new-project-icon"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-4" ng-repeat="application in applications">
+            <a class="application" href="#/applications/{{application.seaCloudsApplicationId}}">
+                <div class="panel panel-default project-panel">
+                    <div class="panel-heading project-panel-heading">
+                            <h3>{{application.name}}</h3>
+                    </div>
+                    <div class="panel-body project-panel-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h5>Status:</h5>
+                            </div>
+                            <div class="col-lg-6">
+                                <i tooltip="{{getStatusTooltip(application.deploymentStatus)}}" tooltip-placement="top"
+                                   tooltip-trigger="mouseenter" class="fa fa-3x"
+                                   ng-class="{'fa-thumbs-up' : application.deploymentStatus == 'RUNNING',
+                                                  'fa-wrench' : application.deploymentStatus == 'STARTING',
+                                                  'fa-warning': application.deploymentStatus == 'STOPPING',
+                                                  'fa-fire': application.deploymentStatus == 'ERROR'}"></i>
+                            </div>
+                            <div class="col-lg-6">
+                                <i tooltip="This application doesn't contain any agreement" tooltip-placement="top"
+                                   tooltip-trigger="mouseenter" class="fa fa-3x fa-question" ng-hide="application.agreementStatus"></i>
+                                <i tooltip="{{getSLATooltip(application.agreementStatus)}}" tooltip-placement="top"
+                                   tooltip-trigger="mouseenter" class="fa fa-3x" ng-show="application.agreementStatus"
+                                   ng-class="{'fa-heartbeat' : project.agreementStatus == 'FULFILLED',
+                                                  'fa-ambulance' : project.agreementStatus == 'VIOLATED',
+                                                  'fa-hourglass-half' : project.agreementStatus == 'NON_DETERMINED',}"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+
