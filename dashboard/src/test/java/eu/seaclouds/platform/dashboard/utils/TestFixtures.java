@@ -18,7 +18,7 @@
 package eu.seaclouds.platform.dashboard.utils;
 
 public interface TestFixtures {
-
+    String APPLICATION_ID = "DUkgr9Vb";
     // Deployer fixtures
     String TOSCA_DAM_PATH = "fixtures/tosca-dam.yml";
     String APPLICATION_PATH = "fixtures/application.json";
@@ -42,4 +42,5 @@ public interface TestFixtures {
     String ADP_PATH = "fixtures/adp.yml";
     String AAM_PATH = "fixtures/aam.yml";
     String DESIGNER_TOPOLOGY = "fixtures/designer-topology.json";
+    String APPLICATION_TREE = "fixtures/application-tree.json";
 }

@@ -31,6 +31,7 @@ import org.apache.brooklyn.rest.domain.ApplicationSummary;
 import org.apache.brooklyn.rest.domain.EntitySummary;
 import org.apache.brooklyn.rest.domain.SensorSummary;
 import org.apache.brooklyn.rest.domain.TaskSummary;
+import org.codehaus.jackson.JsonNode;
 import org.mockito.Matchers;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -55,6 +56,7 @@ public abstract class AbstractResourceTest<T extends Resource> {
     private static final String SLA_ENDPOINT = "http://localhost:8080";
 
     private ApplicationSummary applicationSummary;
+    private JsonNode applicationTree;
     private TaskSummary taskSummaryDeploy;
     private TaskSummary taskSummaryDelete;
     private List<SensorSummary> sensorSummaries;
@@ -78,6 +80,8 @@ public abstract class AbstractResourceTest<T extends Resource> {
     private void initObjects() throws IOException, JAXBException {
         applicationSummary = ObjectMapperHelpers.JsonToObject(
                 TestUtils.getStringFromPath(TestFixtures.APPLICATION_PATH), ApplicationSummary.class);
+        applicationTree = ObjectMapperHelpers.JsonToObject(
+                TestUtils.getStringFromPath(TestFixtures.APPLICATION_TREE), JsonNode.class);
         taskSummaryDeploy = ObjectMapperHelpers.JsonToObject(
                 TestUtils.getStringFromPath(TestFixtures.TASK_SUMMARY_DEPLOY_PATH), TaskSummary.class);
         taskSummaryDelete = ObjectMapperHelpers.JsonToObject(
@@ -112,6 +116,7 @@ public abstract class AbstractResourceTest<T extends Resource> {
         when(slaProxy.getEndpoint()).thenReturn(SLA_ENDPOINT);
 
         when(deployerProxy.getApplication(anyString())).thenReturn(applicationSummary);
+        when(deployerProxy.getApplicationsTree()).thenReturn(applicationTree);
         when(deployerProxy.deployApplication(anyString())).thenReturn(taskSummaryDeploy);
         when(deployerProxy.removeApplication(anyString())).thenReturn(taskSummaryDelete);
         when(deployerProxy.getEntitiesFromApplication(anyString())).thenReturn(entitySummaries);

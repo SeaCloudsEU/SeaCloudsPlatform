@@ -34,6 +34,7 @@ import eu.seaclouds.platform.dashboard.proxy.SlaProxy;
 import it.polimi.tower4clouds.rules.MonitoringRules;
 import org.apache.brooklyn.rest.domain.ApplicationSummary;
 import org.apache.brooklyn.rest.domain.TaskSummary;
+import org.codehaus.jackson.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -188,7 +189,13 @@ public class DeployerResource implements Resource {
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
 
-            return Response.ok(deployer.getApplication(seaCloudsApplicationData.getDeployerApplicationId())).build();
+            for (JsonNode application : deployer.getApplicationsTree()) {
+                if(application.get("id").getTextValue().equals(seaCloudsApplicationData.getDeployerApplicationId())){
+                    return Response.ok(application).build();
+                }
+            }
+
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
 

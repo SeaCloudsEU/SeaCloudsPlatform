@@ -23,6 +23,7 @@ import org.apache.brooklyn.rest.domain.ApplicationSummary;
 import org.apache.brooklyn.rest.domain.EntitySummary;
 import org.apache.brooklyn.rest.domain.SensorSummary;
 import org.apache.brooklyn.rest.domain.TaskSummary;
+import org.codehaus.jackson.JsonNode;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
 import javax.ws.rs.client.Entity;
@@ -51,6 +52,25 @@ public class DeployerProxy extends AbstractProxy {
         // Dropwizard Jackson(com.fasterxml.jackson) cannot parse this entity, we will use Brooklyn one instead (org.codehaus.jackson.map.ObjectMapper)
         return ObjectMapperHelpers.JsonToObject(invocation.invoke().readEntity(String.class), ApplicationSummary.class);
     }
+
+
+    /**
+     * Creates proxied HTTP GET request to Apache Brooklyn which returns the whole applications tree
+     *
+     * @return JsonNode
+     */
+    public JsonNode getApplicationsTree() throws IOException {
+        Invocation invocation = getJerseyClient().target(getEndpoint() + "/v1/applications/tree").request().buildGet();
+
+        if (getUser() != null && getPassword() != null) {
+            invocation = invocation.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_USERNAME, getUser());
+            invocation = invocation.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_PASSWORD, getPassword());
+        }
+
+        // Dropwizard Jackson(com.fasterxml.jackson) cannot parse this entity, we will use Brooklyn one instead (org.codehaus.jackson.map.ObjectMapper)
+        return ObjectMapperHelpers.JsonToObject(invocation.invoke().readEntity(String.class), JsonNode.class);
+    }
+
 
     /**
      * Creates a proxied HTTP DELETE request to Apache Brooklyn to remove an application
