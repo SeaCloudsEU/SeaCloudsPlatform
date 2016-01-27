@@ -19,26 +19,18 @@
     "bootstrap": "~3.3.5",
     "Chart.js": "~1.0.2",
     "d3": "~3.5.6",
-    "angular": "~1.4.7",
+    "angular": "~1.4.9",
+    "angular-route": "~1.4.7",
     "angular-bootstrap": "~0.14.2",
     "angular-datatables": "~0.5.0",
     "angular-chart.js": "~0.8.5",
     "angular-animate": "~1.4.7",
-    "angular-sanitize": "~1.4.7",
-    "angular-spinner": "~0.7.0",
     "angular-ui-codemirror": "~0.3.0",
-    "ngFitText": "~3.3.3",
-    "ng-file-upload": "~9.1.0",
     "angular-pnotify": "~0.0.6",
-    "angular-loading-spinner": "~0.0.3",
+    "angular-loading-bar": "~0.8.0",
     "js-yaml": "~3.4.3",
     "components-font-awesome": "~4.4.0",
-    "angular-route": "~1.4.7",
     "loglevel": "~1.4.0"
-  },
-  "resolutions": {
-    "angular": "~1.4.7",
-    "angular-spinner": "~0.7.0"
   },
   "overrides": {
     "bootstrap": {
@@ -57,6 +49,8 @@
         "mode/xml/xml.js"
       ]
     }
-
+  },
+  "resolutions": {
+    "angular": "~1.4.9"
   }
 }

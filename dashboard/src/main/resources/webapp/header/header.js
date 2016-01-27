@@ -17,36 +17,45 @@
 
 'use strict';
 
-angular.module('seacloudsDashboard.header', ["ngLoadingSpinner"])
+angular.module('seacloudsDashboard.header', [])
+    .directive('header', function () {
+        return {
+            restrict: 'E',
+            templateUrl: 'header/header.html',
+            controller: 'HeaderCtrl'
+        };
+    })
     .controller('HeaderCtrl', function ($scope, $location, $interval, notificationService) {
 
-        $scope.login = $scope.UserCredentials.login;
-        $scope.logout = $scope.UserCredentials.logout;
-        $scope.isUserAuthenticated = $scope.UserCredentials.isUserAuthenticated;
+        $scope.applications = [];
 
-        $scope.projects = [];
+        $scope.SeaCloudsApi.getAboutSeaClouds().success(function (endpoints){
+            $scope.endpoints = endpoints;
+        }).error(function () {
+            notificationService.error("SeaClouds server seems to be down. Please refresh the browser");
+        })
 
-        $scope.SeaCloudsApi.getProjects().
-            success(function (projects) {
-                $scope.projects = projects;
+        $scope.SeaCloudsApi.getApplications().
+            success(function (applications) {
+                $scope.applications = applications;
             }).
             error(function () {
-                //TODO: Handle the error better than showing a notification
-                notificationService.error("Unable to retrieve the projects");
-
+                notificationService.error("Unable to retrieve the applications");
             })
 
-        $scope.updateFunction = undefined;
-
+        var retrievalErrors = 0;
         $scope.updateFunction = $interval(function () {
-            $scope.SeaCloudsApi.getProjects().
-                success(function (projects) {
-                    $scope.projects = projects;
+            $scope.SeaCloudsApi.getApplications().
+                success(function (applications) {
+                    $scope.applications = applications;
                 }).
                 error(function () {
-                    //TODO: Handle the error better than showing a notification
-                    notificationService.error("Unable to retrieve the projects");
-
+                    retrievalErrors++;
+                    if(retrievalErrors > 3) {
+                        $interval.cancel($scope.updateFunction);
+                        $scope.updateFunction = undefined;
+                        notificationService.error("It was not possible to retrieve the Applications after several attempts. Disabling automatic refresh.");
+                    }
                 })
         }, 5000);
 
@@ -59,11 +68,4 @@ angular.module('seacloudsDashboard.header', ["ngLoadingSpinner"])
         $scope.isViewActive = function (route) {
             return $location.path().startsWith(route);
         }
-    })
-    .directive('header', function () {
-        return {
-            restrict: 'E',
-            templateUrl: 'header/header.html',
-            controller: 'HeaderCtrl'
-        };
     });
