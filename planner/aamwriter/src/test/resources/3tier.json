@@ -16,7 +16,14 @@
                 "container": "webapp.tomcat.TomcatServer",
                 "benchmark_rt": "200",
                 "benchmark_platform": "hp_cloud_services.2xl",
-                "autoscale": true
+                "autoscale": true,
+                "qos": [
+                    {
+                        "metric": "AverageResponseTime",
+                        "operator": "",
+                        "threshold": ""
+                    }
+                ],
             }
         },
         {
