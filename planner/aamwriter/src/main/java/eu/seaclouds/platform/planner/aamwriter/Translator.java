@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.seaclouds.platform.planner.aamwriter.modelaam.Aam;
 import eu.seaclouds.platform.planner.aamwriter.modelaam.Constraint;
 import eu.seaclouds.platform.planner.aamwriter.modelaam.NodeTemplate;
@@ -39,7 +42,8 @@ import eu.seaclouds.platform.planner.aamwriter.modeldesigner.DRequirements;
  *
  */
 public class Translator {
-
+    public static Logger log = LoggerFactory.getLogger(Translator.class);
+    
     private static final String NODE_TYPE_PREFIX = "sc_req.";
     private static final String OPERATION_PREFIX = "operation_";
 
@@ -368,7 +372,15 @@ public class Translator {
             String operator = item.get("operator");
             String threshold = item.get("threshold");
             String unit = metric.getUnit();
-            result.addConstraint(metricName, operator, Double.parseDouble(threshold), unit);
+            
+            try {
+                
+                double thresholdValue = Double.parseDouble(threshold);
+                result.addConstraint(metricName, operator, thresholdValue, unit);
+                
+            } catch (NumberFormatException e) {
+                log.warn("Could not parse threshold value ('{}'). This QoS requirement is ignored", threshold);
+            }
         }
         
         return result;
