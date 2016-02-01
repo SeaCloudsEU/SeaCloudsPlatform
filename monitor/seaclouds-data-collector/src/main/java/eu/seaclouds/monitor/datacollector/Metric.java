@@ -1,12 +1,7 @@
-package eu.seaclouds.monitor.nuroDc;
+package eu.seaclouds.monitor.datacollector;
 
 import it.polimi.tower4clouds.data_collector_library.DCAgent;
 import it.polimi.tower4clouds.model.ontology.Resource;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -14,14 +9,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.codec.binary.Base64;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,28 +17,22 @@ import com.google.common.util.concurrent.Uninterruptibles;
 public abstract class Metric implements Observer {
 
     private static final Logger logger = LoggerFactory.getLogger(Metric.class);
+    private static final String APPLICATION_USER_PARAMETER ="applicationUser";
+    private static final String APPLICATION_PASSWORD_PARAMETER ="applicationPassword";
+    private static final String SAMPLING_TIME_PARAMETER ="samplingTime";
 
     private DCAgent dcAgent;
 
-    private String nuroInstanceIp;
-
-    private String nuroInstancePort;
-
-    private String nuroUser;
-
-    private String nuroPassword;
-    
     private String monitoredMetric;
-    
-    private String response;
-    
+        
     private final Map<String, Timer> timerPerResourceId = new ConcurrentHashMap<String, Timer>();
     private final Map<String, Integer> samplingTimePerResourceId = new ConcurrentHashMap<String, Integer>();
-
+    
     private static final int DEFAULT_SAMPLING_TIME = 5;
 
     protected void send(Number value, Resource resource) {
         if (dcAgent != null) {
+            logger.info("Sending monitoring datum: " + resource.getType() + "," + resource.getId() + "," + this.getMonitoredMetric() + "," + value);
             dcAgent.send(resource, this.getMonitoredMetric(), value);
         } else {
             logger.warn("Monitoring is not required, data won't be sent");
@@ -82,7 +63,10 @@ public abstract class Metric implements Observer {
                     timerPerResourceId.put(resource.getId(), timer);
                     samplingTimePerResourceId.put(resource.getId(),
                             newSamplingTime);
-                    createTask(timer, resource, newSamplingTime);
+                    String url = Registry._INSTANCE.getResourceUrl(resource);
+                    String user = getApplicationUser(resource);
+                    String password = getApplicationPassword(resource);
+                    createTask(timer, resource, newSamplingTime, url, user, password);
                 }
             } else {
                 Timer timer = timerPerResourceId.remove(resource.getId());
@@ -93,29 +77,61 @@ public abstract class Metric implements Observer {
         }
     }
 
+    private String getApplicationUser(Resource resource){
+        try {
+            if(getParameters(resource).get(APPLICATION_USER_PARAMETER) != null){
+                return getParameters(resource).get(APPLICATION_USER_PARAMETER);
+            }else{
+                return new String();
+            }
+        } catch (Exception e) {
+            logger.error("Error while reading the applicationUser", e);
+            throw new IllegalStateException("Error while reading the applicationUser",e.getCause());
+        }    
+    }
+    
+    private String getApplicationPassword(Resource resource){
+        try {
+            if(getParameters(resource).get(APPLICATION_PASSWORD_PARAMETER) != null){
+                return getParameters(resource).get(APPLICATION_PASSWORD_PARAMETER);
+            }else{
+                return new String();
+            }        
+        } catch (Exception e) {
+            logger.error("Error while reading the applicationPassword", e);
+            throw new IllegalStateException("Error while reading the applicationPassword",e.getCause());
+        }    
+    }
+    
     private int getSamplingTime(Resource resource) {
         if (getParameters(resource) == null
-                || getParameters(resource).get("samplingTime") == null)
+                || getParameters(resource).get(SAMPLING_TIME_PARAMETER) == null)
             return DEFAULT_SAMPLING_TIME;
         try {
             return Integer
-                    .parseInt(getParameters(resource).get("samplingTime"));
+                    .parseInt(getParameters(resource).get(SAMPLING_TIME_PARAMETER));
         } catch (Exception e) {
             logger.error("Error while reading the sampling time", e);
             return DEFAULT_SAMPLING_TIME;
         }
     }
 
-    private void createTask(Timer timer, Resource resource, int samplingTime) {
-        timer.scheduleAtFixedRate(new MetricSender(resource), 0,
+    private void createTask(Timer timer, Resource resource, int samplingTime, String applicationUrl, String user, String password) {
+        timer.scheduleAtFixedRate(new MetricSender(resource, applicationUrl, user, password), 0,
                 samplingTime * 1000);
     }
 
     private class MetricSender extends TimerTask {
         private Resource resource;
+        private String applicationUrl;
+        private String user;
+        private String password;
 
-        public MetricSender(Resource resource) {
+        public MetricSender(Resource resource, String applicationUrl, String user, String password) {
             this.resource = resource;
+            this.applicationUrl = applicationUrl;
+            this.user = user;
+            this.password = password;
         }
 
         @Override
@@ -126,7 +142,7 @@ public abstract class Metric implements Observer {
 
             do {
                 try {
-                    send(getSample(resource), resource);
+                    send(getSample(applicationUrl, user, password), resource);
                     sampleRetrieved = true;
                     logger.info("Sample retrieved and sent in: "
                             + (System.currentTimeMillis() - first) + "ms");
@@ -141,96 +157,12 @@ public abstract class Metric implements Observer {
 
     }
 
-    protected String getResponse() {
-
-        if (this.response == null) {
-
-            HttpResponse response;
-            HttpEntity responseEntity;
-            InputStream stream;
-            BufferedReader reader;
-            StringBuilder out;
-
-            HttpClient httpClient = HttpClientBuilder.create().build();
-            String auth = getNuroUser() + ":" + getNuroPassword();
-            String encodedAuth = Base64.encodeBase64String(auth.getBytes());
-
-            HttpGet httpget = new HttpGet("http://" + getNuroInstanceIp() + ":"
-                    + getNuroInstancePort() + "/sensor.php");
-                       
-            httpget.addHeader("Authorization", "Basic " + encodedAuth);
-
-            try {
-
-                response = httpClient.execute(httpget);
-
-                responseEntity = response.getEntity();
-                stream = responseEntity.getContent();
-                reader = new BufferedReader(new InputStreamReader(stream));
-                out = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    out.append(line);
-                }
-                reader.close();
-
-                return out.toString();
-
-            } catch (ClientProtocolException e) {
-                logger.warn(e.getMessage());
-                throw new IllegalStateException(e.getMessage(), e.getCause());
-            } catch (IOException e) {
-                logger.warn(e.getMessage());
-                throw new IllegalStateException(e.getMessage(), e.getCause());
-            }
-        } else {
-            return this.response;
-        }
-
-    }
-
-    public void setResponse(String response) {
-        this.response = response;
-    }
-
-    public abstract Number getSample(Resource resource) throws Exception;
+    public abstract Number getSample(String applicationUrl, String user, String password) throws Exception;
     
     protected Map<String, String> getParameters(Resource resource) {
         if (this.dcAgent != null)
             return this.dcAgent.getParameters(resource, this.getMonitoredMetric());
         return null;
-    }
-
-    public String getNuroInstanceIp() {
-        return nuroInstanceIp;
-    }
-
-    public void setNuroInstanceIp(String nuroInstanceIp) {
-        this.nuroInstanceIp = nuroInstanceIp;
-    }
-
-    public String getNuroInstancePort() {
-        return nuroInstancePort;
-    }
-
-    public void setNuroInstancePort(String nuroInstancePort) {
-        this.nuroInstancePort = nuroInstancePort;
-    }
-
-    public String getNuroUser() {
-        return nuroUser;
-    }
-
-    public void setNuroUser(String nuroUser) {
-        this.nuroUser = nuroUser;
-    }
-
-    public String getNuroPassword() {
-        return nuroPassword;
-    }
-
-    public void setNuroPassword(String nuroPassword) {
-        this.nuroPassword = nuroPassword;
     }
 
     public String getMonitoredMetric() {

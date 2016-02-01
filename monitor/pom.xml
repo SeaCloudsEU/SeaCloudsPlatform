@@ -34,7 +34,7 @@
   </repositories>
 
   <modules>
-    <module>nuro-data-collector</module>
+    <module>seaclouds-data-collector</module>
     <module>reconfiguration-data-collector</module>
     <module>monitoring-dam-generator-core</module>
     <module>monitoring-dam-generator-service</module>

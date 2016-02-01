@@ -1,6 +1,6 @@
-package eu.seaclouds.monitor.nuroDcTest;
+package eu.seaclouds.monitor.seacloudsDc;
 
-public class InputExample {
+public class NuroInputExample {
 
     public static final String EXAMPLE_INPUT = ""
             + "{"
