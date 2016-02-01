@@ -17,16 +17,16 @@ public class ApplicationRulesGenerator {
 
     public static final ObjectFactory factory = new ObjectFactory();
 
-    public void generateMonitoringRules(Module module) {
+    public MonitoringRules generateMonitoringRules(Module module) {
 
-        MonitoringRules toAdd = factory.createMonitoringRules();
+        MonitoringRules toReturn = factory.createMonitoringRules();
 
         logger.info("Generating application level monitoring rules for host: "
                 + module.getModuleName());
 
-        if (module.isJavaApp()) {
+        if (module.getLanguage().equals("JAVA")) {
             
-            toAdd.getMonitoringRules().addAll(
+            toReturn.getMonitoringRules().addAll(
                     generateModulesResponseTimeRules(module)
                             .getMonitoringRules());
             
@@ -35,28 +35,29 @@ public class ApplicationRulesGenerator {
                 logger.info("Module "
                         + module.getModuleName()
                         + " has a condition over the response time metric; generating SLA rule.");
-                toAdd.getMonitoringRules().addAll(
+                toReturn.getMonitoringRules().addAll(
                         generateResponseTimeSlaRule(module)
                                 .getMonitoringRules());
             }
         }
         
-        if (module.existAvailabilityRequirement()
-                & module.getHost().getDeploymentType().equals("IaaS")) {
+        if (module.existAvailabilityRequirement()) {
 
             logger.info("Module "
                     + module.getModuleName()
                     + " has a condition over the availability metric; generating SLA rule.");
-            toAdd.getMonitoringRules().addAll(
+            toReturn.getMonitoringRules().addAll(
                     generateAvailabilitySlaRule(module)
                             .getMonitoringRules());
         }
+        
+        toReturn.getMonitoringRules().addAll(
+                generateAvailabilityRule(module).getMonitoringRules());
 
-        toAdd.getMonitoringRules().addAll(
+        toReturn.getMonitoringRules().addAll(
                 generateCheckStatusRule(module).getMonitoringRules());
 
-        module.addApplicationMonitoringRules(toAdd);
-        
+        return toReturn;
     }
 
     private MonitoringRules generateCheckStatusRule(Module module) {
@@ -79,10 +80,10 @@ public class ApplicationRulesGenerator {
         parameters.put("samplingProbability", "1");
         return RuleSchemaGenerator.fillMonitoringRuleSchema("respTimeSLARule___"
                 + module.getModuleName(), "10", "10", "InternalComponent",
-                module.getModuleName(), "AvarageResponseTimeInternalComponent",
-                parameters, "Average", "InternalComponent", "METRIC > "
+                module.getModuleName(), "AverageResponseTimeInternalComponent",
+                parameters, null, null, "METRIC > "
                         + module.getResponseTime(),
-                "AvarageResponseTimeViolation_" + module.getModuleName() + "");
+                "ResponseTimeViolation_" + module.getModuleName() + "");
 
     }
 
@@ -90,14 +91,12 @@ public class ApplicationRulesGenerator {
 
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("samplingTime", "10");
-        parameters.put("port", module.getPort());
-        parameters.put("path", "/");
         return RuleSchemaGenerator.fillMonitoringRuleSchema(
                 "appAvailableSLARule___" + module.getModuleName(), "10", "10",
-                "InternalComponent", module.getModuleName(), "AppAvailable",
-                parameters, "Average", "InternalComponent", "METRIC < "
+                "InternalComponent", module.getModuleName(), "PaaSModuleAvailability",
+                parameters, null, null, "METRIC < "
                         + module.getAvailability(),
-                "AvarageAppAvailabilityViolation_" + module.getModuleName()
+                "AppAvailabilityViolation_" + module.getModuleName()
                         + "");
 
     }
@@ -108,10 +107,21 @@ public class ApplicationRulesGenerator {
         parameters.put("samplingProbability", "1");
         return RuleSchemaGenerator.fillMonitoringRuleSchema("respTimeRule___"
                 + module.getModuleName(), "10", "10", "InternalComponent",
-                module.getModuleName(), "AvarageResponseTimeInternalComponent",
+                module.getModuleName(), "AverageResponseTimeInternalComponent",
                 parameters, null, null, null,
-                "AvarageResponseTime_" + module.getModuleName());
+                "ResponseTime_" + module.getModuleName());
 
     }
 
+    private MonitoringRules generateAvailabilityRule(Module module) {
+
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("samplingTime", "10");
+        return RuleSchemaGenerator.fillMonitoringRuleSchema(
+                "appAvailableRule___" + module.getModuleName(), "10", "10",
+                "InternalComponent", module.getModuleName(), "PaaSModuleAvailability",
+                parameters, null, null, null,
+                "AppAvailability_" + module.getModuleName());
+
+    }
 }

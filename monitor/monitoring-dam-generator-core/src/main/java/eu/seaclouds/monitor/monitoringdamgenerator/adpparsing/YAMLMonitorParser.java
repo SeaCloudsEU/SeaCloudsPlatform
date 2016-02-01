@@ -26,6 +26,7 @@ public class YAMLMonitorParser {
     public static final String WORKLOAD_REQUIREMENT = "workload";
     public static final String TOPOLOGY_KEY = "topology_template";
     public static final String NODE_TEMPLATES_KEY = "node_templates";
+    public static final String NODE_TYPES_KEY = "node_types";
     public static final String GROUPS_KEY = "groups";
     public static final String MEMBERS_KEY = "members";
     public static final String POLICIES_KEY = "policies";
@@ -35,6 +36,8 @@ public class YAMLMonitorParser {
     public static final String HOST_KEY = "host";
     public static final String REQUIREMENTS_KEY = "requirements";
     public static final String TYPE_KEY = "type";
+    public static final String RAW_TYPE_KEY = "derived_from";
+
 
     public List<Module> getModuleRelevantInfoFromAdp(String adp)
             throws AdpParsingException {
@@ -56,6 +59,7 @@ public class YAMLMonitorParser {
         Map<String, Object> groups = getGroupsFromAdp(adp);
 
         Map<String, Object> nodeTemplates = getNodeTemplatesFromAdp(adp);
+        Map<String, Object> nodeTypes = getNodeTypesFromAdp(adp);
 
         for (String nodeTemplate : nodeTemplates.keySet()) {
             String type = getNodeTemplateTypeName((Map<String, Object>) nodeTemplates
@@ -70,25 +74,27 @@ public class YAMLMonitorParser {
                 tempHost.setHostName(nodeTemplate);
                 tempHost.setDeploymentType(DeploymentType.PaaS);
                 hosts.put(tempHost.getHostName(), tempHost);
-            }
+            } 
         }
-
+        
         for (String nodeTemplate : nodeTemplates.keySet()) {
             String type = getNodeTemplateTypeName((Map<String, Object>) nodeTemplates
                     .get(nodeTemplate));
-
+            
             if (!(type.startsWith(COMPUTE_NODE_PREFIX) || type
-                    .startsWith(PLATFORM_NODE_PREFIX))) {
+                    .startsWith(PLATFORM_NODE_PREFIX))){
                 tempModule = new Module();
 
                 tempModule.setModuleName(nodeTemplate);
 
+                Map<String, Object> nodeType = (Map<String, Object>) nodeTypes.get(type);
+                String rawType = (String) nodeType.get(RAW_TYPE_KEY);
+                tempModule.setType(rawType);
+                
                 if (getNodeTemplateLanguage((Map<String, Object>) nodeTemplates
-                        .get(nodeTemplate)) != null
-                        && getNodeTemplateLanguage(
-                                (Map<String, Object>) nodeTemplates
-                                        .get(nodeTemplate)).equals("JAVA")) {
-                    tempModule.setJavaApp(true);
+                        .get(nodeTemplate)) != null) {
+                    tempModule.setLanguage(getNodeTemplateLanguage((Map<String, Object>) nodeTemplates
+                            .get(nodeTemplate)));
                 }
                 
                 if (getNodeTemplatePort((Map<String, Object>) nodeTemplates
@@ -97,8 +103,6 @@ public class YAMLMonitorParser {
                             .get(nodeTemplate)));
                 }
                 
-                //TO ADD: SET OF THE PORT PROPERTY
-
                 if (getNodeTemplateHost((Map<String, Object>) nodeTemplates
                         .get(nodeTemplate)) != null) {
                     tempModule
@@ -119,8 +123,6 @@ public class YAMLMonitorParser {
                 }
 
                 toReturn.add(tempModule);
-            } else {
-
             }
         }
         return toReturn;
@@ -231,7 +233,6 @@ public class YAMLMonitorParser {
 
     private String getNodeTemplateHost(Map<String, Object> nodeTemplate)
             throws AdpParsingException {
-
         try {
             List<Map<String, Object>> requirements = (List<Map<String, Object>>) nodeTemplate
                     .get(REQUIREMENTS_KEY);
@@ -278,6 +279,19 @@ public class YAMLMonitorParser {
             logger.error("The parser was not able to retrieve the 'node_templates'  from the current ADP.");
             throw new AdpParsingException(
                     "The parser was not able to retrieve the 'node_templates' from the current ADP.");
+        }
+    }
+    
+    private Map<String, Object> getNodeTypesFromAdp(Map<String, Object> adp)
+            throws AdpParsingException {
+
+        try {
+            return (Map<String, Object>) adp.get(NODE_TYPES_KEY);
+
+        } catch (NullPointerException E) {
+            logger.error("The parser was not able to retrieve the 'node_types'  from the current ADP.");
+            throw new AdpParsingException(
+                    "The parser was not able to retrieve the 'node_types' from the current ADP.");
         }
     }
 

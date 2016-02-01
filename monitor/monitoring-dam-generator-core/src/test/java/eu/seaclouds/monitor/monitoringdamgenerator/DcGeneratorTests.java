@@ -30,6 +30,7 @@ public class DcGeneratorTests {
     private static final String SYNC_PERIOD = "10";
     private static final String KEEP_ALIVE = "25";
     private static final String  IAAS_DEPLOYMENT = "IaaS";
+    private static final String  JAVA_LANGUAGE = "JAVA";
 
 
     @SuppressWarnings("unchecked")
@@ -43,7 +44,7 @@ public class DcGeneratorTests {
         testHost.setHostName(TEST_HOST);
         testModule.setModuleName(TEST_MODULE);
         testModule.setHost(testHost);
-        testModule.setJavaApp(true);
+        testModule.setLanguage(JAVA_LANGUAGE);
         
         testGenerator.addDataCollector(testModule, TEST_MONITORING_MANAGER_IP, TEST_MONITORING_MANAGER_PORT,
         		TEST_MONITORING_INFLUXDB_IP, TEST_MONITORING_INFLUXDB_PORT);

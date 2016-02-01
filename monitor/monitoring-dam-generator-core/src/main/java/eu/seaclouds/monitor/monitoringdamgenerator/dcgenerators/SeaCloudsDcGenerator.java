@@ -2,7 +2,6 @@ package eu.seaclouds.monitor.monitoringdamgenerator.dcgenerators;
 
 import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Metrics;
 import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
-import eu.seaclouds.monitor.monitoringdamgenerator.dcgenerators.DataCollectorGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,37 +10,44 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MODACloudsDcGenerator implements DataCollectorGenerator {
-
+public class SeaCloudsDcGenerator implements DataCollectorGenerator {
+    
     private static Logger logger = LoggerFactory
-            .getLogger(MODACloudsDcGenerator.class);
-
-    private static final String MODACLOUDS_DC_ID = "modacloudsDc";
-    private static final String START_SCRIPT_URL = "https://s3-eu-west-1.amazonaws.com/modacloudsdc-start-script/installModacloudsDc.sh";
+            .getLogger(SeaCloudsDcGenerator.class);
+    
+    private static final String SEACLOUDS_DC_ID = "seacloudsDc";
+    private static final String PHP_LANGUAGE = "PHP";
+    private static final String START_SCRIPT_URL = "https://s3-eu-west-1.amazonaws.com/seaclouds-dc/installSeaCloudsDc.sh";
+    private static final String MODULE_IP ="MODULE_IP";
+    private static final String MODULE_PORT ="MODULE_PORT";
     private Metrics metrics;
 
-    public MODACloudsDcGenerator(){
+    public SeaCloudsDcGenerator() {
         List<String> toAdd = new ArrayList<String>();
         
-        toAdd.add("AverageCpuUtilization");
-        toAdd.add("AverageRamUtilization");
-        
+        toAdd.add("NUROServerLastThirtySecondsAverageRunTime");
+        toAdd.add("NUROServerLastThirtySecondsPlayerCount");
+        toAdd.add("NUROServerLastThirtySecondsRequestCount");
+        toAdd.add("NUROServerLastThirtySecondsAverageThroughput");
+        toAdd.add("AppAvailability");
+
         this.metrics = new Metrics(toAdd);
+        
     }
-    
-    public void addDataCollector(Module module, String monitoringManagerIp,
-        int monitoringManagerPort, String influxdbIp, int influxdbPort) {
+
+    @Override
+    public void addDataCollector(Module module, String monitoringManagerIp, int monitoringManagerPort,
+            String influxdbIp, int influxdbPort) {
 
         logger.info("Generating required deployment script for the MODAClouds Data Collector.");
-
+    
         Map<String, Object> dataCollector = this.generateDcNodeTemplate(this
                 .getRequiredEnvVars(module, monitoringManagerIp,
                         monitoringManagerPort, influxdbIp, influxdbPort), module);
-
+    
         module.addDataCollector(dataCollector);
-
     }
-
+    
     private Map<String, String> getRequiredEnvVars(Module module,
             String monitoringManagerIp, int monitoringManagerPort,
             String influxdbIp, int influxdbPort) {
@@ -58,26 +64,27 @@ public class MODACloudsDcGenerator implements DataCollectorGenerator {
         toReturn.put(MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT,
                 String.valueOf(influxdbPort));
 
-        toReturn.put(MODACLOUDS_TOWER4CLOUDS_DC_SYNC_PERIOD, "10");
-
-        toReturn.put(MODACLOUDS_TOWER4CLOUDS_RESOURCES_KEEP_ALIVE_PERIOD, "25");
-
         toReturn.put(MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE,
                 module.getModuleName());
 
         toReturn.put(MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID,
                 module.getModuleName() + "_ID");
 
-        toReturn.put(MODACLOUDS_TOWER4CLOUDS_VM_TYPE, module.getHost()
-                .getHostName());
+        if(module.getLanguage().equals(PHP_LANGUAGE)){
+            toReturn.put(METRICS,
+                    metrics.toString());           
+        } else{
+            toReturn.put(METRICS,
+                    new String("AppAvailability"));           
+        }
 
-        toReturn.put(MODACLOUDS_TOWER4CLOUDS_VM_ID, module.getHost().getHostName()
-                + "_ID");
         
-        toReturn.put(METRICS,
-                metrics.toString());
+        toReturn.put(MODULE_IP,
+                "$brooklyn:component(\"" + module.getModuleName()
+                + "\").attributeWhenReady(\"host.address\")");
         
-        
+        toReturn.put(MODULE_PORT,
+                module.getPort());
 
         return toReturn;
 
@@ -103,10 +110,10 @@ public class MODACloudsDcGenerator implements DataCollectorGenerator {
         startCommand = new HashMap<String, Object>();
 
         startCommand.put("start", START_SCRIPT_URL);
+        
         interfaces.put("Standard", startCommand);
         requirement.put("host", module.getHost().getHostName());
         requirements.add(requirement);
-
         properties.put("installLatch",
                 "$brooklyn:component(\"" + module.getModuleName()
                         + "\").attributeWhenReady(\"service.isUp\")");
@@ -118,9 +125,9 @@ public class MODACloudsDcGenerator implements DataCollectorGenerator {
         dataCollector.put("requirements", requirements);
         dataCollector.put("interfaces", interfaces);
 
-        toSet.put(MODACLOUDS_DC_ID+"_"+module.getModuleName(), dataCollector);
+        toSet.put(SEACLOUDS_DC_ID+"_"+module.getModuleName(), dataCollector);
 
         return toSet;
     }
-
+        
 }

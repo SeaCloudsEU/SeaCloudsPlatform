@@ -21,25 +21,22 @@ public class NuroRulesGenerator {
 
         MonitoringRules toReturn = factory.createMonitoringRules();
 
-        if (module.getModuleName().equals("NuroApplication")) {
+        logger.info("NuroApplication module found. Generating all the custom monitoring rules");
 
-            logger.info("NuroApplication module found. Generating all the custom monitoring rules");
-
-            toReturn.getMonitoringRules().addAll(
-                    this.generateThirtySecondsRuntimeRule(module)
-                            .getMonitoringRules());
-            toReturn.getMonitoringRules().addAll(
-                    this.generateThirtySecondsPlayerCountRule(module)
-                            .getMonitoringRules());
-            toReturn.getMonitoringRules().addAll(
-                    this.generateThirtySecondsRequestCountRule(module)
-                            .getMonitoringRules());
-            toReturn.getMonitoringRules().addAll(
-                    this.generateThirtySecondsThroughputRule(module)
-                            .getMonitoringRules());
-            toReturn.getMonitoringRules().addAll(
-                    this.generateNuroSlaRules(module).getMonitoringRules());
-        }
+        toReturn.getMonitoringRules().addAll(
+                this.generateThirtySecondsRuntimeRule(module)
+                        .getMonitoringRules());
+        toReturn.getMonitoringRules().addAll(
+                this.generateThirtySecondsPlayerCountRule(module)
+                        .getMonitoringRules());
+        toReturn.getMonitoringRules().addAll(
+                this.generateThirtySecondsRequestCountRule(module)
+                        .getMonitoringRules());
+        toReturn.getMonitoringRules().addAll(
+                this.generateThirtySecondsThroughputRule(module)
+                        .getMonitoringRules());
+        toReturn.getMonitoringRules().addAll(
+                this.generateNuroSlaRules(module).getMonitoringRules());
 
         return toReturn;
     }
@@ -67,7 +64,7 @@ public class NuroRulesGenerator {
                 "InternalComponent", module.getModuleName(),
                 "NUROServerLastTenSecondsAverageRunTime", parameters,
                 "Average", "InternalComponent", null,
-                "NUROServerLastThirtySecondsAverageRunTime");
+                "NUROServerLastThirtySecondsAverageRunTime_" + module.getModuleName());
 
     }
 
@@ -80,7 +77,7 @@ public class NuroRulesGenerator {
                 "InternalComponent", module.getModuleName(),
                 "NUROServerLastTenSecondsPlayerCount", parameters, "Sum",
                 "InternalComponent", null,
-                "NUROServerLastThirtySecondsPlayerCount");
+                "NUROServerLastThirtySecondsPlayerCount_" + module.getModuleName());
 
     }
 
@@ -93,7 +90,7 @@ public class NuroRulesGenerator {
                 "InternalComponent", module.getModuleName(),
                 "NUROServerLastTenSecondsRequestCount", parameters, "Sum",
                 "InternalComponent", null,
-                "NUROServerLastThirtySecondsRequestCount");
+                "NUROServerLastThirtySecondsRequestCount_" + module.getModuleName());
 
     }
 
@@ -106,7 +103,7 @@ public class NuroRulesGenerator {
                 module.getModuleName(),
                 "NUROServerLastTenSecondsAverageThroughput", parameters,
                 "Average", "InternalComponent", null,
-                "NUROServerLastThirtySecondsAverageThroughput");
+                "NUROServerLastThirtySecondsAverageThroughput_" + module.getModuleName());
     }
 
 }
