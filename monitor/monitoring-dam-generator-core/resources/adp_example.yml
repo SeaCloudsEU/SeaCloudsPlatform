@@ -32,19 +32,19 @@ topology_template:
       requirements:
       - {host: Amazon_EC2_i2_xlarge_us_west_2, instancesPOC: 1}
     Amazon_EC2_i2_xlarge_us_west_1:
-      type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_1
+      type: seaclouds.nodes.Compute.Amazon_EC2_i2_xlarge_us_west_1
       properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',
         region: us-west-1, performance: 90, availability: 0.9995, country: United States,
         city: SAN JOSE, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,
         ram: 30.5, disk_type: ssd}
     CloudFoundry:
-      type: seaclouds.Nodes.Platform.CloudFoundry_Pivotal
+      type: seaclouds.nodes.Platform.CloudFoundry_Pivotal
       properties: {resource_type: compute, hardwareId: m3.xlarge, location: 'aws:ec2',
         region: eu-central-1, performance: 90, availability: 0.9995, country: Germany,
         city: FRANKFURT, cost: 0.385 USD/hour, disk_size: 80, num_disks: 2, num_cpus: 4,
         ram: 15, disk_type: ssd}
     Amazon_EC2_i2_xlarge_us_west_2:
-      type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_2
+      type: seaclouds.nodes.Compute.Amazon_EC2_i2_xlarge_us_west_2
       properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',
         region: us-west-2, performance: 90, availability: 0.9995, country: United States,
         city: PORTLAND, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,

@@ -31,12 +31,12 @@ topology_template:
       requirements:
       - {instancesPOC: 8, host: App42_PaaS_America_US}
     Vultr_64gb_mc_atlanta:
-      type: seaclouds.Nodes.Compute
+      type: seaclouds.nodes.Compute
       properties: {num_cpus: 24, country: United States, cost: 0.893 USD/hour, hardwareId: 64gb-mc,
         city: ATLANTA, disk_type: ssd, resource_type: compute, disk_size: 800, location: 'vultr:compute',
         region: atlanta, ram: 64}
     App42_PaaS_America_US:
-      type: seaclouds.Nodes.Platform
+      type: seaclouds.nodes.Platform
       properties: {continent: America, country: US, postgresql_support: true, php_version: 5.5,
         auto_scaling: false, postgresql_version: 9.1, horizontal_scaling: true, python_version: 2.7,
         vertical_scaling: true, php_support: true, node_support: true, tomcat_version: 6.0,
@@ -45,7 +45,7 @@ topology_template:
         redis_support: true, mysql_version: 5.5, java_support: true, redis_version: 2.8,
         ruby_support: true, python_support: true, java_version: 7, mysql_support: true}
     Rapidcloud_io_Asia_HK:
-      type: seaclouds.Nodes.Platform
+      type: seaclouds.nodes.Platform
       properties: {continent: Asia, country: HK, tomcat_version: 8.0, private_hosting: false,
         resource_type: platform, tomcat_support: true, auto_scaling: false, public_hosting: true,
         memcached_support: true, redis_support: true, mysql_version: 5.6, java_support: true,

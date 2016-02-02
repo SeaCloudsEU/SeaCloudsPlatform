@@ -20,7 +20,7 @@ public class AdpParsingTest {
     public void parsingTest() throws Exception {
         
         YAMLMonitorParser adpParser = new YAMLMonitorParser();
-        byte[] encoded = Files.readAllBytes(Paths.get("resources/currentAtosAdpFromOptimizer.yml"));
+        byte[] encoded = Files.readAllBytes(Paths.get("resources/adp_example.yml"));
 
         List<Module> modules = adpParser.getModuleRelevantInfoFromAdp(new String(encoded, Charset.defaultCharset()));
 

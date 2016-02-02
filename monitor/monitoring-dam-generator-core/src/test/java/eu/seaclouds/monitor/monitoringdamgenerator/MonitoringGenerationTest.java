@@ -31,7 +31,7 @@ public class MonitoringGenerationTest {
         MonitoringDamGenerator service = new MonitoringDamGenerator(new URL("http://127.0.0.1:8170"), new URL("http://127.0.0.1:8083"));
 
         MonitoringInfo returned = service
-                .generateMonitoringInfo(readFile("resources/currentAtosAdpFromOptimizer.yml",
+                .generateMonitoringInfo(readFile("resources/adp_example.yml",
                         Charset.defaultCharset()));
 
         parametersTest = new HashMap<String, String>();
