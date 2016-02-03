@@ -12,7 +12,7 @@ imports:
 
 topology_template:
  node_templates:
-
+    # valid for [www]
     wwwValidOffering:
       type: seaclouds.nodes.wwwValidOffering
       properties:
@@ -20,11 +20,11 @@ topology_template:
         tomcat_support: true
         java_version: 7
         resource_type: platform
-        mysql_support: true
         availability: 0.965
         cost: 0.928 usd_per_hour
         performance: 175
 
+    # valid for [www]
     wwwValidOffering2:
       type: seaclouds.nodes.wwwValidOffering2
       properties:
@@ -32,35 +32,47 @@ topology_template:
         tomcat_support: true
         java_version: 8
         resource_type: platform
-        mysql_support: true
         availability: 0.985
         cost: 0.928 usd_per_hour
         performance: 645
 
+    # valid for [www]
+    wwwValidOffering3:
+          type: seaclouds.nodes.wwwValidOffering2
+          properties:
+            java_support: true
+            tomcat_support: true
+            resource_type: platform
+            availability: 0.950
+            cost: 0.928 usd_per_hour
+            performance: 150
+
+    # valid for []
     wwwInvalidOffering:
       type: seaclouds.nodes.wwwInvalidOffering
       properties:
          java_support: true
          tomcat_support: true
          java_version: 5
-         resource_type: compute
-         mysql_support: true
+         resource_type: platform
          availability: 0.995
          cost: 0.928 usd_per_hour
          performance: 43
 
+    # valid for []
     wwwInvalidOffering:
       type: seaclouds.nodes.wwwInvalidOffering2
       properties:
+        resource_type: platform
         tomcat_support: true
+        java_support: true
         java_version: 5
-        mysql_support: true
         availability: 0.98
         cost: 0.928 usd_per_hour
         performance: 543
 
 
-
+    # valid for [webservices, db1]
     webserviceValidOffering:
       type: seacluds.nodes.webserviceValidOffering
       properties:
@@ -71,6 +83,7 @@ topology_template:
         cost: 0.928 usd_per_hour
         performance: 543
 
+    # valid for [db1]
     webserviceInvalidOffering:
       type: seacluds.nodes.webserviceInvalidOffering
       properties:
@@ -81,28 +94,36 @@ topology_template:
         cost: 0.928 usd_per_hour
         performance: 123
 
+
+    # valid for [db1]
     webserviceInvalidOffering2:
       type: seacluds.nodes.webserviceInvalidOffering2
       properties:
-        num_cpus: 2
+        num_cpus: 8
         disk_size: 128
         resource_type: compute
         availability: 0.89
         cost: 0.728 usd_per_hour
         performance: 621
 
+
+    # valid for [db1]
     db1ValidOffering:
       type: seaclouds.nodes.db1ValidOffering
       properties:
+        resource_type: platform
         mysql_support: true
         mysql_version: 5.4
         availability: 0.99
         cost: 0.928 usd_per_hour
         performance: 62
 
+
+    # valid for []
     db1InvalidOffering2:
       type: seaclouds.nodes.db1InvalidOffering2
       properties:
+        resource_type: platform
         mysql_support: true
         mysql_version: 4.7
         availability: 0.98
