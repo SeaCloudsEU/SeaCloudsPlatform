@@ -178,14 +178,20 @@ var Credentials = (function() {
      * Returns a topology from a DAM.
      */
     function to_topology(rawdam) {
-        var CLOUD_TYPE_PREFIX = "seaclouds.nodes";
+        var PAAS_TYPE_PREFIX = "seaclouds.nodes.Platform";
+        var IAAS_TYPE_PREFIX = "seaclouds.nodes.Compute";
         var INSTANCES = "instancesPOC";
         var dam = jsyaml.safeLoad(rawdam);
+
+        function node_type_is_provider(node_type_name) {
+            return node_type_name.startsWith(PAAS_TYPE_PREFIX) ||
+                node_type_name.startsWith(IAAS_TYPE_PREFIX);
+        }
 
         function topology_type_by_node_template(node_template) {
             var result = undefined;
             if (node_template.type) {
-                if (node_template.type.startsWith(CLOUD_TYPE_PREFIX)) {
+                if (node_type_is_provider(node_template.type)) {
                     result = Types.Cloud;
                 }
                 else {
@@ -199,8 +205,13 @@ var Credentials = (function() {
         }
 
         function requirement_is_hosted_on_provider(requirement) {
-
-            return (requirement.host && requirement[INSTANCES]);
+            if (requirement.host) {
+                var host_template = dam.topology_template.node_templates[requirement.host];
+                if (host_template && node_type_is_provider(host_template.type)) {
+                        return true;
+                }
+            }
+            return false;
         }
 
         var topology = {

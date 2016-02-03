@@ -584,14 +584,14 @@ var Canvas = (function() {
     }
 
     function addlink(link) {
-        log.info("Adding link " + link.toString());
         _addlink(link);
+        firechange();
     }
 
     function _addlink(link) {
         if (link) {
+            log.info("Adding link " + link.toString());
             links.push(link);
-            firechange();
         }
     }
 
