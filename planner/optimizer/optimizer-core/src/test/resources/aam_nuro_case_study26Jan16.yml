@@ -1,0 +1,89 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: NURO application
+imports:
+- tosca-normative-types:1.0.0.wd06-SNAPSHOT
+topology_template:
+  node_templates:
+    php:
+      type: sc_req.php
+      properties:
+        language: PHP
+        location: ''
+        autoscale: true
+        php_version:
+          constraints:
+          - greater_or_equal: '5.1'
+          - less_or_equal: '5.5'
+        credentials_file: database.properties
+      artifacts:
+      - file: https://<user>:<password>@seaclouds-dev.nurogames.com/nuro-casestudy/versions/current/nurogames-seaclouds-casestudy-php-current.tgz
+        type: tosca.artifacts.File
+      requirements:
+      - endpoint: database
+        type: seaclouds.relations.databaseconnections.php
+    database:
+      type: sc_req.database
+      properties:
+        location: ''
+        autoscale: false
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5.1'
+          - less_or_equal: '5.6'
+      artifacts:
+      - db_create: https://<user>:<password>@seaclouds-dev.nurogames.com/nuro-casestudy/versions/current/create_db_and_tables-current.sql
+        type: tosca.artifacts.File
+node_types:
+  sc_req.php:
+    derived_from: seaclouds.nodes.SoftwareComponent
+    properties:
+      php_support:
+        constraints:
+        - equal: true
+      php_version:
+        constraints:
+        - greater_or_equal: '5.1'
+        - less_or_equal: '5.5'
+  sc_req.database:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      mysql_support:
+        constraints:
+        - equal: true
+      mysql_version:
+        constraints:
+        - greater_or_equal: '5.1'
+        - less_or_equal: '5.6'
+groups:
+  operation_php:
+    members:
+    - php
+    policies:
+    - QoSInfo:
+        execution_time: 4 ms
+        benchmark_platform: Amazon_EC2_m1_large_us_east_1
+    - dependencies:
+        operation_database: '1'
+    - AppQoSRequirements:
+        response_time:
+          less_than: 2000.0 ms
+        availability:
+          greater_than: 0.99
+        cost:
+          less_or_equal: 800.0 euros_per_month
+        workload:
+          less_or_equal: 50.0 req_per_min
+    - QoSRequirements:
+        AverageResponseTime:
+          less_than: 2000.0 ms
+  operation_database:
+    members:
+    - database
+    policies:
+    - QoSInfo:
+        execution_time: 15 ms
+        benchmark_platform: Amazon_EC2_m1_large_us_east_1
+    - dependencies: {}
+    - QoSRequirements:
+        AverageResponseTime:
+          less_than: 2000.0 ms
