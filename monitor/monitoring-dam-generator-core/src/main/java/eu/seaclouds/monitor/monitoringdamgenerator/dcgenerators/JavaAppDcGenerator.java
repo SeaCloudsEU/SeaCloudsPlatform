@@ -1,6 +1,8 @@
 package eu.seaclouds.monitor.monitoringdamgenerator.dcgenerators;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -62,20 +64,23 @@ public class JavaAppDcGenerator implements DataCollectorGenerator {
         Map<String, Object> toSet;
         Map<String, Object> dataCollector;
         Map<String, Object> properties;
-        Map<String, Object> requirements;
+        List<Map<String, Object>> requirements;
+        Map<String, Object> requirement;
         Map<String, Object> interfaces;
         Map<String, Object> startCommand;
 
         toSet = new HashMap<String, Object>();
         dataCollector = new HashMap<String, Object>();
         properties = new HashMap<String, Object>();
-        requirements = new HashMap<String, Object>();
+        requirements = new ArrayList<Map<String, Object>>();
+        requirement = new HashMap<String, Object>();
         interfaces = new HashMap<String, Object>();
         startCommand = new HashMap<String, Object>();
 
         startCommand.put("start", START_SCRIPT_URL);
         interfaces.put("Standard", startCommand);
-        requirements.put("host", module.getHost().getHostName());
+        requirement.put("host", module.getHost().getHostName());
+        requirements.add(requirement);
         properties.put("install.latch",
                 "$brooklyn:component(\"" + module.getModuleName()
                         + "\").attributeWhenReady(\"service.isUp\")");
