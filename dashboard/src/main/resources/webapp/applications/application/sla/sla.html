@@ -1,0 +1,124 @@
+<!--
+  ~  Copyright 2014 SeaClouds
+  ~  Contact: SeaClouds
+  ~
+  ~      Licensed under the Apache License, Version 2.0 (the "License");
+  ~      you may not use this file except in compliance with the License.
+  ~      You may obtain a copy of the License at
+  ~
+  ~          http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~      Unless required by applicable law or agreed to in writing, software
+  ~      distributed under the License is distributed on an "AS IS" BASIS,
+  ~      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~      See the License for the specific language governing permissions and
+  ~      limitations under the License.
+  -->
+
+<div ng-hide="agreement">
+        <span class="text-center text-warning">
+            <h1>
+                <small>This application doesn't have any Agreement installed</small>
+            </h1>
+        </span>
+</div>
+
+<div ng-show="agreement" role="tabpanel">
+
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" ng-class="{active: !isRawAgreementVisible()}">
+            <a aria-controls="sla-viewer" role="tab" data-toggle="tab" ng-click="showRawAgreement(false)">SLA
+                Viewer</a></li>
+        <li role="presentation" ng-class="{active: isRawAgreementVisible()}">
+            <a aria-controls="sla-settings" role="tab" data-toggle="tab" ng-click="showRawAgreement(true)">View RAW
+                Agreement</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+
+        <!-- SLA Viewer -->
+        <div id="sla-viewer" role="tabpanel" class="tab-pane" ng-class="{active: !isRawAgreementVisible()}"
+             ng-hide="isRawAgreementVisible()">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3>
+                        <small><strong>Name:</strong> {{agreement.name}}</small>
+                        <small><strong>Service Provider:</strong> {{agreement.context.serviceProvider}}</small>
+                        <small><strong>Status:</strong> {{agreementStatus.guaranteestatus}}</small>
+                        <small><strong>Expiration Time:</strong>
+                            <span ng-show="agreement.context.expirationTime"> {{agreement.context.expirationTime | date}}</span>
+                            <span ng-hide="agreement.context.expirationTime"> No expiration date</span></small>
+                    </h3>
+                    <hr>
+
+                    <h3>
+                        <strong>Guaranteed Terms</strong>
+                    </h3>
+
+                    <ul class="nav nav-pills" role="tablist">
+                        <li role="presentation" ng-repeat="term in agreementStatus.guaranteeterms track by term.name"
+                            ng-class="{'active' : term.name == getActiveTermName()}" ng-click="viewSLATerm(term.name)">
+                            <a>{{term.name}}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div ng-repeat="term in agreementStatus.guaranteeterms track by term.name">
+                        <div ng-show="term.name == getActiveTermName()">
+                            <h3>
+                                <small><strong>Status:</strong> {{term.status}}</small>
+                                <small><strong>Constrain:</strong> {{getSlaTermConstrain()}}</small>
+                                <small><strong>QoS:</strong> {{getSlaTermQoS()}}</small>
+                            </h3>
+                            <hr>
+                            <strong>Violations</strong>
+                            <table datatable="" dt-options="dtOptions" class="table table-striped compact"
+                                   cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th>
+                                        <small>ID</small>
+                                    </th>
+                                    <th>
+                                        <small>Date</small>
+                                    </th>
+                                    <th>
+                                        <small>Value</small>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="violation in getActiveTermViolations()">
+                                    <td>
+                                        <small>{{violation.uuid}}</small>
+                                    </td>
+                                    <td>
+                                        <small>{{violation.datetime}}</small>
+                                    </td>
+                                    <td>
+                                        <small>{{violation.actual_value}}</small>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Raw SLA Agreement -->
+        <div id="sla-settings" role="tabpanel" class="tab-pane" ng-class="{active: isRawAgreementVisible()}"
+             ng-show="isRawAgreementVisible()">
+            <h3>
+                <small>View RAW Agreement</small>
+            </h3>
+            <ui-codemirror class="codemirror-height-md" ui-codemirror-opts="rawAgreementViewerOptions"
+                           ng-model="agreement"></ui-codemirror>
+        </div>
+    </div>
+
+</div>

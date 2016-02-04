@@ -17,69 +17,58 @@
 
 'use strict';
 
-angular.module('seacloudsDashboard.projects.project', ['ngRoute', 'ui.bootstrap',
-    'seacloudsDashboard.projects', 'seacloudsDashboard.projects.project.status',
-    'seacloudsDashboard.projects.project.monitor', 'seacloudsDashboard.projects.project.sla'])
+angular.module('seacloudsDashboard.applications.application', ['ngRoute', 'ui.bootstrap', 'seacloudsDashboard.applications.application.status',
+    'seacloudsDashboard.applications.application.monitor', 'seacloudsDashboard.applications.application.sla'])
     .config(['$routeProvider', function ($routeProvider) {
-        $routeProvider.when('/projects/:project', {
-            templateUrl: 'projects/project/project.html'
+        $routeProvider.when('/applications/:seaCloudsApplicationId', {
+            templateUrl: 'applications/application/application.html',
+            controller: 'ProjectCtrl'
         })
     }])
     .controller('ProjectCtrl', function ($scope, $routeParams, $location, $interval, $uibModal, notificationService) {
-        $scope.Page.setTitle('SeaClouds Dashboard - Project details');
+        $scope.Page.setTitle('SeaClouds Dashboard - Application details');
 
-        $scope.project = undefined;
 
+        $scope.seaCloudsApplicationId = $routeParams.seaCloudsApplicationId;
+        $scope.brooklynApplication = undefined;
         $scope.isLoaded = false;
 
-        $scope.SeaCloudsApi.getProject($routeParams.project).
-            success(function (project) {
-                $scope.project = project;
+        $scope.SeaCloudsApi.getApplication($scope.seaCloudsApplicationId).
+            success(function (brooklynApplication) {
+                $scope.brooklynApplication = brooklynApplication;
                 $scope.isLoaded = true;
             }).
             error(function () {
-                notificationService.error("Cannot retrieve the project, please try it again");
+                $scope.isLoaded = true;
+                notificationService.error("Cannot retrieve the application, please try it again");
             })
 
 
-        $scope.updateFunction = undefined;
-
         $scope.updateFunction = $interval(function () {
-            $scope.SeaCloudsApi.getProject($routeParams.project).
-                success(function (project) {
-                    $scope.project = project;
+            $scope.SeaCloudsApi.getApplication($scope.seaCloudsApplicationId).
+                success(function (brooklynApplication) {
+                    $scope.brooklynApplication = brooklynApplication;
                 }).
                 error(function () {
-                    //TODO: Handle the error better than showing a notification
-                    notificationService.error("Unable to retrieve the project");
-
+                    $interval.cancel($scope.updateFunction);
+                    $scope.updateFunction = undefined;
+                    notificationService.error("It was not possible to retrieve the application after several attempts. Disabling automatic refresh.");
                 })
         }, 5000);
 
         $scope.$on('$destroy', function () {
-            if ($scope.updateFunction) {
+            if($scope.updateFunction){
                 $interval.cancel($scope.updateFunction);
             }
         });
 
+        var tabSelected = 0;
 
-        $scope.$watch('projects', function (data) {
-            $scope.SeaCloudsApi.getProject($routeParams.project).
-                success(function (project) {
-                    $scope.project = project;
-                }).
-                error(function () {
-                    notificationService.error("Cannot retrieve the project, please try it again");
-                })
-        })
-
-        var tabSelected = 1;
-
-        $scope.getSelectedTab = function () {
+        $scope.getSelectedApplicationTab = function () {
             return tabSelected;
         }
 
-        $scope.setSelectedTab = function (tab) {
+        $scope.setSelectedApplicationTab = function (tab) {
             tabSelected = tab;
         }
 
@@ -92,11 +81,11 @@ angular.module('seacloudsDashboard.projects.project', ['ngRoute', 'ui.bootstrap'
                     }
                 },
                 templateUrl: 'removeApplicationModal.html',
-                controller: function ($scope, $uibModalInstance, project) {
-                    $scope.project = project;
+                controller: function ($scope, $uibModalInstance, application) {
+                    $scope.application = application;
 
                     $scope.ok = function () {
-                        $uibModalInstance.close(project.id);
+                        $uibModalInstance.close($scope.seaCloudsApplicationId);
                     };
 
                     $scope.cancel = function () {
@@ -106,11 +95,11 @@ angular.module('seacloudsDashboard.projects.project', ['ngRoute', 'ui.bootstrap'
                 }
             });
 
-            modalInstance.result.then(function (projectId) {
-                $scope.SeaCloudsApi.removeProject(projectId).
+            modalInstance.result.then(function (seaCloudsApplicationId) {
+                $scope.SeaCloudsApi.removeApplication(seaCloudsApplicationId).
                     success(function () {
-                        $location.path("/projects")
-                        notificationService.success("The application " + projectId + " will be removed soon");
+                        $location.path("/applications")
+                        notificationService.success("The application " + seaCloudsApplicationId + " will be removed soon");
                     }).
                     error(function () {
                         notificationService.error("An error happened during the removal process, please try it again");

@@ -15,29 +15,29 @@
  *      limitations under the License.
  */
 "use strict";
-var AdpPretifier = (function() {
+var AdpPretifier = (function () {
 
-    var isNodeType = function (str){
+    var isNodeType = function (str) {
         return str.includes("sc_req") || str.includes("seaclouds.nodes") && !isLocationType(str);
     }
 
-    var isLocationType = function(str){
-        return str.includes("seaclouds.Nodes.Compute") || str.includes("seaclouds.Nodes.Platform");
+    var isLocationType = function (str) {
+        return str.includes("seaclouds.nodes.Compute") || str.includes("seaclouds.nodes.Platform");
     }
 
-    var findLocationByName = function(location, index, array){
+    var findLocationByName = function (location, index, array) {
         return this == location.name;
     }
 
 
-    if(!log){
+    if (!log) {
         throw "AdpPrettifier requires loglevel.js"
     }
 
-    if(!jsyaml){
+    if (!jsyaml) {
         throw "AdpPrettifier requires JS-YAML"
     }
-    var adpToObject = function(adp){
+    var adpToObject = function (adp) {
         var jsAdp = jsyaml.safeLoad(adp);
         var application = {
             name: undefined,
@@ -47,63 +47,63 @@ var AdpPretifier = (function() {
         application.name = jsAdp.description;
         var services = [];
 
-        // Not sure about how to deal with Camel Case agains the tosca underscore pattern, should I mix it?
-        if(jsAdp.topology_template && jsAdp.topology_template.node_templates){
+        var nodeTemplates = jsAdp.topology_template.node_templates;
+        var nodeTypes = jsAdp.node_types;
 
-            var nodeTemplates = jsAdp.topology_template.node_templates;
-
-            // node_templates are not a list of nodes but an object with several properties. This way iterates thought properties
-            for (var nodeTemplateKey in nodeTemplates) {
-                if (!nodeTemplates.hasOwnProperty(nodeTemplateKey)) {
-                    //The current property is not a direct property of jsAdp.topology_template.node_templates
-                    continue;
-                }
-
-                var nodeTemplate = nodeTemplates[nodeTemplateKey];
-
-                if(isLocationType(nodeTemplate.type)){
-                    // If it's a location we add an empty list of hosted services and we add into the application topology
-                    nodeTemplate.name = nodeTemplateKey;
-                    nodeTemplate.services = [];
-                    application.locations.push(nodeTemplate);
-                }else if (isNodeType(nodeTemplate.type)){
-                    // We will add the node_template the de pending work list
-                    nodeTemplate.name = nodeTemplateKey;
-                    services.push(nodeTemplate);
-                }else{
-                    log.warn("Unrecognized Node Type");
-                    continue;
-                }
+        // node_templates are not a list of nodes but an object with several properties. This way iterates thought properties
+        for (var nodeTemplateKey in nodeTemplates) {
+            if (!nodeTemplates.hasOwnProperty(nodeTemplateKey)) {
+                //The current property is not a direct property of jsAdp.topology_template.node_templates
+                continue;
             }
 
-            services.forEach(function (service){
-                if(service.requirements){
-                    service.requirements.forEach(function(requirement){
-                        if(requirement.host){
-                            var location = application.locations.find(findLocationByName, requirement.host);
+            var nodeTemplate = nodeTemplates[nodeTemplateKey];
 
-                            if(!location){
-                                // Maybe an exception it's better for this
-                                log.warn("The service is hosted on an unknown location, it will be ignored");
-                            }else{
-                                location.services.push(service);
-                            }
-                        }
-                    });
-                }else{
-                    // Maybe an exception it's better for this
-                    log.warn("The service is has no requirments, it will be ignored. ");
-                }
+            if (isLocationType(nodeTemplate.type)) {
+                // If it's a location we add an empty list of hosted services and we add into the application topology
+                nodeTemplate.name = nodeTemplateKey;
+                nodeTemplate.services = [];
+                application.locations.push(nodeTemplate);
+            } else if (isNodeType(nodeTemplate.type)) {
+                // We will add the node_template the de pending work list
+                nodeTemplate.name = nodeTemplateKey;
 
-            });
-
+                // Adding parent nodetype
+                nodeTemplate.parentType = nodeTypes[nodeTemplate.type].derived_from;
+                services.push(nodeTemplate);
+            } else {
+                log.warn("Unrecognized Node Type");
+                continue;
+            }
         }
+
+        services.forEach(function (service) {
+            if (service.requirements) {
+                service.requirements.forEach(function (requirement) {
+                    if (requirement.host) {
+                        var location = application.locations.find(findLocationByName, requirement.host);
+
+                        if (!location) {
+                            // Maybe an exception it's better for this
+                            log.warn("The service is hosted on an unknown location, it will be ignored");
+                        } else {
+                            location.services.push(service);
+                        }
+                    }
+                });
+            } else {
+                // Maybe an exception it's better for this
+                log.warn("The service is has no requirments, it will be ignored. ");
+            }
+
+        });
+
 
         return application;
     }
 
 
-    var adpToTopology = function(adp){
+    var adpToTopology = function (adp) {
         var application = AdpToObject(adp);
 
         var topology = {

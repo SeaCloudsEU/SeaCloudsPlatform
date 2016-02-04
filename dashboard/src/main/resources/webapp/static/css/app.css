@@ -19,6 +19,10 @@
     display: none !important;
 }
 
+a.application:hover {
+    text-decoration: none;
+}
+
 .col-centered {
     display: block;
     margin-left: auto;
@@ -124,12 +128,37 @@
     color: white;
 }
 
+.project-panel a:hover{
+    text-decoration: none;
+}
+
+.project-panel-heading {
+    height: 15px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    background-color: #6CB3EF !important;
+    border: 0px;
+    color: white !important;
+}
+
+.project-panel > .project-panel-heading h3 {
+    margin-bottom: 0px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-decoration: none;
+}
+
 .project-panel > .project-panel-body {
     text-align: center;
-    height: 150px;
+    height: 135px;
     line-height: 100px;
-
 }
+
+.project-panel > .project-panel-body .application {
+    padding-top: 0px;
+}
+
 
 .project-panel-body h3 {
     margin-top: 0px;
@@ -315,7 +344,7 @@ input.form-control.ng-valid.ng-touched {
 }
 
 .adp-box {
-    height: 650px !important;
+    height: 450px !important;
 }
 
 .adp-box-button{
@@ -324,8 +353,9 @@ input.form-control.ng-valid.ng-touched {
 
 .adp-box-list {
     overflow-y: auto;
-    height: 535px;
+    height: 325px;
     padding-top: 15px;
+    background-color: #fff;
 }
 
 
@@ -335,3 +365,16 @@ input.form-control.ng-valid.ng-touched {
 }
 
 
+.api-frame {
+    border: 0;
+    height: 800px;
+    overflow-y: auto;
+}
+
+#loading-bar .bar {
+    background: #6CB3EF;
+}
+
+.tooltip.tooltip-marquee .tooltip-inner {
+    max-width: 300px;
+}

@@ -19,20 +19,28 @@
 var seacloudsDashboard = angular.module('seacloudsDashboard', [
     'jlareau.pnotify',
     'ngAnimate',
+    'angular-loading-bar',
     'seacloudsDashboard.header',
     'seacloudsDashboard.footer',
-    'seacloudsDashboard.signin',
     'seacloudsDashboard.about',
-    'seacloudsDashboard.help',
-    'seacloudsDashboard.projects',
-    'seacloudsDashboard.projects.addApplicationWizard'
-
+    'seacloudsDashboard.apiclient',
+    'seacloudsDashboard.applications',
+    'seacloudsDashboard.applications.application',
+    'seacloudsDashboard.wizards.addApplication'
 ]);
 
-seacloudsDashboard.config(['$routeProvider', function ($routeProvider) {
-    $routeProvider.when("/", {redirectTo: '/projects'})
-    //TODO: Create a not available view
-    $routeProvider.otherwise({redirectTo: '/not-available.html'});
+seacloudsDashboard.config(['$routeProvider', '$httpProvider', 'cfpLoadingBarProvider',
+    function ($routeProvider, $httpProvider, cfpLoadingBarProvider) {
+        // Disable Angular loading spinner
+        cfpLoadingBarProvider.includeSpinner = false;
+
+        // Allows $http.get/post... to use legacy success and error methods
+        $httpProvider.useLegacyPromiseExtensions(true);
+        $routeProvider.when("/", {redirectTo: '/applications'})
+        //TODO: Create a not available view
+        $routeProvider.otherwise({redirectTo: function(){
+            window.location = "/not-available.html"
+        }});
 }]);
 
 
@@ -48,319 +56,56 @@ seacloudsDashboard.factory('Page', function () {
     };
 });
 
-seacloudsDashboard.factory('UserCredentials', function ($location) {
-    var authenticatedUser = {
-        id: 1337,
-        username: "Manager",
-        email: "admin@example.com"
-    };
-
-    return {
-        getUser: function () {
-            return authenticatedUser;
-        },
-        isUserAuthenticated: function () {
-            return !(!authenticatedUser)
-        },
-        login: function (userCredentials) {
-            authenticatedUser = {
-                id: 1337,
-                username: "Manager",
-                email: "admin@example.com"
-            };
-            $location.path('/projects');
-        },
-        logout: function () {
-            authenticatedUser = undefined;
-            $location.path('/signin');
-        }
-    };
-
-});
-
 seacloudsDashboard.factory('SeaCloudsApi', function ($http) {
     return {
-        getProjects: function () {
+        getAboutSeaClouds: function () {
+            return $http.get("/api/about");
+        },
+        getApplications: function () {
             return $http.get("/api/deployer/applications");
         },
-        getProject: function (id) {
-            var promise = new Promise(function (resolve, reject) {
-                $http.get("/api/deployer/applications").
-                    success(function (data) {
-                        var project = data.filter(function (project) {
-                            return project.id == id;
-                        })[0];
-                        resolve(project);
-                    }).
-                    error(function (err) {
-                        reject(Error(err));
-                    });
-            });
-            promise.success = function (fn) {
-                promise.then(fn);
-                return promise;
-            }
-
-            promise.error = function (fn) {
-                promise.then(null, fn);
-                return promise;
-            }
-
-            return promise;
+        getApplication: function (seaCloudsId) {
+            return $http.get("/api/deployer/applications/" + seaCloudsId);
         },
-        addProject: function (dam, damSuccessCallback, damErrorCallback,
-                              monitoringRules, monitoringRulesSuccessCallback, monitoringRulesErrorCallback,
-                              agreements, agreementsSuccessCallback, agreementsErrorCallback) {
-
-
-            var promise = new Promise(function (resolveParent, rejectParent) {
-                var deployerResponse;
-
-                // Start application deployment
-                $http.post("/api/deployer/applications", dam).
-                    success(function (response) {
-                        deployerResponse = response;
-                        damSuccessCallback(response)
-
-                        // Deploy monitor rules
-                        $http.post("/api/monitor/rules", monitoringRules).
-                            success(function () {
-                                monitoringRulesSuccessCallback();
-
-
-                                $http.post("/api/sla/agreements", {
-                                    rules: monitoringRules,
-                                    agreements: agreements
-                                }).
-                                    success(function (data) {
-                                        agreementsSuccessCallback();
-                                        resolveParent(deployerResponse);
-
-                                    }).
-                                    error(function (err) {
-                                        //TODO: Rollback monitoring rules + monitor model + deployed app
-                                        agreementsErrorCallback();
-                                        rejectParent(err);
-                                    })
-                            }).
-                            error(function (err) {
-                                //TODO: Rollback monitor model + deployed app
-                                monitoringRulesErrorCallback();
-                                rejectParent(err);
-                            })
-                    }).
-                    error(function (err) {
-                        damErrorCallback();
-                        rejectParent(err);
-                    })
-
-            });
-            promise.success = function (fn) {
-                promise.then(fn);
-                return promise;
-            }
-
-            promise.error = function (fn) {
-                promise.then(null, fn);
-                return promise;
-            }
-
-            return promise;
-
-
+        addApplication: function (toscaDam) {
+            return $http.post("/api/deployer/applications", toscaDam);
         },
-        removeProject: function (id) {
-            return $http.delete("/api/deployer/applications/" + id);
+        removeApplication: function (seaCloudsId) {
+            return $http.delete("/api/deployer/applications/" + seaCloudsId);
         },
-        getSensors: function (id) {
-            var promise = new Promise(function (resolve, reject) {
-                $http.get("/api/deployer/applications/" + id + "/sensors").
-                    success(function (sensors) {
-                        resolve(sensors);
-                    }).
-                    error(function (err) {
-                        reject(Error(err));
-                    });
-            });
-            promise.success = function (fn) {
-                promise.then(fn);
-                return promise;
-            }
-
-            promise.error = function (fn) {
-                promise.then(null, fn);
-                return promise;
-            }
-
-            return promise;
+        getEntitySensorMapList: function (seaCloudsId) {
+            return $http.get("/api/monitor/applications/" + seaCloudsId + "/sensors");
         },
-        getAvailableMetrics: function (applicationId) {
-            var promise = new Promise(function (resolve, reject) {
-                $http.get("/api/deployer/applications/" + applicationId + "/metrics").
-                    success(function (sensors) {
-                        resolve(sensors);
-                    }).
-                    error(function (err) {
-                        reject(Error(err));
-                    });
-            });
-            promise.success = function (fn) {
-                promise.then(fn);
-                return promise;
-            }
-
-            promise.error = function (fn) {
-                promise.then(null, fn);
-                return promise;
-            }
-
-            return promise;
+        getEntityMetricMapList: function (seaCloudsId) {
+            return $http.get("/api/monitor/applications/" + seaCloudsId + "/metrics");
         },
-        getMetricValue: function (applicationId, entityId, metricId) {
-            var promise = new Promise(function (resolve, reject) {
-                $http.get("/api/deployer/applications/" + applicationId + "/metrics/value?entityId=" + entityId + "&metricId=" + metricId).
-                    success(function (value) {
-                        resolve(value);
-                    }).
-                    error(function (err) {
-                        reject(Error(err));
-                    });
-            });
-            promise.success = function (fn) {
-                promise.then(fn);
-                return promise;
-            }
-
-            promise.error = function (fn) {
-                promise.then(null, fn);
-                return promise;
-            }
-
-            return promise;
+        getMetricValue: function (seaCloudsId, entityId, metricId) {
+            return $http.get("/api/monitor/applications/" + seaCloudsId + "/entities/" + entityId + "/metrics/" +metricId);
         },
-        getAgreementStatus: function (applicationId) {
-            var promise = new Promise(function (resolve, reject) {
-                $http.get("/api/sla/agreements/" + applicationId + "/status").
-                    success(function (value) {
-                        resolve(value);
-                    }).
-                    error(function (err) {
-                        reject(Error(err));
-                    });
-
-
-            });
-            promise.success = function (fn) {
-                promise.then(fn);
-                return promise;
-            }
-
-            promise.error = function (fn) {
-                promise.then(null, fn);
-                return promise;
-            }
-
-            return promise;
+        getAgreement: function (seaCloudsId) {
+           return $http.get("/api/sla/agreements/" + seaCloudsId);
         },
-        getAgreements: function (applicationId) {
-            var promise = new Promise(function (resolve, reject) {
-                $http.get("/api/sla/agreements/" + applicationId).
-                    success(function (value) {
-                        resolve(value);
-                    }).
-                    error(function (err) {
-                        reject(Error(err));
-                    })
-            });
-            promise.success = function (fn) {
-                promise.then(fn);
-                return promise;
-            }
-
-            promise.error = function (fn) {
-                promise.then(null, fn);
-                return promise;
-            }
-
-            return promise;
+        getAgreementStatus: function (seaCloudsId) {
+            return $http.get("/api/sla/agreements/" + seaCloudsId + "/status");
+        },
+        getAgreementTermViolations: function (seaCloudsId, termName) {
+            return $http.get("/api/sla/agreements/" + seaCloudsId + "/terms/" + termName + "/violations");
         },
         getAamFromDesigner: function (designerTopology) {
-            var promise = new Promise(function (resolve, reject) {
-                $http.post("/api/aamwriter/translate", designerTopology).
-                    success(function (value) {
-                        resolve(value);
-                    }).
-                    error(function (err) {
-                        reject(Error(err));
-                    })
-            });
-            promise.success = function (fn) {
-                promise.then(fn);
-                return promise;
-            }
-
-            promise.error = function (fn) {
-                promise.then(null, fn);
-                return promise;
-            }
-
-            return promise;
+            return $http.post("/api/aamwriter/translate", designerTopology);
         },
         getAdpList: function (aam) {
-            var promise = new Promise(function (resolve, reject) {
-                $http.post("/api/planner/adps", aam).
-                    success(function (response) {
-                        resolve(response.adps);
-                    }).
-                    error(function (err) {
-                        reject(Error(err));
-                    })
-            });
-            promise.success = function (fn) {
-                promise.then(fn);
-                return promise;
-            }
-
-            promise.error = function (fn) {
-                promise.then(null, fn);
-                return promise;
-            }
-
-            return promise;
+            return $http.post("/api/planner/adps", aam);
         },
         getDam: function (adp) {
-            var promise = new Promise(function (resolve, reject) {
-                $http.post("/api/planner/dam", adp).
-                    success(function (result) {
-                        resolve(result.dam);
-                    }).
-                    error(function (err) {
-                        reject(Error(err));
-                    })
-            });
-            promise.success = function (fn) {
-                promise.then(fn);
-                return promise;
-            }
-
-            promise.error = function (fn) {
-                promise.then(null, fn);
-                return promise;
-            }
-
-            return promise;
+            return $http.post("/api/planner/dam", adp);
         }
     };
 });
 
 
-seacloudsDashboard.controller('GlobalCtrl', function ($scope, Page, UserCredentials, SeaCloudsApi) {
+seacloudsDashboard.controller('GlobalCtrl', function ($scope, Page, SeaCloudsApi) {
     $scope.Page = Page;
-    $scope.UserCredentials = UserCredentials;
     $scope.SeaCloudsApi = SeaCloudsApi;
-
-    if (!UserCredentials.isUserAuthenticated()) {
-        $location.path('/access-restricted.html');
-    }
 });
 
