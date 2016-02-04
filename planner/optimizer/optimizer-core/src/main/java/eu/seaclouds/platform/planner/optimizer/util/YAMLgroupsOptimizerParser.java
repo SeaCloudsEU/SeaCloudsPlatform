@@ -68,7 +68,9 @@ public class YAMLgroupsOptimizerParser {
    }
 
    public static Map<String, Object> getQoSinfoOfMemberName(String moduleName, Map<String, Object> groups) {
+      log.debug("Looking for QoS information benchmark of module {}. Finding its group", moduleName);
       Map<String, Object> groupInfo = YAMLgroupsOptimizerParser.findGroupOfMemberName(moduleName, groups);
+      log.debug("Looking for QoS information benchmark of module {}. Finding information inside group", moduleName);
       return YAMLgroupsOptimizerParser.getPolicySubInfoFromGroupInfo(groupInfo, TOSCAkeywords.GROUP_POLICY_QOSINFO);
 
    }
