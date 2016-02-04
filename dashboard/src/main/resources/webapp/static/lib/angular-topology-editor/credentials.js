@@ -64,6 +64,7 @@ var Credentials = (function() {
         /*
          * Edit cloud
          */
+        $('body').off('click', '.popover button[data-nodeindex]');
         $('body').on('click', '.popover button[data-nodeindex]', function () {
             var index = this.getAttribute("data-nodeindex");
 
