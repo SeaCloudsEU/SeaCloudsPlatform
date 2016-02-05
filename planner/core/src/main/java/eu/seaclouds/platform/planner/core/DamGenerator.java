@@ -88,7 +88,7 @@ public class DamGenerator {
 
         String slaInfoResponse = new HttpHelper(slaGenURL).postInBody(SLA_GEN_OP, yml.dump(adpYaml));
         checkNotNull(slaInfoResponse, "Error getting SLA info");
-        adpYaml = DamGenerator.addApplicationInfo(adpYaml, slaGenURL, SLA_INFO_GROUPNAME);
+        adpYaml = DamGenerator.addApplicationInfo(adpYaml, slaInfoResponse, SLA_INFO_GROUPNAME);
 
         Map groups = (Map) adpYaml.remove(GROUPS);
 
@@ -185,6 +185,23 @@ public class DamGenerator {
         for(String moduleName:nodeTemplates.keySet()){
             Map<String, Object> module = (Map<String, Object>) nodeTemplates.get(moduleName);
 
+            ArrayList<Map<String, Object>> artifactsList =  (ArrayList<Map<String, Object>>) module.get("artifacts");
+            if (artifactsList != null) {
+                Map<String, Object> artifacts = artifactsList.get(0);
+                artifacts.remove("type");
+
+                Set<String> artifactKeys = artifacts.keySet();
+                if (artifactKeys.size() > 1) {
+                    throw new IllegalArgumentException();
+                }
+
+                String[] keys = artifactKeys.toArray(new String[1]);
+
+                Map<String, Object> properties = (Map<String, Object>) module.get("properties");
+                properties.put(keys[0], artifacts.get(keys[0]));
+
+                module.remove("artifacts");
+            }
             //type replacement
             String moduleType = (String) module.get("type");
             if(nodeTypes.containsKey(moduleType)){

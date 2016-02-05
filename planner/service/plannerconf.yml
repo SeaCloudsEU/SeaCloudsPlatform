@@ -5,9 +5,11 @@ server:
   connector:
     type: http
     port: 1234
-discovererURL: http://131.114.3.217:1236/
-monitorGeneratorURL: http://127.0.0.1
-monitorGeneratorPort: 8080
-slaGeneratorURL: http://109.231.121.157:8080/
+discovererURL: http://52.49.115.206:1236/
+monitorGeneratorURL: 52.48.12.68
+monitorGeneratorPort: 8170
+slaGeneratorURL: http://95.211.172.242:9003
 deployableProviders: ["openstack-nova","openstack-keystone","openstack-nova-ec2", "byon", "sts", "elasticstack", "cloudstack", "rackspace-cloudidentity","aws-ec2","gogrid","elastichosts-lon-p","elastichosts-sat-p","elastichosts-lon-b","openhosting-east1","serverlove-z1-man","skalicloud-sdg-my","go2cloud-jhb1","softlayer","hpcloud-compute","rackspace-cloudservers-us","rackspace-cloudservers-uk","azurecompute","google-compute-engine","CloudFoundry"]
-filterOfferings: false
+filterOfferings: true
+influxdbPort: 8086
+influxdbURL: 52.48.12.68

@@ -113,7 +113,21 @@ public class Matchmaker {
         //Check properties
         if(module.getProperties() == null) return true;
 
+        PropertyValue offeringType = getPropertyValue("", offering.getProperties().get("resource_type"));
+
+        // for each property of the module
         for(String p:module.getProperties().keySet()) {
+            // if constraints contain software support and the offering is of type compute,
+            // the constraint is considered satisfied
+            if (!offering.getProperties().containsKey(p) &&
+                    offeringType.getValue().equals("compute") &&
+                    p.endsWith("_support"))
+                continue;
+
+            // if the offering does not specify a software version, the constraint is considered satisfied
+            if (!offering.getProperties().containsKey(p) && p.endsWith("_version"))
+                continue;
+
             if(!offering.getProperties().containsKey(p)) return false; //no info means rejection
 
             PropertyDefinition moduleProperty = module.getProperties().get(p); //TODO: check if this should be requirements instead of property

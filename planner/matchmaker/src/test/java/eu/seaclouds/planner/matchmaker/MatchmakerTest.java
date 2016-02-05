@@ -193,8 +193,8 @@ public class MatchmakerTest {
 
         assertNotNull(res);
         assertEquals(res.get("webservices").size(), 1);
-        assertEquals(res.get("db1").size(), 1);
-        assertEquals(res.get("www").size(), 2);
+        assertEquals(res.get("db1").size(), 4);
+        assertEquals(res.get("www").size(), 3);
     }
 
     @Test
