@@ -18,6 +18,7 @@
  */
 package org.apache.brooklyn.entity.cloudfoundry.webapp.php;
 
+import org.apache.brooklyn.entity.cloudfoundry.LocalResourcesDownloader;
 import org.apache.brooklyn.entity.cloudfoundry.webapp.PaasWebAppCloudFoundryDriver;
 import org.apache.brooklyn.location.cloudfoundry.CloudFoundryPaasLocation;
 import org.cloudfoundry.client.lib.domain.Staging;
@@ -57,8 +58,9 @@ public class PhpPaasWebAppCloudFoundryDriver extends PaasWebAppCloudFoundryDrive
         try {
             staging = new Staging(null, getBuildpack());
             uris.add(inferApplicationDomainUri(getApplicationName()));
-            //fixme a URI in necessary
-            applicationDirectory = new File(getApplicationUrl());
+
+            applicationDirectory = LocalResourcesDownloader
+                    .downloadResourceInLocalDir(getApplicationUrl());
 
             getClient().createApplication(getApplicationName(), staging,
                     getLocation().getConfig(CloudFoundryPaasLocation.REQUIRED_MEMORY),

@@ -39,9 +39,7 @@ import static org.testng.Assert.assertTrue;
 
 public class PhpWebCloudFoundryLiveTest extends AbstractCloudFoundryPaasLocationLiveTest {
 
-    private final String APPLICATION_URL = checkNotNull(getClass().getClassLoader()
-            .getResource("phpHelloWorld")).getFile();
-
+    private final String APPLICATION_URL = "classpath://phpHelloWorld.zip";
 
     @Test(groups = {"Live"})
     protected void deployApplicationTest() throws Exception {
