@@ -94,9 +94,11 @@ angular.module('seacloudsDashboard.wizards.addApplication', ['ngRoute', 'angular
                     $scope.currentStep++;
                     break;
                 case 2:
-                    var designPhaseOutput = $scope.applicationWizardData.topology;
-                    designPhaseOutput.name = $scope.applicationWizardData.name;
-                    designPhaseOutput.application_requirements = $scope.applicationWizardData.application_requirements;
+                    $scope.applicationWizardData.topology.name = $scope.applicationWizardData.name;
+                    $scope.applicationWizardData.topology.application_requirements = $scope.applicationWizardData.application_requirements;
+
+                    // Simple way to clone objects without functions
+                    var designPhaseOutput = JSON.parse(JSON.stringify($scope.applicationWizardData.topology));
                     designPhaseOutput.application_requirements.workload *= 60; // Fix Issue #182
                     designPhaseOutput.application_requirements.availability /= 100; // Fix Issue #223
                     notificationService.info("Generating AAM for the current topology.");
