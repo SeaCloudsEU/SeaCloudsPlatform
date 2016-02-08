@@ -14,6 +14,18 @@
 
 var Credentials = (function() {
 
+    var activeform = undefined;
+    var amazonform = Object.create(Forms.Form);
+    var userpwdform = Object.create(Forms.Form);
+    var cloudfoundryform = Object.create(Forms.Form);
+    var genericform = Object.create(Forms.Form);
+
+    var form_by_provider = {
+        "aws-ec2": amazonform,
+        "openshift": userpwdform,
+        "CloudFoundry": cloudfoundryform,
+    };
+
     var canvas;
 
     /*
@@ -87,10 +99,11 @@ var Credentials = (function() {
                 /*
                  * and load form
                  */
-                credentialsform.title = node.name;
-                credentialsform.reset();
-                credentialsform.load(node);
-                credentialsform.show(function(node) {
+                activeform = form_by_provider[node.properties.location] || genericform;
+                activeform.title = node.name;
+                activeform.reset();
+                activeform.load(node);
+                activeform.show(function(node) {
                     canvas.restart();
                     canvas.firechange();
                 });
@@ -101,44 +114,68 @@ var Credentials = (function() {
          * Edit cloud button in form
          */
         $("div.modal-footer button.btn-primary").on("click", function() {
-            credentialsform.hide();
-            credentialsform.createnode();
+            activeform.hide();
+            activeform.createnode();
+            activeform = undefined;
         });
     }
 
-    var credentialsform = Object.create(Forms.Form);
-    var apikeyset = Object.create(Forms.Fieldset);
-    var userpwdset = Object.create(Forms.Fieldset);
+    var credentialset = Object.create(Forms.Fieldset);
+    var amazonset = Object.create(credentialset);
+    var userpwdset = Object.create(credentialset);
+    var cloudfoundryset = Object.create(credentialset);
+    var genericset = Object.create(credentialset);
 
     function initialize_fieldssets() {
-        apikeyset.apikeyset("set-apikey");
-        userpwdset.userpwdset("set-userpwd");
+        amazonset.credentialset("set-amazon");
+        userpwdset.credentialset("set-userpwd");
+        cloudfoundryset.credentialset("set-cloudfoundry");
+        genericset.credentialset("set-generic");
     }
 
     function initialize_forms() {
-        credentialsform.setup(
+        amazonform.setup(
             Types.Cloud,
             NodeBehaviour,
             document.getElementById("edit-credentials-form"),
             "Cloud",
-            [apikeyset, userpwdset]
+            [amazonset]
+        );
+        userpwdform.setup(
+            Types.Cloud,
+            NodeBehaviour,
+            document.getElementById("edit-credentials-form"),
+            "Cloud",
+            [userpwdset]
+        );
+        cloudfoundryform.setup(
+            Types.Cloud,
+            NodeBehaviour,
+            document.getElementById("edit-credentials-form"),
+            "Cloud",
+            [userpwdset, cloudfoundryset]
+        );
+        genericform.setup(
+            Types.Cloud,
+            NodeBehaviour,
+            document.getElementById("edit-credentials-form"),
+            "Cloud",
+            [genericset]
         );
     }
 
-    apikeyset.apikeyset = function(fieldsetid) {
+    credentialset.credentialset = function(fieldsetid) {
         this.setup(fieldsetid);
     }
 
-    apikeyset.load = function(node) {
-        $("#apikey-apikey").val(node.properties.apikey);
+    amazonset.load = function(node) {
+        $("#amazon-identity").val(node.properties.identity);
+        $("#amazon-credential").val(node.properties.credential);
     }
 
-    apikeyset.store = function(node) {
-        node.properties.apikey = $("#apikey-apikey").val();
-    }
-
-    userpwdset.userpwdset = function(fieldsetid) {
-        this.setup(fieldsetid);
+    amazonset.store = function(node) {
+        node.properties.identity = $("#amazon-identity").val();
+        node.properties.credential = $("#amazon-credential").val();
     }
 
     userpwdset.load = function(node) {
@@ -149,6 +186,43 @@ var Credentials = (function() {
     userpwdset.store = function(node) {
         node.properties.user = $("#userpwd-user").val();
         node.properties.password = $("#userpwd-pwd").val();
+    }
+
+    cloudfoundryset.load = function(node) {
+        $("#cloudfoundry-org").val(node.properties.org);
+        $("#cloudfoundry-space").val(node.properties.space);
+        $("#cloudfoundry-address").val(node.properties.address);
+        $("#cloudfoundry-endpoint").val(node.properties.endpoint);
+    }
+
+    cloudfoundryset.store = function(node) {
+        node.properties.org = $("#cloudfoundry-org").val();
+        node.properties.space = $("#cloudfoundry-space").val();
+        node.properties.address = $("#cloudfoundry-address").val();
+        node.properties.endpoint = $("#cloudfoundry-endpoint").val();
+    }
+
+    genericset.load = function(node) {
+        var arr = []
+
+        Object.keys(node.properties).
+            forEach(function(name) {
+                if (name != "location") {
+                    arr.push(name + "=" + node.properties[name]);
+                }
+            });
+        var s = arr.join(";");
+        $("#generic-value").val(s);
+    }
+
+    genericset.store = function(node) {
+        var arr = $("#generic-value").val().split(";");
+        arr.forEach(function(item) {
+            var parts = item.split("=");
+            var name = parts[0];
+            var value = parts[1];
+            node.properties[name] = value;
+        });
     }
 
     function addlinkcallback(canvas, link, accept) {
@@ -233,6 +307,10 @@ var Credentials = (function() {
                 label: name,
                 behaviour: Credentials.NodeBehaviour
             });
+
+            if (ttype == Types.Cloud) {
+                tnode.properties.location = node_template.properties.location;
+            }
             topology.nodes.push(tnode);
             nodemap[name] = tnode;
         });
@@ -283,8 +361,15 @@ var Credentials = (function() {
                         var policy = group.policies[i];
                         if (policy[LOCATION_POLICY]) {
                             var tnode = canvas.getnodebyname(tnodename);
-                            policy["identity"] = tnode.identity();
-                            policy["credential"] = tnode.credential();
+
+                            Object.keys(tnode.properties).
+                            filter(function(name) {
+                                name != "location"
+                            }).
+                            forEach(function(name) {
+                                var value = tnode.properties[name];
+                                policy[name] = value;
+                            });
                             break;
                         }
                     }

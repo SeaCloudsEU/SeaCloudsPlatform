@@ -101,12 +101,6 @@ var Types = function() {
         label : "Cloud",
         type : "Cloud",
         icon : "\uf0c2",
-        identity : function() {
-            return this.properties.apikey || this.properties.user || "";
-        },
-        credential: function() {
-            return this.properties.password || "";
-        }
     });
 
     var Module = Object.create(Graph.Node).init({
