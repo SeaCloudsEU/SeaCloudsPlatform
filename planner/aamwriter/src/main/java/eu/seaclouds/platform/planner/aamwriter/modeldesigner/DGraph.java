@@ -26,6 +26,17 @@ import org.json.simple.JSONObject;
 
 import eu.seaclouds.platform.planner.aamwriter.AamWriterException;
 
+/**
+ * Classes in aamwriter.modeldesigner package model the topology described in UI. 
+ * 
+ * DGraph class is the root of the topology model. It is in charge of reading a description
+ * of the topology in json and build the hierarchy of classes.
+ * 
+ * NOTE: The preferred way to set the frontend node of the application is specifying it in the 
+ * application_requirements element of the json topology. It not specified, the frontend
+ * node is calculated as the first node found without incoming links. This may lead to 
+ * unexpected behaviour. Due to optimizer constraint, only one frontend node is allowed.
+ */
 public class DGraph {
     public final static class Properties {
         public static final String NAME = "name";
@@ -38,6 +49,7 @@ public class DGraph {
     private List<DNode> nodes; 
     private List<DLink> links;
     private DRequirements requirements;
+    private DNode frontendNode;
 
     public DGraph(JSONObject json) {
         this.name = (String)json.get(Properties.NAME);
@@ -54,6 +66,10 @@ public class DGraph {
         
         JSONObject orequirements = (JSONObject) json.get(Properties.REQUIREMENTS);
         this.requirements = new DRequirements(orequirements, this);
+        
+        DNode frontend = getNode(requirements.getFrontend());
+        this.frontendNode = (DNode.NOT_FOUND.equals(frontend))? 
+                calculateSourceNode() : frontend;
     }
 
     public DNode getNode(String nodeName) {
@@ -122,13 +138,27 @@ public class DGraph {
         return result;
     }
 
+    private DNode calculateSourceNode() {
+        DNode result = DNode.NOT_FOUND;
+        
+        for (DNode node : nodes) {
+            List<DLink> links = getLinksTo(node);
+            if (links.size() == 0) {
+                result = node;
+                break;
+            }
+        }
+        return result;
+    }
+    
     @Override
     public String toString() {
-        return String.format("Graph [name=%s, nodes=%s, links=%s, requirements=%s]",
+        return String.format("Graph [name=%s, nodes=%s, links=%s, requirements=%s, source=%s]",
                 this.name,
                 Arrays.toString(nodes.toArray()), 
                 Arrays.toString(links.toArray()),
-                requirements.toString());
+                requirements.toString(),
+                frontendNode.getName());
     }
 
     public String getName() {
@@ -145,5 +175,14 @@ public class DGraph {
     
     public DRequirements getRequirements() {
         return requirements;
+    }
+
+    /**
+     * The frontend node is specified in application_requirements/frontend. If not specified,
+     * the frontend is considered the source of the flow graph. 
+     * @return
+     */
+    public DNode getFrontendNode() {
+        return frontendNode;
     }
 }

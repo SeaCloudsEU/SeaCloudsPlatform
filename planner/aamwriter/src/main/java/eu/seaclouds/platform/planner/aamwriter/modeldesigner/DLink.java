@@ -21,6 +21,11 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+/**
+ * Classes in aamwriter.modeldesigner package model the topology described in UI. 
+ * 
+ * DLink class models a "uses" relationship between two DNodes.
+ */
 public class DLink {
 
     public static final class Attributes {
