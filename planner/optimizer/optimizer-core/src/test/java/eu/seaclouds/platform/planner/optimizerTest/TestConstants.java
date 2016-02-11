@@ -18,7 +18,7 @@
 
 package eu.seaclouds.platform.planner.optimizerTest;
 
-public class TestConstants {
+public abstract class TestConstants {
 
    public static final boolean EnabledTest = true;
    
@@ -35,5 +35,9 @@ public class TestConstants {
    public static final int    NUM_PLANS_TO_GENERATE = 5;
 
    public static final String CLOUD_OFFER_FILENAME_IN_JSON = "./src/test/resources/mmOutputExample20Oct.json";
+   
+   
+   public static final String APP_MODEL_FILENAME_SINGLE_MODULE    = "./src/test/resources/aam_singleModule11Feb16.yml";
+   public static final String CLOUD_OFFER_FILENAME_IN_JSON_SINGLE_OFFER = "./src/test/resources/mmOutputExample20OctSingleOffer.json";
    
 }

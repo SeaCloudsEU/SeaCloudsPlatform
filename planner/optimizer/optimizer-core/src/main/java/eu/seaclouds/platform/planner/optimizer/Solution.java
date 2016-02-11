@@ -101,7 +101,7 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
    public void modifyNumInstancesOfModule(String modulename, int newInstances) {
 
       if (!modName_NumInstances.containsKey(modulename)) {
-         log.error("trying to modify the number of instances of a module which does not exist");
+         log.error("trying to modify the number of instances of a module which does not exist. The name of the module searched was {}", modulename);
       } else {
          modName_NumInstances.put(modulename, newInstances);
       }

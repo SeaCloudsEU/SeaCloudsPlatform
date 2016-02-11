@@ -708,6 +708,7 @@ public class YAMLoptimizerParser {
 
       } catch (NullPointerException E) {
          log.error("It was not found '" + TOSCAkeywords.NODE_TYPES + "' . Cannot be unveiled the types of modules");
+         log.error(TOSCAkeywords.NODE_TYPES + " was searched in " + YAMLoptimizerParser.fromMAPtoYAMLstring(appMap));
          return null;
       }
       return typesMap;
