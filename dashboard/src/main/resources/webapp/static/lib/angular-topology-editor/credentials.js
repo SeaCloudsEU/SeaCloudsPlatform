@@ -347,10 +347,49 @@ var Credentials = (function() {
      *
      * Assumes there is a group LOCATION_GROUP_<nodename> where nodename is the
      * name of a node template in the topology_template.
+     *
+     * A final policy is like this:
+     *
+     *  add_brooklyn_location_Cloud_Foundry:
+     *      policies:
+     *      - brooklyn.location:
+     *          CloudFoundry:
+     *              user: <user>
+     *              ...
+     *
      */
     function store_credentials_in_dam(rawdam) {
         var LOCATION_GROUP = "add_brooklyn_location_";
         var LOCATION_POLICY = "brooklyn.location";
+
+        /*
+         * If the content of brooklyn.location is a string,
+         * (e.g.- {brooklyn.location: CloudFoundry}),
+         * convert it into an object.
+         *
+         * Returns the new object if modified; in other case, it returns the
+         * first object inside brooklyn.location.
+         */
+        function fix_or_get_location(policy) {
+            if (typeof(policy[LOCATION_POLICY]) == "string") {
+                var location = policy[LOCATION_POLICY];
+
+                policy[LOCATION_POLICY] = {};
+                policy[LOCATION_POLICY][location] = {};
+            }
+            var keys = Object.keys(policy[LOCATION_POLICY]);
+            /*
+             * XXX: Assumes the credentials are to be stored in the first property
+             * of brooklyn.location map.
+             */
+            if (keys.length > 0) {
+                var key = keys[0];
+                return policy[LOCATION_POLICY][key]
+            }
+            else {
+                throw "Policy not valid: " + policy;
+            }
+        }
 
         var dam = jsyaml.safeLoad(rawdam);
         var canvas = this.canvas;
@@ -361,19 +400,22 @@ var Credentials = (function() {
             forEach(function(groupname) {
                 var group = dam.topology_template.groups[groupname];
                 var tnodename = groupname.substr(LOCATION_GROUP.length);
+
                 if (group.policies) {
                     for (var i = 0; i < group.policies.length; i++) {
                         var policy = group.policies[i];
                         if (policy[LOCATION_POLICY]) {
                             var tnode = canvas.getnodebyname(tnodename);
 
+                            var location_policy = fix_or_get_location(policy);
+
                             Object.keys(tnode.properties).
                             filter(function(name) {
-                                name != "location"
+                                return name != "location";
                             }).
                             forEach(function(name) {
                                 var value = tnode.properties[name];
-                                policy[name] = value;
+                                location_policy[name] = (value !== undefined)? value : "";
                             });
                             break;
                         }
