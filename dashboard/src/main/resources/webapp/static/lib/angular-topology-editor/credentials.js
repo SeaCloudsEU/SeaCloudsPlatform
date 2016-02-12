@@ -253,14 +253,19 @@ var Credentials = (function() {
      * Returns a topology from a DAM.
      */
     function to_topology(rawdam) {
-        var PAAS_TYPE_PREFIX = "seaclouds.nodes.Platform";
-        var IAAS_TYPE_PREFIX = "seaclouds.nodes.Compute";
-        var INSTANCES = "instancesPOC";
+        var cloud_prefixes = [
+                "seaclouds.nodes.Platform",
+                "tosca.nodes.Platform",
+                "seaclouds.nodes.Compute",
+                "tosca.nodes.Compute"
+        ];
         var dam = jsyaml.safeLoad(rawdam);
 
         function node_type_is_provider(node_type_name) {
-            return node_type_name.startsWith(PAAS_TYPE_PREFIX) ||
-                node_type_name.startsWith(IAAS_TYPE_PREFIX);
+            var result = cloud_prefixes.some(function(prefix) {
+                return node_type_name.startsWith(prefix);
+            });
+            return result;
         }
 
         function topology_type_by_node_template(node_template) {
