@@ -18,6 +18,11 @@ package eu.seaclouds.platform.planner.aamwriter.modeldesigner;
 
 import org.json.simple.JSONObject;
 
+/**
+ * Classes in aamwriter.modeldesigner package model the topology described in UI. 
+ * 
+ * DRequirements class stores QoS needed for the whole application.
+ */
 public class DRequirements {
 
     public static final class Attributes {
@@ -25,6 +30,7 @@ public class DRequirements {
         public static final String AVAILABILITY = "availability";
         public static final String COST = "cost";
         public static final String WORKLOAD = "workload";
+        public static final String FRONTEND = "frontend";
     }
     
     @SuppressWarnings("unused")
@@ -34,6 +40,7 @@ public class DRequirements {
     private double availability;
     private double cost;
     private double workload;
+    private String frontendModuleName;
 
     public DRequirements(JSONObject jnode, DGraph graph) {
         this.graph = graph;
@@ -42,11 +49,20 @@ public class DRequirements {
         this.availability = parseDouble(jnode, Attributes.AVAILABILITY);
         this.cost = parseDouble(jnode, Attributes.COST);
         this.workload = parseDouble(jnode, Attributes.WORKLOAD);
+        this.frontendModuleName = parseString(jnode, Attributes.FRONTEND);
     }
     
     private double parseDouble(JSONObject jnode, String key) {
-        double result = Double.parseDouble(jnode.get(key).toString());
+        Object value = jnode.get(key);
+        double result = (value == null)? 0: Double.parseDouble(value.toString());
         
+        return result;
+    }
+    
+    private String parseString(JSONObject jnode, String key) {
+        Object value = jnode.get(key);
+        
+        String result = (value == null)? "" : value.toString();
         return result;
     }
 
@@ -70,5 +86,9 @@ public class DRequirements {
     
     public double getWorkload() {
         return workload;
+    }
+    
+    public String getFrontend() {
+        return frontendModuleName;
     }
 }

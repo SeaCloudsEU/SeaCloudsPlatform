@@ -239,9 +239,9 @@ public class Translator {
             sourceOperation.addDependencies(new Policy.Dependencies(dependencies));
             
             /*
-             * Application QosRequirements if this node is the source of the flow graph
+             * Application QosRequirements if this node is the frontend
              */
-            if (isSource(dgraph, dnode)) {
+            if (dnode.isFrontend()) {
                 DRequirements dreq = dgraph.getRequirements();
                 Policy.AppQoSRequirements requirements = new Policy.AppQoSRequirements(
                         dreq.getResponseTime(), dreq.getAvailability(), dreq.getCost(), dreq.getWorkload());
@@ -297,11 +297,6 @@ public class Translator {
         return artifactName;
     }
     
-    private boolean isSource(DGraph dgraph, DNode dnode) {
-        List<DLink> links = dgraph.getLinksTo(dnode);
-        return links.size() == 0;
-    }
-
     private String buildOperationName(DNode dnode) {
         return OPERATION_PREFIX + dnode.getName();
     }

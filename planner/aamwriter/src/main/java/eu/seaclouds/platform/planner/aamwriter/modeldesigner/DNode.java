@@ -23,6 +23,12 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+/**
+ * Classes in aamwriter.modeldesigner package model the topology described in UI. 
+ * 
+ * DNode class models a module in the topology, describing the name, tech properties,
+ * deployment properties and needed QoS.
+ */
 public class DNode {
     public static final class Attributes {
         public static final String NAME = "name";
@@ -200,5 +206,13 @@ public class DNode {
     
     public List<Map<String, String>> getQos() {
         return qos;
+    }
+    
+    public boolean isFrontend() {
+        boolean result = false;
+        if (this.graph != null) {
+            result = (this.graph.getFrontendNode() == this);
+        }
+        return result;
     }
 }

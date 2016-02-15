@@ -17,7 +17,6 @@
 package eu.seaclouds.platform.planner.aamwriter;
 
 import org.json.simple.JSONObject;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.*;
@@ -27,19 +26,15 @@ import eu.seaclouds.platform.planner.aamwriter.modeldesigner.DNode;
 
 public class DesignerModelTest {
 
-    private static final DNode[] EMPTY_NODES = {};
-    private static final DLink[] EMPTY_LINKS = {};
-    private static JSONObject root;
-    private static DGraph graph;
-
-    @BeforeClass
-    private static void beforeClass() throws Exception {
-        root = (JSONObject) TestUtils.loadJson("/3tier.json");
-        graph = new DGraph(root);
-    }
+    private final DNode[] EMPTY_NODES = {};
+    private final DLink[] EMPTY_LINKS = {};
+    private JSONObject root;
+    private DGraph graph;
 
     @Test
-    public void testLoadGraph() {
+    public void testLoadGraph() throws Exception {
+        root = (JSONObject) TestUtils.loadJson("/3tier.json");
+        graph = new DGraph(root);
 
         graph = new DGraph(root);
         assertNotNull(graph);
@@ -63,4 +58,35 @@ public class DesignerModelTest {
         assertEquals(links[1].getTarget(), nodes[2]);
     }
 
+    @Test
+    public void testFrontendNodeIsEmpty() throws Exception {
+        root = (JSONObject) TestUtils.loadJson("/3tier.json");
+        graph = new DGraph(root);
+        
+        assertEquals(graph.getFrontendNode().getName(), "www");
+        assertTrue(graph.getNode("www").isFrontend());
+        assertFalse(graph.getNode("db1").isFrontend());
+        
+    }
+
+    @Test
+    public void testFrontendNodeIsFilled() throws Exception {
+        root = (JSONObject) TestUtils.loadJson("/frontend.json");
+        graph = new DGraph(root);
+        
+        assertEquals(graph.getFrontendNode().getName(), "webservices");
+        assertFalse(graph.getNode("www").isFrontend());
+        assertTrue(graph.getNode("webservices").isFrontend());
+    }
+    
+    @Test
+    public void testWrontFrontendName() throws Exception {
+        root = (JSONObject) TestUtils.loadJson("/wrong_frontend.json");
+        graph = new DGraph(root);
+        
+        assertEquals(graph.getFrontendNode().getName(), "www");
+        assertFalse(graph.getNode("webservices").isFrontend());
+        assertTrue(graph.getNode("www").isFrontend());
+        assertFalse(graph.getNode("db1").isFrontend());
+    }
 }
