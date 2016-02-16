@@ -2,8 +2,7 @@ sudo: required
 language: java
 jdk:
 - oraclejdk7
-after_success:
-- ".buildscript/deploy_snapshot.sh"
+
 install: true
 before_script:
 - chmod 600 qa/src/main/resources/brooklyn.properties
@@ -22,6 +21,7 @@ script:
 #- mvn verify -pl qa -Ptravis -DskipTests
 #- cat qa/target/brooklyn-maven-plugin/brooklyn.debug.log
 after_success:
+  - ".buildscript/deploy_snapshot.sh"
   - codecov
 
 branches:
