@@ -1,7 +1,7 @@
 map_name: brooklyn-tosca-ssh-mapping
 description: This mapping contains the equivalence between SeaClouds NodeTypes and brooklyn-tosca-types
 
-mapping.node_ypes:
+mapping.node_types:
   seaclouds.nodes.webapp.jboss.JBoss6Server: org.apache.brooklyn.entity.webapp.jboss.JBoss6Server
   seaclouds.nodes.webapp.jboss.JBoss7Server: org.apache.brooklyn.entity.webapp.jboss.JBoss7Server
   seaclouds.nodes.webapp.jetty.Jetty6Server: org.apache.brooklyn.entity.webapp.jetty.Jetty6Server
@@ -95,7 +95,7 @@ node_types:
     description: >
       A simple DC
     properties:
-      install_latch:
+      install.latch:
         type: string
         required: false
       shell.env:
