@@ -34,6 +34,10 @@ import eu.seaclouds.platform.planner.aamwriter.modeldesigner.DGraph;
 import eu.seaclouds.platform.planner.aamwriter.modeldesigner.DLink;
 import eu.seaclouds.platform.planner.aamwriter.modeldesigner.DNode;
 import eu.seaclouds.platform.planner.aamwriter.modeldesigner.DRequirements;
+import static eu.seaclouds.platform.planner.aamwriter.modeldesigner.DNode.Types;
+import static eu.seaclouds.platform.planner.aamwriter.modeldesigner.DNode.Categories;
+import static eu.seaclouds.platform.planner.aamwriter.modeldesigner.DNode.Containers;
+
 
 /**
  * Translates from designer model to AAM.
@@ -42,11 +46,20 @@ import eu.seaclouds.platform.planner.aamwriter.modeldesigner.DRequirements;
  *
  */
 public class Translator {
+
     public static Logger log = LoggerFactory.getLogger(Translator.class);
     
     private static final String NODE_TYPE_PREFIX = "sc_req.";
     private static final String OPERATION_PREFIX = "operation_";
 
+    private static final class Languages {
+        public static final String PHP = "PHP";
+        public static final String NET = ".NET";
+        public static final String RUBY = "RUBY";
+        public static final String PYTHON = "PYTHON";
+        public static final String JAVA = "JAVA";
+    }
+    
     public Aam translate(DGraph graph) {
 
         Aam aam = new Aam(graph.getName());
@@ -260,13 +273,13 @@ public class Translator {
     private String buildDerivedFrom(DNode dnode) {
         String derivedFrom;
         String derivedFromSuffix;
-        if ("WebApplication".equals(dnode.getType())) {
+        if (Types.WEB_APPLICATION.equals(dnode.getType())) {
             derivedFromSuffix = dnode.getContainer(); 
         }
         else {
             derivedFromSuffix = dnode.getCategory();
         }
-        if ("".equals(derivedFromSuffix)) {
+        if (derivedFromSuffix.isEmpty()) {
             derivedFrom = "seaclouds.nodes.SoftwareComponent";
         }
         else {
@@ -278,17 +291,19 @@ public class Translator {
     private String buildArtifactName(DNode dnode, boolean needsContainer) {
         String artifactName;
         switch (dnode.getType()) {
-        case "WebApplication":
+        case Types.WEB_APPLICATION:
             String language = dnode.getLanguage();
-            if ("JAVA".equals(language)) {
-                artifactName = (needsContainer)? "war" : "jar";
+            if (Languages.JAVA.equals(language)) {
+                artifactName = (needsContainer)? "wars.root" : "jar";
+            } else if (Languages.PHP.equals(language)) {
+                artifactName = dnode.getArtifact().endsWith(".git")? "git.url" : "tarball.url";
             }
             else {
                 artifactName = "file";
             }
             break;
-        case "Database":
-            artifactName = "db_create";
+        case Types.DATABASE:
+            artifactName = Categories.MYSQL.equals(dnode.getCategory())?"creationScriptUrl" : "db_create";
             break;
         default:
             artifactName = "artifact";
@@ -334,23 +349,23 @@ public class Translator {
     private String getPrefixItem(String requirement, String minVersion, String maxVersion) {
         
         switch (requirement) {
-        case "JAVA": return "java";
-        case "PYTHON": return "python";
-        case "RUBY": return "ruby";
-        case ".NET": return "dotnet";
-        case "PHP": return "php";
+        case Languages.JAVA: return "java";
+        case Languages.PYTHON: return "python";
+        case Languages.RUBY: return "ruby";
+        case Languages.NET: return "dotnet";
+        case Languages.PHP: return "php";
         
-        case "webapp.jboss.JBoss6Server": return "jboss";
-        case "webapp.jboss.JBoss7Server": return "jboss";
-        case "webapp.jetty.Jetty6Server": return "jetty";
-        case "webapp.tomcat.TomcatServer": return "tomcat";
-        case "webapp.tomcat.Tomcat8Server": return "tomcat";
+        case Containers.JBOSS6: return "jboss";
+        case Containers.JBOSS7: return "jboss";
+        case Containers.JETTY6: return "jetty";
+        case Containers.TOMCAT: return "tomcat";
+        case Containers.TOMCAT8: return "tomcat";
 
-        case "database.mysql.MySqlNode": return "mysql";
-        case "database.mariadb.MariaDbNode": return "maria";
-        case "database.postgresql.PostgreSqlNode": return "postgresql";
-        case "nosql.mongodb.MongoDBServer": return "mongoDB";
-        case "nosql.redis.RedisStore": return "redis";
+        case Categories.MYSQL: return "mysql";
+        case Categories.MARIADB: return "maria";
+        case Categories.POSTGRESQL: return "postgresql";
+        case Categories.MONGODB: return "mongoDB";
+        case Categories.REDIS: return "redis";
 
         default:
             return "";

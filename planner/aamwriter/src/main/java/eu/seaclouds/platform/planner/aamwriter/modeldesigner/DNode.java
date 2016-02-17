@@ -36,6 +36,27 @@ public class DNode {
         public static final String PROPERTIES = "properties";
     }
     
+    public static final class Types {
+        public static final String WEB_APPLICATION = "WebApplication";
+        public static final String DATABASE = "Database";
+    }
+    
+    public static final class Categories {
+        public static final String MYSQL = "database.mysql.MySqlNode";
+        public static final String MARIADB = "database.mariadb.MariaDbNode";
+        public static final String POSTGRESQL = "database.postgresql.PostgreSqlNode";
+        public static final String MONGODB = "nosql.mongodb.MongoDBServer"; 
+        public static final String REDIS = "nosql.redis.RedisStore";
+    }
+    
+    public static final class Containers {
+        public static final String JBOSS6 = "webapp.jboss.JBoss6Server";
+        public static final String JBOSS7 = "webapp.jboss.JBoss7Server";
+        public static final String JETTY6 = "webapp.jetty.Jetty6Server";
+        public static final String TOMCAT = "webapp.tomcat.TomcatServer";
+        public static final String TOMCAT8 = "webapp.tomcat.Tomcat8Server";
+    }
+    
     public static final DNode NOT_FOUND = new DNode("[null]", "[null]");
 
     @SuppressWarnings("unused")
