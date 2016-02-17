@@ -202,6 +202,10 @@ public class TranslatorTest {
 
         checkProperty(n1, "autoscale", graph.getNode("www").getOtherProperties().get("autoscale"));
         checkProperty(n3, "autoscale", graph.getNode(N3).getOtherProperties().get("autoscale"));
+        
+        checkProperty(n3, "db_name", graph.getNode(N3).getOtherProperties().get("db_name"));
+        checkProperty(n3, "db_user", graph.getNode(N3).getOtherProperties().get("db_user"));
+        checkProperty(n3, "db_password", graph.getNode(N3).getOtherProperties().get("db_password"));
     }
     
     @Test
