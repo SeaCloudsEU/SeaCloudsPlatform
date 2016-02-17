@@ -247,14 +247,7 @@ public class OptimizerTOSCADecember2015BenchmarkPlatformsTest extends AbstractTe
                Assert.assertTrue(autoscalingPolicy.containsKey(TOSCAkeywords.AUTOSCALE_METRIC_UPPERBOUND));
                Assert.assertTrue(autoscalingPolicy.containsKey(TOSCAkeywords.AUTOSCALE_POOL_MINIMUM_SIZE));
 
-               String typeOfNode = YAMLmodulesOptimizerParser.getModuleTypeFromModulesMap(entry.getKey(), nodesMap);
-               Assert.assertNotNull("Type of node " + entry.getKey() + " was NULL", typeOfNode);
-               Assert.assertTrue(
-                     "Types in node_types were not created well for module " + entry.getKey()
-                           + " type found for it was: "
-                           + YAMLtypesOptimizerParser.getDerivedTypeFromTypesMap(typeOfNode, typesMap),
-                     TOSCAkeywords.NODE_TYPE_AUTOSCALABLE
-                           .equals(YAMLtypesOptimizerParser.getDerivedTypeFromTypesMap(typeOfNode, typesMap)));
+             
             }
          }
       }

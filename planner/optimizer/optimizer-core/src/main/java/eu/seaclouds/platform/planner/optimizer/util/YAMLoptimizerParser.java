@@ -477,6 +477,7 @@ public class YAMLoptimizerParser {
          Topology topology, Map<String, Object> modules, Map<String, Object> groups,
          SuitableOptions appInfoSuitableOptions, Map<String, CloudOffer> benchmarkPlatforms) {
 
+      log.debug("Executing the Recursive application topology generation for module {}", elementName);
       if (topology.contains(elementName)) {
          return topology;
       }
@@ -497,6 +498,7 @@ public class YAMLoptimizerParser {
             YAMLmodulesOptimizerParser.getMeasuredExecTimeMillis(elementName, groups) * hostPerformance);
 
       newelement.setCanScale(elementCanScale);
+      log.debug("Scalability of Element {} is {}", elementName, elementCanScale);
       // The module does not have requiremetns
       if (!YAMLmodulesOptimizerParser.moduleHasModuleRequirements(elementName, groups)) {
          // Include it directly

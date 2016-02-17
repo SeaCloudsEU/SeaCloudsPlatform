@@ -262,7 +262,10 @@ public class OptimizerInitialDeployment {
             log.debug("Adding upperWkl= " + upperWklBound + " lowerWkl=" + lowerWklBound + " poolsize=" + maxPoolSize);
             YAMLoptimizerParser.addScalingPolicyToModule(entry.getKey(), baseAppMap, lowerWklBound, upperWklBound, 1,
                   maxPoolSize);
-            YAMLoptimizerParser.changeModuleToScalableType(entry.getKey(), baseAppMap);
+            
+            //Here it is the point where the module type changed to be scalable (Dynamic Cluster, through changeModuleToScalableType method). 
+            //It looks like it is not required to change the type. TODO: Study this in more depth.
+            
          } else {
             log.debug("Module " + entry.getKey() + " was not scalable");
          }
