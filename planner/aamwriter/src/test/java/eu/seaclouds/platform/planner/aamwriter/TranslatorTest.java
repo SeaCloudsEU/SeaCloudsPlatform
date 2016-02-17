@@ -36,10 +36,18 @@ import static org.testng.AssertJUnit.*;
 @SuppressWarnings({"unused", "rawtypes", "unchecked"})
 public class TranslatorTest {
     
-    private static final String N3 = "db1";
+    private static final String N7 = "php_tarball";
+    private static final String N6 = "php_git";
+    private static final String N5 = "db_postgre";
+    private static final String N4 = "db_mariadb";
+    private static final String N3 = "db_mysql";
     private static final String N2 = "webservices";
     private static final String N1 = "www";
-    private static final String N3_TYPE = "sc_req.db1";
+    private static final String N7_TYPE = "sc_req.php_tarball";
+    private static final String N6_TYPE = "sc_req.php_git";
+    private static final String N5_TYPE = "sc_req.db_postgre";
+    private static final String N4_TYPE = "sc_req.db_mariadb";
+    private static final String N3_TYPE = "sc_req.db_mysql";
     private static final String N2_TYPE = "sc_req.webservices";
     private static final String N1_TYPE = "sc_req.www";
     private Object deserializedYaml;
@@ -49,9 +57,17 @@ public class TranslatorTest {
     private Map<String, Object> n1;
     private Map<String, Object> n2;
     private Map<String, Object> n3;
+    private Map<String, Object> n4;
+    private Map<String, Object> n5;
+    private Map<String, Object> n6;
+    private Map<String, Object> n7;
     private Map<String, Object> t1;
     private Map<String, Object> t2;
     private Map<String, Object> t3;
+    private Map<String, Object> t4;
+    private Map<String, Object> t5;
+    private Map<String, Object> t6;
+    private Map<String, Object> t7;
     private DGraph graph;
     
     @BeforeMethod
@@ -64,7 +80,7 @@ public class TranslatorTest {
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         Yaml yaml = new Yaml(options);
 
-        JSONObject root = (JSONObject) TestUtils.loadJson("/3tier.json");
+        JSONObject root = (JSONObject) TestUtils.loadJson("/translator.json");
         graph = new DGraph(root);
 
         Aam aam = new Translator().translate(graph);
@@ -80,34 +96,54 @@ public class TranslatorTest {
         n1 = nodeTemplates.get(N1);
         n2 = nodeTemplates.get(N2);
         n3 = nodeTemplates.get(N3);
+        n4 = nodeTemplates.get(N4);
+        n5 = nodeTemplates.get(N5);
+        n6 = nodeTemplates.get(N6);
+        n7 = nodeTemplates.get(N7);
         
         t1 = nodeTypes.get(N1_TYPE);
         t2 = nodeTypes.get(N2_TYPE);
         t3 = nodeTypes.get(N3_TYPE);
+        t4 = nodeTypes.get(N4_TYPE);
+        t5 = nodeTypes.get(N5_TYPE);
+        t6 = nodeTypes.get(N6_TYPE);
+        t7 = nodeTypes.get(N7_TYPE);
     }
 
     @Test
     public void testNodeTemplates() {
-        assertEquals(3, nodeTemplates.size());
+        assertEquals(7, nodeTemplates.size());
         assertNotNull(n1);
         assertNotNull(n2);
         assertNotNull(n3);
+        assertNotNull(n4);
+        assertNotNull(n5);
+        assertNotNull(n6);
+        assertNotNull(n7);
         assertEquals(N1_TYPE, n1.get("type"));
         assertEquals(N2_TYPE, n2.get("type"));
         assertEquals(N3_TYPE, n3.get("type"));
+        assertEquals(N4_TYPE, n4.get("type"));
+        assertEquals(N5_TYPE, n5.get("type"));
     }
     
     @Test
     public void testNodeTypes() {
         
-        assertEquals(3, nodeTypes.size());
+        assertEquals(7, nodeTypes.size());
         assertNotNull(t1);
         assertNotNull(t2);
         assertNotNull(t3);
+        assertNotNull(t4);
+        assertNotNull(t5);
+        assertNotNull(t6);
+        assertNotNull(t7);
         
         assertEquals("seaclouds.nodes.webapp.tomcat.TomcatServer", t1.get("derived_from"));
         assertEquals("seaclouds.nodes.SoftwareComponent", t2.get("derived_from"));
         assertEquals("seaclouds.nodes.database.mysql.MySqlNode", t3.get("derived_from"));
+        assertEquals("seaclouds.nodes.database.mariadb.MariaDbNode", t4.get("derived_from"));
+        assertEquals("seaclouds.nodes.database.postgresql.PostgreSqlNode", t5.get("derived_from"));
 
     }
     
@@ -165,7 +201,7 @@ public class TranslatorTest {
         checkProperty(n2, "location_option", graph.getNode("webservices").getOtherProperties().get("location_option"));
 
         checkProperty(n1, "autoscale", graph.getNode("www").getOtherProperties().get("autoscale"));
-        checkProperty(n3, "autoscale", graph.getNode("db1").getOtherProperties().get("autoscale"));
+        checkProperty(n3, "autoscale", graph.getNode(N3).getOtherProperties().get("autoscale"));
     }
     
     @Test
@@ -173,6 +209,28 @@ public class TranslatorTest {
         assertNull(getProperty(n1, "qos"));
         assertNull(getProperty(n2, "qos"));
         assertNull(getProperty(n3, "qos"));
+    }
+    
+    @Test
+    public void testMysqlArtifact() {
+        checkArtifact(n3, "creationScriptUrl", graph.getNode(N3).getArtifact());
+    }
+    
+    @Test
+    public void testNonMysqlArtifact() {
+        checkArtifact(n4, "db_create", graph.getNode(N4).getArtifact());
+        checkArtifact(n5, "db_create", graph.getNode(N5).getArtifact());
+    }
+    
+    @Test
+    public void testWarArtifact() {
+        checkArtifact(n1, "wars.root", graph.getNode(N1).getArtifact());
+    }
+    
+    @Test
+    public void testPhpArtifact() {
+        checkArtifact(n6, "git.url", graph.getNode(N6).getArtifact());
+        checkArtifact(n7, "tarball.url", graph.getNode(N7).getArtifact());
     }
     
     @Test
@@ -263,6 +321,14 @@ public class TranslatorTest {
             actualValue = (Double) constraintValue;
         }
         assertEquals(expectedValue, actualValue);
+    }
+    
+    private void checkArtifact(Map<String, Object> nodeTemplate, String propName, String expectedPropValue) {
+        List<Map> artifacts = (List<Map>) nodeTemplate.get("artifacts");
+        Map<String, Object> artifact = searchArray(artifacts, propName);
+        assertNotNull(artifact);
+        String actualValue = (String) artifact.get(propName);
+        assertEquals(expectedPropValue, actualValue);
     }
 
     private void checkConnection(Map from, String to, DLink l) {
