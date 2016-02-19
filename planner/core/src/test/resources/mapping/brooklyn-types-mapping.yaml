@@ -95,7 +95,7 @@ node_types:
     description: >
       A simple DC
     properties:
-      install.latch:
+      installLatch:
         type: string
         required: false
       shell.env:
