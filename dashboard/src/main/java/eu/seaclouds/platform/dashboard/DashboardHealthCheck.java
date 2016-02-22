@@ -32,7 +32,6 @@ public class DashboardHealthCheck extends HealthCheck {
     private static final String NAME = "reachability";
 
     private final DeployerProxy deployer;
-    private final MonitorProxy monitor;
     private final SlaProxy sla;
     private final PlannerProxy planner;
     private final GrafanaProxy grafana;
@@ -47,9 +46,8 @@ public class DashboardHealthCheck extends HealthCheck {
         }
     }
 
-    public DashboardHealthCheck(DeployerProxy deployer, MonitorProxy monitor, GrafanaProxy grafana, SlaProxy sla, PlannerProxy planner){
+    public DashboardHealthCheck(DeployerProxy deployer, GrafanaProxy grafana, SlaProxy sla, PlannerProxy planner){
         this.deployer = deployer;
-        this.monitor = monitor;
         this.grafana = grafana;
         this.sla = sla;
         this.planner = planner;
@@ -67,9 +65,6 @@ public class DashboardHealthCheck extends HealthCheck {
             return Result.unhealthy("The Deployer endpoint is not ready");
         }
 
-        if(!portIsOpen(monitor.getHost(), monitor.getPort())){
-            return Result.unhealthy("The Monitor endpoint is not ready");
-        }
 
         if(!portIsOpen(grafana.getHost(), grafana.getPort())){
             return Result.unhealthy("The Monitor endpoint is not ready");

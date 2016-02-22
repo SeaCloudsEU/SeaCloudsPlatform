@@ -72,7 +72,6 @@ public abstract class AbstractResourceTest<T extends Resource> {
     private String dam;
 
     private final DeployerProxy deployerProxy = mock(DeployerProxy.class);
-    private final MonitorProxy monitorProxy = mock(MonitorProxy.class);
     private final PlannerProxy plannerProxy = mock(PlannerProxy.class);
     private final SlaProxy slaProxy = mock(SlaProxy.class);
     private final GrafanaProxy grafanaProxy = mock(GrafanaProxy.class);
@@ -110,7 +109,6 @@ public abstract class AbstractResourceTest<T extends Resource> {
     private void initMocks() throws IOException {
 
         when(deployerProxy.getEndpoint()).thenReturn(DEPLOYER_ENDPOINT);
-        when(monitorProxy.getEndpoint()).thenReturn(MONITOR_ENDPOINT);
         when(grafanaProxy.getEndpoint()).thenReturn(GRAFANA_ENDPOINT);
         when(plannerProxy.getEndpoint()).thenReturn(PLANNER_ENDPOINT);
         when(slaProxy.getEndpoint()).thenReturn(SLA_ENDPOINT);
@@ -122,11 +120,6 @@ public abstract class AbstractResourceTest<T extends Resource> {
         when(deployerProxy.getEntitiesFromApplication(anyString())).thenReturn(entitySummaries);
         when(deployerProxy.getEntitySensors(anyString(), anyString())).thenReturn(sensorSummaries);
         when(deployerProxy.getEntitySensorsValue(anyString(), anyString(), anyString())).thenReturn("0.7");
-
-
-        when(monitorProxy.addMonitoringRules(any(MonitoringRules.class))).thenReturn(RANDOM_STRING);
-        when(monitorProxy.listMonitoringRules()).thenReturn(monitoringRules);
-        when(monitorProxy.removeMonitoringRule(anyString())).thenReturn(RANDOM_STRING);
 
         when(plannerProxy.getMonitoringRulesByTemplateId(anyString())).thenReturn(monitoringRules);
         when(plannerProxy.getAdps(anyString())).thenReturn(adps);
@@ -207,10 +200,6 @@ public abstract class AbstractResourceTest<T extends Resource> {
 
     public DeployerProxy getDeployerProxy() {
         return deployerProxy;
-    }
-
-    public MonitorProxy getMonitorProxy() {
-        return monitorProxy;
     }
 
     public GrafanaProxy getGrafanaProxy(){

@@ -13,9 +13,6 @@ deployer:
   port: ${DEPLOYER_PORT}
   user: ${DEPLOYER_USER}
   password: ${DEPLOYER_PASSWORD}
-monitor.manager:
-  host: ${MONITOR_HOST}
-  port: ${MONITOR_PORT}
 monitor.grafana:
   host: ${GRAFANA_HOST}
   port: ${GRAFANA_PORT}

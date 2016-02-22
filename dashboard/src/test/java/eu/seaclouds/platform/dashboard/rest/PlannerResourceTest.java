@@ -37,11 +37,6 @@ public class PlannerResourceTest extends AbstractResourceTest<PlannerResource>{
         SeaCloudsApplicationDataStorage.getInstance().addSeaCloudsApplicationData(applicationData);
     }
 
-    @Test
-    public void testGetMonitoringRulesById() throws Exception {
-        MonitoringRules rules = (MonitoringRules) resource.getMonitoringRulesById(applicationData.getAgreementTemplateId()).getEntity();
-        assertNotNull(rules);
-    }
 
     @Test
     public void testGetAdps() throws Exception {

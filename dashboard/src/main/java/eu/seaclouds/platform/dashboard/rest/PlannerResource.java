@@ -42,21 +42,6 @@ public class PlannerResource implements Resource{
     }
 
 
-    @GET
-    @Timed
-    @Produces(MediaType.APPLICATION_XML)
-    @Path("monitoringrules/{templateId}")
-    @ApiOperation(value="Get Monitoring Rules from the Monitoring Rule Template Id")
-    public Response getMonitoringRulesById(@PathParam("templateId") String templateId) {
-        if (templateId == null) {
-            LOG.error("Missing input parameters");
-            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
-        } else {
-            return Response.ok(planner.getMonitoringRulesByTemplateId(templateId)).build();
-        }
-    }
-
-
     @POST
     @Timed
     @Produces("application/x-yaml")
