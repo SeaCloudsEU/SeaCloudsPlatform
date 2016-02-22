@@ -23,7 +23,7 @@ import static org.testng.Assert.assertNotNull;
 
 public class CoreResourceTest extends AbstractResourceTest<CoreResource> {
 
-    private final CoreResource coreResource = new CoreResource(getDeployerProxy(), getMonitorProxy(), getGrafanaProxy(), getPlannerProxy(), getSlaProxy());
+    private final CoreResource coreResource = new CoreResource(getDeployerProxy(), getGrafanaProxy(), getPlannerProxy(), getSlaProxy());
 
     @Test
     public void testGetSeaCloudsInformation() throws Exception {

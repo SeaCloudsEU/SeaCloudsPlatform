@@ -19,7 +19,6 @@ package eu.seaclouds.platform.dashboard;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.seaclouds.platform.dashboard.proxy.DeployerProxy;
-import eu.seaclouds.platform.dashboard.proxy.MonitorProxy;
 import eu.seaclouds.platform.dashboard.proxy.PlannerProxy;
 import eu.seaclouds.platform.dashboard.proxy.SlaProxy;
 import io.dropwizard.Configuration;
@@ -41,9 +40,6 @@ public class DashboardTestConfiguration extends Configuration {
     @NotNull
     private DeployerProxy deployer = new DeployerProxy();
 
-    @Valid
-    @NotNull
-    private MonitorProxy monitor = new MonitorProxy();
 
     @Valid
     @NotNull
@@ -71,16 +67,6 @@ public class DashboardTestConfiguration extends Configuration {
     @JsonProperty("deployer")
     public void setDeployerProxy(DeployerProxy factory) {
         this.deployer = factory;
-    }
-
-    @JsonProperty("monitor.manager")
-    public MonitorProxy getMonitorProxy() {
-        return monitor;
-    }
-
-    @JsonProperty("monitor.manager")
-    public void setMonitorConfigProxy(MonitorProxy factory) {
-        this.monitor = factory;
     }
 
     @JsonProperty("sla")

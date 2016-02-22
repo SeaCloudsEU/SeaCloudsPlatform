@@ -13,9 +13,6 @@ planner:
 deployer:
   host: 10.10.10.101
   port: 8081
-monitor.manager:
-  host: 10.10.10.101
-  port: 8170
 sla:
   host: 10.10.10.101
   port: 8080

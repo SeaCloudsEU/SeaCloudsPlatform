@@ -18,6 +18,7 @@
 package eu.seaclouds.platform.dashboard.proxy;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.Max;
@@ -40,7 +41,7 @@ public abstract class AbstractProxy {
 
     private String user;
     private String password;
-    private Client jerseyClient = ClientBuilder.newClient();
+    private Client jerseyClient;
 
     @JsonProperty
     public String getHost() {
@@ -83,6 +84,16 @@ public abstract class AbstractProxy {
     }
 
     public Client getJerseyClient() {
+
+        if(jerseyClient == null){
+            jerseyClient = ClientBuilder.newClient();
+
+            if(user != null && password != null){
+                HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(getUser(),  getPassword());
+                jerseyClient.register(feature);
+            }
+        }
+
         return jerseyClient;
     }
 

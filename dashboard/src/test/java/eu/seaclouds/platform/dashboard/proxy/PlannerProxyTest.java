@@ -33,20 +33,6 @@ public class PlannerProxyTest extends AbstractProxyTest<PlannerProxy> {
     private final String RANDOM_STRING = UUID.randomUUID().toString();
 
     @Test
-    public void testGetMonitoringRulesByTemplateId() throws Exception {
-        String xml = TestUtils.getStringFromPath(TestFixtures.MONITORING_RULES_PATH);
-
-        getMockWebServer().enqueue(new MockResponse()
-                        .setBody(xml)
-                        .setHeader("Accept", MediaType.TEXT_PLAIN)
-                        .setHeader("Content-Type", MediaType.APPLICATION_XML)
-        );
-
-        MonitoringRules monitoringRules = getProxy().getMonitoringRulesByTemplateId(RANDOM_STRING);
-        assertEquals(ObjectMapperHelpers.XmlToObject(xml, MonitoringRules.class), monitoringRules);
-    }
-
-    @Test
     public void testGetAdps() throws Exception {
         String aam = TestUtils.getStringFromPath(TestFixtures.AAM_PATH);
         String adps = TestUtils.getStringFromPath(TestFixtures.ADPS_PATH);

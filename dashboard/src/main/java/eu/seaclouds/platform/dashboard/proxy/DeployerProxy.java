@@ -44,14 +44,7 @@ public class DeployerProxy extends AbstractProxy {
      * @return ApplicationSummary
      */
     public ApplicationSummary getApplication(String brooklynId) throws IOException {
-        Client client = getJerseyClient();
-
-        if (getUser() != null && getPassword() != null) {
-            HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(getUser(),  getPassword());
-            client.register(feature);
-        }
-        Invocation invocation = client.target(getEndpoint() + "/v1/applications/" + brooklynId).request().buildGet();
-
+        Invocation invocation = getJerseyClient().target(getEndpoint() + "/v1/applications/" + brooklynId).request().buildGet();
         return invocation.invoke().readEntity(ApplicationSummary.class);
     }
 
@@ -62,15 +55,7 @@ public class DeployerProxy extends AbstractProxy {
      * @return JsonNode
      */
     public JsonNode getApplicationsTree() throws IOException {
-        Client client = getJerseyClient();
-
-        if (getUser() != null && getPassword() != null) {
-            HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(getUser(),  getPassword());
-            client.register(feature);
-        }
-
-        Invocation invocation = client.target(getEndpoint() + "/v1/applications/fetch").request().buildGet();
-
+        Invocation invocation = getJerseyClient().target(getEndpoint() + "/v1/applications/fetch").request().buildGet();
         return invocation.invoke().readEntity(JsonNode.class);
     }
 
@@ -82,15 +67,7 @@ public class DeployerProxy extends AbstractProxy {
      * @return TaskSummary representing the running process
      */
     public TaskSummary removeApplication(String brooklynId) throws IOException {
-        Client client = getJerseyClient();
-
-        if (getUser() != null && getPassword() != null) {
-            HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(getUser(),  getPassword());
-            client.register(feature);
-        }
-
-        Invocation invocation = client.target(getEndpoint() + "/v1/applications/" + brooklynId).request().buildDelete();
-
+        Invocation invocation = getJerseyClient().target(getEndpoint() + "/v1/applications/" + brooklynId).request().buildDelete();
         return invocation.invoke().readEntity(TaskSummary.class);
     }
 
@@ -101,16 +78,8 @@ public class DeployerProxy extends AbstractProxy {
      * @return TaskSummary representing the running process
      */
     public TaskSummary deployApplication(String tosca) throws IOException {
-
-        Client client = getJerseyClient();
-        if (getUser() != null && getPassword() != null) {
-            HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(getUser(),  getPassword());
-            client.register(feature);
-        }
-
         Entity content = Entity.entity(tosca, "application/x-yaml");
-        Invocation invocation = client.target(getEndpoint() + "/v1/applications").request().buildPost(content);
-
+        Invocation invocation = getJerseyClient().target(getEndpoint() + "/v1/applications").request().buildPost(content);
         return invocation.invoke().readEntity(TaskSummary.class);
     }
 
@@ -121,13 +90,7 @@ public class DeployerProxy extends AbstractProxy {
      * @return List<EntitySummary> with all the children entities of the application
      */
     public List<EntitySummary> getEntitiesFromApplication(String brooklynId) throws IOException {
-        Client client = getJerseyClient();
-        if (getUser() != null && getPassword() != null) {
-            HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(getUser(),  getPassword());
-            client.register(feature);
-        }
-
-        Invocation invocation = client.target(getEndpoint() + "/v1/applications/" + brooklynId + "/entities")
+        Invocation invocation = getJerseyClient().target(getEndpoint() + "/v1/applications/" + brooklynId + "/entities")
                 .request().buildGet();
 
         return invocation.invoke().readEntity(new GenericType<List<EntitySummary>>(){});
@@ -141,17 +104,10 @@ public class DeployerProxy extends AbstractProxy {
      * @return List<SensorSummary> with the entity sensors
      */
     public List<SensorSummary> getEntitySensors(String brooklynId, String brooklynEntityId) throws IOException {
-        Client client = getJerseyClient();
-        if (getUser() != null && getPassword() != null) {
-            HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(getUser(),  getPassword());
-            client.register(feature);
-        }
-
-        Invocation invocation = client
+        Invocation invocation = getJerseyClient()
                 .target(getEndpoint() + "/v1/applications/" + brooklynId + "/entities/" + brooklynEntityId + "/sensors")
                 .request().buildGet();
 
-        // Dropwizard Jackson(com.fasterxml.jackson) cannot parse this entity, we will use Brooklyn one instead (org.codehaus.jackson.map.ObjectMapper)
         return invocation.invoke().readEntity(new GenericType<List<SensorSummary>>(){});
     }
 
@@ -164,14 +120,7 @@ public class DeployerProxy extends AbstractProxy {
      * @return String representing the sensor value
      */
     public String getEntitySensorsValue(String brooklynId, String brooklynEntityId, String sensorId) throws IOException {
-        Client client = getJerseyClient();
-        if (getUser() != null && getPassword() != null) {
-            HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(getUser(),  getPassword());
-            client.register(feature);
-        }
-
-
-        Invocation invocation = client.target(
+        Invocation invocation = getJerseyClient().target(
                 getEndpoint() + "/v1/applications/" + brooklynId + "/entities/" + brooklynEntityId + "/sensors/" + sensorId + "?raw=true")
                 .request().buildGet();
 

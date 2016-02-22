@@ -24,6 +24,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.yaml.snakeyaml.Yaml;
 
+import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -39,8 +40,9 @@ public class SeaCloudsApplicationDataStorageTest {
     private static final int INITIAL_DATASTORE_SIZE = 100;
 
     @BeforeMethod
-    public void setUp() throws IOException {
+    public void setUp() throws Exception {
         Yaml yamlParser = new Yaml();
+
         URL resource = Resources.getResource(TOSCA_DAM_FILE_PATH);
         Map toscaDamMap = (Map) yamlParser.load(FileUtils.openInputStream(new File(resource.getFile())));
         // Fill SeaCloudsApplicationDataStorage with empty applications with distinct SeaCloudsID
@@ -56,7 +58,7 @@ public class SeaCloudsApplicationDataStorageTest {
     }
 
     @Test
-    public void testAddSeaCloudsApplicationData() throws IOException {
+    public void testAddSeaCloudsApplicationData() throws Exception {
         Yaml yamlParser = new Yaml();
         URL resource = Resources.getResource(TOSCA_DAM_FILE_PATH);
         Map toscaDamMap = (Map) yamlParser.load(FileUtils.openInputStream(new File(resource.getFile())));
@@ -72,7 +74,7 @@ public class SeaCloudsApplicationDataStorageTest {
     }
 
     @Test
-    public void testRemoveSeaCloudsApplicationData() throws IOException {
+    public void testRemoveSeaCloudsApplicationData() throws Exception {
         Yaml yamlParser = new Yaml();
         URL resource = Resources.getResource(TOSCA_DAM_FILE_PATH);
         Map toscaDamMap = (Map) yamlParser.load(FileUtils.openInputStream(new File(resource.getFile())));
@@ -89,7 +91,7 @@ public class SeaCloudsApplicationDataStorageTest {
     }
 
     @Test
-    public void testGetSeaCloudsApplicationData() throws IOException {
+    public void testGetSeaCloudsApplicationData() throws Exception {
         Yaml yamlParser = new Yaml();
         URL resource = Resources.getResource(TOSCA_DAM_FILE_PATH);
         Map toscaDamMap = (Map) yamlParser.load(FileUtils.openInputStream(new File(resource.getFile())));

@@ -54,7 +54,6 @@ import org.apache.brooklyn.util.exceptions.Exceptions;
 import org.apache.brooklyn.util.http.HttpTool;
 import org.apache.brooklyn.util.http.HttpToolResponse;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.bouncycastle.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,7 +169,7 @@ public class SeaCloudsManagementPolicy extends AbstractPolicy {
     }
 
     private void parseMonitoringRules() {
-        String decodedRules = Strings.fromByteArray(BaseEncoding.base64().decode(getConfig(T4C_RULES)));
+        String decodedRules = new String(BaseEncoding.base64().decode(getConfig(T4C_RULES)));
         try {
             monitoringRules = xmlToObject(decodedRules, MonitoringRules.class);
         } catch (JAXBException e) {
@@ -180,7 +179,7 @@ public class SeaCloudsManagementPolicy extends AbstractPolicy {
     }
 
     private void parseAgreements() {
-        String decodedRules = Strings.fromByteArray(BaseEncoding.base64().decode(getConfig(SLA_AGREEMENT)));
+        String decodedRules = new String(BaseEncoding.base64().decode(getConfig(SLA_AGREEMENT)));
         try {
             agreement = xmlToObject(decodedRules, Agreement.class);
         } catch (JAXBException e) {
