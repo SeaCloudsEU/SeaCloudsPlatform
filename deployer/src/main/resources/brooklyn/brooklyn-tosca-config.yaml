@@ -1,0 +1,4 @@
+# Overrides version in src/main to include samples.
+defaultTypes:
+- https://github.com/alien4cloud/tosca-normative-types/archive/1.1.0-SM8.zip
+- https://github.com/SeaCloudsEU/seaclouds-types/archive/master.zip
