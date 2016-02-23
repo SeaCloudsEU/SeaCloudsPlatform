@@ -17,7 +17,6 @@
 
 package eu.seaclouds.platform.dashboard.rest;
 
-import eu.seaclouds.platform.dashboard.proxy.GrafanaProxy;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertNotNull;

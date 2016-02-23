@@ -53,11 +53,5 @@ public class DashboardTestApplication extends Application<DashboardTestConfigura
                 return Result.healthy();
             }
         });
-
-        // Link HTTP Clients with the Factories
-        configuration.getDeployerProxy().setJerseyClient(jerseyClient);
-        configuration.getMonitorProxy().setJerseyClient(jerseyClient);
-        configuration.getSlaProxy().setJerseyClient(jerseyClient);
-        configuration.getPlannerProxy().setJerseyClient(jerseyClient);
     }
 }

@@ -18,8 +18,6 @@
 package eu.seaclouds.platform.dashboard.util;
 
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.type.TypeFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -28,7 +26,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -38,12 +35,9 @@ import java.util.List;
 
 public class ObjectMapperHelpers {
 
-    private static com.fasterxml.jackson.databind.ObjectMapper jackson2Mapper;
-    
-    static {
-        jackson2Mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-    }
-    
+    private static com.fasterxml.jackson.databind.ObjectMapper JACKSON2_MAPPER =
+            new com.fasterxml.jackson.databind.ObjectMapper();
+
     /**
      * Transforms a JSON string to an Object using org.codehaus.jackson.map.ObjectMapper
      * If you want to parse a collection please @see {#link JsonToObjectCollection}
@@ -55,12 +49,7 @@ public class ObjectMapperHelpers {
      * @throws IOException if is not possible to parse the object
      */
     public static <T> T JsonToObject(String json, Class<T> type) throws IOException {
-        return new ObjectMapper().readValue(json, type);
-
-    }
-
-    public static <T> T JsonToObjectJackson2(String json, Class<T> type) throws IOException {
-        return jackson2Mapper.readValue(json, type);
+        return JACKSON2_MAPPER.readValue(json, type);
 
     }
 
@@ -75,14 +64,10 @@ public class ObjectMapperHelpers {
      * @throws IOException if is not possible to parse the object
      **/
     public static <T> List<T> JsonToObjectCollection(String json, Class<T> type) throws IOException {
-        return new ObjectMapper().readValue(json, TypeFactory.collectionType(List.class, type));
+        return JACKSON2_MAPPER.readValue(json,
+                JACKSON2_MAPPER.getTypeFactory().constructCollectionType(List.class, type));
     }
 
-    public static <T> List<T> JsonToObjectCollectionJackson2(String json, Class<T> type) throws IOException {
-        com.fasterxml.jackson.databind.type.TypeFactory typeFactory = com.fasterxml.jackson.databind.type.TypeFactory.defaultInstance();
-        return jackson2Mapper.readValue(
-                json, typeFactory.constructCollectionType(List.class, type));
-    }
 
     /**
      * Transforms an annotated Object to a JSON string using org.codehaus.jackson.map.ObjectMapper
@@ -92,7 +77,7 @@ public class ObjectMapperHelpers {
      * @throws IOException if is not possible to parse the object
      */
     public static String ObjectToJson(Object object) throws IOException {
-        return new ObjectMapper().writeValueAsString(object);
+        return JACKSON2_MAPPER.writeValueAsString(object);
     }
 
     /**

@@ -31,7 +31,7 @@ import static org.testng.Assert.assertEquals;
 
 public class MonitorResourceTest extends AbstractResourceTest<MonitorResource> {
     private final DeployerResource deployerResource = new DeployerResource(getDeployerProxy(), getMonitorProxy(), getSlaProxy(), getPlannerProxy());
-    private final MonitorResource monitorResource = new MonitorResource(getMonitorProxy(), getDeployerProxy());
+    private final MonitorResource monitorResource = new MonitorResource(getDeployerProxy());
     private SeaCloudsApplicationData applicationData;
 
     @Override

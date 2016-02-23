@@ -19,9 +19,10 @@ package eu.seaclouds.platform.dashboard.rest;
 
 
 import com.codahale.metrics.annotation.Timed;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import com.fasterxml.jackson.databind.JsonNode;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import eu.atos.sla.datamodel.IGuaranteeTerm;
 import eu.atos.sla.parser.data.GuaranteeTermsStatus;
 import eu.atos.sla.parser.data.wsag.Agreement;
@@ -34,7 +35,6 @@ import eu.seaclouds.platform.dashboard.proxy.SlaProxy;
 import it.polimi.tower4clouds.rules.MonitoringRules;
 import org.apache.brooklyn.rest.domain.ApplicationSummary;
 import org.apache.brooklyn.rest.domain.TaskSummary;
-import org.codehaus.jackson.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -190,7 +190,7 @@ public class DeployerResource implements Resource {
             }
 
             for (JsonNode application : deployer.getApplicationsTree()) {
-                if(application.get("id").getTextValue().equals(seaCloudsApplicationData.getDeployerApplicationId())){
+                if(application.get("id").asText().equals(seaCloudsApplicationData.getDeployerApplicationId())){
                     return Response.ok(application).build();
                 }
             }

@@ -67,15 +67,6 @@ public class DashboardApplication extends Application<DashboardConfiguration> {
 
     @Override
     public void run(DashboardConfiguration configuration, Environment environment) throws Exception {
-        // Generating  HTTP Clients
-        Client jerseyClient =  ClientBuilder.newClient();
-
-        // Link HTTP Clients with the Factories
-        configuration.getDeployerProxy().setJerseyClient(jerseyClient);
-        configuration.getMonitorProxy().setJerseyClient(jerseyClient);
-        configuration.getSlaProxy().setJerseyClient(jerseyClient);
-        configuration.getPlannerProxy().setJerseyClient(jerseyClient);
-
         // Configuring HealthChecks
         DashboardHealthCheck healthCheck = new DashboardHealthCheck(configuration.getDeployerProxy(),
                 configuration.getMonitorProxy(), configuration.getGrafanaProxy(), configuration.getSlaProxy(), configuration.getPlannerProxy());
@@ -86,7 +77,7 @@ public class DashboardApplication extends Application<DashboardConfiguration> {
                 configuration.getMonitorProxy(), configuration.getGrafanaProxy(), configuration.getPlannerProxy(),
                 configuration.getSlaProxy()));
         environment.jersey().register(new DeployerResource(configuration.getDeployerProxy(), configuration.getMonitorProxy(), configuration.getSlaProxy(), configuration.getPlannerProxy()));
-        environment.jersey().register(new MonitorResource(configuration.getMonitorProxy(), configuration.getDeployerProxy()));
+        environment.jersey().register(new MonitorResource(configuration.getDeployerProxy()));
         environment.jersey().register(new PlannerResource(configuration.getPlannerProxy()));
         environment.jersey().register(new SlaResource(configuration.getSlaProxy()));
         environment.jersey().register(new AamWriterResource());

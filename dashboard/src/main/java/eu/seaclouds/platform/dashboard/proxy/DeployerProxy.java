@@ -17,17 +17,19 @@
 
 package eu.seaclouds.platform.dashboard.proxy;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import eu.seaclouds.platform.dashboard.util.ObjectMapperHelpers;
 import org.apache.brooklyn.rest.domain.ApplicationSummary;
 
 import org.apache.brooklyn.rest.domain.EntitySummary;
 import org.apache.brooklyn.rest.domain.SensorSummary;
 import org.apache.brooklyn.rest.domain.TaskSummary;
-import org.codehaus.jackson.JsonNode;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.List;
@@ -42,15 +44,15 @@ public class DeployerProxy extends AbstractProxy {
      * @return ApplicationSummary
      */
     public ApplicationSummary getApplication(String brooklynId) throws IOException {
-        Invocation invocation = getJerseyClient().target(getEndpoint() + "/v1/applications/" + brooklynId).request().buildGet();
+        Client client = getJerseyClient();
 
         if (getUser() != null && getPassword() != null) {
-            invocation = invocation.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_USERNAME, getUser());
-            invocation = invocation.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_PASSWORD, getPassword());
+            HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(getUser(),  getPassword());
+            client.register(feature);
         }
+        Invocation invocation = client.target(getEndpoint() + "/v1/applications/" + brooklynId).request().buildGet();
 
-        // Dropwizard Jackson(com.fasterxml.jackson) cannot parse this entity, we will use Brooklyn one instead (org.codehaus.jackson.map.ObjectMapper)
-        return ObjectMapperHelpers.JsonToObject(invocation.invoke().readEntity(String.class), ApplicationSummary.class);
+        return invocation.invoke().readEntity(ApplicationSummary.class);
     }
 
 
@@ -60,15 +62,16 @@ public class DeployerProxy extends AbstractProxy {
      * @return JsonNode
      */
     public JsonNode getApplicationsTree() throws IOException {
-        Invocation invocation = getJerseyClient().target(getEndpoint() + "/v1/applications/tree").request().buildGet();
+        Client client = getJerseyClient();
 
         if (getUser() != null && getPassword() != null) {
-            invocation = invocation.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_USERNAME, getUser());
-            invocation = invocation.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_PASSWORD, getPassword());
+            HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(getUser(),  getPassword());
+            client.register(feature);
         }
 
-        // Dropwizard Jackson(com.fasterxml.jackson) cannot parse this entity, we will use Brooklyn one instead (org.codehaus.jackson.map.ObjectMapper)
-        return ObjectMapperHelpers.JsonToObject(invocation.invoke().readEntity(String.class), JsonNode.class);
+        Invocation invocation = client.target(getEndpoint() + "/v1/applications/fetch").request().buildGet();
+
+        return invocation.invoke().readEntity(JsonNode.class);
     }
 
 
@@ -79,16 +82,16 @@ public class DeployerProxy extends AbstractProxy {
      * @return TaskSummary representing the running process
      */
     public TaskSummary removeApplication(String brooklynId) throws IOException {
-        Invocation invocation = getJerseyClient().target(getEndpoint() + "/v1/applications/" + brooklynId).request().buildDelete();
+        Client client = getJerseyClient();
 
         if (getUser() != null && getPassword() != null) {
-            invocation = invocation.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_USERNAME, getUser());
-            invocation = invocation.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_PASSWORD, getPassword());
+            HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(getUser(),  getPassword());
+            client.register(feature);
         }
 
-        // Dropwizard Jackson(com.fasterxml.jackson) cannot parse this entity, we will use Brooklyn one instead (org.codehaus.jackson.map.ObjectMapper)
-        return ObjectMapperHelpers.JsonToObject(invocation.invoke().readEntity(String.class), TaskSummary.class);
+        Invocation invocation = client.target(getEndpoint() + "/v1/applications/" + brooklynId).request().buildDelete();
 
+        return invocation.invoke().readEntity(TaskSummary.class);
     }
 
     /**
@@ -99,16 +102,16 @@ public class DeployerProxy extends AbstractProxy {
      */
     public TaskSummary deployApplication(String tosca) throws IOException {
 
-        Entity content = Entity.entity(tosca, MediaType.TEXT_PLAIN);
-        Invocation invocation = getJerseyClient().target(getEndpoint() + "/v1/applications").request().buildPost(content);
-
+        Client client = getJerseyClient();
         if (getUser() != null && getPassword() != null) {
-            invocation = invocation.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_USERNAME, getUser());
-            invocation = invocation.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_PASSWORD, getPassword());
+            HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(getUser(),  getPassword());
+            client.register(feature);
         }
 
-        // Dropwizard Jackson(com.fasterxml.jackson) cannot parse this entity, we will use Brooklyn one instead (org.codehaus.jackson.map.ObjectMapper)
-        return ObjectMapperHelpers.JsonToObject(invocation.invoke().readEntity(String.class), TaskSummary.class);
+        Entity content = Entity.entity(tosca, "application/x-yaml");
+        Invocation invocation = client.target(getEndpoint() + "/v1/applications").request().buildPost(content);
+
+        return invocation.invoke().readEntity(TaskSummary.class);
     }
 
     /**
@@ -118,17 +121,16 @@ public class DeployerProxy extends AbstractProxy {
      * @return List<EntitySummary> with all the children entities of the application
      */
     public List<EntitySummary> getEntitiesFromApplication(String brooklynId) throws IOException {
-        Invocation invocation = getJerseyClient()
-                .target(getEndpoint() + "/v1/applications/" + brooklynId + "/entities")
-                .request().buildGet();
-
+        Client client = getJerseyClient();
         if (getUser() != null && getPassword() != null) {
-            invocation = invocation.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_USERNAME, getUser());
-            invocation = invocation.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_PASSWORD, getPassword());
+            HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(getUser(),  getPassword());
+            client.register(feature);
         }
 
-        // Dropwizard Jackson(com.fasterxml.jackson) cannot parse this entity, we will use Brooklyn one instead (org.codehaus.jackson.map.ObjectMapper)
-        return ObjectMapperHelpers.JsonToObjectCollection(invocation.invoke().readEntity(String.class), EntitySummary.class);
+        Invocation invocation = client.target(getEndpoint() + "/v1/applications/" + brooklynId + "/entities")
+                .request().buildGet();
+
+        return invocation.invoke().readEntity(new GenericType<List<EntitySummary>>(){});
     }
 
     /**
@@ -139,17 +141,18 @@ public class DeployerProxy extends AbstractProxy {
      * @return List<SensorSummary> with the entity sensors
      */
     public List<SensorSummary> getEntitySensors(String brooklynId, String brooklynEntityId) throws IOException {
-        Invocation invocation = getJerseyClient()
+        Client client = getJerseyClient();
+        if (getUser() != null && getPassword() != null) {
+            HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(getUser(),  getPassword());
+            client.register(feature);
+        }
+
+        Invocation invocation = client
                 .target(getEndpoint() + "/v1/applications/" + brooklynId + "/entities/" + brooklynEntityId + "/sensors")
                 .request().buildGet();
 
-        if (getUser() != null && getPassword() != null) {
-            invocation = invocation.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_USERNAME, getUser());
-            invocation = invocation.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_PASSWORD, getPassword());
-        }
-
         // Dropwizard Jackson(com.fasterxml.jackson) cannot parse this entity, we will use Brooklyn one instead (org.codehaus.jackson.map.ObjectMapper)
-        return ObjectMapperHelpers.JsonToObjectCollection(invocation.invoke().readEntity(String.class), SensorSummary.class);
+        return invocation.invoke().readEntity(new GenericType<List<SensorSummary>>(){});
     }
 
     /**
@@ -161,16 +164,17 @@ public class DeployerProxy extends AbstractProxy {
      * @return String representing the sensor value
      */
     public String getEntitySensorsValue(String brooklynId, String brooklynEntityId, String sensorId) throws IOException {
-        Invocation invocation = getJerseyClient().target(
+        Client client = getJerseyClient();
+        if (getUser() != null && getPassword() != null) {
+            HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(getUser(),  getPassword());
+            client.register(feature);
+        }
+
+
+        Invocation invocation = client.target(
                 getEndpoint() + "/v1/applications/" + brooklynId + "/entities/" + brooklynEntityId + "/sensors/" + sensorId + "?raw=true")
                 .request().buildGet();
 
-        if (getUser() != null && getPassword() != null) {
-            invocation = invocation.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_USERNAME, getUser());
-            invocation = invocation.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_PASSWORD, getPassword());
-        }
-
-        // Dropwizard Jackson(com.fasterxml.jackson) cannot parse this entity, we will use Brooklyn one instead (org.codehaus.jackson.map.ObjectMapper)
         return invocation.invoke().readEntity(String.class);
     }
 }
