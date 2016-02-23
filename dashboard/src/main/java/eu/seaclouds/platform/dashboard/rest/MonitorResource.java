@@ -19,15 +19,14 @@ package eu.seaclouds.platform.dashboard.rest;
 
 
 import com.codahale.metrics.annotation.Timed;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
+import com.fasterxml.jackson.databind.JsonNode;
 import eu.seaclouds.platform.dashboard.model.SeaCloudsApplicationData;
 import eu.seaclouds.platform.dashboard.model.SeaCloudsApplicationDataStorage;
 import eu.seaclouds.platform.dashboard.proxy.DeployerProxy;
-import eu.seaclouds.platform.dashboard.proxy.MonitorProxy;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.brooklyn.rest.domain.EntitySummary;
 import org.apache.brooklyn.rest.domain.SensorSummary;
-import org.codehaus.jackson.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,12 +46,10 @@ import java.util.*;
 public class MonitorResource implements Resource {
     private static final Logger LOG = LoggerFactory.getLogger(MonitorResource.class);
 
-    private final MonitorProxy monitor;
     private final DeployerProxy deployer;
     private final SeaCloudsApplicationDataStorage dataStore;
 
-    public MonitorResource(MonitorProxy monitorProxy, DeployerProxy deployer) {
-        this.monitor = monitorProxy;
+    public MonitorResource(DeployerProxy deployer) {
         this.deployer = deployer;
         this.dataStore = SeaCloudsApplicationDataStorage.getInstance();
     }
@@ -60,11 +57,11 @@ public class MonitorResource implements Resource {
     private List<EntitySummary> getFlatEntityTree(JsonNode siblingsNode){
 
         List result = new ArrayList();
-        Iterator<JsonNode> silblingsItr = siblingsNode.getElements();
+        Iterator<JsonNode> silblingsItr = siblingsNode.elements();
         while(silblingsItr.hasNext()){
             JsonNode silblingNode = silblingsItr.next();
-            EntitySummary silbling = new EntitySummary(silblingNode.get("id").getTextValue(),
-                    silblingNode.get("name").getTextValue(), silblingNode.get("type").getTextValue(), null, null);
+            EntitySummary silbling = new EntitySummary(silblingNode.get("id").asText(),
+                    silblingNode.get("name").asText(), silblingNode.get("type").asText(), null, null);
             result.add(silbling);
 
             JsonNode childrenNode = silblingNode.get("children");
@@ -79,9 +76,9 @@ public class MonitorResource implements Resource {
     private List<EntitySummary> getFlatEntityTree(String brooklynId) throws IOException {
         List result = new ArrayList();
         for (JsonNode application : deployer.getApplicationsTree()) {
-            if(application.get("id").getTextValue().equals(brooklynId)){
-                EntitySummary mainEntity = new EntitySummary(application.get("id").getTextValue(),
-                        application.get("name").getTextValue(), application.get("id").getTextValue(), null, null);
+            if(application.get("id").asText().equals(brooklynId)){
+                EntitySummary mainEntity = new EntitySummary(application.get("id").asText(),
+                        application.get("name").asText(), application.get("id").asText(), null, null);
                 result.add(mainEntity);
 
                 JsonNode children = application.get("children");

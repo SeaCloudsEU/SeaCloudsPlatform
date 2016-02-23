@@ -17,6 +17,7 @@
 
 package eu.seaclouds.platform.dashboard.proxy;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import eu.seaclouds.platform.dashboard.util.ObjectMapperHelpers;
 import eu.seaclouds.platform.dashboard.utils.TestFixtures;
@@ -25,15 +26,13 @@ import org.apache.brooklyn.rest.domain.ApplicationSummary;
 import org.apache.brooklyn.rest.domain.EntitySummary;
 import org.apache.brooklyn.rest.domain.SensorSummary;
 import org.apache.brooklyn.rest.domain.TaskSummary;
-import org.codehaus.jackson.JsonNode;
-import org.testng.annotations.*;
+import org.testng.annotations.Test;
 
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.UUID;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
 
 public class DeployerProxyTest extends AbstractProxyTest<DeployerProxy> {
     private final String RANDOM_STRING = UUID.randomUUID().toString();

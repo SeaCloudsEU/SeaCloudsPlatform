@@ -125,7 +125,7 @@ public class SlaProxyTest extends AbstractProxyTest<SlaProxy> {
 
         // GuaranteeTermsStatus doesn't implement equals(), so we are going to check the IDs
         GuaranteeTermsStatus response = getProxy().getAgreementStatus(agreement);
-        GuaranteeTermsStatus fixture = ObjectMapperHelpers.JsonToObjectJackson2(termStatusJson, GuaranteeTermsStatus.class);
+        GuaranteeTermsStatus fixture = ObjectMapperHelpers.JsonToObject(termStatusJson, GuaranteeTermsStatus.class);
         assertEquals(response.getAgreementId(), fixture.getAgreementId());
     }
 

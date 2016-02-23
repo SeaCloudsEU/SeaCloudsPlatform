@@ -17,6 +17,7 @@
 
 package eu.seaclouds.platform.dashboard.rest;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import eu.atos.sla.parser.data.GuaranteeTermsStatus;
 import eu.atos.sla.parser.data.Violation;
 import eu.atos.sla.parser.data.wsag.Agreement;
@@ -31,7 +32,6 @@ import org.apache.brooklyn.rest.domain.ApplicationSummary;
 import org.apache.brooklyn.rest.domain.EntitySummary;
 import org.apache.brooklyn.rest.domain.SensorSummary;
 import org.apache.brooklyn.rest.domain.TaskSummary;
-import org.codehaus.jackson.JsonNode;
 import org.mockito.Matchers;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -92,11 +92,11 @@ public abstract class AbstractResourceTest<T extends Resource> {
                 TestUtils.getStringFromPath(TestFixtures.ENTITIES_PATH), EntitySummary.class);
 
 
-        agreement = ObjectMapperHelpers.JsonToObjectJackson2(
+        agreement = ObjectMapperHelpers.JsonToObject(
                 TestUtils.getStringFromPath(TestFixtures.AGREEMENT_PATH_JSON), Agreement.class);
-        agreementStatus = ObjectMapperHelpers.JsonToObjectJackson2(
+        agreementStatus = ObjectMapperHelpers.JsonToObject(
                 TestUtils.getStringFromPath(TestFixtures.AGREEMENT_STATUS_PATH_JSON), GuaranteeTermsStatus.class);
-        agreementTermViolations = ObjectMapperHelpers.JsonToObjectCollectionJackson2(TestUtils.getStringFromPath(TestFixtures.VIOLATIONS_JSON_PATH), Violation.class);
+        agreementTermViolations = ObjectMapperHelpers.JsonToObjectCollection(TestUtils.getStringFromPath(TestFixtures.VIOLATIONS_JSON_PATH), Violation.class);
 
         monitoringRules = ObjectMapperHelpers.XmlToObject(TestUtils.getStringFromPath(TestFixtures.MONITORING_RULES_PATH), MonitoringRules.class);
         topology = TestUtils.getStringFromPath(TestFixtures.DESIGNER_TOPOLOGY);

@@ -23,6 +23,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 
 /**
  * AbstractProxy holds the necessary information to configure a Client for each SeaClouds MicroServices
@@ -39,7 +40,7 @@ public abstract class AbstractProxy {
 
     private String user;
     private String password;
-    private Client jerseyClient;
+    private Client jerseyClient = ClientBuilder.newClient();
 
     @JsonProperty
     public String getHost() {
@@ -83,10 +84,6 @@ public abstract class AbstractProxy {
 
     public Client getJerseyClient() {
         return jerseyClient;
-    }
-
-    public void setJerseyClient(Client jerseyClient) {
-        this.jerseyClient = jerseyClient;
     }
 
     public String getEndpoint() {
