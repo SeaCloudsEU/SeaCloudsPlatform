@@ -496,6 +496,10 @@ var Editor = (function() {
         );
         $("#database-min-version").val(node.properties.min_version);
         $("#database-max-version").val(node.properties.max_version);
+
+        $("#database-name").val(node.properties.db_name);
+        $("#database-user").val(node.properties.db_user);
+        $("#database-pwd").val(node.properties.db_password);
     };
 
     databasetechset.store = function(node) {
@@ -503,6 +507,9 @@ var Editor = (function() {
         node.properties.artifact = $("#database-artifact").val();
         node.properties.min_version = $("#database-min-version").val();
         node.properties.max_version = $("#database-max-version").val();
+        node.properties.db_name = $("#database-name").val();
+        node.properties.db_user = $("#database-user").val();
+        node.properties.db_password = $("#database-pwd").val();
     };
 
     nonfunctionalset.nonfunctionalset = function(fieldsetid) {

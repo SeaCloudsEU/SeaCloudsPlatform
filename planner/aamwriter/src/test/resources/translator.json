@@ -66,6 +66,9 @@
                 "min_version": "5.0",
                 "max_version": "5.6",
                 "artifact": "mysql_script.sql",
+                "db_name": "<db_name>",
+                "db_user": "<db_user>",
+                "db_password": "<db_password>",
             }
         },
         {
