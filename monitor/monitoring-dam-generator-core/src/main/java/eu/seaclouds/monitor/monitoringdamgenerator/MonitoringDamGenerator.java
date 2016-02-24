@@ -1,24 +1,32 @@
 package eu.seaclouds.monitor.monitoringdamgenerator;
 
+import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.AdpParsingException;
+import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Host;
+import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
+import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.YAMLMonitorParser;
+import eu.seaclouds.monitor.monitoringdamgenerator.dcgenerators.JavaAppDcGenerator;
+import eu.seaclouds.monitor.monitoringdamgenerator.dcgenerators.MODACloudsDcGenerator;
+import eu.seaclouds.monitor.monitoringdamgenerator.dcgenerators.SeaCloudsDcGenerator;
+import eu.seaclouds.monitor.monitoringdamgenerator.rulesgenerators.ApplicationRulesGenerator;
+import eu.seaclouds.monitor.monitoringdamgenerator.rulesgenerators.InfrastructuralRulesGenerator;
+import eu.seaclouds.monitor.monitoringdamgenerator.rulesgenerators.NuroRulesGenerator;
 import it.polimi.tower4clouds.rules.MonitoringRules;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
-import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Host;
-import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
-import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.AdpParsingException;
-import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.YAMLMonitorParser;
-import eu.seaclouds.monitor.monitoringdamgenerator.dcgenerators.JavaAppDcGenerator;
-import eu.seaclouds.monitor.monitoringdamgenerator.dcgenerators.MODACloudsDcGenerator;
-import eu.seaclouds.monitor.monitoringdamgenerator.rulesgenerators.ApplicationRulesGenerator;
-import eu.seaclouds.monitor.monitoringdamgenerator.rulesgenerators.InfrastructuralRulesGenerator;
+
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+
+
 
 public class MonitoringDamGenerator {
     private static final Logger logger = LoggerFactory
@@ -40,6 +48,8 @@ public class MonitoringDamGenerator {
             + "requirements:\n"
             + " - host: tosca.nodes.Compute\n"
             + "   type: tosca.relationships.HostedOn\n";
+    private static final String JAVA_LANGUAGE = "JAVA";
+    private static final String PHP_LANGUAGE = "PHP";
 
     private URL monitoringManagerUrl;
     private URL influxdbUrl;
@@ -61,38 +71,61 @@ public class MonitoringDamGenerator {
 
             InfrastructuralRulesGenerator irg = new InfrastructuralRulesGenerator();
             ApplicationRulesGenerator arg = new ApplicationRulesGenerator();
+            NuroRulesGenerator nrg = new NuroRulesGenerator();
             MODACloudsDcGenerator modacloudsDcScriptGen = new MODACloudsDcGenerator();
             JavaAppDcGenerator javaDcScriptGen = new JavaAppDcGenerator();
+            SeaCloudsDcGenerator seacloudsDcGen = new SeaCloudsDcGenerator();
                 
             List<Module> modules = adpParser.getModuleRelevantInfoFromAdp(adp);
             List<Host> hosts = getDistinctHostsFromModules(modules);
 
             for (Host host : hosts) {
-                logger.info("Generating monitoring information for host "
-                        + host.getHostName());
-                Module mainModule = getMainHostedModule(modules, host);
-                                    
-                irg.generateMonitoringRules(mainModule);
-                
-                modacloudsDcScriptGen.addDataCollector(mainModule,
-                        this.monitoringManagerUrl.getHost(),
-                        this.monitoringManagerUrl.getPort(),
-                        this.influxdbUrl.getHost(),
-                        this.influxdbUrl.getPort());
+                if(host.getDeploymentType().equals(DeploymentType.IaaS)){
+                    
+                    logger.info("Generating monitoring information for host "
+                            + host.getHostName());
+                    Module mainModule = getMainHostedModule(modules, host);
+
+                    mainModule.addApplicationMonitoringRules(irg.generateMonitoringRules(mainModule));
+    
+                    modacloudsDcScriptGen.addDataCollector(mainModule,
+                            this.monitoringManagerUrl.getHost(),
+                            this.monitoringManagerUrl.getPort(),
+                            this.influxdbUrl.getHost(),
+                            this.influxdbUrl.getPort());
+                }
             }
 
             for (Module module : modules) {
-
                 logger.info("Generating monitoring information for module "
                         + module.getModuleName());
 
-                arg.generateMonitoringRules(module);             
-
-                javaDcScriptGen.addDataCollector(module,
-                        this.monitoringManagerUrl.getHost(),
-                        this.monitoringManagerUrl.getPort(),
-                        this.influxdbUrl.getHost(),
-                        this.influxdbUrl.getPort());
+                if(module.getHost().getDeploymentType().equals(DeploymentType.IaaS) &
+                        !module.getType().toLowerCase().contains("database")){
+                 
+                    module.addApplicationMonitoringRules(arg.generateMonitoringRules(module));
+                    
+                    if(module.getLanguage().equals(PHP_LANGUAGE)){
+                        module.addApplicationMonitoringRules(nrg.generateMonitoringRules(module));
+                    }
+                    
+                    if (module.getLanguage().equals(JAVA_LANGUAGE)) {
+                        javaDcScriptGen.addDataCollector(module,
+                                this.monitoringManagerUrl.getHost(),
+                                this.monitoringManagerUrl.getPort(),
+                                this.influxdbUrl.getHost(),
+                                this.influxdbUrl.getPort());
+                    }
+                    
+                    
+                    seacloudsDcGen.addDataCollector(module,
+                            this.monitoringManagerUrl.getHost(),
+                            this.monitoringManagerUrl.getPort(),
+                            this.influxdbUrl.getHost(),
+                            this.influxdbUrl.getPort());
+                    
+                }
+                
             }
 
             return this.buildMonitoringInfo(modules, adp);
@@ -173,5 +206,10 @@ public class MonitoringDamGenerator {
         
         return new MonitoringInfo(applicationRules, enrichedAdp);
         
+    }
+    
+    static String readFile(String path, Charset encoding) throws IOException {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, encoding);
     }
 }

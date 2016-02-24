@@ -1,15 +1,15 @@
 package eu.seaclouds.monitor.monitoringdamgenerator.dcgenerators;
 
+import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Metrics;
+import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
+import eu.seaclouds.monitor.monitoringdamgenerator.dcgenerators.DataCollectorGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import eu.seaclouds.monitor.monitoringdamgenerator.adpparsing.Module;
-import eu.seaclouds.monitor.monitoringdamgenerator.dcgenerators.DataCollectorGenerator;
 
 public class JavaAppDcGenerator implements DataCollectorGenerator {
 
@@ -18,11 +18,21 @@ public class JavaAppDcGenerator implements DataCollectorGenerator {
 
     private static final String JAVA_APP_DC = "javaAppDc";
     private static final String START_SCRIPT_URL = "https://s3-eu-west-1.amazonaws.com/java-app-dc-start-script/installJavaAppDc.sh";
+    private static final String MODULE_ID = "MODULE_ID";
 
+    private Metrics metrics;
+    
+    public JavaAppDcGenerator(){
+        List<String> toAdd = new ArrayList<String>();
+        
+        toAdd.add("ResponseTime");
+        
+        this.metrics = new Metrics(toAdd);
+    }    
+    
     public void addDataCollector(Module module, String monitoringManagerIp,
             int monitoringManagerPort, String influxdbIp, int influxdbPort) {
 
-        if (module.isJavaApp()) {
             logger.info("Generating required deployment script for the java-app-level Data Collector.");
 
             Map<String, Object> dataCollector = this.generateDcNodeTemplate(this
@@ -30,9 +40,6 @@ public class JavaAppDcGenerator implements DataCollectorGenerator {
                             monitoringManagerPort, influxdbIp, influxdbPort), module);
 
             module.addDataCollector(dataCollector);           
-        }
-
-
     }
 
     private Map<String, String> getRequiredEnvVars(Module module,
@@ -51,7 +58,10 @@ public class JavaAppDcGenerator implements DataCollectorGenerator {
         toReturn.put(MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT,
                 String.valueOf(monitoringManagerPort));
         
-        toReturn.put("MODULE_ID",
+        toReturn.put(METRICS,
+                metrics.toString());
+        
+        toReturn.put(MODULE_ID,
                 module.getModuleName());
 
         return toReturn;
@@ -81,7 +91,8 @@ public class JavaAppDcGenerator implements DataCollectorGenerator {
         interfaces.put("Standard", startCommand);
         requirement.put("host", module.getHost().getHostName());
         requirements.add(requirement);
-        properties.put("install.latch",
+
+        properties.put("installLatch",
                 "$brooklyn:component(\"" + module.getModuleName()
                         + "\").attributeWhenReady(\"service.isUp\")");
 

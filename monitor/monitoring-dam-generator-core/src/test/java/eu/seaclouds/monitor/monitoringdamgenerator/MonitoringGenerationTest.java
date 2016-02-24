@@ -48,9 +48,9 @@ public class MonitoringGenerationTest {
                 parametersTest.put("samplingProbability", "1");
                 TestUtils.testRule(rule, "10", "10", "InternalComponent",
                         nodeTemplateId,
-                        "AvarageResponseTimeInternalComponent",
+                        "AverageResponseTimeInternalComponent",
                         parametersTest, null, null, null,
-                        "AvarageResponseTime_" + nodeTemplateId);
+                        "ResponseTime_" + nodeTemplateId);
                 break;
 
             case "respTimeSLARule":
@@ -58,23 +58,21 @@ public class MonitoringGenerationTest {
                 parametersTest.put("samplingProbability", "1");
                 TestUtils.testRule(rule, "10", "10", "InternalComponent",
                         nodeTemplateId,
-                        "AvarageResponseTimeInternalComponent",
+                        "AverageResponseTimeInternalComponent",
                         parametersTest, null, null, "METRIC > "
                                 + EXPECTED_RESPONSE_TIME_THRESHOLD,
-                        "AvarageResponseTimeViolation_" + nodeTemplateId);
+                        "ResponseTimeViolation_" + nodeTemplateId);
                 break;
                 
             case "appAvailableSLARule":
                 parametersTest.clear();
                 parametersTest.put("samplingProbability", "1");
-                parametersTest.put("path", "/");
-                parametersTest.put("port", TEST_PORT);
                 TestUtils.testRule(rule, "10", "10", "InternalComponent",
                         nodeTemplateId,
-                        "AppAvailable",
-                        parametersTest, "Average", "InternalComponent", "METRIC < "
+                        "PaaSModuleAvailability",
+                        parametersTest, null, null, "METRIC < "
                                 + EXPECTED_AVAILABILITY_THRESHOLD,
-                        "AvarageAppAvailabilityViolation_" + nodeTemplateId);
+                        "AppAvailabilityViolation_" + nodeTemplateId);
                 break;
 
             case "checkStatusRule":
@@ -89,6 +87,7 @@ public class MonitoringGenerationTest {
             case "cpuRule":
                 parametersTest.clear();
                 parametersTest.put("samplingTime", "10");
+                parametersTest.put("samplingProbability", "1");
                 TestUtils.testRule(rule, "10", "10", "VM",
                         nodeTemplateId, "CPUUtilization",
                         parametersTest, "Average", "VM", null,
@@ -98,15 +97,12 @@ public class MonitoringGenerationTest {
             case "ramRule":
                 parametersTest.clear();
                 parametersTest.put("samplingTime", "10");
+                parametersTest.put("samplingProbability", "1");
                 TestUtils.testRule(rule, "10", "10", "VM",
                         nodeTemplateId, "MemUsed",
                         parametersTest, "Average", "VM", null,
                         "AverageRamUtilization_" + nodeTemplateId);
                 break;
-
-            default:
-                throw new Exception(
-                        "Test failure: monitoring rule with not valid id found.");
             }
         }
         

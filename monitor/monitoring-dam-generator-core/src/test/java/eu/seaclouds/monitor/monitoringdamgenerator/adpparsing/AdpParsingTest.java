@@ -32,7 +32,7 @@ public class AdpParsingTest {
             case "www":
                 Assert.assertEquals(m.getAvailability(), 0.98);
                 Assert.assertEquals(m.getResponseTime(), 2000.0);
-                Assert.assertTrue(m.isJavaApp());
+                Assert.assertEquals(m.getLanguage(), "JAVA");
                 Assert.assertEquals(m.getHost().getHostName(), "CloudFoundry");
                 Assert.assertEquals(m.getHost().getDeploymentType(), DeploymentType.PaaS);
 
@@ -41,7 +41,7 @@ public class AdpParsingTest {
             case "webservices":
                 Assert.assertEquals(m.getAvailability(), 0.96);
                 Assert.assertEquals(m.getResponseTime(), 0.0);
-                Assert.assertTrue(m.isJavaApp());
+                Assert.assertEquals(m.getLanguage(), "JAVA");
                 Assert.assertEquals(m.getPort(), "8080");
                 Assert.assertEquals(m.getHost().getHostName(), "Amazon_EC2_i2_xlarge_us_west_1");
                 Assert.assertEquals(m.getHost().getDeploymentType(), DeploymentType.IaaS);
@@ -50,7 +50,6 @@ public class AdpParsingTest {
             case "db1":
                 Assert.assertEquals(m.getAvailability(), 0.0);
                 Assert.assertEquals(m.getResponseTime(), 0.0);
-                Assert.assertFalse(m.isJavaApp());
                 Assert.assertEquals(m.getHost().getHostName(), "Amazon_EC2_i2_xlarge_us_west_2");
                 Assert.assertEquals(m.getHost().getDeploymentType(), DeploymentType.IaaS);
                 

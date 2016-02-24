@@ -10,10 +10,11 @@ public class Module {
 
     private double respTime = 0;
     private double availability = 0;
-    private boolean isJavaApp;
+    private String language = new String();
     private String moduleName;
     private Host host;
-    private String port;
+    private String port = "8080";
+    private String type;
 
     private List<Map<String, Object>> dataCollectors;
     private MonitoringRules monitoringRules;
@@ -81,16 +82,16 @@ public class Module {
               .append(" Availability= ").append(this.availability)
               .append(" Host= ").append(this.host.getHostName())
               .append(" DeploymentType= ").append(this.host.getDeploymentType())
-              .append(" isJavaApp= ").append(this.isJavaApp)
+              .append(" language= ").append(this.language)
               .toString();
     }
 
-    public boolean isJavaApp() {
-        return isJavaApp;
+    public String getLanguage() {
+        return language;
     }
 
-    public void setJavaApp(boolean isJavaApp) {
-        this.isJavaApp = isJavaApp;
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
     public Host getHost() {
@@ -107,6 +108,14 @@ public class Module {
 
     public void setPort(String port) {
         this.port = port;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
 
