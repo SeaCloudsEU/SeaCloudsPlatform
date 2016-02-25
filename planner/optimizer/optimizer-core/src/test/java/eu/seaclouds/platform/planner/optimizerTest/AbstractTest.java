@@ -28,6 +28,7 @@ import java.nio.file.Paths;
 import org.slf4j.Logger;
 
 import eu.seaclouds.platform.planner.optimizer.Optimizer;
+import eu.seaclouds.platform.planner.optimizer.heuristics.SearchMethodName;
 
 public class AbstractTest {
 
@@ -50,6 +51,26 @@ public class AbstractTest {
 
       try {
          suitableCloudOffer = filenameToString(TestConstants.CLOUD_OFFER_FILENAME_IN_JSON);
+      } catch (IOException e) {
+         log.error("File for Cloud Offers not found");
+         e.printStackTrace();
+      }
+      
+   }
+   
+   public void openInputFiles(String appmodel, String cloudOffers) {
+      final String dir = System.getProperty("user.dir");
+      log.debug("Trying to open files: current executino dir = " + dir);
+
+      try {
+         appModel = filenameToString(appmodel);
+      } catch (IOException e) {
+         log.error("File for APPmodel not found");
+         e.printStackTrace();
+      }
+
+      try {
+         suitableCloudOffer = filenameToString(cloudOffers);
       } catch (IOException e) {
          log.error("File for Cloud Offers not found");
          e.printStackTrace();
@@ -83,6 +104,8 @@ public class AbstractTest {
       }
 
    }
+
+
    
    
 }

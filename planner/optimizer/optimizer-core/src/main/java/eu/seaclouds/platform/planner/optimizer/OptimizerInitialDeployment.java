@@ -108,9 +108,9 @@ public class OptimizerInitialDeployment {
          int numPlansToGenerate, double hyst) {
 
       log.debug("Optimization method started. Inputs received");
-      log.debug("AAM is: " + appModel);
-      log.debug("Suitable offers are: " + suitableCloudOffer);
-      log.debug("Informaton of Benchmark platform is: " + benchmarkPlatformsYaml);
+      log.trace("AAM is: {}", appModel);
+      log.trace("Suitable offers are: {} ", suitableCloudOffer);
+      log.trace("Informaton of Benchmark platform is: {}" , benchmarkPlatformsYaml);
 
       // Get app characteristics
       Map<String, Object> appMap = YAMLoptimizerParser.getMAPofAPP(appModel);
@@ -157,7 +157,7 @@ public class OptimizerInitialDeployment {
       // inside
 
       // Compute solution
-      Solution[] solutions = engine.computeOptimizationProblem(appInfoSuitableOptions.clone(), requirements, topology,
+      Solution[] solutions = engine.computeOptimizationProblemForAllDifferentSolutions(appInfoSuitableOptions.clone(), requirements, topology,
             numPlansToGenerate);
 
       if (solutions == null) {
@@ -165,15 +165,16 @@ public class OptimizerInitialDeployment {
       }
 
       Map<String, Object>[] appMapSolutions = hashMapOfFoundSolutionsWithThresholds(solutions, appMap, topology,
-            appInfoSuitableOptions, numPlansToGenerate, requirements, suitableCloudOffer, hyst);
+            appInfoSuitableOptions, requirements, suitableCloudOffer, hyst);
 
       log.debug("Before ReplaceSuitableServiceByHost and adding the seaclouds.nodes.Compute type information");
 
-      String[] stringSolutions = new String[numPlansToGenerate];
+      String[] stringSolutions = new String[appMapSolutions.length];
       for (int i = 0; i < appMapSolutions.length; i++) {
          YAMLoptimizerParser.addComputeTypeToTypes(appMapSolutions[i]);
          YAMLoptimizerParser.replaceSuitableServiceByHost(appMapSolutions[i]);
          stringSolutions[i] = YAMLoptimizerParser.fromMAPtoYAMLstring(appMapSolutions[i]);
+         log.debug("Compute type addition finished for solution index {}", i);
       }
 
       return stringSolutions;
@@ -195,14 +196,14 @@ public class OptimizerInitialDeployment {
    }
 
    private Map<String, Object>[] hashMapOfFoundSolutionsWithThresholds(Solution[] bestSols,
-         Map<String, Object> applicMap, Topology topology, SuitableOptions cloudOffers, int numPlansToGenerate,
+         Map<String, Object> applicMap, Topology topology, SuitableOptions cloudOffers, 
          QualityInformation requirements, String suitableCloudOffer, double hyst) {
 
       if (log.isDebugEnabled()) {
          engine.checkQualityAttachedToSolutions(bestSols);
       }
       @SuppressWarnings("unchecked")
-      Map<String, Object>[] solutions = new HashMap[numPlansToGenerate];
+      Map<String, Object>[] solutions = new HashMap[bestSols.length];
 
       for (int i = 0; i < bestSols.length; i++) {
 
@@ -360,18 +361,12 @@ public class OptimizerInitialDeployment {
       double perfGoodness = requirements.getResponseTime() / qualityAnalyzer
             .computePerformance(sol, topology, requirements.getWorkload(), cloudCharacteristics).getResponseTime();
 
-      log.debug("Create reconfiguration Thresholds method has finished its call to compute Performance");
+      log.debug("Create reconfiguration Thresholds method has finished its call to compute Performance with result {}", perfGoodness);
 
-      if ((requirements.existResponseTimeRequirement()) && (perfGoodness >= 1.0)) {// response
-         // time
-         // requirements
-         // are
-         // satisfied
-         // if
-         // perfGoodness>=1.0
+      if ((requirements.existResponseTimeRequirement()) && (perfGoodness >= 1.0)) {
+         // response time requirements are satisfied if perfGoodness>=1.0
 
-         // A HashMap with all the keys of module names, and associated an
-         // arraylist with the thresholds for reconfigurations.
+         // A HashMap with all the keys of module names, and associated an arraylist with the thresholds for reconfigurations.
          HashMap<String, ArrayList<Double>> thresholds = new HashMap<String, ArrayList<Double>>();
 
          log.debug("Starting teh computation of reconfiguration thresholds");

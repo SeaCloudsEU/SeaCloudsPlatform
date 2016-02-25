@@ -34,9 +34,9 @@ public abstract class AbstractHeuristic {
 
    static Logger log = LoggerFactory.getLogger(AbstractHeuristic.class);
 
-   private int MAX_ITER_NO_IMPROVE = 200; // 200;
-   private double MAX_TIMES_IMPROVE_REQUIREMENT = 20;
-   private static final int DEFAULT_MAX_NUM_INSTANCES = 10;
+   private int MAX_ITER_NO_IMPROVE = 200;
+   private double           MAX_TIMES_IMPROVE_REQUIREMENT = 20;
+   private static final int DEFAULT_MAX_NUM_INSTANCES     = 10;
 
    public AbstractHeuristic(int maxIter) {
       MAX_ITER_NO_IMPROVE = maxIter;
@@ -450,6 +450,40 @@ public abstract class AbstractHeuristic {
 
       }
 
+   }
+
+   protected Solution[] filterUniqueSolutions(Solution[] sols) {
+      int duplicatedElements = 0;
+
+      // remove one by one from sols and check whether sols still contains the
+      // removed one.
+      for (int i = 0; i < sols.length; i++) {
+         Solution current = sols[i];
+         sols[i] = null;
+
+         if (current.isContainedIn(sols)) {
+            duplicatedElements++;
+         } else {
+            sols[i] = current;
+         }
+      }
+
+      // now sols[] contains only different solutions and null values. Remove
+      // the nulls.
+      Solution[] newSols = new Solution[sols.length - duplicatedElements];
+      int newSolsIndex = 0;
+      for (int i = 0; i < sols.length; i++) {
+         if (sols[i] != null) {
+            newSols[newSolsIndex] = sols[i];
+            newSolsIndex++;
+         }
+      }
+      if (newSolsIndex != newSols.length) {
+         log.warn(
+               "Something weird happened removing duplicated solutions: the number of different solutions were {} but they are only returned {}",
+               newSols.length, newSolsIndex);
+      }
+      return newSols;
    }
 
 }

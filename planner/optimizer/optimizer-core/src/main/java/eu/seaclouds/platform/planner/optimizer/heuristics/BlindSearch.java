@@ -33,6 +33,14 @@ public class BlindSearch extends AbstractHeuristic implements SearchMethod {
    public BlindSearch(int maxIter) {
       super(maxIter);
    }
+   
+   
+   
+   @Override
+   public Solution[] computeOptimizationProblemForAllDifferentSolutions(SuitableOptions cloudOffers, QualityInformation requirements,
+         Topology topology, int numPlansToGenerate) {
+      return super.filterUniqueSolutions(computeOptimizationProblem(cloudOffers,requirements,topology,numPlansToGenerate));
+   }
 
    /*
     * (non-Javadoc)

@@ -546,6 +546,10 @@ public class QualityAnalyzer {
 
    private void addResourceToSolution(Solution sol, String moduleWithHighestUtilization) {
 
+      if (moduleWithHighestUtilization == null) {
+         return;
+      }
+
       try {
          sol.modifyNumInstancesOfModule(moduleWithHighestUtilization,
                sol.getCloudInstancesForModule(moduleWithHighestUtilization) + 1);

@@ -1,0 +1,5 @@
+[ {
+  "forum-webapp-20151021" : [ {
+    "6184608484337307426" : "Cloud_Foundry: \n  properties: \n    auto_scaling: false\n    availability: 0.99871\n    cost: 0.04\n    go_support: true\n    go_version: 1.4\n    horizontal_scaling: true\n    java_support: true\n    location: CloudFoundry\n    node_support: true\n    performance: 192\n    php_support: true\n    private_hosting: true\n    public_hosting: false\n    python_support: true\n    resource_type: platform\n    ruby_support: true\n    scala_support: true\n    tomcat_support: true\n    tomcat_version: 7\n    vertical_scaling: true\n  type: seaclouds.nodes.Platform.Cloud_Foundry\n"
+  } ]
+ } ]

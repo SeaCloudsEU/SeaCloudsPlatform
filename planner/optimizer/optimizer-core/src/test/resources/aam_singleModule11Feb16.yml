@@ -1,0 +1,46 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: Softcare
+imports:
+- tosca-normative-types:1.0.0.wd06-SNAPSHOT
+topology_template:
+  node_templates:
+    forum-webapp-20151021:
+      type: sc_req.forum-webapp-20151021
+      properties:
+        language: JAVA
+        autoscale: false
+node_types:
+  sc_req.forum-webapp-20151021:
+    derived_from: seaclouds.nodes.webapp.tomcat.TomcatServer
+    properties:
+      java_support:
+        constraints:
+        - equal: true
+      tomcat_support:
+        constraints:
+        - equal: true
+      java_version:
+        constraints:
+        - greater_or_equal: '7'
+        - less_or_equal: '8'
+      resource_type:
+        constraints:
+        - equal: platform
+groups:
+  operation_forum-webapp-20151021:
+    members:
+    - forum-webapp-20151021
+    policies:
+    - QoSInfo:
+        execution_time: 5 ms
+        benchmark_platform: Amazon_EC2_m1_medium_us_east_1
+    - dependencies: {}
+    - AppQoSRequirements:
+        response_time:
+          less_than: 200.0 ms
+        availability:
+          greater_than: 0.99
+        cost:
+          less_or_equal: 1000.0 euros_per_month
+        workload:
+          less_or_equal: 240.0 req_per_min

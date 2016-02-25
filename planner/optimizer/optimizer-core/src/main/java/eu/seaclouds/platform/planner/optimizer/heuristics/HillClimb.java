@@ -40,6 +40,15 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
    public HillClimb(int maxIter) {
       super(maxIter);
    }
+   
+   
+   
+   
+   @Override
+   public Solution[] computeOptimizationProblemForAllDifferentSolutions(SuitableOptions cloudOffers, QualityInformation requirements,
+         Topology topology, int numPlansToGenerate) {
+      return super.filterUniqueSolutions(computeOptimizationProblem(cloudOffers,requirements,topology,numPlansToGenerate));
+   }
 
    /*
     * (non-Javadoc)

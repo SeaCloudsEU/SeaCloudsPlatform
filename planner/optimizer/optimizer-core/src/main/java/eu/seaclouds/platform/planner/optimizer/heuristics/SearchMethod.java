@@ -35,9 +35,14 @@ public interface SearchMethod {
     * @return
     */
    
+   public Solution[] computeOptimizationProblemForAllDifferentSolutions(
+         SuitableOptions cloudOffers, QualityInformation requirements,
+         Topology topology, int numPlansToGenerate);
+   
    public Solution[] computeOptimizationProblem(
          SuitableOptions cloudOffers, QualityInformation requirements,
          Topology topology, int numPlansToGenerate);
+   
    
    public void checkQualityAttachedToSolutions(Solution[] solutions);
 
