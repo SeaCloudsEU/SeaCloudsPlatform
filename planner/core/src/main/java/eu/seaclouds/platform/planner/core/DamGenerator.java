@@ -77,7 +77,8 @@ public class DamGenerator {
     public static final String SEACLOUDS_NODE_PREFIX = "seaclouds.nodes";
 
     private static DeployerTypesResolver deployerTypesResolver;
-    static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<>();
+    public static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<>();
+
 
     public static String generateDam(String adp, String monitorGenURL, String monitorGenPort, String slaGenURL, String influxdbURL, String influxdbPort){
         Yaml yml = new Yaml();

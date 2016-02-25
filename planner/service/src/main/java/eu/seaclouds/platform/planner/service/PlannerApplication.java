@@ -35,10 +35,12 @@ public class PlannerApplication extends Application<PlannerConfiguration> {
                                                 plannerConfiguration.getSlaGeneratorURL(),
                                                 plannerConfiguration.getInfluxdbURL(),
                                                 plannerConfiguration.getInfluxdbPort());
+        RulesResource rr = new RulesResource();
 
         environment.jersey().register(pr);
         environment.jersey().register(rpr);
         environment.jersey().register(dgr);
+        environment.jersey().register(rr);
 
         //TODO: add health ckecks
     }
