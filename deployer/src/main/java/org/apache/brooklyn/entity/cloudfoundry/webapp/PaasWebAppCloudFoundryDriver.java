@@ -28,11 +28,13 @@ import org.apache.brooklyn.core.entity.Attributes;
 import org.apache.brooklyn.core.entity.BrooklynConfigKeys;
 import org.apache.brooklyn.core.entity.Entities;
 import org.apache.brooklyn.location.cloudfoundry.CloudFoundryPaasLocation;
+import org.apache.brooklyn.util.http.HttpTool;
 import org.apache.brooklyn.util.text.Strings;
 import org.cloudfoundry.client.lib.domain.CloudApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -84,11 +86,21 @@ public abstract class PaasWebAppCloudFoundryDriver extends PaasEntityCloudFoundr
         try {
             CloudApplication app = getClient().getApplication(applicationName);
             return (app != null)
-                    && app.getState().equals(CloudApplication.AppState.STARTED);
+                    && app.getState().equals(CloudApplication.AppState.STARTED)
+                    && isApplicationDomainAvailable();
         } catch (Exception e) {
-            //log.debug("Application - {} is not available for now", applicationName);
             return false;
         }
+    }
+
+    private boolean isApplicationDomainAvailable(){
+        boolean result;
+        try {
+            result = HttpTool.getHttpStatusCode(getDomainUri()) == HttpURLConnection.HTTP_OK ;
+        } catch (Exception e) {
+            result = false;
+        }
+        return result;
     }
 
     @Override
@@ -225,7 +237,7 @@ public abstract class PaasWebAppCloudFoundryDriver extends PaasEntityCloudFoundr
         getEntity().waitForEntityStart();
 
         CloudApplication application = getClient().getApplication(applicationName);
-        String domainUri = "http://"+application.getUris().get(0);
+        String domainUri = getDomainUri();
         getEntity().setAttribute(Attributes.MAIN_URI, URI.create(domainUri));
         getEntity().setAttribute(CloudFoundryWebApp.ROOT_URL, domainUri);
 
@@ -237,6 +249,15 @@ public abstract class PaasWebAppCloudFoundryDriver extends PaasEntityCloudFoundr
 
         getEntity().setAttribute(CloudFoundryWebApp.DISK,
                 application.getDiskQuota());
+    }
+
+    protected String getDomainUri(){
+        String domainUri=null;
+        CloudApplication application = getClient().getApplication(applicationName);
+        if(application != null){
+             domainUri = "http://"+application.getUris().get(0);
+        }
+        return domainUri;
     }
 
     @Override
