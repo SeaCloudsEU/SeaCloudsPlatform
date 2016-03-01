@@ -13,7 +13,6 @@ import static com.google.common.base.Preconditions.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
-import java.util.regex.Pattern;
 
 
 /**
@@ -46,6 +45,7 @@ public class DamGenerator {
     public static final String REGION = "region";
     public static final String HARDWARE_ID = "hardwareId";
     public static final String TYPE = "type";
+    public static final String ENDPOINT = "endpoint";
     public static final String CLOUD_FOUNDRY = "CloudFoundry";
     public static final String POLICIES = "policies";
     public static final String GROUPS = "groups";
@@ -85,6 +85,7 @@ public class DamGenerator {
         adpYaml = DamGenerator.manageTemplateMetada(adpYaml);
         adpYaml = DamGenerator.translateAPD(adpYaml);
         adpYaml = DamGenerator.addMonitorInfo(yml.dump(adpYaml), monitorGenURL, monitorGenPort, influxdbURL, influxdbPort);
+        adpYaml = DamGenerator.translateOfferingsType(adpYaml);
 
         String slaInfoResponse = new HttpHelper(slaGenURL).postInBody(SLA_GEN_OP, yml.dump(adpYaml));
         checkNotNull(slaInfoResponse, "Error getting SLA info");
@@ -225,15 +226,25 @@ public class DamGenerator {
 
             if(module.keySet().contains(REQUIREMENTS)){
                 List<Map<String, Object> > requirements = (ArrayList<Map<String, Object> >) module.get(REQUIREMENTS);
+                ArrayList<Map<String, Object>> requirementsToRemove = new ArrayList<>();
                 for(Map<String, Object> req : requirements){
-                    if(req.keySet().contains(HOST)){
+                    if (req.containsKey(ENDPOINT) && req.containsKey(TYPE)) {
+                        // removes the requirement {endpoint: "", type: ""} that is not supported yet
+                        requirementsToRemove.add(req);
+                    } else if(req.keySet().contains(HOST)){
+
                         String host = (String) req.get(HOST);
                         if(!groups.keySet().contains(host)){
                             groups.put(host, new ArrayList<String>());
                         }
                         groups.get(host).add(moduleName);
                     }
+
                     req.remove(INSTANCES_POC);
+                }
+
+                for (Map<String, Object> requirementToRemove : requirementsToRemove) {
+                    requirements.remove(requirementToRemove);
                 }
             }
         }
@@ -269,6 +280,27 @@ public class DamGenerator {
         }
 
         String finalDam = yml.dump(adpYaml);
+        return adpYaml;
+    }
+
+    public static Map<String, Object> translateOfferingsType(Map<String, Object> adpYaml) {
+
+        Map<String, Object> topologyTemplate = (Map<String, Object>) adpYaml.get(TOPOLOGY_TEMPLATE);
+        Map<String, Object> nodeTemplates = (Map<String, Object>) topologyTemplate.get(NODE_TEMPLATES);
+
+        for(String moduleName:nodeTemplates.keySet()) {
+            Map<String, Object> module = (Map<String, Object>) nodeTemplates.get(moduleName);
+
+            String moduleType = (String) module.get("type");
+
+            // replaces seaclouds types (unknown by the deployer) with tosca types for the offerings
+            if (moduleType.startsWith("seaclouds.nodes.Platform.")) {
+                module.put("type", "tosca.nodes.Platform");
+            } else if (moduleType.startsWith("seaclouds.nodes.Compute.")) {
+                module.put("type", "tosca.nodes.Compute");
+            }
+        }
+
         return adpYaml;
     }
 
@@ -401,5 +433,4 @@ public class DamGenerator {
         }
         return property;
     }
-
 }
