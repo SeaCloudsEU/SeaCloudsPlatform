@@ -36,7 +36,7 @@ public class SuitableOptions { // implements Iterable<List<String>
    private ArrayList<List<String>>     suitableOptionsNames;
    private ArrayList<List<CloudOffer>> suitableOptionsCharacteristics;
 
-   private double                      latencyInternetMillis;
+   private double                      latencyInternetMillis=200.0;
 
    private double                      latencyDatacenterMillis;
 
