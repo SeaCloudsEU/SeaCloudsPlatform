@@ -74,8 +74,8 @@ public class DamGenerator {
     public static final String SEACLOUDS_APPLICATION_INFORMATION_POLICY_TYPE = "seaclouds.policies.app.information";
     public static final String SEACLOUDS_APPLICATION_POLICY_NAME = "seaclouds.app.information";
     public static final String SEACLOUDS_NODE_PREFIX = "seaclouds.nodes";
-    private static final String SEACLOUDS_NORMATIVE_TYPES = "seaclouds-types";
-    private static final String SEACLOUDS_NORMATIVE_TYPES_VERSION = "0.8.0-SNAPSHOT";
+    public static final String SEACLOUDS_NODE_TYPES = "seaclouds-types";
+    public static final String SEACLOUDS_NODE_TYPES_VERSION = "0.8.0-SNAPSHOT";
 
     private static DeployerTypesResolver deployerTypesResolver;
     static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<>();
@@ -128,7 +128,7 @@ public class DamGenerator {
                     imports.add(TOSCA_NORMATIVE_TYPES+":"+TOSCA_NORMATIVE_TYPES_VERSION);
                 }
 
-                imports.add(SEACLOUDS_NORMATIVE_TYPES + ":" + SEACLOUDS_NORMATIVE_TYPES_VERSION);
+                imports.add(SEACLOUDS_NODE_TYPES + ":" + SEACLOUDS_NODE_TYPES_VERSION);
             }
         }
 
