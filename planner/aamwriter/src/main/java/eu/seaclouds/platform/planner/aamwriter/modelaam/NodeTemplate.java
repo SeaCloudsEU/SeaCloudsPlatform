@@ -35,7 +35,7 @@ public class NodeTemplate extends LinkedHashMap {
     private String name;
     private Map _properties = new LinkedHashMap();
     private List<Map<String, String>> _artifacts = new ArrayList();
-    private List<Map<String, String>> _requirements = new ArrayList();
+    private List<Map<String, Object>> _requirements = new ArrayList();
     
     public NodeTemplate(String name) {
         this.name = name;
@@ -79,13 +79,13 @@ public class NodeTemplate extends LinkedHashMap {
     
     public void setHostRequirement(NodeTemplate node) {
         
-        for (Map<String, String> item : _requirements) {
+        for (Map<String, Object> item : _requirements) {
             if (item.containsKey("host")) {
                 item.put("host", node.getName());
                 return;
             }
         }
-        Map<String, String> requirement = new LinkedHashMap();
+        Map<String, Object> requirement = new LinkedHashMap();
         requirement.put("host", node.getName());
         
         requirements().add(requirement);
@@ -95,12 +95,17 @@ public class NodeTemplate extends LinkedHashMap {
      * Add an endpoint requirement to a NodeTemplate
      * @return name given to the requirement
      */
-    public String addConnectionRequirement(NodeTemplate target, String type) {
-        Map<String, String> requirement = new LinkedHashMap();
+    public String addConnectionRequirement(NodeTemplate target, String type, String varName) {
+        Map<String, Object> requirement = new LinkedHashMap();
         
         String requirementName = "endpoint";
         requirement.put(requirementName, target.getName());
         requirement.put("type", type);
+        if (!varName.isEmpty()) {
+            Map<String, String> properties = new LinkedHashMap();
+            properties.put("prop.name", varName);
+            requirement.put("properties", properties);
+        }
         requirements().add(requirement);
         
         return requirementName;
@@ -130,7 +135,7 @@ public class NodeTemplate extends LinkedHashMap {
         return _artifacts;
     }
     
-    private List<Map<String, String>> requirements() {
+    private List<Map<String, Object>> requirements() {
         if (!this.containsKey(Attributes.REQUIREMENTS)) {
             this.put(Attributes.REQUIREMENTS, _requirements);
         }

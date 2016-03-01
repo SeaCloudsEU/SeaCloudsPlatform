@@ -115,7 +115,8 @@
             "target": "webservices",
             "properties": {
                 "calls": "2",
-                "operation_type": "seaclouds.relation.connection.endpoint.host"
+                "operation_type": "seaclouds.relation.connection.endpoint.host",
+                "env_var": "connurl"
             }
         },
         {

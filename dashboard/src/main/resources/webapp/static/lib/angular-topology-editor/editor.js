@@ -674,13 +674,13 @@ var Editor = (function() {
 
     operationsset.load = function(link) {
         $("#operation-calls").val(link.properties.calls);
-        $("#operation-credentials-file").val(link.properties.credentials_file);
+        $("#operation-env-var").val(link.properties.env_var);
         $("#operation-type").val(link.properties.operation_type);
     };
 
     operationsset.store = function(link) {
         link.properties.calls = $("#operation-calls").val();
-        link.properties.credentials_file = $("#operation-credentials-file").val();
+        link.properties.env_var = $("#operation-env-var").val();
         link.properties.operation_type = $("#operation-type").val();
     };
 

@@ -16,6 +16,7 @@
  */
 package eu.seaclouds.platform.planner.aamwriter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -155,7 +156,7 @@ public class TranslatorTest {
         
         Object term;
         String string = "equal";
-        Map constraint = searchArray(constraints, string);
+        Map constraint = searchFirstInArray(constraints, string);
 
         assertNotNull(constraint);
         assertEquals("compute", constraint.get(string));
@@ -169,7 +170,7 @@ public class TranslatorTest {
         
         Object term;
         String string = "equal";
-        Map constraint = searchArray(constraints, string);
+        Map constraint = searchFirstInArray(constraints, string);
 
         assertNotNull(constraint);
         assertEquals("platform", constraint.get(string));
@@ -242,7 +243,7 @@ public class TranslatorTest {
 
         List<Map> frontend_policies = (List<Map>) groups.get("operation_www").get("policies");
         String reqname = Policy.AppQoSRequirements.Attributes.NAME;
-        Map reqs = searchArray(frontend_policies, reqname);
+        Map reqs = searchFirstInArray(frontend_policies, reqname);
         
         if (reqs == null) {
             fail("Requirements " + reqname + " not found");
@@ -267,7 +268,7 @@ public class TranslatorTest {
         
         List<Map> frontend_policies = (List<Map>) groups.get("operation_webservices").get("policies");
         String reqname = Policy.ModuleQoSRequirements.Attributes.NAME;
-        Map reqs = searchArray(frontend_policies, reqname);
+        Map reqs = searchFirstInArray(frontend_policies, reqname);
         
         if (reqs == null) {
             fail("Requirements " + reqname + " not found");
@@ -281,13 +282,16 @@ public class TranslatorTest {
     }
     
     @Test
-    public void testCredentialsFileInPropertiesOfFromNode() {
+    public void testRelationEnvVar() {
+        
         for (DLink l : graph.getLinks()) {
-            String credsFile = l.getCredentialsFile();
-            
-            Map<String, Object> from = nodeTemplates.get(l.getSource().getName());
-            if (!credsFile.isEmpty()) {
-                checkProperty(from, DLink.Attributes.CREDENTIALS_FILE, credsFile);
+            if (!l.getEnvVar().isEmpty()) {
+                Map from = nodeTemplates.get(l.getSource().getName());
+                String to = l.getTarget().getName();
+                Map endpoint = getConnection(from, to, l);
+                Map properties = (Map) endpoint.get("properties");
+                assertNotNull(properties);
+                assertEquals(l.getEnvVar(), properties.get("prop.name"));
             }
         }
     }
@@ -329,28 +333,54 @@ public class TranslatorTest {
     
     private void checkArtifact(Map<String, Object> nodeTemplate, String propName, String expectedPropValue) {
         List<Map> artifacts = (List<Map>) nodeTemplate.get("artifacts");
-        Map<String, Object> artifact = searchArray(artifacts, propName);
+        Map<String, Object> artifact = searchFirstInArray(artifacts, propName);
         assertNotNull(artifact);
         String actualValue = (String) artifact.get(propName);
         assertEquals(expectedPropValue, actualValue);
     }
 
     private void checkConnection(Map from, String to, DLink l) {
-        List<Map> requirements = (List)from.get("requirements");
-        Map endpoint = searchArray(requirements, "endpoint");
-        assertEquals(to, endpoint.get("endpoint"));
-        if (!l.getOperationType().isEmpty()) {
-            assertEquals(l.getOperationType(), endpoint.get("type"));
+        Map endpoint = getConnection(from, to, l);
+        
+        if (endpoint == null) {
+            fail(String.format("No connection found for (%s, %s)", l.getSource().getName(), l.getTarget().getName()));
+        }
+        else {
+            assertEquals(to, endpoint.get("endpoint"));
+            if (!l.getOperationType().isEmpty()) {
+                assertEquals(l.getOperationType(), endpoint.get("type"));
+            }
         }
     }
-    
-    private Map<String, Object> searchArray(List<Map> array, String key) {
+
+    private Map getConnection(Map from, String to, DLink l) {
+        List<Map> requirements = (List)from.get("requirements");
+        List<Map<String, Object>> endpoints = searchArray(requirements, "endpoint");
+        
+        for (Map<String, Object> endpoint : endpoints) {
+            if (endpoint.get("endpoint").equals(to)) {
+                return endpoint;
+            }
+        }
+        return null; 
+    }
+    private Map<String, Object> searchFirstInArray(List<Map> array, String key) {
         for (Map item: array) {
             if (item.containsKey(key)) {
                 return item;
             }
         }
         return null;
+    }
+    
+    private List<Map<String, Object>> searchArray(List<Map> array, String key) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Map item: array) {
+            if (item.containsKey(key)) {
+                result.add(item);
+            }
+        }
+        return result;
     }
     
     private List<Map> getConstraints(Map<String, Object> m, String propertyName) {
