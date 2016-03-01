@@ -199,7 +199,7 @@ public class DamGeneratorTest {
         assertNotNull(adpYaml.get(DamGenerator.IMPORTS));
         assertTrue(adpYaml.get(DamGenerator.IMPORTS) instanceof List);
         List imports = (List) adpYaml.get(DamGenerator.IMPORTS);
-        assertEquals(imports.size(), 1);
+        assertEquals(imports.size(), 2);
         assertEquals(imports.get(0), DamGenerator.TOSCA_NORMATIVE_TYPES+":"+DamGenerator.TOSCA_NORMATIVE_TYPES_VERSION);
     }
 

@@ -13,7 +13,6 @@ import static com.google.common.base.Preconditions.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
-import java.util.regex.Pattern;
 
 
 /**
@@ -75,10 +74,22 @@ public class DamGenerator {
     public static final String SEACLOUDS_APPLICATION_INFORMATION_POLICY_TYPE = "seaclouds.policies.app.information";
     public static final String SEACLOUDS_APPLICATION_POLICY_NAME = "seaclouds.app.information";
     public static final String SEACLOUDS_NODE_PREFIX = "seaclouds.nodes";
+    private static final String SEACLOUDS_NORMATIVE_TYPES = "seaclouds-types";
+    private static final String SEACLOUDS_NORMATIVE_TYPES_VERSION = "0.8.0-SNAPSHOT";
 
     private static DeployerTypesResolver deployerTypesResolver;
     static Map<String, MonitoringInfo> monitoringInfoByApplication=new HashMap<>();
 
+    /**
+     *
+     * @param adp YAML string containing the ADP
+     * @param monitorGenURL URL of the Monitoring service
+     * @param monitorGenPort Port of the Monitoring service
+     * @param slaGenURL URL of the SLA service
+     * @param influxdbURL URL of InfluxDB
+     * @param influxdbPort Port of InfluxDB
+     * @return YAML string containing the generated DAM
+     */
     public static String generateDam(String adp, String monitorGenURL, String monitorGenPort, String slaGenURL, String influxdbURL, String influxdbPort){
         Yaml yml = new Yaml();
         Map<String, Object> adpYaml = (Map<String, Object>) yml.load(adp);
@@ -91,6 +102,7 @@ public class DamGenerator {
         adpYaml = DamGenerator.addApplicationInfo(adpYaml, slaInfoResponse, SLA_INFO_GROUPNAME);
 
         Map groups = (Map) adpYaml.remove(GROUPS);
+        adpYaml.remove(NODE_TYPES);
 
         addPoliciesTypeIfNotPresent(groups);
 
@@ -115,6 +127,8 @@ public class DamGenerator {
                     imports.remove(importedNormativeTypes);
                     imports.add(TOSCA_NORMATIVE_TYPES+":"+TOSCA_NORMATIVE_TYPES_VERSION);
                 }
+
+                imports.add(SEACLOUDS_NORMATIVE_TYPES + ":" + SEACLOUDS_NORMATIVE_TYPES_VERSION);
             }
         }
 
@@ -263,12 +277,9 @@ public class DamGenerator {
 
             policyGroup.put(POLICIES, policy);
 
-            HashMap<String, Object> finalGroup = new HashMap<>();
-
             ADPgroups.put(ADD_BROOKLYN_LOCATION + group ,policyGroup);
         }
 
-        String finalDam = yml.dump(adpYaml);
         return adpYaml;
     }
 
