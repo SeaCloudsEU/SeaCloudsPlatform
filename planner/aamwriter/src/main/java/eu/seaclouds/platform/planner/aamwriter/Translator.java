@@ -216,10 +216,7 @@ public class Translator {
         NodeTemplate source = topologyTemplate.getNodeTemplate(dSource.getName());
         NodeTemplate target = topologyTemplate.getNodeTemplate(dTarget.getName());
         
-        source.addConnectionRequirement(target, l.getOperationType());
-        if (!l.getCredentialsFile().isEmpty()) {
-            source.addProperty(DLink.Attributes.CREDENTIALS_FILE, l.getCredentialsFile());
-        }
+        source.addConnectionRequirement(target, l.getOperationType(), l.getEnvVar());
     }
 
     private void buildGroups(DGraph dgraph, Aam aam) {

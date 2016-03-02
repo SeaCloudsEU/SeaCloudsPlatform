@@ -36,6 +36,7 @@ public class DLink {
         public static final String CALLS = "calls";
         public static final String TYPE = "operation_type";
         public static final String CREDENTIALS_FILE = "credentials_file";
+        public static final String ENV_VAR = "env_var";
     }
 
     private DGraph graph;
@@ -45,6 +46,7 @@ public class DLink {
     private String calls;
     private String operationType;
     private String credentialsFile;
+    private String envVar;
 
     public DLink(JSONObject jnode, DGraph graph) {
         this.graph = graph;
@@ -62,6 +64,7 @@ public class DLink {
         this.calls = properties.containsKey(Attributes.CALLS)? properties.get(Attributes.CALLS) : "";
         this.operationType = properties.containsKey(Attributes.TYPE)? properties.get(Attributes.TYPE) : "";
         this.credentialsFile = properties.containsKey(Attributes.CREDENTIALS_FILE)? properties.get(Attributes.CREDENTIALS_FILE) : "";
+        this.envVar = properties.containsKey(Attributes.ENV_VAR)? properties.get(Attributes.ENV_VAR) : "";
     }
 
     @Override
@@ -88,5 +91,9 @@ public class DLink {
     
     public String getOperationType() {
         return operationType;
+    }
+    
+    public String getEnvVar() {
+        return envVar;
     }
 }
