@@ -2,6 +2,10 @@ fieldset legend {
     font-size: 16px;
 }
 
+circle.node {
+    stroke: #888888;
+}
+
 circle.node.running {
     stroke: #2E9E2E;
 }
@@ -13,11 +17,10 @@ circle.node.starting{
 
 circle.node.on-fire{
     stroke: #F33F3F;
-
 }
 
 circle.node.frontend {
-    stroke-width: 2px;
+    stroke: black;
 }
 
 path.link.hostedon {

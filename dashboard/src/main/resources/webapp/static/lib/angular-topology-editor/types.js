@@ -21,8 +21,13 @@ var Types = function() {
     Graph.Node.update = function(dom_element) {
         var d3_element = d3.select(dom_element);
 
+        var classes = [
+            "node", 
+            this.properties.status,
+            this.properties.frontend? "frontend" : ""
+        ];
         d3_element.select("circle.node").
-            attr("class", "node " + this.properties.status);
+            attr("class", classes.join(" "));
 
         d3_element.select(".nodelabel").text(this.label);
     };
