@@ -57,13 +57,18 @@ public class DamGenResource {
     @POST
     @Timed
     public DamGeneratorResponse damGenPost(String adp){
-        return new DamGeneratorResponse(DamGenerator.generateDam(adp, monitorGeneratorURL, monitorGeneratorPort, slaGeneratorURL, influxdbURL, influxdbPort));
+        DamGenerator damGenerator = new DamGenerator(monitorGeneratorURL, monitorGeneratorPort,
+                slaGeneratorURL, influxdbURL, influxdbPort);
+        return new DamGeneratorResponse(damGenerator.generateDam(adp));
     }
 
     @GET
     @Timed
     public DamGeneratorResponse damgen(@QueryParam("adp") String adp){
-        return new DamGeneratorResponse(DamGenerator.generateDam(adp, monitorGeneratorURL, monitorGeneratorPort, slaGeneratorURL, influxdbURL, influxdbPort));
+        DamGenerator damGenerator = new DamGenerator(monitorGeneratorURL, monitorGeneratorPort,
+                slaGeneratorURL, influxdbURL, influxdbPort);
+
+        return new DamGeneratorResponse(damGenerator.generateDam(adp));
     }
 
 }

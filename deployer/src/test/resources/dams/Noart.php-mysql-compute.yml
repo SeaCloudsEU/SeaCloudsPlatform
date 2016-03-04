@@ -1,9 +1,11 @@
 tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
-description: Nuro. PHP and hosted Mysql
-template_name: nuro.php.mysql-compute
+description: Nuro application. Mysql is hosted. No artifacs
+template_name: nuro.php.mysql-compute.na
 template_version: 1.0.0-SNAPSHOT
 imports:
-- tosca-normative-types:1.0.0.wd06-SNAPSHOT
+  - tosca-normative-types:1.0.0.wd06-SNAPSHOT
+  - seaclouds-types:0.8.0-SNAPSHOT
+
 topology_template:
   node_templates:
     php:
@@ -22,10 +24,7 @@ topology_template:
           g_DatabaseName: "database1"
           g_DatabaseUser: "brooklyn"
           g_DatabasePassword: "br00k11n"
-      artifacts:
-        git.url:
-          implementation: "https://<USER>:<PASS>@bitbucket.org/seaclDem/nuro-casestudy.git"
-          type: tosca.artifacts.File
+        git.url: "https://<USER>:<PASS>@bitbucket.org/seaclDem/nuro-casestudy.git"
 
     db:
       type: org.apache.brooklyn.entity.database.mysql.MySqlNode
@@ -34,10 +33,7 @@ topology_template:
           constraints:
           - greater_or_equal: '5.0'
           - less_or_equal: '5.6'
-      artifacts:
-        creationScriptUrl:
-          implementation: "https://www.dropbox.com/s/rp7owcgyhaa692f/create.sql?dl=1"
-          type: tosca.artifacts.File
+        creationScriptUrl: "https://www.dropbox.com/s/rp7owcgyhaa692f/create.sql?dl=1"
       requirements:
       - host: Amazon_EC2_m3_xlarge_eu_central_1
 
@@ -70,40 +66,3 @@ topology_template:
       - brooklyn.location: aws-ec2:us-west-2
       members:
       - Amazon_EC2_m3_xlarge_eu_central_1
-
-node_types:
-  org.apache.brooklyn.entity.database.mysql.MySqlNode:
-    derived_from: tosca.nodes.Root
-    description: |
-      A MySQL server
-    requirements:
-    - host: tosca.nodes.Compute
-      type: tosca.relationships.HostedOn
-    artifacts:
-    - creationScriptUrl: null
-      type: tosca.artifacts.File
-
-  org.apache.brooklyn.entity.php.httpd.PhpHttpdServer:
-    derived_from: tosca.nodes.Root
-    description: |
-      A simple Tomcat server
-    properties:
-      php.app.name:
-        type: string
-        required: false
-      config.file:
-        type: string
-        required: false
-      config.params:
-        type: map
-        required: false
-        entry_schema:
-          type: string
-    artifacts:
-    - git.url: null
-      type: tosca.artifacts.File
-    - tarball.url: null
-      type: tosca.artifacts.File
-    #requirements:
-    #- host: seaclouds.nodes.Compute
-    #  type: tosca.relationships.HostedOn
