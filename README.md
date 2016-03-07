@@ -20,7 +20,7 @@ Building SeaClouds shouldn't be a big deal, however it has the following prerequ
 After you have been installed all the prerequisites, you can download the master branch of the repository from git with `git clone git@github.com:SeaCloudsEU/SeaCloudsPlatform.git` and build it with `mvn clean install` (if you want to skip the tests, please add `-DskipTest` flag). 
 
 # Deploy SeaClouds
-A deployment of SeaClouds can be launched using Apache Brooklyn. We currently support deployments against Bring Your
+A deployment of SeaClouds can be launched using [Apache Brooklyn](https://github.com/apache/brooklyn). We currently support deployments against Bring Your
 Own Nodes (BYON) and to all the IaaS provider supported by [Apache jclouds](http://jclouds.org).
 
 ## Setup your environment
