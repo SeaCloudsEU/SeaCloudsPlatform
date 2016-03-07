@@ -3,9 +3,7 @@ SeaClouds Platform
 ![SeaClouds Project][SeaClouds-banner]
 [SeaClouds-banner]: http://www.seaclouds-project.eu/img/header_test.jpg  "SeaClouds Project"
 ==================
-[![Build Status](https://api.travis-ci.org/SeaCloudsEU/SeaCloudsPlatform.svg?branch=master)](https://travis-ci.org/SeaCloudsEU/SeaCloudsPlatform)
-
-[![codecov.io](https://codecov.io/github/SeaCloudsEU/SeaCloudsPlatform/coverage.svg?branch=master)](https://codecov.io/github/SeaCloudsEU/SeaCloudsPlatform?branch=master)
+[![Build Status](https://api.travis-ci.org/SeaCloudsEU/SeaCloudsPlatform.svg?branch=master)](https://travis-ci.org/SeaCloudsEU/SeaCloudsPlatform)&nbsp;[![codecov.io](https://codecov.io/github/SeaCloudsEU/SeaCloudsPlatform/coverage.svg?branch=master)](https://codecov.io/github/SeaCloudsEU/SeaCloudsPlatform?branch=master)&nbsp;[![Gitter](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/SeaCloudsEU/SeaCloudsPlatform)
 
 This is a proof of concept of the **SeaClouds Platform** ([www.seaclouds-project.eu](http://www.seaclouds-project.eu)), integrating a first version of the [Discoverer & Planner](../planner-branch/planner/) (considering the [Matchmaker process](../planner-branch/planner/matchmaker/)), [Deployer](./deployer/), [Monitor](./monitor/) and [SLA Service](https://github.com/SeaCloudsEU/sla-core/) components, into a [**Unified Dashboard**](./dashboard/src/main/webapp).
 
