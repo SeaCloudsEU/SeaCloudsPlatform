@@ -1,0 +1,28 @@
+name: CF - appserver-w-db
+services:
+- type: org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
+  name: Web AppServer HelloWorld
+  id: webapp
+  location: cloudfoundry-instance
+  brooklyn.config:
+    application-name: test-brooklyn-monitor-app
+    application-url: classpath://brooklyn-webapp-custom-env-monitoring.war
+    app.monitor.resource: /db.jsp GET
+    bind: 
+    - $brooklyn:component("db")
+    env: 
+      myDbJdbcUrl: $brooklyn:component("db").attributeWhenReady("test-brooklyn-monitor-app.credentials.jdbcUrl")
+      myDbName: $brooklyn:component("db").attributeWhenReady("test-brooklyn-monitor-app.credentials.name")
+      myDbHostName: $brooklyn:component("db").attributeWhenReady("test-brooklyn-monitor-app.credentials.hostname")
+      myDbUser: $brooklyn:component("db").attributeWhenReady("test-brooklyn-monitor-app.credentials.username")
+      myDbPassword: $brooklyn:component("db").attributeWhenReady("test-brooklyn-monitor-app.credentials.password")
+      myDbPort: $brooklyn:component("db").attributeWhenReady("test-brooklyn-monitor-app.credentials.port")
+
+- type: org.apache.brooklyn.entity.cloudfoundry.services.sql.cleardb.ClearDbService
+  id: db
+  name: DB HelloWorld Visitors
+  location: cloudfoundry-instance
+  brooklyn.config:
+    creationScriptUrl: classpath://chat-database.sql
+    serviceInstanceName: test-brooklyn-service-mysql
+    plan: spark

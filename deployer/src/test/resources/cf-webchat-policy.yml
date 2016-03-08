@@ -1,0 +1,26 @@
+name: App-CF-AWS-Policy
+services:
+- type: org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
+  name: Web AppServer HelloWorld
+  id: webapp
+  location: cloudfoundry-instance
+  brooklyn.config:
+    application-name: test-brooklyn-monitor-app-JM
+    application-url: "https://s3-us-west-2.amazonaws.com/seaclouds-usescases-artifacts/webchat/webchat-jm.war"
+    env:
+      brooklyn.example.db.url: $brooklyn:formatString("jdbc:%s%s?user=%s&password=%s",component("db").attributeWhenReady("datastore.url"), "visitors", "brooklyn", "br00k11n")
+  brooklyn.policies:
+  - policyType: org.apache.brooklyn.policy.autoscaling.AutoScalerPolicy
+    brooklyn.config:
+      metric: $brooklyn:sensor("org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp", "app.server.latency")
+      metricLowerBound: 60
+      metricUpperBound: 100
+      minPoolSize: 1
+      maxPoolSize: 2
+
+- type: org.apache.brooklyn.entity.database.mysql.MySqlNode
+  id: db
+  name: My DB
+  location: aws-ec2:us-west-2
+  brooklyn.config:
+    creationScriptUrl: https://raw.githubusercontent.com/apache/brooklyn-library/master/examples/simple-web-cluster/src/main/resources/visitors-creation-script.sql

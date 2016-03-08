@@ -19,27 +19,62 @@
 package org.apache.brooklyn.entity.cloudfoundry.webapp.java;
 
 
-import org.apache.brooklyn.entity.cloudfoundry.webapp.CloudFoundryWebApp;
 import org.apache.brooklyn.api.entity.ImplementedBy;
+import org.apache.brooklyn.api.sensor.AttributeSensor;
 import org.apache.brooklyn.config.ConfigKey;
 import org.apache.brooklyn.core.config.ConfigKeys;
 import org.apache.brooklyn.core.config.MapConfigKey;
+import org.apache.brooklyn.core.entity.trait.Resizable;
+import org.apache.brooklyn.core.sensor.Sensors;
+import org.apache.brooklyn.entity.cloudfoundry.webapp.CloudFoundryWebApp;
 import org.apache.brooklyn.util.core.flags.SetFromFlag;
 
 /**
  * Java webapp entity for being deployed in a CloudFoundry location.
  */
 @ImplementedBy(JavaCloudFoundryPaasWebAppImpl.class)
-public interface JavaCloudFoundryPaasWebApp extends CloudFoundryWebApp {
+public interface JavaCloudFoundryPaasWebApp extends CloudFoundryWebApp, Resizable {
 
     @SetFromFlag("buildpack")
-    ConfigKey<String> BUILDPACK= ConfigKeys.newStringConfigKey(
+    ConfigKey<String> BUILDPACK = ConfigKeys.newStringConfigKey(
             "cloudFoundryWebApp.application.buildpack", "URL of the required buildpack",
             "https://github.com/cloudfoundry/java-buildpack.git");
-    
-    // TODO: I think that java.sysprops are dependent on the buildpack.
+
     @SetFromFlag("java.sysprops")
     MapConfigKey<String> JAVA_SYSPROPS = new MapConfigKey<String>(String.class,
             "cloudfoundry.java.sysprops",
             "System properties to be passed to the buildpack");
+
+    @SetFromFlag("jm.resource")
+    ConfigKey<String> MAIN_MONITOR_RESOURCE = ConfigKeys.newStringConfigKey(
+            "app.monitor.resource", "Main resource that will be used to monitor the app",
+            "/ GET");
+
+    public static final AttributeSensor<String> MONITOR_URL =
+            Sensors.newStringSensor("app.monitor.url", "URL for monitoring the app");
+
+    public static final AttributeSensor<Long> USED_MEMORY =
+            Sensors.newLongSensor("app.usedmemory", "Memory used by Application");
+
+    public static final AttributeSensor<Double> DURATION_SUM =
+            Sensors.newDoubleSensor("app.resource.durationsum", "Total time used by a resource");
+
+    public static final AttributeSensor<Double> RESOURCE_HITS =
+            Sensors.newDoubleSensor("app.resource.hits", "Total time that a resource was used");
+
+    public static final AttributeSensor<Double> RESOURCE_LATENCY =
+            Sensors.newDoubleSensor("app.resource.latency", "Latency");
+
+    public static final AttributeSensor<Double> SERVER_PROCESSING_TIME =
+            Sensors.newDoubleSensor("app.server.processingtime", "");
+
+    public static final AttributeSensor<Double> SERVER_REQUESTS =
+            Sensors.newDoubleSensor("app.server.requests", "");
+
+    public static final AttributeSensor<Double> SERVER_LATENCY =
+            Sensors.newDoubleSensor("app.server.latency", "Latency");
+
+    public static final AttributeSensor<Double> REQUEST_PER_SECOND =
+            Sensors.newDoubleSensor("app.server.requestpersecond", "Request per second");
+
 }

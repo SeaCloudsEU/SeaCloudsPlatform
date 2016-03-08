@@ -240,15 +240,6 @@ public abstract class PaasWebAppCloudFoundryDriver extends PaasEntityCloudFoundr
         String domainUri = getDomainUri();
         getEntity().setAttribute(Attributes.MAIN_URI, URI.create(domainUri));
         getEntity().setAttribute(CloudFoundryWebApp.ROOT_URL, domainUri);
-
-        /*getEntity().setAttribute(CloudFoundryWebApp.INSTANCES_NUM,
-                application.getInstances());*/
-
-        getEntity().setAttribute(CloudFoundryWebApp.MEMORY,
-                application.getMemory());
-
-        getEntity().setAttribute(CloudFoundryWebApp.DISK,
-                application.getDiskQuota());
     }
 
     protected String getDomainUri(){
