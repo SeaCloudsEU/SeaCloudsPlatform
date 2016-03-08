@@ -185,7 +185,7 @@ brooklyn.catalog:
         brooklynnode.webconsole.nosecurity: true
         brooklynnode.classpath:
           - https://s3-eu-west-1.amazonaws.com/seaclouds-deployer/deployer-0.9.0-20162302.17.14.52.jar
-          - https://s3-eu-west-1.amazonaws.com/tosca-temporal-integration/deployer-brooklyn-tosca-transformer-0.9.0-20162602.100347.jar
+          - https://s3-eu-west-1.amazonaws.com/tosca-temporal-integration/deployer-brooklyn-tosca-transformer-0.9.0-20160803.160928.jar
       brooklyn.enrichers:
         - enricherType: org.apache.brooklyn.enricher.stock.Transformer
           brooklyn.config:
