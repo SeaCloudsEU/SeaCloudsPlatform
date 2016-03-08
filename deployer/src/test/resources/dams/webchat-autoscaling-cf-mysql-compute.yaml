@@ -1,0 +1,94 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+
+imports:
+  - tosca-normative-types:1.0.0.wd06-SNAPSHOT
+  - seaclouds-types:0.8.0-SNAPSHOT
+
+
+template_name: web-chat.cluster-policy-compute.mysql-compute
+template_version: 1.0.0-SNAPSHOT
+
+description: Chat Application using JBoss
+
+node_types:
+
+  org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp:
+    derived_from: tosca.nodes.Root
+    description: >
+      A simple Tomcat server
+    properties:
+      application-name:
+        type: string
+        required: false
+      application-url:
+        type: string
+        required: false
+      env:
+        type: map
+        required: false
+        entry_schema:
+          type: string
+
+topology_template:
+  description: Web Server Sample with Script
+  node_templates:
+    webchat:
+      type: org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
+      properties:
+        application-name: webchat-polict-test
+        application-url: "https://s3-us-west-2.amazonaws.com/seaclouds-usescases-artifacts/webchat/webchat-jm.war"
+        env:
+          brooklyn.example.db.url: $brooklyn:formatString("jdbc:%s%s?user=%s&password=%s",component("db").attributeWhenReady("datastore.url"), "visitors", "brooklyn", "br00k11n")
+
+    db:
+      type: org.apache.brooklyn.entity.database.mysql.MySqlNode
+      properties:
+        creationScriptUrl: "https://raw.githubusercontent.com/apache/brooklyn-library/master/examples/simple-web-cluster/src/main/resources/visitors-creation-script.sql"
+      requirements:
+      - host: Amazon_EC2_i2_xlarge_us_west_1
+
+    Amazon_EC2_i2_xlarge_us_west_1:
+      type: tosca.nodes.Compute
+      properties:
+        resource_type: compute
+        hardwareId: i2.xlarge
+        location: aws-ec2
+        region: us-west-1
+        performance: 90
+        availability: 0.9995
+        country: United States
+        city: SAN JOSE
+        cost: 1.001 USD/hour
+        disk_size: 800
+        num_disks: 1
+        num_cpus: 4
+        ram: 30.5
+        disk_type: ssd
+
+  # if you want to tell brooklyn to assign a location at deploy time, as part of the template, this is the current way.
+  # it can also be done with camp, referencing this topology template.
+  groups:
+    add_brooklyn_autoscaling:
+      members: [ webchat ]
+      policies:
+      - brooklyn.location:
+          cloudfoundry:
+            user: <user>
+            password: <pass>
+            org: <org>
+            endpoint: https://api.run.pivotal.io
+            space: development
+            address: run.pivotal.io
+      - autoscaling:
+          type: org.apache.brooklyn.policy.autoscaling.AutoScalerPolicy
+          metric: $brooklyn:sensor("org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp", "app.server.requestpersecond")
+          autoscaler.resizeDownStabilizationDelay: 100000
+          metricLowerBound: 60
+          metricUpperBound: 100
+          minPoolSize: 1
+          maxPoolSize: 2
+
+    add_brooklyn_location-db:
+      members: [ Amazon_EC2_i2_xlarge_us_west_1 ]
+      policies:
+      - brooklyn.location: aws-ec2:us-west-2
