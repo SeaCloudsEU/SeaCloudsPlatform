@@ -1,0 +1,128 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: WebChat application
+imports:
+- tosca-normative-types:1.0.0.wd06-SNAPSHOT
+topology_template:
+  node_templates:
+    Chat:
+      type: sc_req.Chat
+      properties:
+        language: JAVA
+      artifacts:
+      - wars.root: http://search.maven.org/remotecontent?filepath=io/brooklyn/example/brooklyn-example-hello-world-sql-webapp/0.6.0/brooklyn-example-hello-world-sql-webapp-0.6.0.war
+        type: tosca.artifacts.File
+      requirements:
+      - endpoint: MessageDatabase
+        type: seaclouds.relations.databaseconnections.jdbc
+      - host: Amazon_EC2_c1_medium_us_west_2
+        instancesPOC: 1
+    MessageDatabase:
+      type: sc_req.MessageDatabase
+      artifacts:
+      - creationScriptUrl: https://raw.githubusercontent.com/apache/incubator-brooklyn/master/brooklyn-server/launcher/src/test/resources/visitors-creation-script.sql
+        type: tosca.artifacts.File
+      properties:
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5.0'
+          - less_or_equal: '5.0'
+      requirements:
+      - host: Amazon_EC2_c1_medium_sa_east_1
+        instancesPOC: 2
+    Amazon_EC2_c1_medium_sa_east_1:
+      type: seaclouds.nodes.Compute.Amazon_EC2
+      properties:
+        num_cpus: 2
+        country: Brazil
+        cost: 0.17
+        city: SAO PAULO
+        resource_type: compute
+        disk_size: 340
+        availability: 0.9995
+        hardwareId: c1.medium
+        disk_type: sata
+        location: aws-ec2
+        num_disks: 1
+        region: sa-east-1
+        ram: 1.7
+        performance: 21
+    Amazon_EC2_c1_medium_us_west_2:
+      type: seaclouds.nodes.Compute.Amazon_EC2
+      properties:
+        num_cpus: 2
+        country: United States
+        cost: 0.17
+        city: PORTLAND
+        resource_type: compute
+        disk_size: 340
+        availability: 0.9995
+        hardwareId: c1.medium
+        disk_type: sata
+        location: aws-ec2
+        num_disks: 1
+        region: us-west-2
+        ram: 1.7
+        performance: 155
+node_types:
+  sc_req.Chat:
+    derived_from: seaclouds.nodes.webapp.tomcat.TomcatServer
+    properties:
+      java_support:
+        constraints:
+        - equal: true
+      tomcat_support:
+        constraints:
+        - equal: true
+      java_version:
+        constraints:
+        - greater_or_equal: '6'
+      resource_type:
+        constraints:
+        - equal: compute
+  sc_req.MessageDatabase:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      disk_size:
+        constraints:
+        - greater_or_equal: '50'
+      resource_type:
+        constraints:
+        - equal: compute
+  seaclouds.nodes.Compute:
+    derived_from: tosca.nodes.Compute
+    description: Custom compute
+    properties:
+      hardwareId:
+        required: false
+        type: string
+groups:
+  operation_Chat:
+    members:
+    - Chat
+    policies:
+    - QoSInfo:
+        execution_time: 50 ms
+        benchmark_platform: hp_cloud_services.2xl
+    - dependencies:
+        operation_MessageDatabase: '2'
+    - AppQoSRequirements:
+        response_time:
+          less_than: 2000.0 ms
+        availability:
+          greater_than: 0.998
+        cost:
+          less_or_equal: 200.0 euros_per_month
+        workload:
+          less_or_equal: 50.0 req_per_min
+    - ExpectedQualityPOC:
+        expectedAvailabilityPOC: 0.999499750125
+        fitnessPOC: 0.8482207697893972
+        expectedCostPOC: 367.2
+  operation_MessageDatabase:
+    members:
+    - MessageDatabase
+    policies:
+    - QoSInfo:
+        execution_time: 30 ms
+        benchmark_platform: hp_cloud_services.2xl
+    - dependencies: {}

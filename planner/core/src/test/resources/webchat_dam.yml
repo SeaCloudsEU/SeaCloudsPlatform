@@ -1,0 +1,135 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: WebChat application
+imports: ['tosca-normative-types:1.0.0.wd06-SNAPSHOT', 'seaclouds-types:0.8.0-SNAPSHOT']
+topology_template:
+  node_templates:
+    Chat:
+      type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
+      properties: {language: JAVA, wars.root: 'http://search.maven.org/remotecontent?filepath=io/brooklyn/example/brooklyn-example-hello-world-sql-webapp/0.6.0/brooklyn-example-hello-world-sql-webapp-0.6.0.war'}
+      requirements:
+      - {host: Amazon_EC2_c1_medium_us_west_2}
+    MessageDatabase:
+      type: org.apache.brooklyn.entity.database.mysql.MySqlNode
+      properties:
+        mysql_version:
+          constraints:
+          - {greater_or_equal: '5.0'}
+          - {less_or_equal: '5.0'}
+        creationScriptUrl: https://raw.githubusercontent.com/apache/incubator-brooklyn/master/brooklyn-server/launcher/src/test/resources/visitors-creation-script.sql
+      requirements:
+      - {host: Amazon_EC2_c1_medium_sa_east_1}
+    Amazon_EC2_c1_medium_sa_east_1:
+      type: tosca.nodes.Compute
+      properties: {num_cpus: 2, country: Brazil, cost: 0.17, city: SAO PAULO, resource_type: compute,
+        disk_size: 340, availability: 0.9995, hardwareId: c1.medium, disk_type: sata,
+        location: aws-ec2, num_disks: 1, region: sa-east-1, ram: 1.7, performance: 21}
+    Amazon_EC2_c1_medium_us_west_2:
+      type: tosca.nodes.Compute
+      properties: {num_cpus: 2, country: United States, cost: 0.17, city: PORTLAND,
+        resource_type: compute, disk_size: 340, availability: 0.9995, hardwareId: c1.medium,
+        disk_type: sata, location: aws-ec2, num_disks: 1, region: us-west-2, ram: 1.7,
+        performance: 155}
+    modacloudsDc_Chat:
+      interfaces:
+        Standard: {start: 'https://s3-eu-west-1.amazonaws.com/modacloudsdc-start-script/installModacloudsDc.sh'}
+      properties:
+        shell.env: {MODACLOUDS_TOWER4CLOUDS_DC_SYNC_PERIOD: '10', MODACLOUDS_TOWER4CLOUDS_VM_ID: Amazon_EC2_c1_medium_us_west_2_ID,
+          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP: 52.48.187.2, MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT: '8170',
+          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID: Chat_ID, MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT: '8086',
+          METRICS: AverageCpuUtilization;AverageRamUtilization, MODACLOUDS_TOWER4CLOUDS_RESOURCES_KEEP_ALIVE_PERIOD: '25',
+          MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 52.48.187.2, MODACLOUDS_TOWER4CLOUDS_VM_TYPE: Amazon_EC2_c1_medium_us_west_2,
+          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE: Chat}
+        installLatch: $brooklyn:component("Chat").attributeWhenReady("service.isUp")
+      type: seaclouds.nodes.Datacollector
+      requirements:
+      - {host: Amazon_EC2_c1_medium_us_west_2}
+    javaAppDc_Chat:
+      interfaces:
+        Standard: {start: 'https://s3-eu-west-1.amazonaws.com/java-app-dc-start-script/installJavaAppDc.sh'}
+      properties:
+        installLatch: $brooklyn:component("Chat").attributeWhenReady("service.isUp")
+        env: {MODULE_ID: Chat, MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP: 52.48.187.2, MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT: '8170',
+          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT: '8170', METRICS: ResponseTime, MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 52.48.187.2}
+      type: seaclouds.nodes.Datacollector
+      requirements:
+      - {host: Amazon_EC2_c1_medium_us_west_2}
+    seacloudsDc_Chat:
+      interfaces:
+        Standard: {start: 'https://s3-eu-west-1.amazonaws.com/seaclouds-dc/installSeaCloudsDc.sh'}
+      properties:
+        shell.env: {MODULE_PORT: '8080', MODULE_IP: '$brooklyn:component("Chat").attributeWhenReady("host.address")',
+          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP: 52.48.187.2, MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT: '8170',
+          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID: Chat_ID, MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT: '8086',
+          METRICS: AppAvailability, MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 52.48.187.2,
+          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE: Chat}
+        installLatch: $brooklyn:component("Chat").attributeWhenReady("service.isUp")
+      type: seaclouds.nodes.Datacollector
+      requirements:
+      - {host: Amazon_EC2_c1_medium_us_west_2}
+    modacloudsDc_MessageDatabase:
+      interfaces:
+        Standard: {start: 'https://s3-eu-west-1.amazonaws.com/modacloudsdc-start-script/installModacloudsDc.sh'}
+      properties:
+        shell.env: {MODACLOUDS_TOWER4CLOUDS_DC_SYNC_PERIOD: '10', MODACLOUDS_TOWER4CLOUDS_VM_ID: Amazon_EC2_c1_medium_sa_east_1_ID,
+          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP: 52.48.187.2, MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT: '8170',
+          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID: MessageDatabase_ID, MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT: '8086',
+          METRICS: AverageCpuUtilization;AverageRamUtilization, MODACLOUDS_TOWER4CLOUDS_RESOURCES_KEEP_ALIVE_PERIOD: '25',
+          MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 52.48.187.2, MODACLOUDS_TOWER4CLOUDS_VM_TYPE: Amazon_EC2_c1_medium_sa_east_1,
+          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE: MessageDatabase}
+        installLatch: $brooklyn:component("MessageDatabase").attributeWhenReady("service.isUp")
+      type: seaclouds.nodes.Datacollector
+      requirements:
+      - {host: Amazon_EC2_c1_medium_sa_east_1}
+    seacloudsDc_MessageDatabase:
+      interfaces:
+        Standard: {start: 'https://s3-eu-west-1.amazonaws.com/seaclouds-dc/installSeaCloudsDc.sh'}
+      properties:
+        shell.env: {MODULE_PORT: '8080', MODULE_IP: '$brooklyn:component("MessageDatabase").attributeWhenReady("host.address")',
+          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP: 52.48.187.2, MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT: '8170',
+          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID: MessageDatabase_ID, MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT: '8086',
+          METRICS: AppAvailability, MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 52.48.187.2,
+          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE: MessageDatabase}
+        installLatch: $brooklyn:component("MessageDatabase").attributeWhenReady("service.isUp")
+      type: seaclouds.nodes.Datacollector
+      requirements:
+      - {host: Amazon_EC2_c1_medium_sa_east_1}
+  groups:
+    operation_Chat:
+      members: [Chat]
+      policies:
+      - QoSInfo: {execution_time: 50 ms, benchmark_platform: hp_cloud_services.2xl,
+          type: seaclouds.policies.QoSInfo}
+      - dependencies: {operation_MessageDatabase: '2', type: seaclouds.policies.dependencies}
+      - AppQoSRequirements:
+          response_time: {less_than: 2000.0 ms}
+          availability: {greater_than: 0.998}
+          cost: {less_or_equal: 200.0 euros_per_month}
+          workload: {less_or_equal: 50.0 req_per_min}
+          type: seaclouds.policies.AppQoSRequirements
+      - ExpectedQualityPOC: {expectedAvailabilityPOC: 0.999499750125, fitnessPOC: 0.8482207697893972,
+          expectedCostPOC: 367.2, type: seaclouds.policies.ExpectedQualityPOC}
+    operation_MessageDatabase:
+      members: [MessageDatabase]
+      policies:
+      - QoSInfo: {execution_time: 30 ms, benchmark_platform: hp_cloud_services.2xl,
+          type: seaclouds.policies.QoSInfo}
+      - dependencies: {type: seaclouds.policies.dependencies}
+    add_brooklyn_location_Amazon_EC2_c1_medium_us_west_2:
+      policies:
+      - {brooklyn.location: 'aws-ec2:us-west-2'}
+      members: [Amazon_EC2_c1_medium_us_west_2]
+    add_brooklyn_location_Amazon_EC2_c1_medium_sa_east_1:
+      policies:
+      - {brooklyn.location: 'aws-ec2:sa-east-1'}
+      members: [Amazon_EC2_c1_medium_sa_east_1]
+    monitoringInformation:
+      policies:
+      - monitoringrules.information.policy: {id: 2a91f8d8-081f-40b0-aba5-ec4a39724059,
+          type: seaclouds.policies.monitoringrules}
+      members: [application]
+    sla_gen_info:
+      policies:
+      - seaclouds.app.information: {id: 94c528aa-cae1-447f-8c0b-6331c0c19d99, type: seaclouds.policies.app.information}
+      members: [application]
+template_name: seaclouds.app.Uebfs3tx
+template_version: 1.0.0-SNAPSHOT

@@ -36,6 +36,7 @@ import static org.testng.Assert.assertTrue;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@SuppressWarnings("ALL")
 @Test
 public class DamGeneratorTest {
 
@@ -124,5 +125,112 @@ public class DamGeneratorTest {
         assertTrue(topologyGroups.containsKey("sla_gen_info"));
     }
 
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testNuroDAM() throws Exception {
+        String adp = new Scanner(new File(Resources.getResource("nuro_adp.yml").toURI())).useDelimiter("\\Z").next();
 
+        when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
+                .thenReturn(FAKE_AGREEMENT_ID);
+
+        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT);
+        damGenerator.setAgreementManager(fakeAgreementManager);
+        dam = damGenerator.generateDam(adp);
+        template = (Map<String, Object>) yamlParser.load(dam);
+
+        String expectedDAMString = new Scanner(new File(Resources.getResource("nuro_dam.yml").toURI())).useDelimiter("\\Z").next();
+        Map<String, Object> expectedDAM = (Map<String, Object>) yamlParser.load(expectedDAMString);
+
+        assertNotNull(template);
+
+        Map<String, Object> generatedTopologyTemplate = (Map<String, Object>) template.get(DamGenerator.TOPOLOGY_TEMPLATE);
+        Map<String, Object> expectedTopologyTemplate = (Map<String, Object>) expectedDAM.get(DamGenerator.TOPOLOGY_TEMPLATE);
+
+        assertEquals(generatedTopologyTemplate.get("www"), expectedTopologyTemplate.get("www"));
+        assertEquals(generatedTopologyTemplate.get("db"), expectedTopologyTemplate.get("db"));
+        assertEquals(generatedTopologyTemplate.get("Amazon_EC2_m1_small_eu_central_1"), expectedTopologyTemplate.get("Amazon_EC2_m1_small_eu_central_1"));
+        assertEquals(generatedTopologyTemplate.get("Amazon_EC2_m4_10xlarge_eu_west_1"), expectedTopologyTemplate.get("Amazon_EC2_m4_10xlarge_eu_west_1"));
+
+        Map<String, Object> generatedGroups = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.GROUPS);
+        Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
+
+        assertEquals(generatedGroups.get("operation_www"), expectedGroups.get("operation_www"));
+        assertEquals(generatedGroups.get("operation_db"), expectedGroups.get("operation_db"));
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_m1_small_eu_central_1"), expectedGroups.get("add_brooklyn_location_Amazon_EC2_m1_small_eu_central_1"));
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_m4_10xlarge_eu_west_1"), expectedGroups.get("add_brooklyn_location_Amazon_EC2_m4_10xlarge_eu_west_1"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testAtosDAM() throws Exception {
+        String adp = new Scanner(new File(Resources.getResource("atos_adp.yml").toURI())).useDelimiter("\\Z").next();
+
+        when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
+                .thenReturn(FAKE_AGREEMENT_ID);
+
+        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT);
+        damGenerator.setAgreementManager(fakeAgreementManager);
+        dam = damGenerator.generateDam(adp);
+        template = (Map<String, Object>) yamlParser.load(dam);
+
+        String expectedDAMString = new Scanner(new File(Resources.getResource("atos_dam.yml").toURI())).useDelimiter("\\Z").next();
+        Map<String, Object> expectedDAM = (Map<String, Object>) yamlParser.load(expectedDAMString);
+
+        assertNotNull(template);
+
+        Map<String, Object> generatedTopologyTemplate = (Map<String, Object>) template.get(DamGenerator.TOPOLOGY_TEMPLATE);
+        Map<String, Object> expectedTopologyTemplate = (Map<String, Object>) expectedDAM.get(DamGenerator.TOPOLOGY_TEMPLATE);
+
+        assertEquals(generatedTopologyTemplate.get("www"), expectedTopologyTemplate.get("www"));
+        assertEquals(generatedTopologyTemplate.get("webservices"), expectedTopologyTemplate.get("webservices"));
+        assertEquals(generatedTopologyTemplate.get("db1"), expectedTopologyTemplate.get("db1"));
+        assertEquals(generatedTopologyTemplate.get("Amazon_EC2_c1_xlarge_eu_central_1"), expectedTopologyTemplate.get("Amazon_EC2_c1_xlarge_eu_central_1"));
+        assertEquals(generatedTopologyTemplate.get("Amazon_EC2_m4_large_eu_west_1"), expectedTopologyTemplate.get("Amazon_EC2_m4_large_eu_west_1"));
+        assertEquals(generatedTopologyTemplate.get("Amazon_EC2_t2_micro_us_east_1"), expectedTopologyTemplate.get("Amazon_EC2_t2_micro_us_east_1"));
+
+        Map<String, Object> generatedGroups = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.GROUPS);
+        Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
+
+        assertEquals(generatedGroups.get("operation_www"), expectedGroups.get("operation_www"));
+        assertEquals(generatedGroups.get("operation_webservices"), expectedGroups.get("operation_webservices"));
+        assertEquals(generatedGroups.get("operation_db1"), expectedGroups.get("operation_db1"));
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_c1_xlarge_eu_central_1"), expectedGroups.get("add_brooklyn_location_Amazon_EC2_c1_xlarge_eu_central_1"));
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_t2_micro_us_east_1"), expectedGroups.get("add_brooklyn_location_Amazon_EC2_t2_micro_us_east_1"));
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_m4_large_eu_west_1"), expectedGroups.get("add_brooklyn_location_Amazon_EC2_m4_large_eu_west_1"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testWebChatDAM() throws Exception {
+        String adp = new Scanner(new File(Resources.getResource("webchat_adp.yml").toURI())).useDelimiter("\\Z").next();
+
+        when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
+                .thenReturn(FAKE_AGREEMENT_ID);
+
+        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT);
+        damGenerator.setAgreementManager(fakeAgreementManager);
+        dam = damGenerator.generateDam(adp);
+        template = (Map<String, Object>) yamlParser.load(dam);
+
+        String expectedDAMString = new Scanner(new File(Resources.getResource("webchat_dam.yml").toURI())).useDelimiter("\\Z").next();
+        Map<String, Object> expectedDAM = (Map<String, Object>) yamlParser.load(expectedDAMString);
+
+        assertNotNull(template);
+
+        Map<String, Object> generatedTopologyTemplate = (Map<String, Object>) template.get(DamGenerator.TOPOLOGY_TEMPLATE);
+        Map<String, Object> expectedTopologyTemplate = (Map<String, Object>) expectedDAM.get(DamGenerator.TOPOLOGY_TEMPLATE);
+
+        assertEquals(generatedTopologyTemplate.get("Chat"), expectedTopologyTemplate.get("Chat"));
+        assertEquals(generatedTopologyTemplate.get("MessageDatabase"), expectedTopologyTemplate.get("MessageDatabase"));
+        assertEquals(generatedTopologyTemplate.get("Amazon_EC2_c1_medium_sa_east_1"), expectedTopologyTemplate.get("Amazon_EC2_c1_medium_sa_east_1"));
+        assertEquals(generatedTopologyTemplate.get("Amazon_EC2_c1_medium_us_west_2"), expectedTopologyTemplate.get("Amazon_EC2_c1_medium_us_west_2"));
+
+        Map<String, Object> generatedGroups = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.GROUPS);
+        Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
+
+        assertEquals(generatedGroups.get("operation_Chat"), expectedGroups.get("operation_Chat"));
+        assertEquals(generatedGroups.get("operation_MessageDatabase"), expectedGroups.get("operation_MessageDatabase"));
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_c1_medium_us_west_2"), expectedGroups.get("add_brooklyn_location_Amazon_EC2_c1_medium_us_west_2"));
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_c1_medium_sa_east_1"), expectedGroups.get("add_brooklyn_location_Amazon_EC2_c1_medium_sa_east_1"));
+    }
 }
