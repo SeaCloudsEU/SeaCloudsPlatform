@@ -9,15 +9,13 @@ topology_template:
       properties:
         language: PHP
         autoscale: true
-        git.url: "https://seaclDem:seaclouds@bitbucket.org/seaclDem/nuro-casestudy-paas.git"
+        git.url: https://seaclDem:seaclouds@bitbucket.org/seaclDem/nuro-casestudy.git
         php_version:
           constraints:
           - greater_or_equal: '5.1'
           - less_or_equal: '5.5'
         credentials_file: db.props
       requirements:
-      - endpoint: db
-        type: seaclouds.relations.databaseconnections.php
       - instancesPOC: 4
         host: Amazon_EC2_m1_small_eu_central_1
     db:

@@ -9,8 +9,6 @@ topology_template:
       properties:
         language: JAVA
       requirements:
-      - endpoint: webservices
-        type: seaclouds.relation.connection.endpoint.host
       - host: Amazon_EC2_m4_large_eu_west_1
         instancesPOC: 2
     webservices:
@@ -23,8 +21,6 @@ topology_template:
           - greater_or_equal: '7'
           - less_or_equal: '8'
       requirements:
-      - endpoint: db1
-        type: seaclouds.relations.databaseconnections.jdbc
       - host: Amazon_EC2_c1_xlarge_eu_central_1
         instancesPOC: 2
     db1:

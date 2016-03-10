@@ -127,8 +127,8 @@ public class DamGeneratorTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testNuroDAM() throws Exception {
-        String adp = new Scanner(new File(Resources.getResource("nuro_adp.yml").toURI())).useDelimiter("\\Z").next();
+    public void testNuroDam() throws Exception {
+        String adp = new Scanner(new File(Resources.getResource("nuro/nuro_adp.yml").toURI())).useDelimiter("\\Z").next();
 
         when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
                 .thenReturn(FAKE_AGREEMENT_ID);
@@ -138,18 +138,19 @@ public class DamGeneratorTest {
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
 
-        String expectedDAMString = new Scanner(new File(Resources.getResource("nuro_dam.yml").toURI())).useDelimiter("\\Z").next();
-        Map<String, Object> expectedDAM = (Map<String, Object>) yamlParser.load(expectedDAMString);
+        String expectedDamString = new Scanner(new File(Resources.getResource("nuro/nuro_dam.yml").toURI())).useDelimiter("\\Z").next();
+        Map<String, Object> expectedDam = (Map<String, Object>) yamlParser.load(expectedDamString);
 
         assertNotNull(template);
 
         Map<String, Object> generatedTopologyTemplate = (Map<String, Object>) template.get(DamGenerator.TOPOLOGY_TEMPLATE);
-        Map<String, Object> expectedTopologyTemplate = (Map<String, Object>) expectedDAM.get(DamGenerator.TOPOLOGY_TEMPLATE);
+        Map<String, Object> expectedTopologyTemplate = (Map<String, Object>) expectedDam.get(DamGenerator.TOPOLOGY_TEMPLATE);
 
-        assertEquals(generatedTopologyTemplate.get("www"), expectedTopologyTemplate.get("www"));
-        assertEquals(generatedTopologyTemplate.get("db"), expectedTopologyTemplate.get("db"));
-        assertEquals(generatedTopologyTemplate.get("Amazon_EC2_m1_small_eu_central_1"), expectedTopologyTemplate.get("Amazon_EC2_m1_small_eu_central_1"));
-        assertEquals(generatedTopologyTemplate.get("Amazon_EC2_m4_10xlarge_eu_west_1"), expectedTopologyTemplate.get("Amazon_EC2_m4_10xlarge_eu_west_1"));
+        Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
+        Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
+        
+        assertEquals(generatedNodeTemplates.get("www"), expectedNodeTemplates.get("www"));
+        assertEquals(generatedNodeTemplates.get("db"), expectedNodeTemplates.get("db"));
 
         Map<String, Object> generatedGroups = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.GROUPS);
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
@@ -162,8 +163,8 @@ public class DamGeneratorTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testAtosDAM() throws Exception {
-        String adp = new Scanner(new File(Resources.getResource("atos_adp.yml").toURI())).useDelimiter("\\Z").next();
+    public void testAtosDam() throws Exception {
+        String adp = new Scanner(new File(Resources.getResource("atos/atos_adp.yml").toURI())).useDelimiter("\\Z").next();
 
         when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
                 .thenReturn(FAKE_AGREEMENT_ID);
@@ -173,20 +174,20 @@ public class DamGeneratorTest {
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
 
-        String expectedDAMString = new Scanner(new File(Resources.getResource("atos_dam.yml").toURI())).useDelimiter("\\Z").next();
-        Map<String, Object> expectedDAM = (Map<String, Object>) yamlParser.load(expectedDAMString);
+        String expectedDamString = new Scanner(new File(Resources.getResource("atos/atos_dam.yml").toURI())).useDelimiter("\\Z").next();
+        Map<String, Object> expectedDam = (Map<String, Object>) yamlParser.load(expectedDamString);
 
         assertNotNull(template);
 
         Map<String, Object> generatedTopologyTemplate = (Map<String, Object>) template.get(DamGenerator.TOPOLOGY_TEMPLATE);
-        Map<String, Object> expectedTopologyTemplate = (Map<String, Object>) expectedDAM.get(DamGenerator.TOPOLOGY_TEMPLATE);
+        Map<String, Object> expectedTopologyTemplate = (Map<String, Object>) expectedDam.get(DamGenerator.TOPOLOGY_TEMPLATE);
 
-        assertEquals(generatedTopologyTemplate.get("www"), expectedTopologyTemplate.get("www"));
-        assertEquals(generatedTopologyTemplate.get("webservices"), expectedTopologyTemplate.get("webservices"));
-        assertEquals(generatedTopologyTemplate.get("db1"), expectedTopologyTemplate.get("db1"));
-        assertEquals(generatedTopologyTemplate.get("Amazon_EC2_c1_xlarge_eu_central_1"), expectedTopologyTemplate.get("Amazon_EC2_c1_xlarge_eu_central_1"));
-        assertEquals(generatedTopologyTemplate.get("Amazon_EC2_m4_large_eu_west_1"), expectedTopologyTemplate.get("Amazon_EC2_m4_large_eu_west_1"));
-        assertEquals(generatedTopologyTemplate.get("Amazon_EC2_t2_micro_us_east_1"), expectedTopologyTemplate.get("Amazon_EC2_t2_micro_us_east_1"));
+        Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
+        Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
+
+        assertEquals(generatedNodeTemplates.get("www"), expectedNodeTemplates.get("www"));
+        assertEquals(generatedNodeTemplates.get("webservices"), expectedNodeTemplates.get("webservices"));
+        assertEquals(generatedNodeTemplates.get("db1"), expectedNodeTemplates.get("db1"));
 
         Map<String, Object> generatedGroups = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.GROUPS);
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
@@ -201,8 +202,8 @@ public class DamGeneratorTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testWebChatDAM() throws Exception {
-        String adp = new Scanner(new File(Resources.getResource("webchat_adp.yml").toURI())).useDelimiter("\\Z").next();
+    public void testWebChatDam() throws Exception {
+        String adp = new Scanner(new File(Resources.getResource("webchat/webchat_adp.yml").toURI())).useDelimiter("\\Z").next();
 
         when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
                 .thenReturn(FAKE_AGREEMENT_ID);
@@ -212,18 +213,19 @@ public class DamGeneratorTest {
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
 
-        String expectedDAMString = new Scanner(new File(Resources.getResource("webchat_dam.yml").toURI())).useDelimiter("\\Z").next();
-        Map<String, Object> expectedDAM = (Map<String, Object>) yamlParser.load(expectedDAMString);
+        String expectedDamString = new Scanner(new File(Resources.getResource("webchat/webchat_dam.yml").toURI())).useDelimiter("\\Z").next();
+        Map<String, Object> expectedDam = (Map<String, Object>) yamlParser.load(expectedDamString);
 
         assertNotNull(template);
 
         Map<String, Object> generatedTopologyTemplate = (Map<String, Object>) template.get(DamGenerator.TOPOLOGY_TEMPLATE);
-        Map<String, Object> expectedTopologyTemplate = (Map<String, Object>) expectedDAM.get(DamGenerator.TOPOLOGY_TEMPLATE);
+        Map<String, Object> expectedTopologyTemplate = (Map<String, Object>) expectedDam.get(DamGenerator.TOPOLOGY_TEMPLATE);
 
-        assertEquals(generatedTopologyTemplate.get("Chat"), expectedTopologyTemplate.get("Chat"));
-        assertEquals(generatedTopologyTemplate.get("MessageDatabase"), expectedTopologyTemplate.get("MessageDatabase"));
-        assertEquals(generatedTopologyTemplate.get("Amazon_EC2_c1_medium_sa_east_1"), expectedTopologyTemplate.get("Amazon_EC2_c1_medium_sa_east_1"));
-        assertEquals(generatedTopologyTemplate.get("Amazon_EC2_c1_medium_us_west_2"), expectedTopologyTemplate.get("Amazon_EC2_c1_medium_us_west_2"));
+        Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
+        Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
+
+        assertEquals(generatedNodeTemplates.get("Chat"), expectedNodeTemplates.get("Chat"));
+        assertEquals(generatedNodeTemplates.get("MessageDatabase"), expectedNodeTemplates.get("MessageDatabase"));
 
         Map<String, Object> generatedGroups = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.GROUPS);
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);

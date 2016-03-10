@@ -12,8 +12,6 @@ topology_template:
       - wars.root: http://search.maven.org/remotecontent?filepath=io/brooklyn/example/brooklyn-example-hello-world-sql-webapp/0.6.0/brooklyn-example-hello-world-sql-webapp-0.6.0.war
         type: tosca.artifacts.File
       requirements:
-      - endpoint: MessageDatabase
-        type: seaclouds.relations.databaseconnections.jdbc
       - host: Amazon_EC2_c1_medium_us_west_2
         instancesPOC: 1
     MessageDatabase:
