@@ -1,0 +1,241 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: softcare
+imports:
+- tosca-normative-types:1.0.0.wd06-SNAPSHOT
+topology_template:
+  node_templates:
+    softcare-db:
+      type: sc_req.softcare-db
+      properties:
+        location_option: AMERICA
+        location: STATIC
+        autoscale: false
+    forum-db:
+      type: sc_req.forum-db
+      properties:
+        location_option: AMERICA
+        location: STATIC
+        autoscale: false
+    softcare-forum:
+      type: sc_req.softcare-forum
+      properties:
+        language: JAVA
+        location_option: AMERICA
+        location: STATIC
+        autoscale: false
+    softcare-gui:
+      type: sc_req.softcare-gui
+      properties:
+        language: JAVA
+        location_option: AMERICA
+        location: STATIC
+        autoscale: true
+      requirements:
+      - endpoint: softcare-ws
+        type: seaclouds.relation.connection.endpoint.host
+      - endpoint: softcare-multimedia
+        type: seaclouds.relation.connection.endpoint.host
+      - endpoint: softcare-forum
+        type: seaclouds.relation.connection.endpoint.host
+    softcare-ws:
+      type: sc_req.softcare-ws
+      properties:
+        language: JAVA
+        location_option: AMERICA
+        location: STATIC
+        autoscale: false
+        credentials_file: softcare_db.properties
+      requirements:
+      - endpoint: softcare-db
+        type: seaclouds.relations.databaseconnections.jdbc
+    softcare-multimedia:
+      type: sc_req.softcare-multimedia
+      properties:
+        language: JAVA
+        location_option: AMERICA
+        location: STATIC
+        autoscale: false
+      requirements:
+      - endpoint: multimedia-db
+        type: seaclouds.relations.databaseconnections.jdbc
+    multimedia-db:
+      type: sc_req.multimedia-db
+      properties:
+        location_option: AMERICA
+        location: STATIC
+        autoscale: false
+node_types:
+  sc_req.softcare-db:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      mysql_support:
+        constraints:
+        - equal: true
+      mysql_version:
+        constraints:
+        - greater_or_equal: '5.4'
+        - less_or_equal: '5.6'
+      resource_type:
+        constraints:
+        - equal: platform
+  sc_req.forum-db:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      mysql_support:
+        constraints:
+        - equal: true
+      mysql_version:
+        constraints:
+        - greater_or_equal: '5.4'
+        - less_or_equal: '5.6'
+      resource_type:
+        constraints:
+        - equal: platform
+  sc_req.softcare-forum:
+    derived_from: seaclouds.nodes.webapp.tomcat.TomcatServer
+    properties:
+      java_support:
+        constraints:
+        - equal: true
+      tomcat_support:
+        constraints:
+        - equal: true
+      java_version:
+        constraints:
+        - greater_or_equal: '7'
+        - less_or_equal: '8'
+      resource_type:
+        constraints:
+        - equal: platform
+  sc_req.softcare-gui:
+    derived_from: seaclouds.nodes.webapp.tomcat.TomcatServer
+    properties:
+      java_support:
+        constraints:
+        - equal: true
+      tomcat_support:
+        constraints:
+        - equal: true
+      java_version:
+        constraints:
+        - greater_or_equal: '7'
+        - less_or_equal: '8'
+      resource_type:
+        constraints:
+        - equal: platform
+  sc_req.softcare-ws:
+    derived_from: seaclouds.nodes.webapp.tomcat.TomcatServer
+    properties:
+      java_support:
+        constraints:
+        - equal: true
+      tomcat_support:
+        constraints:
+        - equal: true
+      java_version:
+        constraints:
+        - greater_or_equal: '7'
+        - less_or_equal: '8'
+      resource_type:
+        constraints:
+        - equal: platform
+  sc_req.softcare-multimedia:
+    derived_from: seaclouds.nodes.webapp.tomcat.TomcatServer
+    properties:
+      java_support:
+        constraints:
+        - equal: true
+      tomcat_support:
+        constraints:
+        - equal: true
+      java_version:
+        constraints:
+        - greater_or_equal: '7'
+        - less_or_equal: '8'
+      resource_type:
+        constraints:
+        - equal: platform
+  sc_req.multimedia-db:
+    derived_from: seaclouds.nodes.nosql.mongodb.MongoDBServer
+    properties:
+      mongoDB_support:
+        constraints:
+        - equal: true
+      mongoDB_version:
+        constraints:
+        - greater_or_equal: '1'
+        - less_or_equal: '3'
+      resource_type:
+        constraints:
+        - equal: platform
+groups:
+  operation_softcare-db:
+    members:
+    - softcare-db
+    policies:
+    - QoSInfo:
+        execution_time: 5 ms
+        benchmark_platform: Amazon_EC2_m1_medium_us_east_1
+    - dependencies: {}
+  operation_forum-db:
+    members:
+    - forum-db
+    policies:
+    - QoSInfo:
+        execution_time: 5 ms
+        benchmark_platform: Amazon_EC2_m1_medium_us_east_1
+    - dependencies: {}
+  operation_softcare-forum:
+    members:
+    - softcare-forum
+    policies:
+    - QoSInfo:
+        execution_time: 5 ms
+        benchmark_platform: Amazon_EC2_m1_medium_us_east_1
+    - dependencies: {}
+  operation_softcare-gui:
+    members:
+    - softcare-gui
+    policies:
+    - QoSInfo:
+        execution_time: 5 ms
+        benchmark_platform: Amazon_EC2_m1_medium_us_east_1
+    - dependencies:
+        operation_softcare-ws: '2'
+        operation_softcare-multimedia: '2'
+        operation_softcare-forum: '2'
+    - AppQoSRequirements:
+        response_time:
+          less_than: 200.0 ms
+        availability:
+          greater_than: 0.99
+        cost:
+          less_or_equal: 1000.0 euros_per_month
+        workload:
+          less_or_equal: 300.0 req_per_min
+  operation_softcare-ws:
+    members:
+    - softcare-ws
+    policies:
+    - QoSInfo:
+        execution_time: 5 ms
+        benchmark_platform: Amazon_EC2_m1_medium_us_east_1
+    - dependencies:
+        operation_softcare-db: '2'
+  operation_softcare-multimedia:
+    members:
+    - softcare-multimedia
+    policies:
+    - QoSInfo:
+        execution_time: 5 ms
+        benchmark_platform: Amazon_EC2_m1_medium_us_east_1
+    - dependencies:
+        operation_multimedia-db: '2'
+  operation_multimedia-db:
+    members:
+    - multimedia-db
+    policies:
+    - QoSInfo:
+        execution_time: 5 ms
+        benchmark_platform: Amazon_EC2_m1_medium_us_east_1
+    - dependencies: {}

@@ -42,7 +42,8 @@ public class YAMLmatchmakerToOptimizerParser {
    // could not set dynamically the level of the logging) it should be changed
    private static int BeeingTooVerboseWithLackOfInformationInCloudOffers = 3;
 
-   static Logger log = LoggerFactory.getLogger(YAMLmatchmakerToOptimizerParser.class);
+   static Logger      log                                                = LoggerFactory
+         .getLogger(YAMLmatchmakerToOptimizerParser.class);
 
    @SuppressWarnings("unchecked")
    public static List<Object> getListofOptions(String appModel) {
@@ -197,6 +198,10 @@ public class YAMLmatchmakerToOptimizerParser {
             log.warn("not found number of cores for offer '" + offerName + "' . Assuming single core.");
          }
          offer.setNumCores(numcores, true);
+
+         offer.setProvider(getTextPropertyOfCloudOffer(TOSCAkeywords.CLOUD_CONCRETE_OFFER_LOCATION, cloudOfferInfoMap));
+         offer.setLocation(getTextPropertyOfCloudOffer(TOSCAkeywords.CLOUD_CONCRETE_OFFER_COUNTRY, cloudOfferInfoMap)
+               + getTextPropertyOfCloudOffer(TOSCAkeywords.CLOUD_CONCRETE_OFFER_CITY, cloudOfferInfoMap));
       } catch (NullPointerException E) {
          return null;
       }
@@ -231,6 +236,31 @@ public class YAMLmatchmakerToOptimizerParser {
          // If there is an error here, treat the value returned in the Map as
          // List<String> instead of as String; i.e., add a .get(0)
          valueOfProperty = YAMLoptimizerParser.castToDouble(propertiesOfOffer.get(cloudOfferProperty));
+
+      } else {
+         // Many times it will not exist the value and it will return 0
+         // Try to make theo output less verbose
+         if (BeeingTooVerboseWithLackOfInformationInCloudOffers > 0) {
+            log.info("Property " + cloudOfferProperty + " not found. REAL SOLUTION CANNOT BE COMPUTED in case that "
+                  + cloudOfferProperty + " requirement existed in the system");
+            BeeingTooVerboseWithLackOfInformationInCloudOffers--;
+         }
+
+      }
+      return valueOfProperty;
+   }
+
+   private static String getTextPropertyOfCloudOffer(String cloudOfferProperty, Map<String, Object> singleOfferMap) {
+
+      Map<String, Object> propertiesOfOffer = (Map<String, Object>) singleOfferMap
+            .get(TOSCAkeywords.CLOUD_OFFER_PROPERTIES_TAG);
+
+      String valueOfProperty = "";
+
+      if (propertiesOfOffer.containsKey(cloudOfferProperty)) {
+         // If there is an error here, treat the value returned in the Map as
+         // List<String> instead of as String; i.e., add a .get(0)
+         valueOfProperty = (String) propertiesOfOffer.get(cloudOfferProperty);
 
       } else {
          // Many times it will not exist the value and it will return 0

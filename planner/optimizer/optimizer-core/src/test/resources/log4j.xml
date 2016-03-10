@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
-<!--
+<!-- 
 
     Copyright 2014 SeaClouds
     Contact: SeaClouds
@@ -17,6 +17,7 @@
        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
        See the License for the specific language governing permissions and
        limitations under the License.
+
 
 -->
 
@@ -52,6 +53,10 @@
 	<logger name="eu.seaclouds.platform.planner.optimizer.heuristics.HillClimb">
 		<level value="info" />
 	</logger>
+	<logger
+		name="eu.seaclouds.platform.planner.optimizer.heuristics.BlindSearch">
+		<level value="info" />
+	</logger>
 	<logger name="eu.seaclouds.platform.planner.optimizer.nfp.QualityAnalyzer">
 		<level value="info" />
 	</logger>
@@ -77,12 +82,11 @@
 		name="eu.seaclouds.platform.planner.optimizer.util.YAMLoptimizerParser">
 		<level value="info" />
 	</logger>
-	
-		<logger
-		name="eu.seaclouds.platform.planner.optimizer.util.ComputeType">
+
+	<logger name="eu.seaclouds.platform.planner.optimizer.util.ComputeType">
 		<level value="info" />
 	</logger>
-	
+
 	<logger
 		name="eu.seaclouds.platform.planner.optimizer.OptimizerInitialDeployment">
 		<level value="info" />

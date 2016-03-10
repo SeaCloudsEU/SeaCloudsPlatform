@@ -27,7 +27,12 @@ public class CloudOffer {
 
    static Logger log = LoggerFactory.getLogger(CloudOffer.class);
    
+   //full name of the offer
    private String name;
+   //Name of the cloud provider, not the datacenter code
+   private String provider;
+   //Country+city where the offer is located
+   private String location;
    private double performanceForExecutionUnit;
    private double availability;
    private double cost;
@@ -36,7 +41,7 @@ public class CloudOffer {
    
    
    public CloudOffer(String name, double performance, double availability,
-         double cost, double numCores) {
+         double cost, double numCores, String provider, String location) {
 
       
       this.name = name;
@@ -50,13 +55,15 @@ public class CloudOffer {
       this.availability = availability;
       this.cost = cost;
       this.numCores = numCores;
+      this.location=location;
+      this.provider=provider;
    }
 
-   // NumCores not specified, assuming 1
+   // NumCores not specified, assuming 1, provider location assumes null
    public CloudOffer(String name, double performance, double availability,
          double cost) {
 
-      this(name, performance, availability, cost, 1.0);
+      this(name, performance, availability, cost, 1.0,null,null);
 
    }
 
@@ -65,9 +72,12 @@ public class CloudOffer {
    }
   
 
-   public static String providerNameOfCloudOffer(String cloudOfferName) {
-      return cloudOfferName
-            .split(TOSCAkeywords.CLOUD_OFFER_PROVIDER_NAME_SEPARATOR)[0];
+   public String getProvider() {
+      return provider;
+   }
+   
+   public void setProvider(String providerName){
+      this.provider=providerName;
    }
 
    public String getName() {
@@ -105,7 +115,7 @@ public class CloudOffer {
    @Override
    public CloudOffer clone() {
       return new CloudOffer(name, performanceForExecutionUnit, availability,
-            cost, numCores);
+            cost, numCores, provider, location);
    }
 
    public double getNumCores() {
@@ -126,20 +136,18 @@ public class CloudOffer {
 
    }
 
-   /**
-    * @return The part of the cloud offer name before the first dot (".")
-    */
-   public String getProviderName() {
-      // TODO: Test this method with several offers names since the split method
-      // gives curious results sometimes (null)
-      // It could be also used the static method providerNameOfClokudOffer
-      // passing as argument the name of this object
-      return name.split(TOSCAkeywords.CLOUD_OFFER_PROVIDER_NAME_SEPARATOR)[0];
-   }
 
    @Override
    public String toString(){
       return "Offer name: " + name + " performance: " + performanceForExecutionUnit + " availability; " +
-   availability + " cost: " + cost + " numCores " + numCores;
+   availability + " cost: " + cost + " numCores " + numCores+ " providerName " + provider +" offerLocation " + location;
+   }
+
+   public String getLocation() {
+      return location;
+   }
+
+   public void setLocation(String location) {
+      this.location = location;
    }
 }

@@ -69,14 +69,10 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
       modName_NumInstances.put(name, numInstances);
    }
 
-   public String getCloudOfferNameForModule(String key) {
+  public String getCloudOfferNameForModule(String key) {
       return modName_ModOption.get(key);
    }
 
-   // returns the provider name of the selected offer of a module
-   public String getCloudProviderNameForModule(String calledElementName) {
-      return CloudOffer.providerNameOfCloudOffer(getCloudOfferNameForModule(calledElementName));
-   }
 
    public int getCloudInstancesForModule(String key) {
       try {

@@ -1,0 +1,76 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: Webchat
+imports:
+- tosca-normative-types:1.0.0.wd06-SNAPSHOT
+topology_template:
+  node_templates:
+    web:
+      type: sc_req.web
+      properties:
+        language: JAVA
+        autoscale: false
+        java_version:
+          constraints:
+          - greater_or_equal: '7'
+          - less_or_equal: '7'
+      requirements:
+      - endpoint: db
+    db:
+      type: sc_req.db
+      properties:
+        autoscale: false
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5'
+          - less_or_equal: '5'
+node_types:
+  sc_req.web:
+    derived_from: seaclouds.nodes.webapp.jboss.JBoss7Server
+    properties:
+      java_support:
+        constraints:
+        - equal: true
+      jboss_support:
+        constraints:
+        - equal: true
+      java_version:
+        constraints:
+        - greater_or_equal: '7'
+        - less_or_equal: '7'
+  sc_req.db:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      mysql_support:
+        constraints:
+        - equal: true
+      mysql_version:
+        constraints:
+        - greater_or_equal: '5'
+        - less_or_equal: '5'
+groups:
+  operation_web:
+    members:
+    - web
+    policies:
+    - QoSInfo:
+        execution_time: 10 ms
+        benchmark_platform: Amazon_EC2_m1_medium_us_east_1
+    - dependencies:
+        operation_db: '29'
+    - AppQoSRequirements:
+        response_time:
+          less_than: 150.0 ms
+        availability:
+          greater_than: 0.99
+        cost:
+          less_or_equal: 1000.0 euros_per_month
+        workload:
+          less_or_equal: 24000.0 req_per_min
+  operation_db:
+    members:
+    - db
+    policies:
+    - QoSInfo:
+        execution_time: 10 ms
+        benchmark_platform: Amazon_EC2_m1_medium_us_east_1
+    - dependencies: {}

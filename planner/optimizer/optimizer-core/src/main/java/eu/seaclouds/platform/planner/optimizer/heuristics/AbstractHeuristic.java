@@ -79,6 +79,7 @@ public abstract class AbstractHeuristic {
       double perfGoodness = 1;
       if (requirements.existResponseTimeRequirement()) {
 
+         log.debug("fitness function is going to call the computation of performance");
          double computedPerformance = qualityAnalyzer
                .computePerformance(bestSol, topology, requirements.getWorkload(), cloudCharacteristics)
                .getResponseTime();
@@ -90,6 +91,7 @@ public abstract class AbstractHeuristic {
                   + " and the workload was " + requirements.getWorkload());
          }
       }
+      log.debug("fitness function has passed the calculation of performance goodness");
 
       // calculates how well it satisfies availability reuquirement, if it
       // exists
@@ -99,6 +101,7 @@ public abstract class AbstractHeuristic {
                / (1.0 - qualityAnalyzer.computeAvailability(bestSol, topology, cloudCharacteristics));
       }
 
+      log.debug("fitness function has passed the calculation of availability goodness");
       // calculates how well it satisfies cost reuquirement, if it exists
       double costGoodness = 1;
       if (requirements.existCostRequirement()) {
@@ -171,8 +174,8 @@ public abstract class AbstractHeuristic {
    protected Solution[] mergeBestSolutions(Solution[] sols1, Solution[] sols2, int numPlansToGenerate) {
       // TODO: this method has never been tested
 
-      sortSolutionsByFitness(sols1);
-      sortSolutionsByFitness(sols2);
+      sortSolutionsByFitnessAndReplaceNaN(sols1);
+      sortSolutionsByFitnessAndReplaceNaN(sols2);
 
       Solution[] merged = new Solution[numPlansToGenerate];
 
@@ -205,15 +208,22 @@ public abstract class AbstractHeuristic {
       return merged;
    }
 
-   protected void sortSolutionsByFitness(Solution[] bestSols) {
-      Arrays.sort(bestSols, Collections.reverseOrder());
+   protected void sortSolutionsByFitnessAndReplaceNaN(Solution[] solutions) {
+     for(Solution solution: solutions){
+        if(Double.isNaN(solution.getSolutionFitness())){
+           solution.setSolutionFitness(Double.NEGATIVE_INFINITY);
+        }
+     }
+      Arrays.sort(solutions, Collections.reverseOrder());
    }
 
    protected void setFitnessOfSolutions(Solution[] bestSols, QualityInformation requirements, Topology topology,
          SuitableOptions cloudOffers) {
       for (int solindex = 0; solindex < bestSols.length; solindex++) {
+         log.debug("Calculating fitness of solution {} ", solindex);
          bestSols[solindex].setSolutionFitness(fitness(bestSols[solindex], requirements, topology, cloudOffers));
       }
+      log.debug("Finished the calculation of the fitness of array of solutions");
    }
 
    /*
@@ -286,6 +296,7 @@ public abstract class AbstractHeuristic {
    }
 
    protected Solution findRandomSolution(SuitableOptions cloudOffers, Topology topology) {
+      log.debug("Creating random solution");
       Solution currentSolution = new Solution();
       for (String modName : cloudOffers.getStringIterator()) {
 
@@ -294,6 +305,7 @@ public abstract class AbstractHeuristic {
 
          // number of instances
          int numInstances = 1;
+         log.debug("Topology is looking for module {}" , modName);
          if (topology.getModule(modName).canScale()) {
             numInstances = ((int) Math.floor(Math.random() * ((double) DEFAULT_MAX_NUM_INSTANCES))) + 1;
          }
@@ -314,10 +326,21 @@ public abstract class AbstractHeuristic {
       }
 
    }
+   
+   protected String printFitnessArray(Solution[] solutions) {
+      String out = "{";
+      for (Solution solution : solutions) {
+         out += solution.getSolutionFitness() + ", ";
+      }
+      out += "}";
+      return out;
+   }
+     
 
    protected Solution[] findInitialRandomSolutions(SuitableOptions cloudOffers, int numPlansToGenerate,
          Topology topology) {
 
+      log.debug("Creating initial set of random solutions");
       Solution[] newSolutions = new Solution[numPlansToGenerate];
 
       for (int newSolIndex = 0; newSolIndex < newSolutions.length; newSolIndex++) {

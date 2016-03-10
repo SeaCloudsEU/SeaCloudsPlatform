@@ -39,5 +39,8 @@ public abstract class TestConstants {
    
    public static final String APP_MODEL_FILENAME_SINGLE_MODULE    = "./src/test/resources/aam_singleModule11Feb16.yml";
    public static final String CLOUD_OFFER_FILENAME_IN_JSON_SINGLE_OFFER = "./src/test/resources/mmOutputExample20OctSingleOffer.json";
+
+   public static final String APP_MODEL_FILENAME_MULTIPLE_INPUT_POINT = "./src/test/resources/aam_atos_case_studyDisconnected26Feb16.yml";
+   public static final String CLOUD_OFFER_FILENAME_IN_JSON_ATOS_7_MODULES = "./src/test/resources/mmOutputExampleForTestingAtosDisconnectedGraph.json";
    
 }

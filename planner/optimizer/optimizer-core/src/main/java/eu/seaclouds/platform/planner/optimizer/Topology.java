@@ -29,6 +29,7 @@ public class Topology {
    static Logger log = LoggerFactory.getLogger(Topology.class);
 
    private List<TopologyElement> modules;
+   private TopologyElement initialElement;
 
    public Topology() {
       modules = new ArrayList<TopologyElement>();
@@ -61,9 +62,13 @@ public class Topology {
    }
 
    public TopologyElement getInitialElement() {
-      // We assume that The initial element is such one that is not called by
+      //if the InitialElement attribute is set. Return it.
+      if(initialElement!=null){
+         return initialElement;
+      }
+      //The initial element was not set. We assume that The initial element is such one that is not called by
       // anyone.
-
+      
       for (TopologyElement pointed : modules) {
          boolean isInitial = true;
 
@@ -208,6 +213,17 @@ public class Topology {
 
    public Iterable<String> getModuleNamesIterator() {
       return new ModuleNamesIterator();
+   }
+
+   public void setInitialElementByElementName(String moduleName) {
+     if(moduleName==null){
+        initialElement=null;
+     }
+     else{
+        initialElement=getModule(moduleName);
+     }
+     
+      
    }
 
 }
