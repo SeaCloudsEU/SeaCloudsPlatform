@@ -39,14 +39,10 @@ public class DashboardConfiguration extends Configuration {
     @Valid
     @NotNull
     private PlannerProxy planner = new PlannerProxy();
-    
+
     @Valid
     @NotNull
     private DeployerProxy deployer = new DeployerProxy();
-    
-    @Valid
-    @NotNull
-    private MonitorProxy monitor = new MonitorProxy();
 
     @Valid
     @NotNull
@@ -75,7 +71,7 @@ public class DashboardConfiguration extends Configuration {
     public void setPlannerProxy(PlannerProxy factory) {
         planner = factory;
     }
-    
+
     @JsonProperty("deployer")
     public DeployerProxy getDeployerProxy() {
         return deployer;
@@ -86,11 +82,6 @@ public class DashboardConfiguration extends Configuration {
         deployer = factory;
     }
 
-    @JsonProperty("monitor.manager")
-    public MonitorProxy getMonitorProxy() {
-        return monitor;
-    }
-
     @JsonProperty("monitor.grafana")
     public void setGrafanaProxy(GrafanaProxy factory) {
         grafana = factory;
@@ -99,11 +90,6 @@ public class DashboardConfiguration extends Configuration {
     @JsonProperty("monitor.grafana")
     public GrafanaProxy getGrafanaProxy() {
         return grafana;
-    }
-
-    @JsonProperty("monitor.manager")
-    public void setMonitorConfigProxy(MonitorProxy factory) {
-        monitor = factory;
     }
 
     @JsonProperty("sla")

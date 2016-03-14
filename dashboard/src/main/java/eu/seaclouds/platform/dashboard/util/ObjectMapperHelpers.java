@@ -37,6 +37,7 @@ public class ObjectMapperHelpers {
 
     private static com.fasterxml.jackson.databind.ObjectMapper JACKSON2_MAPPER =
             new com.fasterxml.jackson.databind.ObjectMapper();
+    //TODO: Now Brooklyn uses Jackson2 annotations, so it shouldn't be necessary to have diferent mappers.
 
     /**
      * Transforms a JSON string to an Object using org.codehaus.jackson.map.ObjectMapper

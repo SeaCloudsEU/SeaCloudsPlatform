@@ -76,20 +76,19 @@ angular.module('seacloudsDashboard.applications.application', ['ngRoute', 'ui.bo
         $scope.openRemoveApplicationModal = function () {
             var modalInstance = $uibModal.open({
                 resolve: {
-                    project: function () {
-                        return $scope.project;
+                    seaCloudsApplicationId: function () {
+                        return $scope.seaCloudsApplicationId;
                     }
                 },
                 templateUrl: 'removeApplicationModal.html',
-                controller: function ($scope, $uibModalInstance, application) {
-                    $scope.application = application;
+                controller: function ($scope, $uibModalInstance, seaCloudsApplicationId) {
 
                     $scope.ok = function () {
-                        $uibModalInstance.close($scope.seaCloudsApplicationId);
+                        $uibModalInstance.close(seaCloudsApplicationId);
                     };
 
                     $scope.cancel = function () {
-                        $uibModalInstance.dismiss('cancel');
+                        $uibModalInstance.dismiss();
                     };
 
                 }
@@ -103,7 +102,7 @@ angular.module('seacloudsDashboard.applications.application', ['ngRoute', 'ui.bo
                     }).
                     error(function () {
                         notificationService.error("An error happened during the removal process, please try it again");
-                        $scope.closeRemoveApplicationModal();
+                        $uibModalInstance.dismiss();
                     });
             });
         };

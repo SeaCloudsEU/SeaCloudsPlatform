@@ -35,7 +35,6 @@ import static org.testng.AssertJUnit.assertNotNull;
 public class SlaProxyTest extends AbstractProxyTest<SlaProxy> {
     private final String RANDOM_STRING = UUID.randomUUID().toString();
 
-     //TODO: Add JSON based tests
 
     @Override
     public SlaProxy getProxy() {

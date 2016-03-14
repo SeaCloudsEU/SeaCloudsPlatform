@@ -19,6 +19,11 @@
     display: none !important;
 }
 
+.wrapper {
+    width: 100%;
+    padding: 1%;
+}
+
 a.application:hover {
     text-decoration: none;
 }

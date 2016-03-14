@@ -61,8 +61,6 @@ brooklyn.catalog:
         deployer.port: 8081
         sla.host: 127.0.0.1
         sla.port: 1234
-        monitor.manager.host: 127.0.0.1
-        monitor.manager.port: 8170
         monitor.grafana.host: 127.0.0.1
         monitor.grafana.host: 3000
         planner.host: 127.0.0.1
@@ -75,8 +73,6 @@ brooklyn.catalog:
         DEPLOYER_PORT: $brooklyn:config("deployer.port")
         SLA_HOST: $brooklyn:config("sla.host")
         SLA_PORT: $brooklyn:config("sla.port")
-        MONITOR_HOST: $brooklyn:config("monitor.manager.host")
-        MONITOR_PORT: $brooklyn:config("monitor.manager.port")
         GRAFANA_HOST: $brooklyn:config("monitor.grafana.host")
         GRAFANA_PORT: $brooklyn:config("monitor.grafana.host")
         PLANNER_HOST: $brooklyn:config("planner.host")
@@ -99,9 +95,9 @@ brooklyn.catalog:
         deployer:
           host: ${DEPLOYER_HOST}
           port: ${DEPLOYER_PORT}
-        monitor.manager:
-          host: ${MONITOR_HOST}
-          port: ${MONITOR_PORT}
+        monitor.grafana:
+          host: ${GRAFANA_HOST}
+          port: ${GRAFANA_PORT}
         sla:
           host: ${SLA_HOST}
           port: ${SLA_PORT}
@@ -333,8 +329,6 @@ brooklyn.catalog:
             deployer.port: $brooklyn:component("deployer").attributeWhenReady("brooklynnode.webconsole.httpPort")
             sla.host: $brooklyn:component("sla-core").attributeWhenReady("host.address")
             sla.port: $brooklyn:component("sla-core").attributeWhenReady("http.port")
-            monitor.manager.host: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
-            monitor.manager.port: $brooklyn:component("monitor-manager").config("monitor.manager.port")
             monitor.grafana.host: $brooklyn:component("grafana").attributeWhenReady("host.address")
             monitor.grafana.port: $brooklyn:component("grafana").config("grafana.port")            
             planner.host: $brooklyn:component("planner").attributeWhenReady("host.address")
@@ -410,8 +404,6 @@ brooklyn.catalog:
           deployer.port: $brooklyn:component("deployer").attributeWhenReady("brooklynnode.webconsole.httpPort")
           sla.host: $brooklyn:component("sla-core").attributeWhenReady("host.address")
           sla.port: $brooklyn:component("sla-core").attributeWhenReady("http.port")
-          monitor.manager.host: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
-          monitor.manager.port: $brooklyn:component("monitor-manager").config("monitor.manager.port")
           monitor.grafana.host: $brooklyn:component("grafana").attributeWhenReady("host.address")
           monitor.grafana.port: $brooklyn:component("grafana").config("grafana.port")            
           planner.host: $brooklyn:component("planner").attributeWhenReady("host.address")

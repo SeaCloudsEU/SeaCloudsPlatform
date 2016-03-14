@@ -40,7 +40,7 @@ var TopologyEditorUtils = (function() {
                     name: brooklynEntity.name,
                     label: brooklynEntity.name,
                     properties: {
-                        status: brooklynEntity.serviceState
+                        status: brooklynEntity.serviceState.toLowerCase()
                     },
                     type : type
                 })

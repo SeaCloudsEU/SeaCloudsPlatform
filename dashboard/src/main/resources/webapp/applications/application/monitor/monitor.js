@@ -41,7 +41,7 @@ angular.module('seacloudsDashboard.applications.application.monitor', ['datatabl
         };
 
         $scope.entities = [];
-        $scope.codemirror.monitoringRules = "Monitoring Rules visualizer not ready yet.";
+        $scope.codemirror = { monitoringRules:  "Monitoring Rules visualizer is not ready yet."};
 
         var selectedTab = 0;
 

@@ -37,14 +37,12 @@ public class CoreResource implements Resource{
     private static final Logger LOG = LoggerFactory.getLogger(CoreResource.class);
 
     private final DeployerProxy deployerProxy;
-    private final MonitorProxy monitorProxy;
     private final GrafanaProxy grafanaProxy;
     private final PlannerProxy plannerProxy;
     private final SlaProxy slaProxy;
 
-    public CoreResource(DeployerProxy deployerProxy, MonitorProxy monitorProxy, GrafanaProxy grafanaProxy, PlannerProxy plannerProxy, SlaProxy slaProxy) {
+    public CoreResource(DeployerProxy deployerProxy, GrafanaProxy grafanaProxy, PlannerProxy plannerProxy, SlaProxy slaProxy) {
         this.deployerProxy = deployerProxy;
-        this.monitorProxy = monitorProxy;
         this.grafanaProxy = grafanaProxy;
         this.plannerProxy = plannerProxy;
         this.slaProxy = slaProxy;
@@ -74,13 +72,9 @@ public class CoreResource implements Resource{
         slaObject.addProperty("url", slaProxy.getEndpoint());
         jsonResponse.add("sla", slaObject);
 
-        JsonObject tower4CloudsObject = new JsonObject();
-        tower4CloudsObject.addProperty("url", monitorProxy.getEndpoint());
-
         JsonObject grafanaObject = new JsonObject();
         grafanaObject.addProperty("url", grafanaProxy.getEndpoint());
 
-        monitorObject.add("manager", tower4CloudsObject);
         monitorObject.add("grafana", grafanaObject);
         jsonResponse.add("monitor", monitorObject);
 

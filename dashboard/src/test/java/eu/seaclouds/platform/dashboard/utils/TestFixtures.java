@@ -30,7 +30,6 @@ public interface TestFixtures {
 
     // SLA fixtures
     String AGREEMENT_PATH_JSON = "fixtures/agreement.json";
-    String TEMPLATE_PATH_JSON = "fixtures/agreement-template.json";
     String AGREEMENT_STATUS_PATH_JSON = "fixtures/agreement-status.json";
     String VIOLATIONS_JSON_PATH = "fixtures/violations.json";
 
