@@ -29,17 +29,17 @@ topology_template:
       requirements:
       - {host: Amazon_EC2_t2_micro_us_east_1}
     Amazon_EC2_c1_xlarge_eu_central_1:
-      type: tosca.nodes.Compute
+      type: seaclouds.nodes.Compute.Amazon_EC2
       properties: {num_cpus: 8, country: Germany, cost: 0.68, city: FRANKFURT, resource_type: compute,
         disk_size: 1680, availability: 0.9995, hardwareId: c1.xlarge, disk_type: sata,
         location: aws-ec2, num_disks: 4, region: eu-central-1, ram: 7, performance: 37}
     Amazon_EC2_m4_large_eu_west_1:
-      type: tosca.nodes.Compute
+      type: seaclouds.nodes.Compute.Amazon_EC2
       properties: {num_cpus: 2, country: Ireland, performance: 47, cost: 0.17, hardwareId: m4.large,
         city: DUBLIN, resource_type: compute, location: aws-ec2, availability: 0.9995,
         region: eu-west-1, ram: 8}
     Amazon_EC2_t2_micro_us_east_1:
-      type: tosca.nodes.Compute
+      type: seaclouds.nodes.Compute.Amazon_EC2
       properties: {num_cpus: 1, country: United States, performance: 40, cost: 0.018,
         hardwareId: t2.micro, city: ASHBURN, resource_type: compute, location: aws-ec2,
         availability: 0.9995, region: us-east-1, ram: 1}
