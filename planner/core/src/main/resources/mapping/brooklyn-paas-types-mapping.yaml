@@ -1,0 +1,51 @@
+map_name: brooklyn-tosca-paas-mapping
+description: This mapping contains the equivalence between SeaClouds NodeTypes and paas brooklyn-tosca-types
+
+mapping.node_types:
+  seaclouds.nodes.webapp.jboss.JBoss6Server: org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
+  seaclouds.nodes.webapp.jboss.JBoss7Server: org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
+  seaclouds.nodes.webapp.jetty.Jetty6Server: org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
+  seaclouds.nodes.webapp.tomcat.TomcatServer: org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
+  seaclouds.nodes.webapp.tomcat.Tomcat8Server: org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
+  seaclouds.nodes.ControlledDynamicWebAppCluster: org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
+  seaclouds.nodes.php.httpd.PhpHttpdServer: org.apache.brooklyn.entity.cloudfoundry.webapp.php.PhpCloudFoundryPaasWebApp
+
+mapping.policy_types:
+  seaclouds.policies.autoscaling.AutoScalerPolicy: org.apache.brooklyn.policy.autoscaling.AutoScalerPolicy
+
+
+node_types:
+
+  org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp:
+     derived_from: tosca.nodes.Root
+     description: >
+       A simple Tomcat server
+     properties:
+       application-name:
+         type: string
+         required: false
+       application-url:
+         type: string
+         required: false
+       env:
+         type: map
+         required: false
+         entry_schema:
+           type: string
+
+  org.apache.brooklyn.entity.cloudfoundry.webapp.php.PhpCloudFoundryPaasWebApp:
+    derived_from: tosca.nodes.Root
+    description: >
+      An CloudFoundry PHP Application
+    properties:
+      application-name:
+        type: string
+        required: true
+      application-url:
+        type: string
+        required: true
+      env:
+        type: map
+        required: false
+        entry_schema:
+          type: string
