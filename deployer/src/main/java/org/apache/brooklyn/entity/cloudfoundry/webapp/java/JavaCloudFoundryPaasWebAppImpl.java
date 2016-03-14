@@ -47,7 +47,7 @@ public class JavaCloudFoundryPaasWebAppImpl extends CloudFoundryWebAppImpl imple
     private static final Logger log = LoggerFactory.getLogger(JavaCloudFoundryPaasWebAppImpl.class);
 
     private volatile HttpFeed httpFeed;
-    private FunctionFeed serverLatencyFeed, resourceLatencyFeed;
+    private FunctionFeed serverLatencyFeed, resourceLatencyFeed, requestPerSecondLatencyFeed;
     private Double lastTotalRequest = 0.0;
 
     public JavaCloudFoundryPaasWebAppImpl() {
@@ -148,7 +148,7 @@ public class JavaCloudFoundryPaasWebAppImpl extends CloudFoundryWebAppImpl imple
     }
 
     private void connectServiceRequestPerSecondSensor() {
-        serverLatencyFeed = FunctionFeed.builder()
+        requestPerSecondLatencyFeed = FunctionFeed.builder()
                 .entity(this)
                 .period(Duration.seconds(1))
                 .poll(new FunctionPollConfig<Double, Double>(REQUEST_PER_SECOND)
@@ -156,8 +156,12 @@ public class JavaCloudFoundryPaasWebAppImpl extends CloudFoundryWebAppImpl imple
                         .callable(new Callable<Double>() {
                             public Double call() {
                                 Double currentRequestPerSecond = getAttribute(SERVER_REQUESTS) - lastTotalRequest;
-                                lastTotalRequest = getAttribute(SERVER_REQUESTS);
-                                return  currentRequestPerSecond;
+                                if (currentRequestPerSecond >= 0) {
+                                    lastTotalRequest = getAttribute(SERVER_REQUESTS);
+                                    return currentRequestPerSecond;
+                                } else {
+                                    return getAttribute(SERVER_REQUESTS);
+                                }
                             }
                         }))
                 .build();
