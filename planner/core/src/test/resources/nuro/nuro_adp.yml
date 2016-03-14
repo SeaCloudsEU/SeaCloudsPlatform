@@ -1,0 +1,118 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: nuro
+imports:
+- tosca-normative-types:1.0.0.wd06-SNAPSHOT
+topology_template:
+  node_templates:
+    www:
+      type: sc_req.www
+      properties:
+        language: PHP
+        autoscale: true
+        git.url: https://seaclDem:seaclouds@bitbucket.org/seaclDem/nuro-casestudy.git
+        php_version:
+          constraints:
+          - greater_or_equal: '5.1'
+          - less_or_equal: '5.5'
+        credentials_file: db.props
+      requirements:
+      - instancesPOC: 4
+        host: Amazon_EC2_m1_small_eu_central_1
+    db:
+      type: sc_req.db
+      properties:
+        autoscale: false
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5'
+          - less_or_equal: '5.6'
+        creationScriptUrl: https://www.dropbox.com/s/rp7owcgyhaa692f/create.sql?dl=1
+      requirements:
+      - instancesPOC: 1
+        host: Amazon_EC2_m4_10xlarge_eu_west_1
+    Amazon_EC2_m1_small_eu_central_1:
+      type: seaclouds.nodes.Compute.Amazon_EC2
+      properties:
+        num_cpus: 1
+        country: Germany
+        cost: 0.081
+        city: FRANKFURT
+        resource_type: compute
+        disk_size: 160
+        availability: 0.9995
+        hardwareId: m1.small
+        disk_type: sata
+        location: aws-ec2
+        num_disks: 1
+        region: eu-central-1
+        ram: 1.7
+        performance: 131
+    Amazon_EC2_m4_10xlarge_eu_west_1:
+      type: seaclouds.nodes.Compute.Amazon_EC2
+      properties:
+        num_cpus: 40
+        country: Ireland
+        performance: 773
+        cost: 3.4
+        hardwareId: m4.10xlarge
+        city: DUBLIN
+        resource_type: compute
+        location: aws-ec2
+        availability: 0.9995
+        region: eu-west-1
+        ram: 160
+node_types:
+  sc_req.www:
+    derived_from: seaclouds.nodes.php.httpd.PhpHttpdServer
+    properties:
+      resource_type:
+        constraints:
+        - equal: compute
+  sc_req.db:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      resource_type:
+        constraints:
+        - equal: compute
+  seaclouds.nodes.Compute:
+    derived_from: tosca.nodes.Compute
+    description: Custom compute
+    properties:
+      hardwareId:
+        type: string
+        required: false
+groups:
+  operation_www:
+    members:
+    - www
+    policies:
+    - QoSInfo:
+        execution_time: 100 ms
+        benchmark_platform: Amazon_EC2_m1_large_us_east_1
+    - dependencies:
+        operation_db: '20'
+    - AppQoSRequirements:
+        response_time:
+          less_than: 2000.0 ms
+        availability:
+          greater_than: 0.009899999999999999
+        cost:
+          less_or_equal: 400.0 euros_per_month
+        workload:
+          less_or_equal: 3600.0 req_per_min
+    - QoSRequirements:
+        AverageResponseTime:
+          less_than: 2000.0 ms
+    - ExpectedQualityPOC:
+        expectedExecutionTimePOC: 4.198539332796935
+        fitnessPOC: 0.7163941600031826
+        expectedCostPOC: 2681.2799999999997
+        expectedAvailabilityPOC: 0.9899999999999402
+  operation_db:
+    members:
+    - db
+    policies:
+    - QoSInfo:
+        execution_time: 15 ms
+        benchmark_platform: Amazon_EC2_m1_large_us_east_1
+    - dependencies: {}
