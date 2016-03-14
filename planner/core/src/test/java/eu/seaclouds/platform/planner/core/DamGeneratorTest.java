@@ -42,10 +42,10 @@ public class DamGeneratorTest {
 
     private static final String FAKE_AGREEMENT_ID = "agreement-1234567890";
 
-    static final String MONITOR_URL = "127.0.0.1";
-    static final String MONITOR_PORT = "8080";
-    static final String INFLUXDB_URL = "127.0.0.1";
-    static final String INFLUXDB_PORT = "8083";
+    static final String MONITOR_URL = "52.48.187.2";
+    static final String MONITOR_PORT = "8170";
+    static final String INFLUXDB_URL = "52.48.187.2";
+    static final String INFLUXDB_PORT = "8086";
     static final String SLA_ENDPOINT = "127.0.0.3:9003";
 
     Yaml yamlParser;
@@ -151,6 +151,9 @@ public class DamGeneratorTest {
         
         assertEquals(generatedNodeTemplates.get("www"), expectedNodeTemplates.get("www"));
         assertEquals(generatedNodeTemplates.get("db"), expectedNodeTemplates.get("db"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_www"), expectedNodeTemplates.get("modacloudsDc_www"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_www"), expectedNodeTemplates.get("seacloudsDc_www"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_db"), expectedNodeTemplates.get("seacloudsDc_db"));
 
         Map<String, Object> generatedGroups = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.GROUPS);
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
@@ -188,6 +191,14 @@ public class DamGeneratorTest {
         assertEquals(generatedNodeTemplates.get("www"), expectedNodeTemplates.get("www"));
         assertEquals(generatedNodeTemplates.get("webservices"), expectedNodeTemplates.get("webservices"));
         assertEquals(generatedNodeTemplates.get("db1"), expectedNodeTemplates.get("db1"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_www"), expectedNodeTemplates.get("modacloudsDc_www"));
+        assertEquals(generatedNodeTemplates.get("javaAppDc_www"), expectedNodeTemplates.get("javaAppDc_www"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_www"), expectedNodeTemplates.get("seacloudsDc_www"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_webservices"), expectedNodeTemplates.get("modacloudsDc_webservices"));
+        assertEquals(generatedNodeTemplates.get("javaAppDc_webservices"), expectedNodeTemplates.get("javaAppDc_webservices"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_webservices"), expectedNodeTemplates.get("seacloudsDc_webservices"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_db1"), expectedNodeTemplates.get("modacloudsDc_db1"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_db1"), expectedNodeTemplates.get("seacloudsDc_db1"));
 
         Map<String, Object> generatedGroups = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.GROUPS);
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
@@ -226,6 +237,11 @@ public class DamGeneratorTest {
 
         assertEquals(generatedNodeTemplates.get("Chat"), expectedNodeTemplates.get("Chat"));
         assertEquals(generatedNodeTemplates.get("MessageDatabase"), expectedNodeTemplates.get("MessageDatabase"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_Chat"), expectedNodeTemplates.get("modacloudsDc_Chat"));
+        assertEquals(generatedNodeTemplates.get("javaAppDc_Chat"), expectedNodeTemplates.get("javaAppDc_Chat"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_Chat"), expectedNodeTemplates.get("seacloudsDc_Chat"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_MessageDatabase"), expectedNodeTemplates.get("modacloudsDc_MessageDatabase"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_MessageDatabase"), expectedNodeTemplates.get("seacloudsDc_MessageDatabase"));
 
         Map<String, Object> generatedGroups = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.GROUPS);
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
