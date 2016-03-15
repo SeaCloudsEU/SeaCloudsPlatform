@@ -45,7 +45,7 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
    @Override
    public Solution[] computeOptimizationProblemForAllDifferentSolutions(SuitableOptions cloudOffers, QualityInformation requirements,
          Topology topology, int numPlansToGenerate) {
-      return super.filterUniqueSolutions(computeOptimizationProblem(cloudOffers,requirements,topology,numPlansToGenerate));
+      return filterUniqueSolutions(computeOptimizationProblem(cloudOffers,requirements,topology,numPlansToGenerate));
    }
    
    @Override

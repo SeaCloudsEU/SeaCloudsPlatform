@@ -137,6 +137,7 @@ public class OptimizerTOSCADecember2015AutoscalingPoliciesTest extends AbstractT
                Assert.assertTrue(autoscalingPolicy.containsKey(TOSCAkeywords.AUTOSCALE_METRIC_LOWERBOUND));
                Assert.assertTrue(autoscalingPolicy.containsKey(TOSCAkeywords.AUTOSCALE_METRIC_UPPERBOUND));
                Assert.assertTrue(autoscalingPolicy.containsKey(TOSCAkeywords.AUTOSCALE_POOL_MINIMUM_SIZE));
+               Assert.assertTrue(autoscalingPolicy.containsKey(TOSCAkeywords.AUTOSCALE_STABILIZATION_DELAY));
 
                String typeOfNode = YAMLmodulesOptimizerParser.getModuleTypeFromModulesMap(entry.getKey(), nodesMap);
                Assert.assertNotNull("Type of node " + entry.getKey() + " was NULL", typeOfNode);

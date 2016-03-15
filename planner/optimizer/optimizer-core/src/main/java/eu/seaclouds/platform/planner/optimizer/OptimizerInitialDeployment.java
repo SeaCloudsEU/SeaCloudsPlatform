@@ -43,9 +43,9 @@ public class OptimizerInitialDeployment {
 
    private static final String NL = System.lineSeparator();
 
-   private SearchMethod engine;
+   private SearchMethod        engine;
 
-   static Logger log;
+   static Logger               log;
 
    public OptimizerInitialDeployment() {
       engine = new BlindSearch();
@@ -88,7 +88,7 @@ public class OptimizerInitialDeployment {
       }
 
       try {
-         
+
          InputStream in = this.getClass().getClassLoader()
                .getResourceAsStream(DefaultConstants.DEFAULT_BENCHMARK_INFORMATION_PACKAGE);
          byte[] buffer = new byte[in.available()];
@@ -98,7 +98,7 @@ public class OptimizerInitialDeployment {
          log.error("Packaged File with the information of Benchmark Platforms not found");
          log.error(
                "Exception type " + e.getClass() + " message: " + e.getMessage() + " Exception cause: " + e.getCause());
-         log.error("Current execution dir=" + System.getProperty("user.dir") );
+         log.error("Current execution dir=" + System.getProperty("user.dir"));
 
       }
       return null;
@@ -110,7 +110,7 @@ public class OptimizerInitialDeployment {
       log.debug("Optimization method started. Inputs received");
       log.trace("AAM is: {}", appModel);
       log.trace("Suitable offers are: {} ", suitableCloudOffer);
-      log.trace("Informaton of Benchmark platform is: {}" , benchmarkPlatformsYaml);
+      log.trace("Informaton of Benchmark platform is: {}", benchmarkPlatformsYaml);
 
       // Get app characteristics
       Map<String, Object> appMap = YAMLoptimizerParser.getMAPofAPP(appModel);
@@ -157,8 +157,8 @@ public class OptimizerInitialDeployment {
       // inside
 
       // Compute solution
-      Solution[] solutions = engine.computeOptimizationProblemForAllDifferentSolutions(appInfoSuitableOptions.clone(), requirements, topology,
-            numPlansToGenerate);
+      Solution[] solutions = engine.computeOptimizationProblemForAllDifferentSolutions(appInfoSuitableOptions.clone(),
+            requirements, topology, numPlansToGenerate);
 
       if (solutions == null) {
          log.error("Map returned by Search engine is null");
@@ -196,8 +196,8 @@ public class OptimizerInitialDeployment {
    }
 
    private Map<String, Object>[] hashMapOfFoundSolutionsWithThresholds(Solution[] bestSols,
-         Map<String, Object> applicMap, Topology topology, SuitableOptions cloudOffers, 
-         QualityInformation requirements, String suitableCloudOffer, double hyst) {
+         Map<String, Object> applicMap, Topology topology, SuitableOptions cloudOffers, QualityInformation requirements,
+         String suitableCloudOffer, double hyst) {
 
       if (log.isDebugEnabled()) {
          engine.checkQualityAttachedToSolutions(bestSols);
@@ -228,7 +228,7 @@ public class OptimizerInitialDeployment {
          // use
          // addReconfigurationThresholds mehtod from YAMLoptimizerParser class.
          if (thresholds != null) {
-            addWorkloadAndPoolSizeBoundsForScalableModules(bestSols[i], thresholds, baseAppMap, topology, hyst);
+            addWorkloadAndPoolSizeBoundsForAllScalableModules(bestSols[i], thresholds, baseAppMap, topology, hyst, requirements);
             log.debug("After adding the reconfiguration thesholds to the map. Thresholds found are: ");
          } else {
             log.debug(
@@ -240,38 +240,64 @@ public class OptimizerInitialDeployment {
       return solutions;
    }
 
-   private void addWorkloadAndPoolSizeBoundsForScalableModules(Solution solution,
+   private void addWorkloadAndPoolSizeBoundsForAllScalableModules(Solution solution,
          HashMap<String, ArrayList<Double>> thresholds, Map<String, Object> baseAppMap, Topology topology,
-         double hyst) {
+         double hyst, QualityInformation requirements) {
 
-      // for each entry in thresholds
-      for (Map.Entry<String, ArrayList<Double>> entry : thresholds.entrySet()) {
-         log.debug("Adding the reconfiguration thresholds for module: " + entry.getKey());
-
-         // if it can scale.
-         if ((topology.getModule(entry.getKey()).canScale()) && (entry.getValue().size() > 0)) {
-            // get number of instances in solution.
-            int numInstances = solution.getCloudInstancesForModule(entry.getKey());
-            // divide the first threshold by the number of instances. Thats the
-            // upper bound.
-            double upperWklBound = entry.getValue().get(0) / (double) numInstances;
-            // the lower bound is the proportion of this specified in hysteresis
-            double lowerWklBound = upperWklBound * hyst;
-            // maximum pool is the number of instances plus the size of
-            // thresholds list
-            int maxPoolSize = entry.getValue().size() + numInstances;
-            log.debug("Adding upperWkl= " + upperWklBound + " lowerWkl=" + lowerWklBound + " poolsize=" + maxPoolSize);
-            YAMLoptimizerParser.addScalingPolicyToModule(entry.getKey(), baseAppMap, lowerWklBound, upperWklBound, 1,
-                  maxPoolSize);
+      //for each module in the topology
+      for(String modName : topology.getModuleNamesIterator()){
+         log.debug("Checking the reconfiguration thresholds for module: " + modName);
+         
+         //a module will have reconfiguration thesholds if: it can scale AND
+         //there were created reconfiguration thresholds OR the number of instances in the proposed solution was higher than one 
+        
+         if(topology.getModule(modName).canScale()){
+            //it can scale AND
             
-            //Here it is the point where the module type changed to be scalable (Dynamic Cluster, through changeModuleToScalableType method). 
-            //It looks like it is not required to change the type. TODO: Study this in more depth.
+            if(thresholds.containsKey(modName) && thresholds.get(modName).size()>0){
+               //there were created reconfiguration thresholds
+               addWorkloadAndPoolSizeBoundsForScalableModule(modName, solution, thresholds.get(modName).get(0), hyst, thresholds.get(modName).size(), baseAppMap);
+            }
+            else{
+               if(solution.getCloudInstancesForModule(modName) > 1){
+                  //the number of instances in the proposed solution was higher than one
+                  addWorkloadAndPoolSizeBoundsForScalableModule(modName, solution, requirements.getWorkload(), hyst, 0, baseAppMap);
+               }
+               else{
+                  log.debug("Module {}, even if it was scalable, hadn't thresholds or more than one instance",modName);
+               }
+            }
             
-         } else {
-            log.debug("Module " + entry.getKey() + " was not scalable");
          }
-
+         else{
+            log.debug("Module {} was not scalable",modName);
+         }
+         
+         
       }
+      
+ 
+   }
+
+   private void addWorkloadAndPoolSizeBoundsForScalableModule(String modName, Solution solution, Double firstThreshold,
+         double hyst, int maxNumExtraInstances, Map<String, Object> baseAppMap) {
+      
+      // get number of instances in solution.
+      int numInstances = solution.getCloudInstancesForModule(modName);
+      // divide the first threshold by the number of instances. Thats the
+      // upper bound.
+      double upperWklBound = firstThreshold / (double) numInstances;
+      // the lower bound is the proportion of this specified in hysteresis
+      double lowerWklBound = upperWklBound * hyst;
+      // maximum pool is the number of instances plus the size of
+      // thresholds list
+      int maxPoolSize =maxNumExtraInstances + numInstances;
+      log.debug("Adding upperWkl={} lowerWkl={} poolsize={}",upperWklBound, lowerWklBound, maxPoolSize);
+      
+      YAMLoptimizerParser.addScalingPolicyToModule(modName, baseAppMap, lowerWklBound, upperWklBound, 1,
+            maxPoolSize);
+
+      
    }
 
    private String showThresholds(HashMap<String, ArrayList<Double>> thresholds) {
@@ -361,12 +387,14 @@ public class OptimizerInitialDeployment {
       double perfGoodness = requirements.getResponseTime() / qualityAnalyzer
             .computePerformance(sol, topology, requirements.getWorkload(), cloudCharacteristics).getResponseTime();
 
-      log.debug("Create reconfiguration Thresholds method has finished its call to compute Performance with result {}", perfGoodness);
+      log.debug("Create reconfiguration Thresholds method has finished its call to compute Performance with result {}",
+            perfGoodness);
 
       if ((requirements.existResponseTimeRequirement()) && (perfGoodness >= 1.0)) {
          // response time requirements are satisfied if perfGoodness>=1.0
 
-         // A HashMap with all the keys of module names, and associated an arraylist with the thresholds for reconfigurations.
+         // A HashMap with all the keys of module names, and associated an
+         // arraylist with the thresholds for reconfigurations.
          HashMap<String, ArrayList<Double>> thresholds = new HashMap<String, ArrayList<Double>>();
 
          log.debug("Starting teh computation of reconfiguration thresholds");

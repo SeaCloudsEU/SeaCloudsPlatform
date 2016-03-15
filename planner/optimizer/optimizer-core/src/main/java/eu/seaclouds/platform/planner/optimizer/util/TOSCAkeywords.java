@@ -91,16 +91,18 @@ public class TOSCAkeywords {
    // These ones are for the autoscaling policies
    public static final String AUTOSCALING_TAG                                  = "autoscaling";
    public static final String AUTOSCALE_TYPE                                   = "type";
-   public static final String AGNOSTIC_AUTOSCALER_POLICY                       = "seaclouds.policies.autoscalling.AutoscalerPolicy";
+   public static final String AGNOSTIC_AUTOSCALER_POLICY                       = "seaclouds.policies.autoscaling.AutoScalerPolicy";
    public static final String BROOKLYN_AUTOSCALER_POLICY                       = "org.apache.brooklyn.policy.autoscaling.AutoScalerPolicy";
    public static final String NODE_TYPE_AUTOSCALABLE                           = "seaclouds.nodes.ControlledDynamicWebAppCluster";
    public static final String AUTOSCALE_METRIC                                 = "metric";
    public static final String BROOKLYN_AUTOSCALER_METRIC_ARRIVALRATE_PER_SECOND = "$brooklyn:sensor(\"org.apache.brooklyn.entity.webapp.DynamicWebAppCluster\", \"webapp.reqs.perSec.windowed.perNode\")";
-   public static final String AGNOSTIC_AUTOSCALER_METRIC_ARRIVALRATE_PER_SECOND = "$brooklyn:sensor(\"seaclouds.nodes.ControlledDynamicWebAppCluster\", \"webapp.reqs.perSec.windowed.perNode\")";
+   public static final String AGNOSTIC_AUTOSCALER_METRIC_ARRIVALRATE_PER_SECOND = "seaclouds.metrics.requestPerNode";
    public static final String AUTOSCALE_METRIC_LOWERBOUND                      = "metricLowerBound";
    public static final String AUTOSCALE_METRIC_UPPERBOUND                      = "metricUpperBound";
    public static final String AUTOSCALE_POOL_MINIMUM_SIZE                      = "minPoolSize";
    public static final String AUTOSCALE_POOL_MAXIMUM_SIZE                      = "maxPoolSize";
+   public static final String AUTOSCALE_STABILIZATION_DELAY                    = "autoscaler.resizeDownStabilizationDelay";
+   public static final int    AUTOSCALE_STABILIZATION_DELAY_VALUE_MILLISECONDS = 120000; //two minutes (exp. booting time).
    
    //This is to define the Compute node type
    public static final String COMPUTE_TYPE = "seaclouds.nodes.Compute";
