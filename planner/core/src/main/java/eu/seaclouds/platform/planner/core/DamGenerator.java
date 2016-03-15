@@ -75,7 +75,6 @@ public class DamGenerator {
     public static final String SEACLOUDS_NODE_TYPES = "seaclouds-types";
     public static final String SEACLOUDS_NODE_TYPES_VERSION = "0.8.0-SNAPSHOT";
 
-
     public static final String TEMPLATE_NAME = "template_name";
     public static final String TEMPLATE_NAME_PREFIX = "seaclouds.app.";
     public static final String TEMPLATE_VERSION = "template_version";
@@ -97,16 +96,57 @@ public class DamGenerator {
     private SlaAgreementManager agreementManager;
     private Map<String, Object> template;
 
-    public DamGenerator(String monitorUrl, String monitorPort, String slaUrl, String influxdbUrl, String influxdbPort) {
-        this.monitorUrl = monitorUrl;
-        this.monitorPort = monitorPort;
-        this.slaUrl = slaUrl;
-        this.influxdbUrl = influxdbUrl;
-        this.influxdbPort = influxdbPort;
+    public static class Builder {
+
+        private String monitorUrl;
+        private String monitorPort;
+        private String slaUrl;
+        private String influxdbUrl;
+        private String influxdbPort;
+
+        public Builder() {
+        }
+
+        public Builder monitorUrl(String monitorUrl) {
+            this.monitorUrl = monitorUrl;
+            return this;
+        }
+
+        public Builder monitorPort(String monitorPort) {
+            this.monitorPort = monitorPort;
+            return this;
+        }
+
+        public Builder slaUrl(String slaUrl) {
+            this.slaUrl = slaUrl;
+            return this;
+        }
+
+        public Builder influxdbUrl(String influxdbUrl) {
+            this.influxdbUrl = influxdbUrl;
+            return this;
+        }
+
+        public Builder influxdbPort(String influxdbPort) {
+            this.influxdbPort = influxdbPort;
+            return this;
+        }
+
+        public DamGenerator build(){
+            return new DamGenerator(this);
+        }
+    }
+
+    private DamGenerator(Builder builder) {
+        this.monitorUrl = builder.monitorUrl;
+        this.monitorPort = builder.monitorPort;
+        this.slaUrl = builder.slaUrl;
+        this.influxdbUrl = builder.influxdbUrl;
+        this.influxdbPort = builder.influxdbPort;
         init();
     }
 
-    public void init() {
+    private void init() {
         agreementManager = new SlaAgreementManager(slaUrl);
     }
 
@@ -315,7 +355,7 @@ public class DamGenerator {
     }
 
     public void addApplicationInfo(Map<String, Object> template,
-                                                  String applicationInfoId) {
+                                   String applicationInfoId) {
 
         Map<String, Object> groups = (Map<String, Object>) template.get(GROUPS);
         HashMap<String, Object> appGroup = new HashMap<>();
