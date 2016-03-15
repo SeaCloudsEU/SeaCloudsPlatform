@@ -96,46 +96,6 @@ public class DamGenerator {
     private SlaAgreementManager agreementManager;
     private Map<String, Object> template;
 
-    public static class Builder {
-
-        private String monitorUrl;
-        private String monitorPort;
-        private String slaUrl;
-        private String influxdbUrl;
-        private String influxdbPort;
-
-        public Builder() {
-        }
-
-        public Builder monitorUrl(String monitorUrl) {
-            this.monitorUrl = monitorUrl;
-            return this;
-        }
-
-        public Builder monitorPort(String monitorPort) {
-            this.monitorPort = monitorPort;
-            return this;
-        }
-
-        public Builder slaUrl(String slaUrl) {
-            this.slaUrl = slaUrl;
-            return this;
-        }
-
-        public Builder influxdbUrl(String influxdbUrl) {
-            this.influxdbUrl = influxdbUrl;
-            return this;
-        }
-
-        public Builder influxdbPort(String influxdbPort) {
-            this.influxdbPort = influxdbPort;
-            return this;
-        }
-
-        public DamGenerator build(){
-            return new DamGenerator(this);
-        }
-    }
 
     private DamGenerator(Builder builder) {
         this.monitorUrl = builder.monitorUrl;
@@ -152,13 +112,18 @@ public class DamGenerator {
 
     public String generateDam(String adp) {
 
+        String applicationInfo;
         Map<String, Object> adpYaml =
                 manageTemplateMetada((Map<String, Object>) getYamlParser().load(adp));
 
         template = translateAPD(adpYaml);
-        addMonitorInfo();
+        MonitoringInfo monitoringInfo = generateMonitoringInfo();
+        addMonitorInfo(monitoringInfo);
         manageNodeTypes();
-        addApplicationInfo();
+
+        applicationInfo = getAgreementManager().generateAgreeemntId(template);
+
+        addApplicationInfo(applicationInfo);
         manageGroups();
 
         return getYamlParser().dump(template);
@@ -206,21 +171,25 @@ public class DamGenerator {
         return template;
     }
 
-    public void addMonitorInfo() {
 
+    public MonitoringInfo generateMonitoringInfo() {
         MonitoringDamGenerator monDamGen = null;
+
         try {
             monDamGen = new MonitoringDamGenerator(
                     new URL("http://" + monitorUrl + ":" + monitorPort + ""),
                     new URL("http://" + influxdbUrl + ":" + influxdbPort + ""));
         } catch (MalformedURLException e) {
-            log.error("A problem was found during Monitoring rules information generation");
             log.error(e.getMessage());
         }
+        return monDamGen.generateMonitoringInfo(getYamlParser().dump(template));
+    }
+
+    public void addMonitorInfo(MonitoringInfo monitoringInfo) {
+
         String generatedApplicationId = UUID.randomUUID().toString();
 
-        MonitoringInfo generated = monDamGen.generateMonitoringInfo(getYamlParser().dump(template));
-        monitoringInfoByApplication.put(generatedApplicationId, generated);
+        monitoringInfoByApplication.put(generatedApplicationId, monitoringInfo);
 
         HashMap<String, Object> appGroup = new HashMap<>();
         appGroup.put(MEMBERS, Arrays.asList(APPLICATION));
@@ -236,11 +205,10 @@ public class DamGenerator {
 
         appGroup.put(POLICIES, policiesList);
 
-        template = (Map<String, Object>) getYamlParser().load(generated.getReturnedAdp());
+        template = (Map<String, Object>) getYamlParser().load(monitoringInfo.getReturnedAdp());
         Map<String, Object> groups = (Map<String, Object>) template.get(GROUPS);
         groups.put(MONITOR_INFO_GROUPNAME, appGroup);
     }
-
 
     public Map<String, Object> translateAPD(Map<String, Object> adpYaml) {
         DeployerTypesResolver deployerTypesResolver = getDeployerIaaSTypeResolver();
@@ -349,13 +317,7 @@ public class DamGenerator {
         return deployerTypesResolver;
     }
 
-    public void addApplicationInfo() {
-        getAgreementManager();
-        addApplicationInfo(template, getAgreementManager().generateAgreeemntId(template));
-    }
-
-    public void addApplicationInfo(Map<String, Object> template,
-                                   String applicationInfoId) {
+    public void addApplicationInfo(String applicationInfoId) {
 
         Map<String, Object> groups = (Map<String, Object>) template.get(GROUPS);
         HashMap<String, Object> appGroup = new HashMap<>();
@@ -476,6 +438,48 @@ public class DamGenerator {
 
     public void setAgreementManager(SlaAgreementManager agManager) {
         this.agreementManager = agManager;
+    }
+
+
+    public static class Builder {
+
+        private String monitorUrl;
+        private String monitorPort;
+        private String slaUrl;
+        private String influxdbUrl;
+        private String influxdbPort;
+
+        public Builder() {
+        }
+
+        public Builder monitorUrl(String monitorUrl) {
+            this.monitorUrl = monitorUrl;
+            return this;
+        }
+
+        public Builder monitorPort(String monitorPort) {
+            this.monitorPort = monitorPort;
+            return this;
+        }
+
+        public Builder slaUrl(String slaUrl) {
+            this.slaUrl = slaUrl;
+            return this;
+        }
+
+        public Builder influxdbUrl(String influxdbUrl) {
+            this.influxdbUrl = influxdbUrl;
+            return this;
+        }
+
+        public Builder influxdbPort(String influxdbPort) {
+            this.influxdbPort = influxdbPort;
+            return this;
+        }
+
+        public DamGenerator build() {
+            return new DamGenerator(this);
+        }
     }
 
     public class SlaAgreementManager {
