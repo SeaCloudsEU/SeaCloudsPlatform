@@ -29,6 +29,7 @@ import org.apache.brooklyn.core.entity.BrooklynConfigKeys;
 import org.apache.brooklyn.core.entity.Entities;
 import org.apache.brooklyn.location.cloudfoundry.CloudFoundryPaasLocation;
 import org.apache.brooklyn.util.http.HttpTool;
+import org.apache.brooklyn.util.text.Identifiers;
 import org.apache.brooklyn.util.text.Strings;
 import org.cloudfoundry.client.lib.domain.CloudApplication;
 import org.slf4j.Logger;
@@ -60,9 +61,12 @@ public abstract class PaasWebAppCloudFoundryDriver extends PaasEntityCloudFoundr
         initApplicationParameters();
     }
 
-    @SuppressWarnings("unchecked")
     private void initApplicationParameters() {
-        applicationName = getEntity().getConfig(CloudFoundryWebApp.APPLICATION_NAME);
+        if(!Strings.isBlank(getEntity().getConfig(CloudFoundryWebApp.APPLICATION_NAME))){
+            applicationName = getEntity().getConfig(CloudFoundryWebApp.APPLICATION_NAME);
+        } else {
+            applicationName = "cf-app" + Identifiers.makeRandomId(8);
+        }
         applicationUrl = getEntity().getConfig(CloudFoundryWebApp.APPLICATION_URL);
     }
 
@@ -240,15 +244,6 @@ public abstract class PaasWebAppCloudFoundryDriver extends PaasEntityCloudFoundr
         String domainUri = getDomainUri();
         getEntity().setAttribute(Attributes.MAIN_URI, URI.create(domainUri));
         getEntity().setAttribute(CloudFoundryWebApp.ROOT_URL, domainUri);
-
-        /*getEntity().setAttribute(CloudFoundryWebApp.INSTANCES_NUM,
-                application.getInstances());*/
-
-        getEntity().setAttribute(CloudFoundryWebApp.MEMORY,
-                application.getMemory());
-
-        getEntity().setAttribute(CloudFoundryWebApp.DISK,
-                application.getDiskQuota());
     }
 
     protected String getDomainUri(){
