@@ -39,6 +39,8 @@ public class DamGenResource {
     private final String monitorGeneratorPort;
     private final String influxdbPort;
 
+    private static final String GRAFANA_ENDPOINT = "http://52.48.187.2:3000";
+
     public DamGenResource(String monitorGeneratorURL,
                           String monitorGeneratorPort,
                           String slaGeneratorURL,
@@ -54,7 +56,6 @@ public class DamGenResource {
                 monitorGeneratorURL,
                 slaGeneratorURL,
         };
-
     }
 
     @POST
@@ -66,8 +67,8 @@ public class DamGenResource {
                 .slaUrl(slaGeneratorURL)
                 .influxdbUrl(influxdbURL)
                 .influxdbPort(influxdbPort)
+                .grafanaEndpoint(GRAFANA_ENDPOINT)
                 .build();
-
         return new DamGeneratorResponse(damGenerator.generateDam(adp));
     }
 
@@ -80,8 +81,8 @@ public class DamGenResource {
                 .slaUrl(slaGeneratorURL)
                 .influxdbUrl(influxdbURL)
                 .influxdbPort(influxdbPort)
+                .grafanaEndpoint(GRAFANA_ENDPOINT)
                 .build();
-
         return new DamGeneratorResponse(damGenerator.generateDam(adp));
     }
 
