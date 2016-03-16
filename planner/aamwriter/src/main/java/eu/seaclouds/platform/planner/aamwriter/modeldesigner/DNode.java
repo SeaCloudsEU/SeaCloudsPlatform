@@ -59,7 +59,6 @@ public class DNode {
     
     public static final DNode NOT_FOUND = new DNode("[null]", "[null]");
 
-    @SuppressWarnings("unused")
     private DGraph graph;
     private String name;
     private String type;
@@ -77,6 +76,7 @@ public class DNode {
     private String benchmarkResponseTime;
     private String benchmarkPlatform;
     private List<Map<String, String>> qos;
+    private boolean frontend;
 
     public DNode(JSONObject jnode, DGraph graph) {
         this.graph = graph;
@@ -109,6 +109,7 @@ public class DNode {
         benchmarkResponseTime = extractStringFromMap("benchmark_rt", map);
         benchmarkPlatform = extractStringFromMap("benchmark_platform", map);
         qos = (List) extractQosFromMap("qos", map);
+        frontend = extractBooleanFromMap("frontend", map);
         return map;
     }
     
@@ -116,6 +117,18 @@ public class DNode {
         String value = (String) map.remove(key);
         
         return (value == null)? "" : value;
+    }
+    
+    private boolean extractBooleanFromMap(String key, Map<String, Object> map) {
+        Object value = map.remove(key);
+        boolean result = false;
+        
+        if (value instanceof Boolean) {
+            result = (value != null && (boolean)value);
+        } else if (value instanceof String) {
+            return ("yes".equals(value))? true : false;
+        }
+        return result;
     }
 
     private List<Object> extractListFromMap(String key, Map<String, Object> map) {
@@ -228,7 +241,19 @@ public class DNode {
     public List<Map<String, String>> getQos() {
         return qos;
     }
+
+    /**
+     * Returns true if this node contains the property "frontend" to true.
+     */
+    public boolean getFrontend() {
+        return frontend;
+    }
     
+    /**
+     * Returns true if this node is the frontend of the graph, according to the rules
+     * defined in Graph. 
+     * NOTE: It is possible that isFrontend() != getFrontend()
+     */
     public boolean isFrontend() {
         boolean result = false;
         if (this.graph != null) {

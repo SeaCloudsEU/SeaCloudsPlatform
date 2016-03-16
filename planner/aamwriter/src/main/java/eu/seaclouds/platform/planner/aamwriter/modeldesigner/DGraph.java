@@ -33,7 +33,8 @@ import eu.seaclouds.platform.planner.aamwriter.AamWriterException;
  * of the topology in json and build the hierarchy of classes.
  * 
  * NOTE: The preferred way to set the frontend node of the application is specifying it in the 
- * application_requirements element of the json topology. It not specified, the frontend
+ * application_requirements element of the json topology. If not specified, it falls back
+ * to the first node found with "frontend" property set to true. If not specified, the frontend
  * node is calculated as the first node found without incoming links. This may lead to 
  * unexpected behaviour. Due to optimizer constraint, only one frontend node is allowed.
  */
@@ -67,9 +68,7 @@ public class DGraph {
         JSONObject orequirements = (JSONObject) json.get(Properties.REQUIREMENTS);
         this.requirements = new DRequirements(orequirements, this);
         
-        DNode frontend = getNode(requirements.getFrontend());
-        this.frontendNode = (DNode.NOT_FOUND.equals(frontend))? 
-                calculateSourceNode() : frontend;
+        this.frontendNode = findFrontendNode();
     }
 
     public DNode getNode(String nodeName) {
@@ -138,6 +137,41 @@ public class DGraph {
         return result;
     }
 
+    /**
+     * Assigns a frontend node to the graph according to the rules in the class header
+     */
+    private DNode findFrontendNode() {
+        DNode frontend = getNode(requirements.getFrontend());
+        
+        if (frontend == DNode.NOT_FOUND) {
+            
+            frontend = searchFrontendNode();
+
+            if (frontend == DNode.NOT_FOUND) {
+                frontend = calculateSourceNode();
+            }
+        }
+        return frontend;
+    }
+
+    /**
+     * Searches the first node with "frontend" property set to true
+     */
+    private DNode searchFrontendNode() {
+        DNode result = DNode.NOT_FOUND;
+        
+        for (DNode node : nodes) {
+            if (node.getFrontend()) {
+                result = node;
+                break;
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Finds the first node with no incoming links.
+     */
     private DNode calculateSourceNode() {
         DNode result = DNode.NOT_FOUND;
         

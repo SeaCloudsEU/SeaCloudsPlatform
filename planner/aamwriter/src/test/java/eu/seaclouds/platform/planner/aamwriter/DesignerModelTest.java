@@ -89,4 +89,26 @@ public class DesignerModelTest {
         assertTrue(graph.getNode("www").isFrontend());
         assertFalse(graph.getNode("db1").isFrontend());
     }
+    
+    @Test
+    public void testNodeFilledWithStringFrontendProperty() throws Exception {
+        root = (JSONObject) TestUtils.loadJson("/node_frontend.json");
+        graph = new DGraph(root);
+        
+        assertEquals(graph.getFrontendNode().getName(), "webservices");
+        assertTrue(graph.getNode("webservices").isFrontend());
+        assertFalse(graph.getNode("www").isFrontend());
+        assertFalse(graph.getNode("db1").isFrontend());
+    }
+
+    @Test
+    public void testNodeFilledWithBooleanFrontendProperty() throws Exception {
+        root = (JSONObject) TestUtils.loadJson("/node_frontend2.json");
+        graph = new DGraph(root);
+        
+        assertEquals(graph.getFrontendNode().getName(), "webservices");
+        assertTrue(graph.getNode("webservices").isFrontend());
+        assertFalse(graph.getNode("www").isFrontend());
+        assertFalse(graph.getNode("db1").isFrontend());
+    }
 }
