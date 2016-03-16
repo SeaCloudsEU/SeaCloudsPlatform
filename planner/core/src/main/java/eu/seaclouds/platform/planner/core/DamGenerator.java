@@ -165,6 +165,7 @@ public class DamGenerator {
         manageNodeTypes();
         applicationInfoId = getAgreementManager().generateAgreeemntId(template);
         addApplicationInfo(applicationInfoId);
+        relationManagement();
 
         addSeaCloudsPolicy(monitoringInfo, applicationInfoId);
 
@@ -179,13 +180,13 @@ public class DamGenerator {
         }
 
         Map<String, Object> topologyTemplate = (Map<String, Object>) template.get(TOPOLOGY_TEMPLATE);
-        Map<String, Object> nodeTemplates = (Map<String, Object>)topologyTemplate.get(NODE_TEMPLATES);
+        Map<String, Object> nodeTemplates = (Map<String, Object>) topologyTemplate.get(NODE_TEMPLATES);
 
         //Solve offerings Types issue
-        for(Map.Entry<String, Object> nodeTemplateEntry : nodeTemplates.entrySet()){
-           Map<String, Object> nodeTemplate = (Map<String, Object>)nodeTemplateEntry.getValue();
+        for (Map.Entry<String, Object> nodeTemplateEntry : nodeTemplates.entrySet()) {
+            Map<String, Object> nodeTemplate = (Map<String, Object>) nodeTemplateEntry.getValue();
             String nodeTemplateType = (String) nodeTemplate.get(TYPE);
-            if(nodeTemplateType.contains("seaclouds.nodes.Compute")){
+            if (nodeTemplateType.contains("seaclouds.nodes.Compute")) {
                 nodeTemplate.put(TYPE, getDeployerIaaSTypeResolver().resolveNodeType("seaclouds.nodes.Compute"));
             }
         }
@@ -454,6 +455,31 @@ public class DamGenerator {
         groups.put(SLA_INFO_GROUPNAME, appGroup);
     }
 
+    /*This method filters current requirements and avoid non-host requirements. It is only a temporal
+    * fix. Relations have to be managed ASAP*/
+    public void relationManagement() {
+        Map<String, Object> topologyTemplate = (Map<String, Object>) template.get(TOPOLOGY_TEMPLATE);
+        Map<String, Object> nodeTemplates = (Map<String, Object>) topologyTemplate.get(NODE_TEMPLATES);
+
+        for (Map.Entry<String, Object> nodeTemplateEntry : nodeTemplates.entrySet()) {
+
+            Map<String, Object> nodeTemplate = (Map<String, Object>) nodeTemplateEntry.getValue();
+
+            List<Map<String, Object>> requirements = (List<Map<String, Object>>) nodeTemplate.get(REQUIREMENTS);
+            List<Map<String, Object>> fixedRequirements = MutableList.of();
+            if (requirements != null) {
+                for (Map<String, Object> requirement : requirements) {
+                    if (requirement.containsKey("host")) {
+                        fixedRequirements.add(requirement);
+                    }
+                }
+                nodeTemplate.put(REQUIREMENTS, fixedRequirements);
+            }
+        }
+
+
+    }
+
     @SuppressWarnings("unchecked")
     public void addPoliciesTypeIfNotPresent(Map<String, Object> groups) {
 
@@ -590,7 +616,7 @@ public class DamGenerator {
             return this;
         }
 
-        public Builder grafanaEndpoint(String grafanaEndpoint){
+        public Builder grafanaEndpoint(String grafanaEndpoint) {
             this.grafanaEndpoint = grafanaEndpoint;
             return this;
         }
@@ -626,7 +652,7 @@ public class DamGenerator {
             return result;
         }
 
-        public String getAgreement(String applicationMonitorId){
+        public String getAgreement(String applicationMonitorId) {
             List<NameValuePair> paremeters = MutableList.of((NameValuePair)
                     new BasicNameValuePair("templateId", applicationMonitorId));
             return new HttpHelper(slaEndpoint).getRequest(GET_AGREEMENT_OP, paremeters);
