@@ -1,0 +1,211 @@
+[ {
+  "softcare-db" : [ {
+    "6184608484337307426" : "Amazon_EC2_i2_xlarge_us_west_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_1\n  properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',\n    region: us-west-1, performance: 90, availability: 0.9995, country: United States,\n    city: SAN JOSE, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,\n    ram: 30.5, disk_type: ssd}\n"
+  }, {
+    "1987550253118773013" : "Microsoft_Azure_Virtual_Machines_A8_eu_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A8_eu_west\n  properties: {resource_type: compute, hardwareId: A8, location: 'azure:compute',\n    region: eu-west, availability: 0.9995, country: Netherlands, city: AMSTERDAM,\n    cost: 1.97 USD/hour, disk_size: 382, num_cpus: 8, ram: 56}\n"
+  }, {
+    "1804644953398208703" : "Microsoft_Azure_Virtual_Machines_DS12_us_central:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_us_central\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: us-central, availability: 0.9995, country: United States, city: WEST DES MOINES,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "7188972354248936960" : "Amazon_EC2_i2_xlarge_us_west_2:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_2\n  properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',\n    region: us-west-2, performance: 90, availability: 0.9995, country: United States,\n    city: PORTLAND, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,\n    ram: 30.5, disk_type: ssd}\n"
+  }, {
+    "7791859447263071509" : "Microsoft_Azure_Virtual_Machines_DS3_us_northcentral:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_us_northcentral\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: us-northcentral, availability: 0.9995, country: United States, city: CHICAGO,\n    disk_size: 28, num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "1489560623223993896" : "Amazon_EC2_m3_xlarge_eu_central_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_m3_xlarge_eu_central_1\n  properties: {resource_type: compute, hardwareId: m3.xlarge, location: 'aws:ec2',\n    region: eu-central-1, performance: 90, availability: 0.9995, country: Germany,\n    city: FRANKFURT, cost: 0.385 USD/hour, disk_size: 80, num_disks: 2, num_cpus: 4,\n    ram: 15, disk_type: ssd}\n"
+  }, {
+    "5230836013578633692" : "Microsoft_Azure_Virtual_Machines_DS12_us_northcentral:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_us_northcentral\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: us-northcentral, availability: 0.9995, country: United States, city: CHICAGO,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "1156644749651417127" : "Amazon_EC2_m2_2xlarge_eu_central_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_m2_2xlarge_eu_central_1\n  properties: {resource_type: compute, hardwareId: m2.2xlarge, location: 'aws:ec2',\n    region: eu-central-1, availability: 0.9995, country: Germany, city: FRANKFURT,\n    cost: 1.01 USD/hour, disk_size: 840, num_disks: 1, num_cpus: 4, ram: 34.2, disk_type: sata}\n"
+  }, {
+    "365042266390325112" : "Microsoft_Azure_Virtual_Machines_DS3_us_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_us_west\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: us-west, availability: 0.9995, country: United States, city: SAN FRANCISCO,\n    disk_size: 28, num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "7968089423762415715" : "Microsoft_Azure_Virtual_Machines_DS12_eu_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_eu_west\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: eu-west, availability: 0.9995, country: Netherlands, city: AMSTERDAM,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "6143196782115643905" : "Microsoft_Azure_Virtual_Machines_A4_brazil_south:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A4_brazil_south\n  properties: {resource_type: compute, hardwareId: A4, location: 'azure:compute',\n    region: brazil-south, availability: 0.9995, country: Brazil, city: SAO PAULO,\n    cost: 0.48 USD/hour, disk_size: 605, num_cpus: 8, ram: 14}\n"
+  }, {
+    "7146173978811256975" : "Microsoft_Azure_Virtual_Machines_A6_japan_east:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A6_japan_east\n  properties: {resource_type: compute, hardwareId: A6, location: 'azure:compute',\n    region: japan-east, availability: 0.9995, country: Japan, city: SAITAMA, cost: 0.44 USD/hour,\n    disk_size: 285, num_cpus: 4, ram: 28}\n"
+  }, {
+    "593963453363491455" : "Microsoft_Azure_Virtual_Machines_DS3_japan_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_japan_west\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: japan-west, availability: 0.9995, country: Japan, city: OSAKA, disk_size: 28,\n    num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "9099585112555786248" : "Amazon_EC2_g2_2xlarge_eu_west_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_g2_2xlarge_eu_west_1\n  properties: {resource_type: compute, hardwareId: g2.2xlarge, location: 'aws:ec2',\n    region: eu-west-1, performance: 162, availability: 0.9995, country: Ireland, city: DUBLIN,\n    cost: 0.898 USD/hour, disk_size: 60, num_disks: 1, num_cpus: 8, ram: 15, disk_type: ssd}\n"
+  } ]
+}, {
+  "forum-db" : [ {
+    "6184608484337307426" : "Amazon_EC2_i2_xlarge_us_west_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_1\n  properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',\n    region: us-west-1, performance: 90, availability: 0.9995, country: United States,\n    city: SAN JOSE, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,\n    ram: 30.5, disk_type: ssd}\n"
+  }, {
+    "1987550253118773013" : "Microsoft_Azure_Virtual_Machines_A8_eu_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A8_eu_west\n  properties: {resource_type: compute, hardwareId: A8, location: 'azure:compute',\n    region: eu-west, availability: 0.9995, country: Netherlands, city: AMSTERDAM,\n    cost: 1.97 USD/hour, disk_size: 382, num_cpus: 8, ram: 56}\n"
+  }, {
+    "1804644953398208703" : "Microsoft_Azure_Virtual_Machines_DS12_us_central:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_us_central\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: us-central, availability: 0.9995, country: United States, city: WEST DES MOINES,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "7188972354248936960" : "Amazon_EC2_i2_xlarge_us_west_2:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_2\n  properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',\n    region: us-west-2, performance: 90, availability: 0.9995, country: United States,\n    city: PORTLAND, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,\n    ram: 30.5, disk_type: ssd}\n"
+  }, {
+    "7791859447263071509" : "Microsoft_Azure_Virtual_Machines_DS3_us_northcentral:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_us_northcentral\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: us-northcentral, availability: 0.9995, country: United States, city: CHICAGO,\n    disk_size: 28, num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "1489560623223993896" : "Amazon_EC2_m3_xlarge_eu_central_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_m3_xlarge_eu_central_1\n  properties: {resource_type: compute, hardwareId: m3.xlarge, location: 'aws:ec2',\n    region: eu-central-1, performance: 90, availability: 0.9995, country: Germany,\n    city: FRANKFURT, cost: 0.385 USD/hour, disk_size: 80, num_disks: 2, num_cpus: 4,\n    ram: 15, disk_type: ssd}\n"
+  }, {
+    "5230836013578633692" : "Microsoft_Azure_Virtual_Machines_DS12_us_northcentral:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_us_northcentral\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: us-northcentral, availability: 0.9995, country: United States, city: CHICAGO,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "1156644749651417127" : "Amazon_EC2_m2_2xlarge_eu_central_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_m2_2xlarge_eu_central_1\n  properties: {resource_type: compute, hardwareId: m2.2xlarge, location: 'aws:ec2',\n    region: eu-central-1, availability: 0.9995, country: Germany, city: FRANKFURT,\n    cost: 1.01 USD/hour, disk_size: 840, num_disks: 1, num_cpus: 4, ram: 34.2, disk_type: sata}\n"
+  }, {
+    "365042266390325112" : "Microsoft_Azure_Virtual_Machines_DS3_us_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_us_west\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: us-west, availability: 0.9995, country: United States, city: SAN FRANCISCO,\n    disk_size: 28, num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "7968089423762415715" : "Microsoft_Azure_Virtual_Machines_DS12_eu_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_eu_west\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: eu-west, availability: 0.9995, country: Netherlands, city: AMSTERDAM,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "6143196782115643905" : "Microsoft_Azure_Virtual_Machines_A4_brazil_south:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A4_brazil_south\n  properties: {resource_type: compute, hardwareId: A4, location: 'azure:compute',\n    region: brazil-south, availability: 0.9995, country: Brazil, city: SAO PAULO,\n    cost: 0.48 USD/hour, disk_size: 605, num_cpus: 8, ram: 14}\n"
+  }, {
+    "7146173978811256975" : "Microsoft_Azure_Virtual_Machines_A6_japan_east:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A6_japan_east\n  properties: {resource_type: compute, hardwareId: A6, location: 'azure:compute',\n    region: japan-east, availability: 0.9995, country: Japan, city: SAITAMA, cost: 0.44 USD/hour,\n    disk_size: 285, num_cpus: 4, ram: 28}\n"
+  }, {
+    "593963453363491455" : "Microsoft_Azure_Virtual_Machines_DS3_japan_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_japan_west\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: japan-west, availability: 0.9995, country: Japan, city: OSAKA, disk_size: 28,\n    num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "9099585112555786248" : "Amazon_EC2_g2_2xlarge_eu_west_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_g2_2xlarge_eu_west_1\n  properties: {resource_type: compute, hardwareId: g2.2xlarge, location: 'aws:ec2',\n    region: eu-west-1, performance: 162, availability: 0.9995, country: Ireland, city: DUBLIN,\n    cost: 0.898 USD/hour, disk_size: 60, num_disks: 1, num_cpus: 8, ram: 15, disk_type: ssd}\n"
+  }  ]
+  }, {
+  "softcare-forum" : [ {
+    "6184608484337307426" : "Amazon_EC2_i2_xlarge_us_west_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_1\n  properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',\n    region: us-west-1, performance: 90, availability: 0.9995, country: United States,\n    city: SAN JOSE, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,\n    ram: 30.5, disk_type: ssd}\n"
+  }, {
+    "1987550253118773013" : "Microsoft_Azure_Virtual_Machines_A8_eu_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A8_eu_west\n  properties: {resource_type: compute, hardwareId: A8, location: 'azure:compute',\n    region: eu-west, availability: 0.9995, country: Netherlands, city: AMSTERDAM,\n    cost: 1.97 USD/hour, disk_size: 382, num_cpus: 8, ram: 56}\n"
+  }, {
+    "1804644953398208703" : "Microsoft_Azure_Virtual_Machines_DS12_us_central:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_us_central\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: us-central, availability: 0.9995, country: United States, city: WEST DES MOINES,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "7188972354248936960" : "Amazon_EC2_i2_xlarge_us_west_2:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_2\n  properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',\n    region: us-west-2, performance: 90, availability: 0.9995, country: United States,\n    city: PORTLAND, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,\n    ram: 30.5, disk_type: ssd}\n"
+  }, {
+    "7791859447263071509" : "Microsoft_Azure_Virtual_Machines_DS3_us_northcentral:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_us_northcentral\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: us-northcentral, availability: 0.9995, country: United States, city: CHICAGO,\n    disk_size: 28, num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "1489560623223993896" : "Amazon_EC2_m3_xlarge_eu_central_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_m3_xlarge_eu_central_1\n  properties: {resource_type: compute, hardwareId: m3.xlarge, location: 'aws:ec2',\n    region: eu-central-1, performance: 90, availability: 0.9995, country: Germany,\n    city: FRANKFURT, cost: 0.385 USD/hour, disk_size: 80, num_disks: 2, num_cpus: 4,\n    ram: 15, disk_type: ssd}\n"
+  }, {
+    "5230836013578633692" : "Microsoft_Azure_Virtual_Machines_DS12_us_northcentral:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_us_northcentral\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: us-northcentral, availability: 0.9995, country: United States, city: CHICAGO,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "1156644749651417127" : "Amazon_EC2_m2_2xlarge_eu_central_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_m2_2xlarge_eu_central_1\n  properties: {resource_type: compute, hardwareId: m2.2xlarge, location: 'aws:ec2',\n    region: eu-central-1, availability: 0.9995, country: Germany, city: FRANKFURT,\n    cost: 1.01 USD/hour, disk_size: 840, num_disks: 1, num_cpus: 4, ram: 34.2, disk_type: sata}\n"
+  }, {
+    "365042266390325112" : "Microsoft_Azure_Virtual_Machines_DS3_us_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_us_west\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: us-west, availability: 0.9995, country: United States, city: SAN FRANCISCO,\n    disk_size: 28, num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "7968089423762415715" : "Microsoft_Azure_Virtual_Machines_DS12_eu_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_eu_west\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: eu-west, availability: 0.9995, country: Netherlands, city: AMSTERDAM,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "6143196782115643905" : "Microsoft_Azure_Virtual_Machines_A4_brazil_south:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A4_brazil_south\n  properties: {resource_type: compute, hardwareId: A4, location: 'azure:compute',\n    region: brazil-south, availability: 0.9995, country: Brazil, city: SAO PAULO,\n    cost: 0.48 USD/hour, disk_size: 605, num_cpus: 8, ram: 14}\n"
+  }, {
+    "7146173978811256975" : "Microsoft_Azure_Virtual_Machines_A6_japan_east:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A6_japan_east\n  properties: {resource_type: compute, hardwareId: A6, location: 'azure:compute',\n    region: japan-east, availability: 0.9995, country: Japan, city: SAITAMA, cost: 0.44 USD/hour,\n    disk_size: 285, num_cpus: 4, ram: 28}\n"
+  }, {
+    "593963453363491455" : "Microsoft_Azure_Virtual_Machines_DS3_japan_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_japan_west\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: japan-west, availability: 0.9995, country: Japan, city: OSAKA, disk_size: 28,\n    num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "9099585112555786248" : "Amazon_EC2_g2_2xlarge_eu_west_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_g2_2xlarge_eu_west_1\n  properties: {resource_type: compute, hardwareId: g2.2xlarge, location: 'aws:ec2',\n    region: eu-west-1, performance: 162, availability: 0.9995, country: Ireland, city: DUBLIN,\n    cost: 0.898 USD/hour, disk_size: 60, num_disks: 1, num_cpus: 8, ram: 15, disk_type: ssd}\n"
+  }  ]
+  }, {
+  "softcare-gui" : [ {
+    "6184608484337307426" : "Amazon_EC2_i2_xlarge_us_west_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_1\n  properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',\n    region: us-west-1, performance: 90, availability: 0.9995, country: United States,\n    city: SAN JOSE, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,\n    ram: 30.5, disk_type: ssd}\n"
+  }, {
+    "1987550253118773013" : "Microsoft_Azure_Virtual_Machines_A8_eu_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A8_eu_west\n  properties: {resource_type: compute, hardwareId: A8, location: 'azure:compute',\n    region: eu-west, availability: 0.9995, country: Netherlands, city: AMSTERDAM,\n    cost: 1.97 USD/hour, disk_size: 382, num_cpus: 8, ram: 56}\n"
+  }, {
+    "1804644953398208703" : "Microsoft_Azure_Virtual_Machines_DS12_us_central:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_us_central\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: us-central, availability: 0.9995, country: United States, city: WEST DES MOINES,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "7188972354248936960" : "Amazon_EC2_i2_xlarge_us_west_2:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_2\n  properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',\n    region: us-west-2, performance: 90, availability: 0.9995, country: United States,\n    city: PORTLAND, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,\n    ram: 30.5, disk_type: ssd}\n"
+  }, {
+    "7791859447263071509" : "Microsoft_Azure_Virtual_Machines_DS3_us_northcentral:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_us_northcentral\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: us-northcentral, availability: 0.9995, country: United States, city: CHICAGO,\n    disk_size: 28, num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "1489560623223993896" : "Amazon_EC2_m3_xlarge_eu_central_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_m3_xlarge_eu_central_1\n  properties: {resource_type: compute, hardwareId: m3.xlarge, location: 'aws:ec2',\n    region: eu-central-1, performance: 90, availability: 0.9995, country: Germany,\n    city: FRANKFURT, cost: 0.385 USD/hour, disk_size: 80, num_disks: 2, num_cpus: 4,\n    ram: 15, disk_type: ssd}\n"
+  }, {
+    "5230836013578633692" : "Microsoft_Azure_Virtual_Machines_DS12_us_northcentral:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_us_northcentral\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: us-northcentral, availability: 0.9995, country: United States, city: CHICAGO,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "1156644749651417127" : "Amazon_EC2_m2_2xlarge_eu_central_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_m2_2xlarge_eu_central_1\n  properties: {resource_type: compute, hardwareId: m2.2xlarge, location: 'aws:ec2',\n    region: eu-central-1, availability: 0.9995, country: Germany, city: FRANKFURT,\n    cost: 1.01 USD/hour, disk_size: 840, num_disks: 1, num_cpus: 4, ram: 34.2, disk_type: sata}\n"
+  }, {
+    "365042266390325112" : "Microsoft_Azure_Virtual_Machines_DS3_us_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_us_west\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: us-west, availability: 0.9995, country: United States, city: SAN FRANCISCO,\n    disk_size: 28, num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "7968089423762415715" : "Microsoft_Azure_Virtual_Machines_DS12_eu_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_eu_west\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: eu-west, availability: 0.9995, country: Netherlands, city: AMSTERDAM,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "6143196782115643905" : "Microsoft_Azure_Virtual_Machines_A4_brazil_south:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A4_brazil_south\n  properties: {resource_type: compute, hardwareId: A4, location: 'azure:compute',\n    region: brazil-south, availability: 0.9995, country: Brazil, city: SAO PAULO,\n    cost: 0.48 USD/hour, disk_size: 605, num_cpus: 8, ram: 14}\n"
+  }, {
+    "7146173978811256975" : "Microsoft_Azure_Virtual_Machines_A6_japan_east:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A6_japan_east\n  properties: {resource_type: compute, hardwareId: A6, location: 'azure:compute',\n    region: japan-east, availability: 0.9995, country: Japan, city: SAITAMA, cost: 0.44 USD/hour,\n    disk_size: 285, num_cpus: 4, ram: 28}\n"
+  }, {
+    "593963453363491455" : "Microsoft_Azure_Virtual_Machines_DS3_japan_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_japan_west\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: japan-west, availability: 0.9995, country: Japan, city: OSAKA, disk_size: 28,\n    num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "9099585112555786248" : "Amazon_EC2_g2_2xlarge_eu_west_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_g2_2xlarge_eu_west_1\n  properties: {resource_type: compute, hardwareId: g2.2xlarge, location: 'aws:ec2',\n    region: eu-west-1, performance: 162, availability: 0.9995, country: Ireland, city: DUBLIN,\n    cost: 0.898 USD/hour, disk_size: 60, num_disks: 1, num_cpus: 8, ram: 15, disk_type: ssd}\n"
+  }  ]
+  }, {
+  "softcare-ws" : [ {
+    "6184608484337307426" : "Amazon_EC2_i2_xlarge_us_west_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_1\n  properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',\n    region: us-west-1, performance: 90, availability: 0.9995, country: United States,\n    city: SAN JOSE, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,\n    ram: 30.5, disk_type: ssd}\n"
+  }, {
+    "1987550253118773013" : "Microsoft_Azure_Virtual_Machines_A8_eu_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A8_eu_west\n  properties: {resource_type: compute, hardwareId: A8, location: 'azure:compute',\n    region: eu-west, availability: 0.9995, country: Netherlands, city: AMSTERDAM,\n    cost: 1.97 USD/hour, disk_size: 382, num_cpus: 8, ram: 56}\n"
+  }, {
+    "1804644953398208703" : "Microsoft_Azure_Virtual_Machines_DS12_us_central:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_us_central\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: us-central, availability: 0.9995, country: United States, city: WEST DES MOINES,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "7188972354248936960" : "Amazon_EC2_i2_xlarge_us_west_2:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_2\n  properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',\n    region: us-west-2, performance: 90, availability: 0.9995, country: United States,\n    city: PORTLAND, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,\n    ram: 30.5, disk_type: ssd}\n"
+  }, {
+    "7791859447263071509" : "Microsoft_Azure_Virtual_Machines_DS3_us_northcentral:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_us_northcentral\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: us-northcentral, availability: 0.9995, country: United States, city: CHICAGO,\n    disk_size: 28, num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "1489560623223993896" : "Amazon_EC2_m3_xlarge_eu_central_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_m3_xlarge_eu_central_1\n  properties: {resource_type: compute, hardwareId: m3.xlarge, location: 'aws:ec2',\n    region: eu-central-1, performance: 90, availability: 0.9995, country: Germany,\n    city: FRANKFURT, cost: 0.385 USD/hour, disk_size: 80, num_disks: 2, num_cpus: 4,\n    ram: 15, disk_type: ssd}\n"
+  }, {
+    "5230836013578633692" : "Microsoft_Azure_Virtual_Machines_DS12_us_northcentral:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_us_northcentral\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: us-northcentral, availability: 0.9995, country: United States, city: CHICAGO,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "1156644749651417127" : "Amazon_EC2_m2_2xlarge_eu_central_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_m2_2xlarge_eu_central_1\n  properties: {resource_type: compute, hardwareId: m2.2xlarge, location: 'aws:ec2',\n    region: eu-central-1, availability: 0.9995, country: Germany, city: FRANKFURT,\n    cost: 1.01 USD/hour, disk_size: 840, num_disks: 1, num_cpus: 4, ram: 34.2, disk_type: sata}\n"
+  }, {
+    "365042266390325112" : "Microsoft_Azure_Virtual_Machines_DS3_us_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_us_west\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: us-west, availability: 0.9995, country: United States, city: SAN FRANCISCO,\n    disk_size: 28, num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "7968089423762415715" : "Microsoft_Azure_Virtual_Machines_DS12_eu_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_eu_west\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: eu-west, availability: 0.9995, country: Netherlands, city: AMSTERDAM,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "6143196782115643905" : "Microsoft_Azure_Virtual_Machines_A4_brazil_south:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A4_brazil_south\n  properties: {resource_type: compute, hardwareId: A4, location: 'azure:compute',\n    region: brazil-south, availability: 0.9995, country: Brazil, city: SAO PAULO,\n    cost: 0.48 USD/hour, disk_size: 605, num_cpus: 8, ram: 14}\n"
+  }, {
+    "7146173978811256975" : "Microsoft_Azure_Virtual_Machines_A6_japan_east:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A6_japan_east\n  properties: {resource_type: compute, hardwareId: A6, location: 'azure:compute',\n    region: japan-east, availability: 0.9995, country: Japan, city: SAITAMA, cost: 0.44 USD/hour,\n    disk_size: 285, num_cpus: 4, ram: 28}\n"
+  }, {
+    "593963453363491455" : "Microsoft_Azure_Virtual_Machines_DS3_japan_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_japan_west\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: japan-west, availability: 0.9995, country: Japan, city: OSAKA, disk_size: 28,\n    num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "9099585112555786248" : "Amazon_EC2_g2_2xlarge_eu_west_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_g2_2xlarge_eu_west_1\n  properties: {resource_type: compute, hardwareId: g2.2xlarge, location: 'aws:ec2',\n    region: eu-west-1, performance: 162, availability: 0.9995, country: Ireland, city: DUBLIN,\n    cost: 0.898 USD/hour, disk_size: 60, num_disks: 1, num_cpus: 8, ram: 15, disk_type: ssd}\n"
+  }  ]
+  }, {
+  "softcare-multimedia" : [ {
+    "6184608484337307426" : "Amazon_EC2_i2_xlarge_us_west_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_1\n  properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',\n    region: us-west-1, performance: 90, availability: 0.9995, country: United States,\n    city: SAN JOSE, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,\n    ram: 30.5, disk_type: ssd}\n"
+  }, {
+    "1987550253118773013" : "Microsoft_Azure_Virtual_Machines_A8_eu_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A8_eu_west\n  properties: {resource_type: compute, hardwareId: A8, location: 'azure:compute',\n    region: eu-west, availability: 0.9995, country: Netherlands, city: AMSTERDAM,\n    cost: 1.97 USD/hour, disk_size: 382, num_cpus: 8, ram: 56}\n"
+  }, {
+    "1804644953398208703" : "Microsoft_Azure_Virtual_Machines_DS12_us_central:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_us_central\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: us-central, availability: 0.9995, country: United States, city: WEST DES MOINES,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "7188972354248936960" : "Amazon_EC2_i2_xlarge_us_west_2:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_2\n  properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',\n    region: us-west-2, performance: 90, availability: 0.9995, country: United States,\n    city: PORTLAND, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,\n    ram: 30.5, disk_type: ssd}\n"
+  }, {
+    "7791859447263071509" : "Microsoft_Azure_Virtual_Machines_DS3_us_northcentral:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_us_northcentral\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: us-northcentral, availability: 0.9995, country: United States, city: CHICAGO,\n    disk_size: 28, num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "1489560623223993896" : "Amazon_EC2_m3_xlarge_eu_central_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_m3_xlarge_eu_central_1\n  properties: {resource_type: compute, hardwareId: m3.xlarge, location: 'aws:ec2',\n    region: eu-central-1, performance: 90, availability: 0.9995, country: Germany,\n    city: FRANKFURT, cost: 0.385 USD/hour, disk_size: 80, num_disks: 2, num_cpus: 4,\n    ram: 15, disk_type: ssd}\n"
+  }, {
+    "5230836013578633692" : "Microsoft_Azure_Virtual_Machines_DS12_us_northcentral:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_us_northcentral\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: us-northcentral, availability: 0.9995, country: United States, city: CHICAGO,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "1156644749651417127" : "Amazon_EC2_m2_2xlarge_eu_central_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_m2_2xlarge_eu_central_1\n  properties: {resource_type: compute, hardwareId: m2.2xlarge, location: 'aws:ec2',\n    region: eu-central-1, availability: 0.9995, country: Germany, city: FRANKFURT,\n    cost: 1.01 USD/hour, disk_size: 840, num_disks: 1, num_cpus: 4, ram: 34.2, disk_type: sata}\n"
+  }, {
+    "365042266390325112" : "Microsoft_Azure_Virtual_Machines_DS3_us_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_us_west\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: us-west, availability: 0.9995, country: United States, city: SAN FRANCISCO,\n    disk_size: 28, num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "7968089423762415715" : "Microsoft_Azure_Virtual_Machines_DS12_eu_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_eu_west\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: eu-west, availability: 0.9995, country: Netherlands, city: AMSTERDAM,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "6143196782115643905" : "Microsoft_Azure_Virtual_Machines_A4_brazil_south:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A4_brazil_south\n  properties: {resource_type: compute, hardwareId: A4, location: 'azure:compute',\n    region: brazil-south, availability: 0.9995, country: Brazil, city: SAO PAULO,\n    cost: 0.48 USD/hour, disk_size: 605, num_cpus: 8, ram: 14}\n"
+  }, {
+    "7146173978811256975" : "Microsoft_Azure_Virtual_Machines_A6_japan_east:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A6_japan_east\n  properties: {resource_type: compute, hardwareId: A6, location: 'azure:compute',\n    region: japan-east, availability: 0.9995, country: Japan, city: SAITAMA, cost: 0.44 USD/hour,\n    disk_size: 285, num_cpus: 4, ram: 28}\n"
+  }, {
+    "593963453363491455" : "Microsoft_Azure_Virtual_Machines_DS3_japan_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_japan_west\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: japan-west, availability: 0.9995, country: Japan, city: OSAKA, disk_size: 28,\n    num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "9099585112555786248" : "Amazon_EC2_g2_2xlarge_eu_west_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_g2_2xlarge_eu_west_1\n  properties: {resource_type: compute, hardwareId: g2.2xlarge, location: 'aws:ec2',\n    region: eu-west-1, performance: 162, availability: 0.9995, country: Ireland, city: DUBLIN,\n    cost: 0.898 USD/hour, disk_size: 60, num_disks: 1, num_cpus: 8, ram: 15, disk_type: ssd}\n"
+  }  ]
+}, {
+  "multimedia-db" : [  {
+    "6184608484337307426" : "Amazon_EC2_i2_xlarge_us_west_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_1\n  properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',\n    region: us-west-1, performance: 90, availability: 0.9995, country: United States,\n    city: SAN JOSE, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,\n    ram: 30.5, disk_type: ssd}\n"
+  }, {
+    "1987550253118773013" : "Microsoft_Azure_Virtual_Machines_A8_eu_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A8_eu_west\n  properties: {resource_type: compute, hardwareId: A8, location: 'azure:compute',\n    region: eu-west, availability: 0.9995, country: Netherlands, city: AMSTERDAM,\n    cost: 1.97 USD/hour, disk_size: 382, num_cpus: 8, ram: 56}\n"
+  }, {
+    "1804644953398208703" : "Microsoft_Azure_Virtual_Machines_DS12_us_central:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_us_central\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: us-central, availability: 0.9995, country: United States, city: WEST DES MOINES,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "7188972354248936960" : "Amazon_EC2_i2_xlarge_us_west_2:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_i2_xlarge_us_west_2\n  properties: {resource_type: compute, hardwareId: i2.xlarge, location: 'aws:ec2',\n    region: us-west-2, performance: 90, availability: 0.9995, country: United States,\n    city: PORTLAND, cost: 1.001 USD/hour, disk_size: 800, num_disks: 1, num_cpus: 4,\n    ram: 30.5, disk_type: ssd}\n"
+  }, {
+    "7791859447263071509" : "Microsoft_Azure_Virtual_Machines_DS3_us_northcentral:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_us_northcentral\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: us-northcentral, availability: 0.9995, country: United States, city: CHICAGO,\n    disk_size: 28, num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "1489560623223993896" : "Amazon_EC2_m3_xlarge_eu_central_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_m3_xlarge_eu_central_1\n  properties: {resource_type: compute, hardwareId: m3.xlarge, location: 'aws:ec2',\n    region: eu-central-1, performance: 90, availability: 0.9995, country: Germany,\n    city: FRANKFURT, cost: 0.385 USD/hour, disk_size: 80, num_disks: 2, num_cpus: 4,\n    ram: 15, disk_type: ssd}\n"
+  }, {
+    "5230836013578633692" : "Microsoft_Azure_Virtual_Machines_DS12_us_northcentral:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_us_northcentral\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: us-northcentral, availability: 0.9995, country: United States, city: CHICAGO,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "1156644749651417127" : "Amazon_EC2_m2_2xlarge_eu_central_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_m2_2xlarge_eu_central_1\n  properties: {resource_type: compute, hardwareId: m2.2xlarge, location: 'aws:ec2',\n    region: eu-central-1, availability: 0.9995, country: Germany, city: FRANKFURT,\n    cost: 1.01 USD/hour, disk_size: 840, num_disks: 1, num_cpus: 4, ram: 34.2, disk_type: sata}\n"
+  }, {
+    "365042266390325112" : "Microsoft_Azure_Virtual_Machines_DS3_us_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_us_west\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: us-west, availability: 0.9995, country: United States, city: SAN FRANCISCO,\n    disk_size: 28, num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "7968089423762415715" : "Microsoft_Azure_Virtual_Machines_DS12_eu_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS12_eu_west\n  properties: {resource_type: compute, hardwareId: DS12, location: 'azure:compute',\n    region: eu-west, availability: 0.9995, country: Netherlands, city: AMSTERDAM,\n    disk_size: 56, num_disks: 1, num_cpus: 4, ram: 28, disk_type: ssd}\n"
+  }, {
+    "6143196782115643905" : "Microsoft_Azure_Virtual_Machines_A4_brazil_south:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A4_brazil_south\n  properties: {resource_type: compute, hardwareId: A4, location: 'azure:compute',\n    region: brazil-south, availability: 0.9995, country: Brazil, city: SAO PAULO,\n    cost: 0.48 USD/hour, disk_size: 605, num_cpus: 8, ram: 14}\n"
+  }, {
+    "7146173978811256975" : "Microsoft_Azure_Virtual_Machines_A6_japan_east:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_A6_japan_east\n  properties: {resource_type: compute, hardwareId: A6, location: 'azure:compute',\n    region: japan-east, availability: 0.9995, country: Japan, city: SAITAMA, cost: 0.44 USD/hour,\n    disk_size: 285, num_cpus: 4, ram: 28}\n"
+  }, {
+    "593963453363491455" : "Microsoft_Azure_Virtual_Machines_DS3_japan_west:\n  type: seaclouds.Nodes.Compute.Microsoft_Azure_Virtual_Machines_DS3_japan_west\n  properties: {resource_type: compute, hardwareId: DS3, location: 'azure:compute',\n    region: japan-west, availability: 0.9995, country: Japan, city: OSAKA, disk_size: 28,\n    num_disks: 1, num_cpus: 4, ram: 14, disk_type: ssd}\n"
+  }, {
+    "9099585112555786248" : "Amazon_EC2_g2_2xlarge_eu_west_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_g2_2xlarge_eu_west_1\n  properties: {resource_type: compute, hardwareId: g2.2xlarge, location: 'aws:ec2',\n    region: eu-west-1, performance: 162, availability: 0.9995, country: Ireland, city: DUBLIN,\n    cost: 0.898 USD/hour, disk_size: 60, num_disks: 1, num_cpus: 8, ram: 15, disk_type: ssd}\n"
+  } ]
+  } ]

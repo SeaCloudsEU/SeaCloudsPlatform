@@ -35,12 +35,14 @@ import eu.seaclouds.platform.planner.optimizer.TopologyElementCalled;
 
 public class QualityAnalyzer {
 
-   static Logger log = LoggerFactory.getLogger(QualityAnalyzer.class);
+   private static final double WORKLOAD_NOT_SET = -1.0;
 
-   private QualityInformation properties = null;
+   static Logger               log              = LoggerFactory.getLogger(QualityAnalyzer.class);
 
-   private final double MAX_TIMES_WORKLOAD_FOR_THRESHOLDS;
-   private final double WORKLOAD_INCREMENT_FOR_SEARCH;
+   private QualityInformation  properties       = null;
+
+   private final double        MAX_TIMES_WORKLOAD_FOR_THRESHOLDS;
+   private final double        WORKLOAD_INCREMENT_FOR_SEARCH;
 
    public QualityAnalyzer() {
 
@@ -106,10 +108,14 @@ public class QualityAnalyzer {
          SuitableOptions cloudCharacteristics) {
 
       if (routes == null) {
+         log.trace("Routing matrix of modules is going to be called");
          routes = getRoutingMatrix(topology);
+         log.trace("Routing matrix of modules calculated: {}", Arrays.deepToString(routes));
       }
       double[] workloadsModules = getWorkloadsArray(routes, workload);
+      log.trace("array of workloads for each module calculated");
       double[] numVisitsModule = getNumVisitsArray(workloadsModules, workload);
+      log.trace("array of number of visits for each module calculated");
 
       // calculate the workload received by each core of a module: consider both
       // number of cores
@@ -119,24 +125,22 @@ public class QualityAnalyzer {
 
       double[] mus = getMusOfSelectedCloudOffers(bestSol, topology, cloudCharacteristics);
 
-      if (log.isDebugEnabled()) {
-         log.debug("Solution to check the mus is: " + bestSol.toString());
-         log.debug("Mus of servers are: " + Arrays.toString(mus));
-         log.debug("Num visits modules is: " + Arrays.toString(numVisitsModule));
-         log.debug("Workload received of modules: " + Arrays.toString(workloadsModules));
-         log.debug("Workload received of each execution unit by its numberOfInstances and Cores: "
-               + Arrays.toString(workloadsModulesByCoresAndNumInstances));
-      }
+      log.trace("Solution to check the mus is: {}", bestSol.toString());
+      log.trace("Mus of servers are: {}", Arrays.toString(mus));
+      log.trace("Num visits modules is: {}", Arrays.toString(numVisitsModule));
+      log.trace("Workload received of modules: {}", Arrays.toString(workloadsModules));
+      log.trace("Workload received of each execution unit by its numberOfInstances and Cores: {}",
+            Arrays.toString(workloadsModulesByCoresAndNumInstances));
+
       double respTime = getSystemRespTime(numVisitsModule, workloadsModulesByCoresAndNumInstances, mus);
 
-      if (log.isDebugEnabled()) {
-         log.debug("calculated response time of the solution " + bestSol.toString()
-               + " without considering latencies is: " + respTime);
-      }
+      log.trace("calculated response time of the solution {} without considering latencies is: {}", bestSol.toString(),
+            respTime);
+
       respTime += addNetworkDelays(bestSol, topology, numVisitsModule, cloudCharacteristics);
-      if (log.isDebugEnabled()) {
-         log.debug("calculated response time of the solution" + bestSol.toString() + " is: " + respTime);
-      }
+
+      log.trace("calculated response time of the solution {} is: {}", bestSol.toString(), respTime);
+
       // after computing, save the performance info in properties.performance
       properties.setResponseTimeSecs(respTime);
 
@@ -158,11 +162,10 @@ public class QualityAnalyzer {
                   elementCalled.getElement().getName(), cloudCharacteristics);
          }
 
-         if (log.isDebugEnabled()) {
-            log.debug("calculated network delay for module " + i + " in solution " + bestSol.toString()
-                  + " is (numVisitsModule[i] * sumOfDelaysSingleModule): "
-                  + numVisitsModule[i] * sumOfDelaysSingleModule);
-         }
+         log.trace(
+               "calculated network delay for module {} in solution {} is (numVisitsModule[i] * sumOfDelaysSingleModule): {}",
+               i, bestSol.toString(), numVisitsModule[i] * sumOfDelaysSingleModule);
+
          networkDelay += numVisitsModule[i] * sumOfDelaysSingleModule;
 
       }
@@ -174,25 +177,33 @@ public class QualityAnalyzer {
    private double latencyBetweenElements(Solution bestSol, String callingModuleName, String calledModuleName,
          SuitableOptions cloudCharacteristics) {
 
-      String cloudOfferCallingElement = bestSol.getCloudProviderNameForModule(callingModuleName);
-      String cloudOfferCalledElement = bestSol.getCloudProviderNameForModule(calledModuleName);
+      String locationCalling = cloudCharacteristics
+            .getCloudCharacteristics(callingModuleName, bestSol.getCloudOfferNameForModule(callingModuleName))
+            .getLocation();
+      String locationCalled = cloudCharacteristics
+            .getCloudCharacteristics(calledModuleName, bestSol.getCloudOfferNameForModule(calledModuleName))
+            .getLocation();
 
-      if (CloudOffer.providerNameOfCloudOffer(cloudOfferCallingElement)
-            .equals(CloudOffer.providerNameOfCloudOffer(cloudOfferCalledElement))) {
+      if ((locationCalling == null) || (locationCalled == null)) {
+         log.debug(
+               "It is not known the location of some offers among {} and {} . Returning interDataCenter Latency in seconds",
+               callingModuleName, calledModuleName, cloudCharacteristics.getLatencyInterCloudSec());
+         return cloudCharacteristics.getLatencyInterCloudSec();
+      }
 
-         if (log.isDebugEnabled()) {
-            log.debug("latency between modules " + callingModuleName + " and " + calledModuleName + " is "
-                  + cloudCharacteristics.getLatencyIntraDatacenterSec());
-         }
+      if (locationCalling.equals(locationCalled)) {
+
+         log.debug("latency between modules {} and {} is {}  because their Location of clouds are {} and {} ",
+               callingModuleName, calledModuleName, cloudCharacteristics.getLatencyIntraDatacenterSec(),
+               locationCalling, locationCalled);
 
          return cloudCharacteristics.getLatencyIntraDatacenterSec();
 
       } else {
 
-         if (log.isDebugEnabled()) {
-            log.debug("latency between modules " + callingModuleName + " and " + calledModuleName + " is "
-                  + cloudCharacteristics.getLatencyInterCloudSec());
-         }
+         log.debug("latency between modules {} and {} is {}  because their Location of clouds are {} and {} ",
+               callingModuleName, calledModuleName, cloudCharacteristics.getLatencyInterCloudSec(), locationCalling,
+               locationCalled);
 
          return cloudCharacteristics.getLatencyInterCloudSec();
       }
@@ -281,10 +292,9 @@ public class QualityAnalyzer {
          double numCores = cloudCharacteristics.getCloudCharacteristics(moduleName, cloudChosenForModule).getNumCores();
          ponderatedWorkloads[i] = workloadsModules[i] / (numInstances * numCores);
 
-         if (log.isDebugEnabled()) {
-            log.debug("Number of instances used for module " + moduleName + " is : " + numInstances
-                  + " and num Cores of the offer is" + numCores);
-         }
+         log.trace("Number of instances used for module " + moduleName + " is : " + numInstances
+               + " and num Cores of the offer is" + numCores);
+
       }
 
       return ponderatedWorkloads;
@@ -293,6 +303,7 @@ public class QualityAnalyzer {
    private double[] getWorkloadsArray(double[][] routing, double workload) {
 
       double[] workloadsReceived = new double[routing.length];
+      Arrays.fill(workloadsReceived, WORKLOAD_NOT_SET);
 
       boolean initialWorkloadIsSet = false;
 
@@ -302,7 +313,10 @@ public class QualityAnalyzer {
          for (int i = 0; i < routing.length; i++) {
 
             // If module i can be calculated (and was not calculate previously)
-            if ((workloadsReceived[i] == 0.0) && (workloadCanBeCalculated(routing, workloadsReceived, i))) {
+            if ((workloadsReceived[i] == WORKLOAD_NOT_SET)
+                  && (workloadCanBeCalculated(routing, workloadsReceived, i))) {
+
+               workloadsReceived[i] = 0.0;
 
                // Calculating the received workload of Module i
                // The first case; i.e,. the one that receive requests directly,
@@ -310,6 +324,8 @@ public class QualityAnalyzer {
                if (!initialWorkloadIsSet) {
                   initialWorkloadIsSet = true;
                   workloadsReceived[i] = workload;
+                  log.debug("Workload value assigned to the first element is {} and the element index is {}", workload,
+                        i);
                }
 
                for (int callingIndex = 0; callingIndex < routing.length; callingIndex++) {
@@ -327,7 +343,7 @@ public class QualityAnalyzer {
    private boolean workloadCanBeCalculated(double[][] routing, double[] workloads, int indexCol) {
 
       for (int row = 0; row < routing.length; row++) {
-         if ((routing[row][indexCol] != 0) && (workloads[row] == 0.0)) {
+         if ((routing[row][indexCol] != 0) && (workloads[row] == WORKLOAD_NOT_SET)) {
             // There is some calling module whose workload has not been
             // calculated yet.
             return false;
@@ -339,7 +355,7 @@ public class QualityAnalyzer {
 
    private boolean completedWorkloadsCalculation(double[] workloads) {
       for (int i = 0; i < workloads.length; i++) {
-         if (workloads[i] == 0.0) {
+         if (workloads[i] == WORKLOAD_NOT_SET) {
             return false;
          }
       }
@@ -516,9 +532,8 @@ public class QualityAnalyzer {
          // Stop condition is the highest allowed cost or, if cost is not
          // specified, ten times the expected worklaod
 
-         if (log.isDebugEnabled()) {
-            log.debug("Creating threshold for workload above " + limitWorkload);
-         }
+         log.trace("Creating threshold for workload above {}", limitWorkload);
+
          limitWorkload = findWorkloadForWhichRespTimeIsExceeded(requirements.getResponseTime(), limitWorkload, mus,
                modifSol, topology, cloudCharacteristics);
          // get highest utilization
@@ -646,9 +661,7 @@ public class QualityAnalyzer {
       // Stop also if the highest allowed cost or, if cost is not specified, ten
       // times the expected workload
 
-      if (log.isDebugEnabled()) {
-         log.debug("checking if continue generating thresholds for: ");
-      }
+      log.debug("checking if continue generating thresholds for: ");
 
       if (!existModulesToScaleOut) {
          return false;

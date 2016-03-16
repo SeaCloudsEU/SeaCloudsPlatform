@@ -17,6 +17,8 @@
 
 package eu.seaclouds.platform.planner.optimizer.heuristics;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
@@ -24,6 +26,8 @@ import eu.seaclouds.platform.planner.optimizer.Topology;
 import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 
 public class BlindSearch extends AbstractHeuristic implements SearchMethod {
+
+   static Logger logBlind = LoggerFactory.getLogger(BlindSearch.class);
 
    public BlindSearch() {
       super();
@@ -33,13 +37,11 @@ public class BlindSearch extends AbstractHeuristic implements SearchMethod {
    public BlindSearch(int maxIter) {
       super(maxIter);
    }
-   
-   
-   
+
    @Override
-   public Solution[] computeOptimizationProblemForAllDifferentSolutions(SuitableOptions cloudOffers, QualityInformation requirements,
-         Topology topology, int numPlansToGenerate) {
-      return super.filterUniqueSolutions(computeOptimizationProblem(cloudOffers,requirements,topology,numPlansToGenerate));
+   public Solution[] computeOptimizationProblemForAllDifferentSolutions(SuitableOptions cloudOffers,
+         QualityInformation requirements, Topology topology, int numPlansToGenerate) {
+      return filterUniqueSolutions(computeOptimizationProblem(cloudOffers, requirements, topology, numPlansToGenerate));
    }
 
    /*
@@ -50,40 +52,47 @@ public class BlindSearch extends AbstractHeuristic implements SearchMethod {
     * (eu.seaclouds.platform.planner.optimizer.SuitableOptions, java.util.Map)
     */
    @Override
-   public Solution[] computeOptimizationProblem(
-         SuitableOptions cloudOffers, QualityInformation requirements,
+   public Solution[] computeOptimizationProblem(SuitableOptions cloudOffers, QualityInformation requirements,
          Topology topology, int numPlansToGenerate) {
 
       // To findSolution method, we pass an Empty solution instead of a null
       // value to or create a new method that does not consider the current one.
       // This way may help for replanning, when even the first attempt for
       // solution will be based on the current deployment
-      Solution[] bestSols = findInitialRandomSolutions(cloudOffers,numPlansToGenerate,topology);
 
-      super.setFitnessOfSolutions(bestSols, requirements, topology,
-            cloudOffers);
-      super.sortSolutionsByFitness(bestSols);
+      logBlind.debug("Starting the computeOptimizationProblem in BLIND");
+      Solution[] bestSols = findInitialRandomSolutions(cloudOffers, numPlansToGenerate, topology);
+      logBlind.debug("Initial random solutions found");
+      super.setFitnessOfSolutions(bestSols, requirements, topology, cloudOffers);
+      super.sortSolutionsByFitnessAndReplaceNaN(bestSols);
 
+      logBlind.debug("Fitness of initial solutions calculated");
       Solution[] currentSol = new Solution[1];
       int numItersNoImprovement = 0;
       while (numItersNoImprovement < super.getMaxIterNoImprove()) {
 
-         currentSol[0] = super.findRandomSolution(cloudOffers,topology);
-         currentSol[0].setSolutionFitness(super.fitness(currentSol[0],
-               requirements, topology, cloudOffers));
+         currentSol[0] = super.findRandomSolution(cloudOffers, topology);
+         currentSol[0].setSolutionFitness(super.fitness(currentSol[0], requirements, topology, cloudOffers));
 
-         if (log.isDebugEnabled()) {
-            log.debug("Start checking the presence of quality attached to solutions after generating a new random solution in BLIND. With sol= "
-                  + currentSol[0].toString());
+         if (logBlind.isTraceEnabled()) {
+            logBlind.trace(
+                  "Start checking the presence of quality attached to solutions after generating a new random solution in BLIND. With sol= "
+                        + currentSol[0].toString());
             super.checkQualityAttachedToSolutions(currentSol);
          }
-         if (currentSol[0].getSolutionFitness() > super
-               .getMinimumFitnessOfSolutions(bestSols)) {
+         if (currentSol[0].getSolutionFitness() > super.getMinimumFitnessOfSolutions(bestSols)) {
+            logBlind.debug(
+                  "Quality of found solution is larger than the best solutions so far {} > {} and can be included: {} ",
+                  currentSol[0].getSolutionFitness(), super.getMinimumFitnessOfSolutions(bestSols),
+                  currentSol[0].toString());
+
             if (!currentSol[0].isContainedIn(bestSols)) {
                super.insertOrdered(bestSols, currentSol[0]);
-    
-                  log.debug("Better solution found after " + numItersNoImprovement + " iterations");
-               
+
+               logBlind.debug(
+                     "Better solution found after {} iterations. Adding fitness of {} . Resulting bestsols fitness are: {}",
+                     numItersNoImprovement, currentSol[0].getSolutionFitness(), printFitnessArray(bestSols));
+
                numItersNoImprovement = 0;
             }
          }
@@ -91,12 +100,8 @@ public class BlindSearch extends AbstractHeuristic implements SearchMethod {
          numItersNoImprovement++;
       }
 
-      
       return bestSols;
 
    }
-
-
-
 
 }

@@ -167,6 +167,7 @@ public class QualityAnalyzerTest {
       Topology topology = new Topology();
       topology.addModule(e1);
       topology.addModule(e2);
+      topology.setInitialElementByElementName(e1.getName());
 
       return topology;
 

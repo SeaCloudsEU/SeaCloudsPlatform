@@ -74,7 +74,7 @@ public class HillClimb extends AbstractHeuristic implements SearchMethod {
                "Start checking the presence of quality attached to solutions after the first generation HILLCLIMB");
          super.checkQualityAttachedToSolutions(bestSols);
       }
-      super.sortSolutionsByFitness(bestSols);
+      super.sortSolutionsByFitnessAndReplaceNaN(bestSols);
 
       int numItersNoImprovement = 0;
       while (numItersNoImprovement < super.getMaxIterNoImprove()) { // each

@@ -7,3 +7,4 @@ target/
 .settings/
 output*.yaml
 **/.checkstyle
+test-output/

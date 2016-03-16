@@ -61,7 +61,10 @@ public class TOSCAkeywords {
    public static final String CLOUD_CONCRETE_OFFER_PERFORMANCE  = "performance";
    public static final String CLOUD_CONCRETE_OFFER_COST         = "cost";
    public static final String CLOUD_CONCRETE_OFFER_NUM_CORES    = "num_cpus";
-
+   public static final String CLOUD_CONCRETE_OFFER_LOCATION = "location";
+   public static final String CLOUD_CONCRETE_OFFER_COUNTRY = "country";
+   public static final String CLOUD_CONCRETE_OFFER_CITY = "city";
+   
    // These ones have not been defined yet. I temporarily use this definition.
    // Used by the first working version of Optimizer
    public static final String CLOUD_OFFER_PROPERTY_AVAILABILITY = "availabilityPOC";

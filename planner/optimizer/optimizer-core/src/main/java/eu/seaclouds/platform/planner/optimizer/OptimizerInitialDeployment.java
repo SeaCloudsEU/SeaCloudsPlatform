@@ -160,6 +160,8 @@ public class OptimizerInitialDeployment {
       Solution[] solutions = engine.computeOptimizationProblemForAllDifferentSolutions(appInfoSuitableOptions.clone(), requirements, topology,
             numPlansToGenerate);
 
+      log.debug("After invocation of the optimization problem");
+      
       if (solutions == null) {
          log.error("Map returned by Search engine is null");
       }

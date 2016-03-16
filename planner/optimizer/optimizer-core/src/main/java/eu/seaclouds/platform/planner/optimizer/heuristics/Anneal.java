@@ -60,7 +60,7 @@ public class Anneal extends AbstractHeuristic implements SearchMethod {
                .debug("Start checking the presence of quality attached to solutions after the first generation ANNEAL");
          super.checkQualityAttachedToSolutions(bestSols);
       }
-      super.sortSolutionsByFitness(bestSols);
+      super.sortSolutionsByFitnessAndReplaceNaN(bestSols);
 
       int numItersNoImprovement = 0;
       int currentIterNum = 1;

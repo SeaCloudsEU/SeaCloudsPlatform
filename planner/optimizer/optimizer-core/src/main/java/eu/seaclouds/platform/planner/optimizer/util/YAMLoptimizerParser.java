@@ -347,6 +347,34 @@ public class YAMLoptimizerParser {
 
    }
 
+   private static String getElementNameWithQualityRequirements(Map<String, Object> applicationMap) {
+      Map<String, Object> groupsMap = YAMLoptimizerParser.getGroupMapFromAppMap(applicationMap);
+      // FOR EACH OF THE APP MODULES (but in this level there are more concepts
+      // than only the modules)
+      for (Map.Entry<String, Object> entry : groupsMap.entrySet()) {
+         String potentialGroupName = entry.getKey();
+
+         log.debug("looking for Initial Element: checking if group '{}' contains the initial element",
+               potentialGroupName);
+
+         if (YAMLgroupsOptimizerParser.groupHasQoSRequirements(entry.getValue())) {
+            // It is expected thate the group contains only one member.
+            // But it could contain 0 member or more than one.
+            List<String> memberNames = YAMLgroupsOptimizerParser.getListOfMemberNames(entry.getValue());
+            if (!(memberNames == null || memberNames.isEmpty())) {
+               return memberNames.get(0);
+            } else {
+               log.debug("found the group with QoSrequirements '{}' but it did not contain any member. Returning NULL",
+                     potentialGroupName);
+               return null;
+            }
+
+         }
+      }
+      log.debug("Not found any group with QoSrequirements. Returning NULL");
+      return null;
+   }
+
    public static QualityInformation getQualityRequirements(Map<String, Object> applicationMap) {
 
       Map<String, Object> groupsMap = YAMLoptimizerParser.getGroupMapFromAppMap(applicationMap);
@@ -367,6 +395,7 @@ public class YAMLoptimizerParser {
             // of the group.
             // Since it should be only one member in the group in as list
             // we get the first module name found
+            log.debug("It is. Group {} has quality requirements", potentialGroupName);
             for (String moduleName : YAMLgroupsOptimizerParser.getListOfMemberNames(entry.getValue())) {
                QualityInformation qosInfoOfGroup = YAMLmodulesOptimizerParser
                      .getQoSRequirementsOfGroup(entry.getValue());
@@ -429,6 +458,14 @@ public class YAMLoptimizerParser {
             (Map<String, Object>) initialElement.getValue(), topology,
             YAMLoptimizerParser.getModuleMapFromAppMap(appMap), YAMLoptimizerParser.getGroupMapFromAppMap(appMap),
             appInfoSuitableOptions, benchmarkPlatforms);
+
+      // adds to the topology the rest of nodes that are not reached by requests
+      // to the system
+      // (disconnected components, etc.)
+      addDisconnectedModulesToTopology(topology, YAMLoptimizerParser.getModuleMapFromAppMap(appMap), benchmarkPlatforms,
+            YAMLoptimizerParser.getGroupMapFromAppMap(appMap));
+
+      topology.setInitialElementByElementName(YAMLoptimizerParser.getElementNameWithQualityRequirements(appMap));
       if (log.isDebugEnabled()) {
          log.debug("Reading topology. Next step: replace the module name by the name of the host");
       }
@@ -438,6 +475,23 @@ public class YAMLoptimizerParser {
       // replaceModuleNameByHostName(topology, (Map<String, Object>)
       // appMap.get(TOSCAkeywords.NODE_TEMPLATE));
       return topology;
+   }
+
+   private static void addDisconnectedModulesToTopology(Topology topology, Map<String, Object> modules,
+         Map<String, CloudOffer> benchmarkPlatforms, Map<String, Object> groups) {
+
+      for (Map.Entry<String, Object> module : modules.entrySet()) {
+         if (!topology.contains(module.getKey())) {
+            // Add module to topology
+            log.debug("DisconnectedModules method found that element {} was not included in the topology. Adding it", module.getKey());
+            TopologyElement newelement = getNewTopologyElementCharacteristics(module.getKey(), groups,
+                  benchmarkPlatforms, modules);
+
+            topology.addModule(newelement);
+
+         }
+      }
+
    }
 
    private static void replaceModuleNameByHostName(Topology topology, Map<String, Object> modules) {
@@ -482,23 +536,9 @@ public class YAMLoptimizerParser {
          return topology;
       }
 
-      TopologyElement newelement = new TopologyElement(elementName);
+      TopologyElement newelement = getNewTopologyElementCharacteristics(elementName, groups, benchmarkPlatforms,
+            modules);
 
-      double hostPerformance = benchmarkPlatforms
-            .get(YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups)).getPerformance();
-
-      if (log.isDebugEnabled()) {
-         log.debug("Found performance of benchmark platform "
-               + YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups) + "=" + benchmarkPlatforms
-                     .get(YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups)).getPerformance());
-      }
-      boolean elementCanScale = YAMLmodulesOptimizerParser.getScalabilityCapabilitiesOfModule(modules, elementName);
-
-      newelement.setExecTimeMillis(
-            YAMLmodulesOptimizerParser.getMeasuredExecTimeMillis(elementName, groups) * hostPerformance);
-
-      newelement.setCanScale(elementCanScale);
-      log.debug("Scalability of Element {} is {}", elementName, elementCanScale);
       // The module does not have requiremetns
       if (!YAMLmodulesOptimizerParser.moduleHasModuleRequirements(elementName, groups)) {
          // Include it directly
@@ -536,6 +576,28 @@ public class YAMLoptimizerParser {
       topology.addModule(newelement);
       return topology;
 
+   }
+
+   private static TopologyElement getNewTopologyElementCharacteristics(String elementName, Map<String, Object> groups,
+         Map<String, CloudOffer> benchmarkPlatforms, Map<String, Object> modules) {
+      TopologyElement newelement = new TopologyElement(elementName);
+
+      double hostPerformance = benchmarkPlatforms
+            .get(YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups)).getPerformance();
+
+      if (log.isDebugEnabled()) {
+         log.debug("Found performance of benchmark platform "
+               + YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups) + "=" + benchmarkPlatforms
+                     .get(YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups)).getPerformance());
+      }
+      boolean elementCanScale = YAMLmodulesOptimizerParser.getScalabilityCapabilitiesOfModule(modules, elementName);
+
+      newelement.setExecTimeMillis(
+            YAMLmodulesOptimizerParser.getMeasuredExecTimeMillis(elementName, groups) * hostPerformance);
+
+      newelement.setCanScale(elementCanScale);
+      log.debug("Scalability of Element {} is {}", elementName, elementCanScale);
+      return newelement;
    }
 
    /**

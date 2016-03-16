@@ -313,7 +313,7 @@ public class SuitableOptions { // implements Iterable<List<String>
       for (CloudOffer offer : offers) {
          // series of conditions in AND that I prefer to nest for visibility
          if (offer.getPerformance() < currentOffer.getPerformance()) {
-            if (offer.getProviderName().equals(currentOffer.getProviderName())) {
+            if (offer.getProvider().equals(currentOffer.getProvider())) {
                return true;
             }
          }
@@ -338,7 +338,7 @@ public class SuitableOptions { // implements Iterable<List<String>
       for (CloudOffer offer : offers) { // assumed that are ordered in reverse
                                         // order
          if (offer.getPerformance() < currentOffer.getPerformance()) {
-            if (offer.getProviderName().equals(currentOffer.getProviderName())) {
+            if (offer.getProvider().equals(currentOffer.getProvider())) {
                return offer; // The first one in an ordered traverse must be the
                              // chosen one
             }
@@ -365,7 +365,7 @@ public class SuitableOptions { // implements Iterable<List<String>
       for (CloudOffer offer : offers) {
          // series of conditions in AND that I prefer to nest for visibility
          if (offer.getPerformance() > currentOffer.getPerformance()) {
-            if (offer.getProviderName().equals(currentOffer.getProviderName())) {
+            if (offer.getProvider().equals(currentOffer.getProvider())) {
                return true;
             }
          }
@@ -393,7 +393,7 @@ public class SuitableOptions { // implements Iterable<List<String>
       for (CloudOffer offer : offers) { // assumed that are ordered in reverse
                                         // order
          if (offer.getPerformance() > currentOffer.getPerformance()) {
-            if (offer.getProviderName().equals(currentOffer.getProviderName())) {
+            if (offer.getProvider().equals(currentOffer.getProvider())) {
                potentialBetter = offer;
             }
          } else {// not better. So the rest are not better either.
@@ -413,8 +413,8 @@ public class SuitableOptions { // implements Iterable<List<String>
       for (CloudOffer offer : offers) {
          // series of conditions in AND that I prefer to nest for visibility
          if (offer.getAvailability() > currentOffer.getAvailability()) {
-            if (!(offer.getProviderName()
-                  .equals(currentOffer.getProviderName()))) {
+            if (!(offer.getProvider()
+                  .equals(currentOffer.getProvider()))) {
                return true;
             }
          }
@@ -433,8 +433,8 @@ public class SuitableOptions { // implements Iterable<List<String>
       for (CloudOffer offer : offers) { // assumed that are ordered in reverse
                                         // order
          if (offer.getAvailability() > currentOffer.getAvailability()) {
-            if (!(offer.getProviderName()
-                  .equals(currentOffer.getProviderName()))) {
+            if (!(offer.getProvider()
+                  .equals(currentOffer.getProvider()))) {
                if (potentialBetter == null) {// there was not found any yet
                   potentialBetter = offer;
                } else {// An alternative offer was already found, now check by
@@ -463,8 +463,8 @@ public class SuitableOptions { // implements Iterable<List<String>
       for (CloudOffer offer : offers) {
          // series of conditions in AND that I prefer to nest for visibility
          if (offer.getAvailability() < currentOffer.getAvailability()) {
-            if (!(offer.getProviderName()
-                  .equals(currentOffer.getProviderName()))) {
+            if (!(offer.getProvider()
+                  .equals(currentOffer.getProvider()))) {
                return true;
             }
          }
@@ -483,8 +483,8 @@ public class SuitableOptions { // implements Iterable<List<String>
       for (CloudOffer offer : offers) { // assumed that are ordered in reverse
                                         // order
          if (offer.getAvailability() < currentOffer.getAvailability()) {
-            if (!(offer.getProviderName()
-                  .equals(currentOffer.getProviderName()))) {
+            if (!(offer.getProvider()
+                  .equals(currentOffer.getProvider()))) {
                if (potentialWorse == null) {// there was not found any yet
                   potentialWorse = offer;
                } else {// An alternative offer was already found, now check by
