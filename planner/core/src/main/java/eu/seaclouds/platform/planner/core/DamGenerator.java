@@ -98,9 +98,9 @@ public class DamGenerator {
     public static final String SEACLOUDS_NODE_PREFIX = "seaclouds.nodes";
 
     public static final String SEACLOUDS_APPLICATION_CONFIGURATION =
-            "seaclouds.application.configuration";
+            "seaclouds_configuration_policy";
     public static final String SEACLOUDS_APPLICATION_CONFIGURATION_POLICY =
-            "seaclouds.policies.application.configuration";
+            "configuration";
     public static final String SEACLOUDS_MANAGEMENT_POLICY =
             "eu.seaclouds.policy.SeaCloudsManagementPolicy";
 

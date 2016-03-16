@@ -19,12 +19,12 @@ topology_template:
       requirements:
       - {host: Amazon_EC2_c1_medium_sa_east_1}
     Amazon_EC2_c1_medium_sa_east_1:
-      type: seaclouds.nodes.Compute.Amazon_EC2
+      type: tosca.nodes.Compute
       properties: {num_cpus: 2, country: Brazil, cost: 0.17, city: SAO PAULO, resource_type: compute,
         disk_size: 340, availability: 0.9995, hardwareId: c1.medium, disk_type: sata,
         location: aws-ec2, num_disks: 1, region: sa-east-1, ram: 1.7, performance: 21}
     Amazon_EC2_c1_medium_us_west_2:
-      type: seaclouds.nodes.Compute.Amazon_EC2
+      type: tosca.nodes.Compute
       properties: {num_cpus: 2, country: United States, cost: 0.17, city: PORTLAND,
         resource_type: compute, disk_size: 340, availability: 0.9995, hardwareId: c1.medium,
         disk_type: sata, location: aws-ec2, num_disks: 1, region: us-west-2, ram: 1.7,
