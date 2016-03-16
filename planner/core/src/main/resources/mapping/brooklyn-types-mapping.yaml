@@ -20,6 +20,7 @@ mapping.node_types:
   seaclouds.nodes.SoftwareComponent: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
   seaclouds.nodes.ControlledDynamicWebAppCluster: org.apache.brooklyn.entity.webapp.ControlledDynamicWebAppCluster
   seaclouds.nodes.php.httpd.PhpHttpdServer: org.apache.brooklyn.entity.php.httpd.PhpHttpdServer
+  seaclouds.nodes.Compute: tosca.nodes.Compute
 
 mapping.policy_types:
   seaclouds.policies.autoscaling.AutoScalerPolicy: org.apache.brooklyn.policy.autoscaling.AutoScalerPolicy

@@ -177,6 +177,18 @@ public class DamGenerator {
         if (template.containsKey(NODE_TYPES)) {
             template.remove(NODE_TYPES);
         }
+
+        Map<String, Object> topologyTemplate = (Map<String, Object>) template.get(TOPOLOGY_TEMPLATE);
+        Map<String, Object> nodeTemplates = (Map<String, Object>)topologyTemplate.get(NODE_TEMPLATES);
+
+        //Solve offerings Types issue
+        for(Map.Entry<String, Object> nodeTemplateEntry : nodeTemplates.entrySet()){
+           Map<String, Object> nodeTemplate = (Map<String, Object>)nodeTemplateEntry.getValue();
+            String nodeTemplateType = (String) nodeTemplate.get(TYPE);
+            if(nodeTemplateType.contains("seaclouds.nodes.Compute")){
+                nodeTemplate.put(TYPE, getDeployerIaaSTypeResolver().resolveNodeType("seaclouds.nodes.Compute"));
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -274,6 +286,7 @@ public class DamGenerator {
 
                 module.remove("artifacts");
             }
+
             //type replacement
             String moduleType = (String) module.get("type");
             if (nodeTypes.containsKey(moduleType)) {
@@ -294,6 +307,7 @@ public class DamGenerator {
                     damUsedNodeTypes.put(moduleType, nodeTypes.get(moduleType));
                 }
             }
+
 
             if (module.keySet().contains(REQUIREMENTS)) {
                 List<Map<String, Object>> requirements = (ArrayList<Map<String, Object>>) module.get(REQUIREMENTS);
