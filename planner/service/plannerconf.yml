@@ -13,3 +13,5 @@ deployableProviders: ["openstack-nova","openstack-keystone","openstack-nova-ec2"
 filterOfferings: true
 influxdbPort: 8086
 influxdbURL: 52.48.187.2
+grafanaPort: 3000
+grafanaURL: 52.48.187.2
