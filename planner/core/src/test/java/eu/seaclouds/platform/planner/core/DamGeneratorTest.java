@@ -46,6 +46,8 @@ public class DamGeneratorTest {
     static final String MONITOR_PORT = "8170";
     static final String INFLUXDB_URL = "52.48.187.2";
     static final String INFLUXDB_PORT = "8086";
+    static final String GRAFANA_URL = "52.48.187.2";
+    static final String GRAFANA_PORT = "3000";
     static final String SLA_ENDPOINT = "127.0.0.3:9003";
 
     Yaml yamlParser;
@@ -71,7 +73,7 @@ public class DamGeneratorTest {
         when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
                 .thenReturn(FAKE_AGREEMENT_ID);
 
-        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT);
+        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT, GRAFANA_URL, GRAFANA_PORT);
         damGenerator.setAgreementManager(fakeAgreementManager);
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
@@ -100,7 +102,7 @@ public class DamGeneratorTest {
         when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
                 .thenReturn(FAKE_AGREEMENT_ID);
 
-        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT);
+        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT, GRAFANA_URL, GRAFANA_PORT);
         damGenerator.setAgreementManager(fakeAgreementManager);
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
@@ -133,7 +135,7 @@ public class DamGeneratorTest {
         when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
                 .thenReturn(FAKE_AGREEMENT_ID);
 
-        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT);
+        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT, GRAFANA_URL, GRAFANA_PORT);
         damGenerator.setAgreementManager(fakeAgreementManager);
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
@@ -179,7 +181,7 @@ public class DamGeneratorTest {
         when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
                 .thenReturn(FAKE_AGREEMENT_ID);
 
-        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT);
+        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT, GRAFANA_URL, GRAFANA_PORT);
         damGenerator.setAgreementManager(fakeAgreementManager);
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
@@ -234,7 +236,7 @@ public class DamGeneratorTest {
         when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
                 .thenReturn(FAKE_AGREEMENT_ID);
 
-        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT);
+        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT, GRAFANA_URL, GRAFANA_PORT);
         damGenerator.setAgreementManager(fakeAgreementManager);
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);

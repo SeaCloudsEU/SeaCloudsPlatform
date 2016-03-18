@@ -45,6 +45,12 @@ public class PlannerConfiguration extends Configuration{
     @NotEmpty
     private String filterOfferings;
 
+    @NotEmpty
+    private String grafanaURL;
+
+    @NotEmpty
+    private  String grafanaPort;
+
     @JsonProperty("monitorGeneratorPort")
     public void setMonitorGeneratorPort(String monitorGeneratorPort) { this.monitorGeneratorPort = monitorGeneratorPort; }
 
@@ -93,4 +99,15 @@ public class PlannerConfiguration extends Configuration{
     @JsonProperty("filterOfferings")
     public String getFilterOfferings() { return this.filterOfferings; }
 
+    @JsonProperty("grafanaPort")
+    public void setGrafanaPort(String grafanaPort) { this.grafanaPort = grafanaPort; }
+
+    @JsonProperty("grafanaPort")
+    public String getGrafanaPort() { return this.grafanaPort; }
+
+    @JsonProperty("grafanaURL")
+    public void setGrafanaURL(String grafanaURL) { this.grafanaURL = grafanaURL; }
+
+    @JsonProperty("grafanaURL")
+    public String getGrafanaURL() { return this.grafanaURL; }
 }

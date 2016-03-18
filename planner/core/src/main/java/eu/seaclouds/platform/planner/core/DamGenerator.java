@@ -94,15 +94,26 @@ public class DamGenerator {
     private String slaUrl;
     private String influxdbUrl;
     private String influxdbPort;
+    private String grafanaUrl;
+    private String grafanaPort;
     private SlaAgreementManager agreementManager;
     private Map<String, Object> template;
 
-    public DamGenerator(String monitorUrl, String monitorPort, String slaUrl, String influxdbUrl, String influxdbPort) {
+    public DamGenerator(String monitorUrl,
+                        String monitorPort,
+                        String slaUrl,
+                        String influxdbUrl,
+                        String influxdbPort,
+                        String grafanaUrl,
+                        String grafanaPort) {
+
         this.monitorUrl = monitorUrl;
         this.monitorPort = monitorPort;
         this.slaUrl = slaUrl;
         this.influxdbUrl = influxdbUrl;
         this.influxdbPort = influxdbPort;
+        this.grafanaUrl = grafanaUrl;
+        this.grafanaPort = grafanaPort;
         init();
     }
 
