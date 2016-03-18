@@ -139,6 +139,10 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
       }
 
       sol.solutionFitness = this.solutionFitness;
+      sol.solutionQuality=null;
+      if(this.solutionQuality!=null){
+         sol.solutionQuality = new QualityInformation(this.solutionQuality);
+      }
       return sol;
    }
 

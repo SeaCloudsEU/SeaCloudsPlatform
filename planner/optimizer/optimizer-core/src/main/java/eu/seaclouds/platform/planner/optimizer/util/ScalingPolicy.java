@@ -32,6 +32,7 @@ public class ScalingPolicy {
       autoscaleValues.put(TOSCAkeywords.AUTOSCALE_METRIC_UPPERBOUND, wklUpperBound);
       autoscaleValues.put(TOSCAkeywords.AUTOSCALE_POOL_MINIMUM_SIZE, minPoolSize);
       autoscaleValues.put(TOSCAkeywords.AUTOSCALE_POOL_MAXIMUM_SIZE, maxPoolSize);
+      autoscaleValues.put(TOSCAkeywords.AUTOSCALE_STABILIZATION_DELAY, TOSCAkeywords.AUTOSCALE_STABILIZATION_DELAY_VALUE_MILLISECONDS);
       
       Map<String, Object> policy = new HashMap<String,Object>();
       policy.put(TOSCAkeywords.AUTOSCALING_TAG, autoscaleValues);

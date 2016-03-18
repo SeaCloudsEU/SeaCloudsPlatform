@@ -27,6 +27,16 @@ public class QualityInformation {
    private double              cost           = 0;      // in moneyUnits/hour
    private double              workload       = 0;      // in seconds
 
+   
+   public QualityInformation(QualityInformation qi) {
+     this.respTime = qi.respTime;
+     this.availability=qi.availability;
+     this.cost=qi.cost;
+     this.workload=qi.workload;
+   }
+
+   public QualityInformation() {}
+   
    public double getResponseTime() {
       return respTime;
    }

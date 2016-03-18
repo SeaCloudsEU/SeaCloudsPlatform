@@ -40,6 +40,7 @@ public class QualityAnalyzerTest {
 
    private static QualityAnalyzer analyzer;
 
+   private static final double WORKLOAD = 10.0;
 
    static Logger log;
 
@@ -67,11 +68,11 @@ public class QualityAnalyzerTest {
       Solution bestSol = createSolution();
       Topology topology = createTopology();
 
-      double workload = 10;
+
 
       SuitableOptions cloudCharacteristics = createSuitableOptions();
 
-      QualityInformation qInfo = analyzer.computePerformance(bestSol, topology, workload, cloudCharacteristics);
+      QualityInformation qInfo = analyzer.computePerformance(bestSol, topology, WORKLOAD, cloudCharacteristics);
 
       Assert.assertTrue("Compute performance returned null", qInfo != null);
 
@@ -127,13 +128,19 @@ public class QualityAnalyzerTest {
       log.info("==== TEST for RECONFIGURATION THRESHOLDS starts ====");
       Solution bestSol = createSolution();
       Topology topology = createTopology();
+      
       SuitableOptions cloudCharacteristics = createSuitableOptions();
 
       QualityInformation requirements = new QualityInformation();
       requirements.setResponseTimeSecs(1000.0);
-      requirements.setWorkload(10.0);
+      requirements.setWorkload(WORKLOAD);
       requirements.setCostHour(40.0);
+      
+      //the computation of thresholds needs the workload value
+      analyzer.getAllComputedQualities().setWorkload(WORKLOAD);
+      bestSol.setSolutionQuality(analyzer.getAllComputedQualities());
 
+      
       HashMap<String, ArrayList<Double>> thresholds = analyzer.computeThresholds(bestSol, topology, requirements,
             cloudCharacteristics);
       Assert.assertTrue("Compute thresholds returns null", thresholds != null);

@@ -142,6 +142,7 @@ public class QualityAnalyzer {
       log.trace("calculated response time of the solution {} is: {}", bestSol.toString(), respTime);
 
       // after computing, save the performance info in properties.performance
+      properties.setWorkload(workload);
       properties.setResponseTimeSecs(respTime);
 
       return properties;
