@@ -66,7 +66,7 @@ public class DamGeneratorTest {
 
         when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
                 .thenReturn(FAKE_AGREEMENT_ID);
-        String fakeAgreement = new Scanner(new File(Resources.getResource("agreements/fakeAgreement.xml").toURI())).useDelimiter("\\Z").next();
+        String fakeAgreement = new Scanner(new File(Resources.getResource("agreements/mock_test_agreement.xml").toURI())).useDelimiter("\\Z").next();
         when(fakeAgreementManager.getAgreement(anyString())).thenReturn(fakeAgreement);
 
         DumperOptions options = new DumperOptions();

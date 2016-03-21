@@ -88,7 +88,7 @@ public class SeaCloudsManagementPolicy extends AbstractPolicy {
 
     @SetFromFlag("t4cRules")
     public static final ConfigKey<String> T4C_RULES = ConfigKeys.newStringConfigKey(
-            "t4c.rules", "SLA Agreement (Base64-encoded)");
+            "t4c.rules", "T4C Rules (Base64-encoded)");
 
     @SetFromFlag("t4cEndpoint")
     public static final ConfigKey<String> T4C_ENDPOINT = ConfigKeys.newStringConfigKey(
