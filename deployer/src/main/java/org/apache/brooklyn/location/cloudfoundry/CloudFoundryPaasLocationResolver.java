@@ -24,6 +24,7 @@ import org.apache.brooklyn.api.location.LocationResolver;
 import org.apache.brooklyn.api.location.LocationSpec;
 import org.apache.brooklyn.api.mgmt.ManagementContext;
 import org.apache.brooklyn.core.location.BasicLocationRegistry;
+import org.apache.brooklyn.core.location.LocationConfigUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,12 +57,13 @@ public class CloudFoundryPaasLocationResolver implements LocationResolver {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Location newLocationFromString(Map locationFlags,
-                                          String spec,
-                                          LocationRegistry registry) {
-        return managementContext.getLocationManager().createLocation(
-                LocationSpec.create(locationFlags, CloudFoundryPaasLocation.class));
+    public boolean isEnabled() {
+        return LocationConfigUtils.isResolverPrefixEnabled(managementContext, getPrefix());    }
+
+    @Override
+    public LocationSpec<? extends Location> newLocationSpecFromString(String s, Map<?, ?> map, LocationRegistry locationRegistry) {
+        return LocationSpec.create(CloudFoundryPaasLocation.class)
+            .configure(map);
     }
 
 

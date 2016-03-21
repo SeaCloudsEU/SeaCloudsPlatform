@@ -236,7 +236,7 @@ public class SeaCloudsManagementPolicy extends AbstractPolicy {
                         // Rewire the original behaviour
                         Collection<? extends Location> locations = null;
                         Object locationRaw = parameters.getStringKey(EffectorStartableImpl.StartParameters.LOCATIONS.getName());
-                        locations = Locations.coerceToCollection(getManagementContext(), locationRaw);
+                        locations = Locations.coerceToCollectionOfLocationsManaged(getManagementContext(), locationRaw);
                         ((StartableApplication) entity).start(locations);
 
                         return null;
