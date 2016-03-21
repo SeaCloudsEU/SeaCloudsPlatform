@@ -25,14 +25,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import eu.atos.sla.datamodel.IGuaranteeTerm;
 import eu.atos.sla.parser.data.GuaranteeTermsStatus;
-import eu.atos.sla.parser.data.wsag.Agreement;
 import eu.seaclouds.platform.dashboard.model.SeaCloudsApplicationData;
 import eu.seaclouds.platform.dashboard.model.SeaCloudsApplicationDataStorage;
 import eu.seaclouds.platform.dashboard.proxy.DeployerProxy;
-import eu.seaclouds.platform.dashboard.proxy.MonitorProxy;
-import eu.seaclouds.platform.dashboard.proxy.PlannerProxy;
 import eu.seaclouds.platform.dashboard.proxy.SlaProxy;
-import it.polimi.tower4clouds.rules.MonitoringRules;
 import org.apache.brooklyn.rest.domain.ApplicationSummary;
 import org.apache.brooklyn.rest.domain.TaskSummary;
 import org.slf4j.Logger;
@@ -50,52 +46,13 @@ public class DeployerResource implements Resource {
     private static final Logger LOG = LoggerFactory.getLogger(DeployerResource.class);
 
     private final DeployerProxy deployer;
-    private final MonitorProxy monitor;
     private final SlaProxy sla;
-    private final PlannerProxy planner;
     private final SeaCloudsApplicationDataStorage dataStore;
 
-    public DeployerResource(DeployerProxy deployerProxy, MonitorProxy monitorProxy, SlaProxy slaProxy, PlannerProxy planner) {
+    public DeployerResource(DeployerProxy deployerProxy, SlaProxy slaProxy) {
         this.deployer = deployerProxy;
-        this.monitor = monitorProxy;
         this.sla = slaProxy;
-        this.planner = planner;
         this.dataStore = SeaCloudsApplicationDataStorage.getInstance();
-    }
-
-    private void cleanUpApplicationDependencies(SeaCloudsApplicationData seaCloudsApplicationData) {
-
-        // TODO: Undo observers (Maybe they are removed when MR are removed)
-
-
-        // TODO: Undo grafana
-
-        if (seaCloudsApplicationData.getMonitoringRulesTemplateId() != null) {
-            try {
-                for (String ruleId : seaCloudsApplicationData.getMonitoringRulesIds()) {
-                    monitor.removeMonitoringRule(ruleId);
-                }
-            } catch (Exception e) {
-                LOG.debug("Something went wrong during the cleanup of the monitoring rules");
-                // This is perfectly fine, it will happen if this phase was not reached before the error.
-            }
-        }
-        if (seaCloudsApplicationData.getAgreementId() != null) {
-            try {
-                sla.removeAgreement(seaCloudsApplicationData.getAgreementId());
-            } catch (Exception e) {
-                LOG.debug("Something went wrong during the cleanup of the agreement");
-                // This is perfectly fine, it will happen if this phase was not reached before the error.
-            }
-        }
-        try {
-            deployer.removeApplication(seaCloudsApplicationData.getDeployerApplicationId());
-        } catch (Exception e) {
-            LOG.debug("Something went wrong during the cleanup of the application");
-            // This is perfectly fine, it will happen if this phase was not reached before the error.
-        }
-
-
     }
 
     @POST
@@ -112,39 +69,13 @@ public class DeployerResource implements Resource {
         } else {
             try {
                 LOG.debug("Deploy new application process started");
-
                 seaCloudsApplication = new SeaCloudsApplicationData(dam);
-
-                LOG.debug("STEP 1: Start deployment of the application");
                 TaskSummary taskSummary = deployer.deployApplication(dam);
                 seaCloudsApplication.setDeployerApplicationId(taskSummary);
 
-                if (seaCloudsApplication.getMonitoringRulesTemplateId() != null) {
-                    LOG.debug("STEP 2: Retrieve Monitoring Rules from TOSCA");
-                    MonitoringRules monitoringRules = planner.getMonitoringRulesByTemplateId(seaCloudsApplication.getMonitoringRulesTemplateId());
-
-                    LOG.debug("STEP 3: Install Monitoring Rules");
-                    monitor.addMonitoringRules(monitoringRules);
-                    seaCloudsApplication.setMonitoringRulesIds(monitoringRules);
-                }
-
-                if (seaCloudsApplication.getAgreementTemplateId() != null) {
-                    LOG.debug("STEP 4: Retrieve SLA Agreements from TOSCA");
-                    Agreement agreement = sla.getAgreementByTemplateId(seaCloudsApplication.getAgreementTemplateId());
-
-                    LOG.debug("STEP 5: Install SLA Agreements");
-                    sla.addAgreement(agreement);
-                    seaCloudsApplication.setAgreementId(agreement);
-
-                    LOG.debug("STEP 6: Notify Rules Ready (Issue #56)");
-                    sla.notifyRulesReady(agreement);
-                }
-
-                LOG.debug("Application deployment process finished");
                 dataStore.addSeaCloudsApplicationData(seaCloudsApplication);
                 return Response.ok(seaCloudsApplication).build();
             } catch (Exception e) {
-                cleanUpApplicationDependencies(seaCloudsApplication);
                 LOG.error(e.getMessage());
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
@@ -215,7 +146,6 @@ public class DeployerResource implements Resource {
         if (seaCloudsApplicationData == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        cleanUpApplicationDependencies(seaCloudsApplicationData);
         dataStore.removeSeaCloudsApplicationDataById(seaCloudsApplicationData.getSeaCloudsApplicationId());
 
         return Response.ok().build();

@@ -18,8 +18,10 @@
 package eu.seaclouds.platform.dashboard.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.io.BaseEncoding;
 import eu.atos.sla.datamodel.IGuaranteeTerm;
 import eu.atos.sla.parser.data.wsag.Agreement;
+import eu.seaclouds.platform.dashboard.util.ObjectMapperHelpers;
 import it.polimi.tower4clouds.rules.MonitoringRule;
 import it.polimi.tower4clouds.rules.MonitoringRules;
 import org.apache.brooklyn.rest.domain.ApplicationSummary;
@@ -29,27 +31,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
+import javax.xml.bind.JAXBException;
 import java.io.Serializable;
 import java.util.*;
 
 public class SeaCloudsApplicationData implements Serializable {
     private static final Logger LOG = LoggerFactory.getLogger(SeaCloudsApplicationData.class);
 
-    private static final String YAML_DESCRIPTION_TAG = "description";
+    private static final String YAML_DESCRIPTION_TAG = "template_name";
     private static final String YAML_TOPOLOGY_TEMPLATE_TAG = "topology_template";
     private static final String YAML_GROUPS_TEMPLATE_TAG = "groups";
     private static final String YAML_POLICIES_TAG = "policies";
-    private static final String YAML_MONITORING_INFORMATION_TAG = "monitoringInformation";
-    private static final String YAML_AGREEMENT_TAG = "sla_gen_info";
 
-    private static final String YAML_ID_TAG = "id";
-
+    private static final String YAML_SEACLOUDS_POLICY_TAG = "seaclouds_configuration_policy";
+    private static final String YAML_SEACLOUDS_POLICY_CONFIGURATION_TAG = "configuration";
+    private static final String YAML_SEACLOUDS_AGREEMENT_TAG = "slaAgreement";
+    private static final String YAML_SEACLOUDS_RULES_TAG = "t4cRules";
 
     private final String seaCloudsApplicationId;
     private final String name;
     private final Map toscaDamMap;
-    private final String monitoringRulesTemplateId;
-    private final String agreementTemplateId;
     private String deployerApplicationId;
     private Set<String> monitoringRulesIds;
     private String agreementId;
@@ -58,59 +59,53 @@ public class SeaCloudsApplicationData implements Serializable {
     private IGuaranteeTerm.GuaranteeTermStatusEnum agreementStatus;
 
 
-    public SeaCloudsApplicationData(String toscaDam) {
-        this.seaCloudsApplicationId = UUID.randomUUID().toString();
-        Yaml yamlParser = new Yaml();
-        this.toscaDamMap = (Map) yamlParser.load(toscaDam);
-        this.name = extractName(this.toscaDamMap);
-        this.monitoringRulesTemplateId = extractMonitoringRulesemplateId(this.toscaDamMap);
-        this.agreementTemplateId = extractAgreementTemplateId(this.toscaDamMap);
-
+    public SeaCloudsApplicationData(String toscaDam) throws JAXBException {
+        this((Map) new Yaml().load(toscaDam));
     }
 
-    SeaCloudsApplicationData(Map toscaDamMap) {
+    SeaCloudsApplicationData(Map toscaDamMap) throws JAXBException  {
         this.seaCloudsApplicationId = UUID.randomUUID().toString();
         this.toscaDamMap = toscaDamMap;
         this.name = extractName(this.toscaDamMap);
-        this.monitoringRulesTemplateId = extractMonitoringRulesemplateId(this.toscaDamMap);
-        this.agreementTemplateId = extractAgreementTemplateId(this.toscaDamMap);
-
+        this.agreementId = extractAgreementId(this.toscaDamMap);
+        this.monitoringRulesIds = extractMonitoringRulesIds(this.toscaDamMap);
     }
 
     static String extractName(Map toscaDamMap) {
         return (String) toscaDamMap.get(YAML_DESCRIPTION_TAG);
     }
 
-    static String extractAgreementTemplateId(Map toscaDamMap) {
+    static String extractAgreementId(Map toscaDamMap) throws JAXBException {
         Map topologyTemplate = (Map) toscaDamMap.get(YAML_TOPOLOGY_TEMPLATE_TAG);
         Map groups = (Map) topologyTemplate.get(YAML_GROUPS_TEMPLATE_TAG);
-        Map monitoringInformation = (Map) groups.get(YAML_AGREEMENT_TAG);
+        Map seaCloudsConfigurationMember = (Map) groups.get(YAML_SEACLOUDS_POLICY_TAG);
+        Map seaCloudsConfigurationPolicy = (Map) ((Map)((List)  seaCloudsConfigurationMember.get(YAML_POLICIES_TAG)).get(0)).get(YAML_SEACLOUDS_POLICY_CONFIGURATION_TAG);
 
-        if(monitoringInformation != null){
-            Map policies = (Map)((List)  monitoringInformation.get(YAML_POLICIES_TAG)).get(0);
-            return (String) policies.get(YAML_ID_TAG);
-        } else{
-            LOG.warn("This TOSCA doesn't contain any SLA Agreement Template ID");
-            return null;
-        }
-
+        String agreementB64String = (String) seaCloudsConfigurationPolicy.get(YAML_SEACLOUDS_AGREEMENT_TAG);
+        String agreementString =  new String(BaseEncoding.base64().decode(agreementB64String));
+        Agreement agreement = ObjectMapperHelpers.XmlToObject(agreementString, Agreement.class);
+        return agreement.getAgreementId();
     }
 
-    static String extractMonitoringRulesemplateId(Map toscaDamMap) {
+    static Set<String> extractMonitoringRulesIds(Map toscaDamMap) throws JAXBException {
+        Set<String> returnSet = new HashSet<>();
+
         Map topologyTemplate = (Map) toscaDamMap.get(YAML_TOPOLOGY_TEMPLATE_TAG);
         Map groups = (Map) topologyTemplate.get(YAML_GROUPS_TEMPLATE_TAG);
-        Map slaGenInfo = (Map) groups.get(YAML_MONITORING_INFORMATION_TAG);
+        Map seaCloudsConfigurationMember = (Map) groups.get(YAML_SEACLOUDS_POLICY_TAG);
+        Map seaCloudsConfigurationPolicy = (Map) ((Map)((List)  seaCloudsConfigurationMember.get(YAML_POLICIES_TAG)).get(0)).get(YAML_SEACLOUDS_POLICY_CONFIGURATION_TAG);
 
-        if(slaGenInfo != null){
-            Map policies = (Map) ((List) slaGenInfo.get(YAML_POLICIES_TAG)).get(0);
-            return (String) policies.get(YAML_ID_TAG);
-        } else{
-            LOG.warn("This TOSCA doesn't contain any MonitoringRules ID");
-            return null;
+        String rulesB64String = (String) seaCloudsConfigurationPolicy.get(YAML_SEACLOUDS_RULES_TAG);
+        String rulesString =  new String(BaseEncoding.base64().decode(rulesB64String));
+        MonitoringRules rules = ObjectMapperHelpers.XmlToObject(rulesString, MonitoringRules.class);
+
+
+        for(MonitoringRule rule : rules.getMonitoringRules()){
+            returnSet.add(rule.getId());
         }
+
+        return returnSet;
     }
-
-
 
     public void setDeployerApplicationId(ApplicationSummary application) {
         this.deployerApplicationId = application.getId();
@@ -141,16 +136,6 @@ public class SeaCloudsApplicationData implements Serializable {
     @JsonProperty
     public String getName() {
         return name;
-    }
-
-    @JsonProperty
-    public String getMonitoringRulesTemplateId() {
-        return monitoringRulesTemplateId;
-    }
-
-    @JsonProperty
-    public String getAgreementTemplateId() {
-        return agreementTemplateId;
     }
 
     @JsonProperty

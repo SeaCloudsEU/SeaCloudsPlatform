@@ -58,12 +58,12 @@
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-software-webapp</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-software-database</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.cloudfoundry</groupId>
             <artifactId>cloudfoundry-client-lib</artifactId>
@@ -77,6 +77,54 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>eu.seaclouds-project</groupId>
+            <artifactId>sla-tools</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+
+        </dependency>
+
+        <dependency>
+            <groupId>it.polimi.tower4clouds</groupId>
+            <artifactId>rules</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.json</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.java-websocket</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.javassist</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.code.findbugs</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

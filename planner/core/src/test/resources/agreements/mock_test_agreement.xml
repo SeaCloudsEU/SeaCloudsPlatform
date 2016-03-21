@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<wsag:Agreement xmlns:sla="http://sla.atos.eu" xmlns:wsag="http://www.ggf.org/namespaces/ws-agreement" wsag:AgreementId="appid">
+    <wsag:Name>user-seaclouds-Chat Application using JBoss</wsag:Name>
+    <wsag:Context>
+        <wsag:AgreementInitiator>user</wsag:AgreementInitiator>
+        <wsag:AgreementResponder>seaclouds</wsag:AgreementResponder>
+        <wsag:ServiceProvider>AgreementResponder</wsag:ServiceProvider>
+        <wsag:ExpirationTime>2017-02-08T16:41:29+0000</wsag:ExpirationTime>
+        <sla:Service>Chat Application using JBoss</sla:Service>
+    </wsag:Context>
+    <wsag:Terms>
+        <wsag:All>
+            <wsag:ServiceDescriptionTerm/>
+            <wsag:GuaranteeTerm wsag:Name="appid_mysql_server_cpu_utilization">
+                <wsag:ServiceScope wsag:ServiceName="service">appid_mysql_server</wsag:ServiceScope>
+                <wsag:ServiceLevelObjective>
+                    <wsag:KPITarget>
+                        <wsag:KPIName>appid_mysql_server/CPUUtilization</wsag:KPIName>
+                        <wsag:CustomServiceLevel>{"constraint": "appid_mysql_server_cpu_utilization NOT_EXISTS", "qos": "METRIC LE 0.5" }</wsag:CustomServiceLevel>
+                    </wsag:KPITarget>
+                </wsag:ServiceLevelObjective>
+            </wsag:GuaranteeTerm>
+        </wsag:All>
+    </wsag:Terms>
+</wsag:Agreement>

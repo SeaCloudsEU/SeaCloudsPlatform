@@ -26,7 +26,7 @@ import static org.testng.Assert.*;
 
 public class DeployerResourceTest extends AbstractResourceTest<DeployerResource> {
 
-    private final DeployerResource deployerResource = new DeployerResource(getDeployerProxy(), getMonitorProxy(), getSlaProxy(), getPlannerProxy());
+    private final DeployerResource deployerResource = new DeployerResource(getDeployerProxy(), getSlaProxy());
 
     @Test
     public void testAddApplication() throws Exception {
@@ -34,10 +34,8 @@ public class DeployerResourceTest extends AbstractResourceTest<DeployerResource>
         assertNotNull(application.getName());
         assertNotNull(application.getToscaDam());
         assertNotNull(application.getAgreementId());
-        assertNotNull(application.getAgreementTemplateId());
         assertNotNull(application.getDeployerApplicationId());
         assertNotNull(application.getMonitoringRulesIds());
-        assertNotNull(application.getMonitoringRulesTemplateId());
     }
 
     @Test

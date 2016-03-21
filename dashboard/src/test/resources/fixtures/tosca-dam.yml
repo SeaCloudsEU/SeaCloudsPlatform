@@ -1,129 +1,152 @@
 tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
-description: Sample 3-tier application
-imports: ['tosca-normative-types:1.0.0.wd06-SNAPSHOT']
 
-template_name: example
+imports:
+  - tosca-normative-types:1.0.0.wd06-SNAPSHOT
+
+template_name: web-chat.tomca-dc-compute.mysql-compute.na
 template_version: 1.0.0-SNAPSHOT
 
-node_types:
+description: Web chat using tomcat and DC. All component are hosted. No artifacts
 
-  seaclouds.Nodes.Compute:
-    derived_from: tosca.nodes.Compute
-    description: Custom compute
+node_types:
+  org.apache.brooklyn.entity.webapp.tomcat.TomcatServer:
+    derived_from: tosca.nodes.Root
+    description: >
+      A simple Tomcat server
     properties:
-      hardwareId:
+      http.port:
+        type: list
+        required: false
+        entry_schema:
+          type: string
+      java.sysprops:
+        type: map
+        required: false
+        entry_schema:
+          type: string
+      wars.root:
         type: string
         required: false
+    requirements:
+      - host: tosca.nodes.Compute
+        type: tosca.relationships.HostedOn
 
   org.apache.brooklyn.entity.database.mysql.MySqlNode:
     derived_from: tosca.nodes.Root
     description: |
       A MySQL server
     properties:
-      datastore.creation.script.url: {type: string, required: false}
-    requirements:
-    - {host: tosca.nodes.Compute, type: tosca.relationships.HostedOn}
-    artifacts:
-    - {datastore.creation.script.url: null, type: tosca.artifacts.File}
-  org.apache.brooklyn.entity.webapp.tomcat.TomcatServer:
-    derived_from: tosca.nodes.Root
-    description: |
-      A simple Tomcat server
-    properties:
-      wars.root: {type: string, required: false}
-      http.port:
-        type: list
+      creationScriptUrl:
+        type: string
         required: false
-        entry_schema: {type: string}
-      java.sysprops:
+    requirements:
+    - host: tosca.nodes.Compute
+      type: tosca.relationships.HostedOn
+
+
+  seaclouds.nodes.Datacollector:
+    derived_from: tosca.nodes.Root
+    description: >
+      A simple DC
+    properties:
+      install_latch:
+        type: string
+        required: false
+      shell.env:
         type: map
         required: false
-        entry_schema: {type: string}
+        entry_schema:
+          type: string
     requirements:
-    - {host: tosca.nodes.Compute, type: tosca.relationships.HostedOn}
-    #artifacts:
-    #- {wars.root: null, type: tosca.artifacts.File}
+    - host: tosca.nodes.Compute
+      type: tosca.relationships.HostedOn
 
 topology_template:
   description: Web Server Sample with Script
   node_templates:
-    www:
+    tomcat_server:
       type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
+      properties:
+        http.port: "8080+"
+        wars.root: "http://search.maven.org/remotecontent?filepath=io/brooklyn/example/brooklyn-example-hello-world-sql-webapp/0.6.0/brooklyn-example-hello-world-sql-webapp-0.6.0.war"
+        java.sysprops:
+          brooklyn.example.db.url: $brooklyn:formatString("jdbc:%s%s?user=%s\\&password=%s", component("db").attributeWhenReady("datastore.url"), "visitors", "brooklyn", "br00k11n")
       requirements:
-    #  - {endpoint: webservices}
-      - {host: Rapidcloud_io_Asia_HK}
-    webservices:
-      type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
-      #properties:
-        #java_version:
-          #constraints:
-          #- {greater_or_equal: '7'}
-          #- {less_or_equal: '8'}
+      - host: Amazon_EC2_i2_xlarge_us_west_2
+
+    dc:
+      type: seaclouds.nodes.Datacollector
+      properties:
+        install_latch: $brooklyn:component("tomcat_server").attributeWhenReady("service.isUp")
       requirements:
-      #- {endpoint: db1}
-      - {host: Vultr_64gb_mc_atlanta}
-    db1:
+      - host: Amazon_EC2_i2_xlarge_us_west_2
+
+    db:
       type: org.apache.brooklyn.entity.database.mysql.MySqlNode
-      #properties:
-        #mysql_version:
-          #constraints:
-          #- {greater_or_equal: '5.0'}
-          #- {less_or_equal: '5.6'}
+      properties:
+        creationScriptUrl: "https://raw.githubusercontent.com/apache/incubator-brooklyn/master/brooklyn-server/launcher/src/test/resources/visitors-creation-script.sql"
       requirements:
-      - {host: App42_PaaS_America_US}
-    Vultr_64gb_mc_atlanta:
-      type: seaclouds.Nodes.Compute
-      properties: {num_cpus: 24, country: United States, cost: 0.893 USD/hour, hardwareId: 64gb-mc,
-        city: ATLANTA, disk_type: ssd, resource_type: compute, disk_size: 800, location: 'vultr:compute',
-        region: atlanta, ram: 64}
-    App42_PaaS_America_US:
-      type: seaclouds.Nodes.Compute
-      properties: {num_cpus: 24, country: United States, cost: 0.893 USD/hour, hardwareId: 64gb-mc,
-        city: ATLANTA, disk_type: ssd, resource_type: compute, disk_size: 800, location: 'vultr:compute',
-        region: atlanta, ram: 64}
-    Rapidcloud_io_Asia_HK:
-      type: seaclouds.Nodes.Compute
-      properties: {num_cpus: 24, country: United States, cost: 0.893 USD/hour, hardwareId: 64gb-mc,
-        city: ATLANTA, disk_type: ssd, resource_type: compute, disk_size: 800, location: 'vultr:compute',
-        region: atlanta, ram: 64}
+      - host: Amazon_EC2_i2_xlarge_us_west_1
+
+    Amazon_EC2_i2_xlarge_us_west_2:
+      type: tosca.nodes.Compute
+      properties:
+        resource_type: compute
+        hardwareId: i2.xlarge
+        location: aws-ec2
+        region: us-west-2
+        performance: 90
+        availability: 0.9995
+        country: United States
+        city: SAN JOSE
+        cost: 1.001 USD/hour
+        disk_size: 800
+        num_disks: 1
+        num_cpus: 4
+        ram: 30.5
+        disk_type: ssd
+
+    Amazon_EC2_i2_xlarge_us_west_1:
+      type: tosca.nodes.Compute
+      properties:
+        resource_type: compute
+        hardwareId: i2.xlarge
+        location: aws-ec2
+        region: us-west-1
+        performance: 90
+        availability: 0.9995
+        country: United States
+        city: SAN JOSE
+        cost: 1.001 USD/hour
+        disk_size: 800
+        num_disks: 1
+        num_cpus: 4
+        ram: 30.5
+        disk_type: ssd
+
+  # if you want to tell brooklyn to assign a location at deploy time, as part of the template, this is the current way.
+  # it can also be done with camp, referencing this topology template.
   groups:
-    operation_www:
-      members: [www]
+    add_brooklyn_location-tomcat:
+      members: [ Amazon_EC2_i2_xlarge_us_west_2 ]
       policies:
-      - QoSInfo: {execution_time: 200 ms, benchmark_platform: hp_cloud_services.2xl}
-      - dependencies: {operation_webservices: '2'}
-      - QoSRequirements:
-          response_time: {less_than: 2000.0 ms}
-          availability: {greater_than: 0.98}
-          cost: {less_or_equal: 200.0 euros_per_month}
-          workload: {less_or_equal: 50.0 req_per_min}
-      - ExpectedQualityPOC: {expectedExecutionTimePOC: .NaN, fitnessPOC: .NaN, expectedCostPOC: 2571.84}
-    operation_webservices:
-      members: [webservices]
+      - brooklyn.location: aws-ec2:us-west-2
+
+    add_brooklyn_location-db:
+      members: [ Amazon_EC2_i2_xlarge_us_west_1 ]
       policies:
-      - QoSInfo: {execution_time: 100 ms, benchmark_platform: hp_cloud_services.2xl}
-      - dependencies: {operation_db1: '1'}
-    operation_db1:
-      members: [db1]
+      - brooklyn.location: aws-ec2:us-west-2
+    seaclouds_configuration_policy:
+      #members: [ ]
       policies:
-      - dependencies: {}
-    add_brooklyn_location_Vultr_64gb_mc_atlanta:
-      policies:
-      - {brooklyn.location: 'vultr:compute:atlanta'}
-      members: [webservices]
-    add_brooklyn_location_Rapidcloud_io_Asia_HK:
-      policies:
-      - {brooklyn.location: Rapidcloud_io_Asia_HK}
-      members: [www]
-    add_brooklyn_location_App42_PaaS_America_US:
-      policies:
-      - {brooklyn.location: App42_PaaS_America_US}
-      members: [db1]
-    monitoringInformation:
-      members: [application]
-      policies:
-      - {id: 3e63723c-9715-457a-9aeb-2ae1b274e8b1}
-    sla_gen_info:
-      members: [ application ]
-      policies:
-      - id: 3e63723c-9715-457a-9aeb-2ae1b274e8b2
+      - configuration:
+          type: eu.seaclouds.policy.SeaCloudsManagementPolicy
+          slaEndpoint: "http://52.36.119.104:9003"
+          slaAgreement: "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pg0KPHdzYWc6QWdyZWVtZW50IHhtbG5zOnNsYT0iaHR0cDovL3NsYS5hdG9zLmV1IiB4bWxuczp3c2FnPSJodHRwOi8vd3d3LmdnZi5vcmcvbmFtZXNwYWNlcy93cy1hZ3JlZW1lbnQiIHdzYWc6QWdyZWVtZW50SWQ9ImFwcGlkIj4NCiAgICA8d3NhZzpOYW1lPnVzZXItc2VhY2xvdWRzLUNoYXQgQXBwbGljYXRpb24gdXNpbmcgSkJvc3M8L3dzYWc6TmFtZT4NCiAgICA8d3NhZzpDb250ZXh0Pg0KICAgICAgICA8d3NhZzpBZ3JlZW1lbnRJbml0aWF0b3I+dXNlcjwvd3NhZzpBZ3JlZW1lbnRJbml0aWF0b3I+DQogICAgICAgIDx3c2FnOkFncmVlbWVudFJlc3BvbmRlcj5zZWFjbG91ZHM8L3dzYWc6QWdyZWVtZW50UmVzcG9uZGVyPg0KICAgICAgICA8d3NhZzpTZXJ2aWNlUHJvdmlkZXI+QWdyZWVtZW50UmVzcG9uZGVyPC93c2FnOlNlcnZpY2VQcm92aWRlcj4NCiAgICAgICAgPHdzYWc6RXhwaXJhdGlvblRpbWU+MjAxNy0wMi0wOFQxNjo0MToyOSswMDAwPC93c2FnOkV4cGlyYXRpb25UaW1lPg0KICAgICAgICA8c2xhOlNlcnZpY2U+Q2hhdCBBcHBsaWNhdGlvbiB1c2luZyBKQm9zczwvc2xhOlNlcnZpY2U+DQogICAgPC93c2FnOkNvbnRleHQ+DQogICAgPHdzYWc6VGVybXM+DQogICAgICAgIDx3c2FnOkFsbD4NCiAgICAgICAgICAgIDx3c2FnOlNlcnZpY2VEZXNjcmlwdGlvblRlcm0vPg0KICAgICAgICAgICAgPHdzYWc6R3VhcmFudGVlVGVybSB3c2FnOk5hbWU9ImFwcGlkX215c3FsX3NlcnZlcl9jcHVfdXRpbGl6YXRpb24iPg0KICAgICAgICAgICAgICAgIDx3c2FnOlNlcnZpY2VTY29wZSB3c2FnOlNlcnZpY2VOYW1lPSJzZXJ2aWNlIj5hcHBpZF9teXNxbF9zZXJ2ZXI8L3dzYWc6U2VydmljZVNjb3BlPg0KICAgICAgICAgICAgICAgIDx3c2FnOlNlcnZpY2VMZXZlbE9iamVjdGl2ZT4NCiAgICAgICAgICAgICAgICAgICAgPHdzYWc6S1BJVGFyZ2V0Pg0KICAgICAgICAgICAgICAgICAgICAgICAgPHdzYWc6S1BJTmFtZT5hcHBpZF9teXNxbF9zZXJ2ZXIvQ1BVVXRpbGl6YXRpb248L3dzYWc6S1BJTmFtZT4NCiAgICAgICAgICAgICAgICAgICAgICAgIDx3c2FnOkN1c3RvbVNlcnZpY2VMZXZlbD57ImNvbnN0cmFpbnQiOiAiYXBwaWRfbXlzcWxfc2VydmVyX2NwdV91dGlsaXphdGlvbiBOT1RfRVhJU1RTIiwgInFvcyI6ICJNRVRSSUMgTEUgMC41IiB9PC93c2FnOkN1c3RvbVNlcnZpY2VMZXZlbD4NCiAgICAgICAgICAgICAgICAgICAgPC93c2FnOktQSVRhcmdldD4NCiAgICAgICAgICAgICAgICA8L3dzYWc6U2VydmljZUxldmVsT2JqZWN0aXZlPg0KICAgICAgICAgICAgPC93c2FnOkd1YXJhbnRlZVRlcm0+DQogICAgICAgIDwvd3NhZzpBbGw+DQogICAgPC93c2FnOlRlcm1zPg0KPC93c2FnOkFncmVlbWVudD4NCg=="
+          t4cEndpoint: "http://52.48.187.2:8170"
+          t4cRules: "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pg0KPG1vbml0b3JpbmdSdWxlcyB4bWxucz0iaHR0cDovL3d3dy5tb2RhY2xvdWRzLmV1L3hzZC8xLjAvbW9uaXRvcmluZ19ydWxlc19zY2hlbWEiIHhtbG5zOnhzaT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEtaW5zdGFuY2UiIHhzaTpzY2hlbWFMb2NhdGlvbj0iaHR0cDovL3d3dy5tb2RhY2xvdWRzLmV1L3hzZC8xLjAvbW9uaXRvcmluZ19ydWxlc19zY2hlbWEiPg0KICAgIDwhLS0gTW9uaXRvcmluZyBydWxlIGlkIHBhdHRlcm4gYXBwaWRfdG9zY2Fsb2NhdGlvbm5hbWVfbWV0cmljIC0tPg0KICAgIDxtb25pdG9yaW5nUnVsZSBpZD0iYXBwaWRfbXlzcWxfc2VydmVyX2NwdV91dGlsaXphdGlvbiIgdGltZVN0ZXA9IjEwIiB0aW1lV2luZG93PSIxMCI+DQogICAgICAgIDxtb25pdG9yZWRUYXJnZXRzPg0KICAgICAgICAgICAgPG1vbml0b3JlZFRhcmdldCB0eXBlPSJhcHBpZF9teXNxbF9zZXJ2ZXIiIGNsYXNzPSJWTSIvPg0KICAgICAgICA8L21vbml0b3JlZFRhcmdldHM+DQogICAgICAgIDxjb2xsZWN0ZWRNZXRyaWMgbWV0cmljTmFtZT0iQ1BVVXRpbGl6YXRpb24iPg0KICAgICAgICAgICAgPHBhcmFtZXRlciBuYW1lPSJzYW1wbGluZ1RpbWUiPjEwPC9wYXJhbWV0ZXI+DQogICAgICAgICAgICA8cGFyYW1ldGVyIG5hbWU9InNhbXBsaW5nUHJvYmFiaWxpdHkiPjE8L3BhcmFtZXRlcj4NCiAgICAgICAgPC9jb2xsZWN0ZWRNZXRyaWM+DQogICAgICAgIDxhY3Rpb25zPg0KICAgICAgICAgICAgPCEtLSBPdXRwdXRtZXRyaWMgcGF0dGVybiBhcHBpZF90b3NjYWxvY2F0aW9ubmFtZV9tZXRyaWNuYW1lX21ldHJpYyAtLT4NCiAgICAgICAgICAgIDxhY3Rpb24gbmFtZT0iT3V0cHV0TWV0cmljIj4NCiAgICAgICAgICAgICAgICA8cGFyYW1ldGVyIG5hbWU9Im1ldHJpYyI+YXBwaWRfbXlzcWxfc2VydmVyX2NwdV91dGlsaXphdGlvbl9tZXRyaWM8L3BhcmFtZXRlcj4NCiAgICAgICAgICAgICAgICA8cGFyYW1ldGVyIG5hbWU9InZhbHVlIj5NRVRSSUM8L3BhcmFtZXRlcj4NCiAgICAgICAgICAgICAgICA8cGFyYW1ldGVyIG5hbWU9InJlc291cmNlSWQiPklEPC9wYXJhbWV0ZXI+DQogICAgICAgICAgICA8L2FjdGlvbj4NCiAgICAgICAgPC9hY3Rpb25zPg0KICAgIDwvbW9uaXRvcmluZ1J1bGU+DQogICAgPG1vbml0b3JpbmdSdWxlIGlkPSJhcHBpZF9teXNxbF9zZXJ2ZXJfcmFtX3V0aWxpemF0aW9uIiB0aW1lU3RlcD0iMTAiIHRpbWVXaW5kb3c9IjEwIj4NCiAgICAgICAgPG1vbml0b3JlZFRhcmdldHM+DQogICAgICAgICAgICA8bW9uaXRvcmVkVGFyZ2V0IHR5cGU9ImFwcGlkX215c3FsX3NlcnZlciIgY2xhc3M9IlZNIi8+DQogICAgICAgIDwvbW9uaXRvcmVkVGFyZ2V0cz4NCiAgICAgICAgPGNvbGxlY3RlZE1ldHJpYyBtZXRyaWNOYW1lPSJNZW1Vc2VkIj4NCiAgICAgICAgICAgIDxwYXJhbWV0ZXIgbmFtZT0ic2FtcGxpbmdUaW1lIj4xMDwvcGFyYW1ldGVyPg0KICAgICAgICAgICAgPHBhcmFtZXRlciBuYW1lPSJzYW1wbGluZ1Byb2JhYmlsaXR5Ij4xPC9wYXJhbWV0ZXI+DQogICAgICAgIDwvY29sbGVjdGVkTWV0cmljPg0KICAgICAgICA8YWN0aW9ucz4NCiAgICAgICAgICAgIDxhY3Rpb24gbmFtZT0iT3V0cHV0TWV0cmljIj4NCiAgICAgICAgICAgICAgICA8cGFyYW1ldGVyIG5hbWU9Im1ldHJpYyI+YXBwaWRfbXlzcWxfc2VydmVyX3JhbV91dGlsaXphdGlvbl9tZXRyaWM8L3BhcmFtZXRlcj4NCiAgICAgICAgICAgICAgICA8cGFyYW1ldGVyIG5hbWU9InZhbHVlIj5NRVRSSUM8L3BhcmFtZXRlcj4NCiAgICAgICAgICAgICAgICA8cGFyYW1ldGVyIG5hbWU9InJlc291cmNlSWQiPklEPC9wYXJhbWV0ZXI+DQogICAgICAgICAgICA8L2FjdGlvbj4NCiAgICAgICAgPC9hY3Rpb25zPg0KICAgIDwvbW9uaXRvcmluZ1J1bGU+DQo8L21vbml0b3JpbmdSdWxlcz4NCg=="
+          influxdbEndpoint: "http://52.48.187.2:8086"
+          influxdbDatabase: "tower4clouds"
+          influxdbUsername: "root"
+          influxdbPassword: "root"
+

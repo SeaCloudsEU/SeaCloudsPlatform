@@ -2,6 +2,7 @@ package eu.seaclouds.platform.planner.core;
 
 
 import com.google.common.io.Resources;
+import org.apache.brooklyn.util.text.Strings;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
@@ -10,13 +11,17 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
@@ -37,16 +42,16 @@ import static org.testng.Assert.assertTrue;
  * limitations under the License.
  */
 @SuppressWarnings("ALL")
-@Test
 public class DamGeneratorTest {
 
     private static final String FAKE_AGREEMENT_ID = "agreement-1234567890";
 
-    static final String MONITOR_URL = "52.48.187.2";
-    static final String MONITOR_PORT = "8170";
-    static final String INFLUXDB_URL = "52.48.187.2";
-    static final String INFLUXDB_PORT = "8086";
-    static final String SLA_ENDPOINT = "127.0.0.3:9003";
+    private static final String MONITOR_URL = "52.48.187.2";
+    private static final String MONITOR_PORT = "8170";
+    private static final String INFLUXDB_URL = "52.48.187.2";
+    private static final String INFLUXDB_PORT = "8086";
+    private static final String SLA_ENDPOINT = "127.0.0.3:9003";
+    private static final String GRAFANA_ENDPOINT = "http://127.0.0.4:1234";
 
     Yaml yamlParser;
     String dam = null;
@@ -56,11 +61,37 @@ public class DamGeneratorTest {
     private DamGenerator.SlaAgreementManager fakeAgreementManager;
 
     @BeforeMethod
-    public void setUp() {
+    public void setUp() throws URISyntaxException, FileNotFoundException {
         MockitoAnnotations.initMocks(this);
+
+        when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
+                .thenReturn(FAKE_AGREEMENT_ID);
+        String fakeAgreement = new Scanner(new File(Resources.getResource("agreements/mock_test_agreement.xml").toURI())).useDelimiter("\\Z").next();
+        when(fakeAgreementManager.getAgreement(anyString())).thenReturn(fakeAgreement);
+
         DumperOptions options = new DumperOptions();
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         yamlParser = new Yaml(options);
+    }
+
+    private DamGenerator getDamGenerator(){
+        DamGenerator damGenerator = new DamGenerator.Builder()
+                .monitorUrl(MONITOR_URL)
+                .monitorPort(MONITOR_PORT)
+                .slaUrl(SLA_ENDPOINT)
+                .influxdbUrl(INFLUXDB_URL)
+                .influxdbPort(INFLUXDB_PORT)
+                .grafanaEndpoint(GRAFANA_ENDPOINT)
+                .build();
+        return damGenerator;
+    }
+
+    private static String getMonitorEndpoint(){
+        return "http://"+MONITOR_URL+":"+MONITOR_PORT;
+    }
+
+    private static String getInfluxDbEndpoint(){
+        return "http://"+INFLUXDB_URL+":"+INFLUXDB_PORT;
     }
 
     @Test
@@ -68,10 +99,7 @@ public class DamGeneratorTest {
     public void testMetadataTemplate() throws Exception {
         String adp = new Scanner(new File(Resources.getResource("generated_adp.yml").toURI())).useDelimiter("\\Z").next();
 
-        when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
-                .thenReturn(FAKE_AGREEMENT_ID);
-
-        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT);
+        DamGenerator damGenerator = getDamGenerator();
         damGenerator.setAgreementManager(fakeAgreementManager);
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
@@ -89,7 +117,6 @@ public class DamGeneratorTest {
         assertEquals(imports.size(), 2);
         assertTrue(imports.contains(DamGenerator.TOSCA_NORMATIVE_TYPES + ":" + DamGenerator.TOSCA_NORMATIVE_TYPES_VERSION));
         assertTrue(imports.contains(DamGenerator.SEACLOUDS_NODE_TYPES + ":" + DamGenerator.SEACLOUDS_NODE_TYPES_VERSION));
-
     }
 
     @Test
@@ -97,10 +124,7 @@ public class DamGeneratorTest {
     public void testGroupsAsTopologyChild() throws Exception {
         String adp = new Scanner(new File(Resources.getResource("generated_adp.yml").toURI())).useDelimiter("\\Z").next();
 
-        when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
-                .thenReturn(FAKE_AGREEMENT_ID);
-
-        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT);
+        DamGenerator damGenerator = getDamGenerator();
         damGenerator.setAgreementManager(fakeAgreementManager);
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
@@ -114,7 +138,7 @@ public class DamGeneratorTest {
                 (Map<String, Object>) topologyTemplate.get(DamGenerator.GROUPS);
 
         assertNotNull(topologyGroups);
-        assertEquals(topologyGroups.size(), 8);
+        assertEquals(topologyGroups.size(), 9);
         assertTrue(topologyGroups.containsKey("operation_www"));
         assertTrue(topologyGroups.containsKey("operation_webservices"));
         assertTrue(topologyGroups.containsKey("operation_db1"));
@@ -123,6 +147,7 @@ public class DamGeneratorTest {
         assertTrue(topologyGroups.containsKey("add_brooklyn_location_App42_PaaS_America_US"));
         assertTrue(topologyGroups.containsKey("monitoringInformation"));
         assertTrue(topologyGroups.containsKey("sla_gen_info"));
+        testSeaCloudsPolicy(topologyGroups);
     }
 
     @Test
@@ -130,10 +155,7 @@ public class DamGeneratorTest {
     public void testNuroDam() throws Exception {
         String adp = new Scanner(new File(Resources.getResource("nuro/nuro_adp.yml").toURI())).useDelimiter("\\Z").next();
 
-        when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
-                .thenReturn(FAKE_AGREEMENT_ID);
-
-        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT);
+        DamGenerator damGenerator = getDamGenerator();
         damGenerator.setAgreementManager(fakeAgreementManager);
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
@@ -164,6 +186,7 @@ public class DamGeneratorTest {
 
         Map<String, Object> generatedGroups = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.GROUPS);
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
+        testSeaCloudsPolicy(generatedGroups);
 
         assertEquals(generatedGroups.get("operation_www"), expectedGroups.get("operation_www"));
         assertEquals(generatedGroups.get("operation_db"), expectedGroups.get("operation_db"));
@@ -176,10 +199,7 @@ public class DamGeneratorTest {
     public void testAtosDam() throws Exception {
         String adp = new Scanner(new File(Resources.getResource("atos/atos_adp.yml").toURI())).useDelimiter("\\Z").next();
 
-        when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
-                .thenReturn(FAKE_AGREEMENT_ID);
-
-        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT);
+        DamGenerator damGenerator = getDamGenerator();
         damGenerator.setAgreementManager(fakeAgreementManager);
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
@@ -217,6 +237,7 @@ public class DamGeneratorTest {
 
         Map<String, Object> generatedGroups = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.GROUPS);
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
+        testSeaCloudsPolicy(generatedGroups);
 
         assertEquals(generatedGroups.get("operation_www"), expectedGroups.get("operation_www"));
         assertEquals(generatedGroups.get("operation_webservices"), expectedGroups.get("operation_webservices"));
@@ -231,10 +252,7 @@ public class DamGeneratorTest {
     public void testWebChatDam() throws Exception {
         String adp = new Scanner(new File(Resources.getResource("webchat/webchat_adp.yml").toURI())).useDelimiter("\\Z").next();
 
-        when(fakeAgreementManager.generateAgreeemntId(((Map<String, Object>) anyObject())))
-                .thenReturn(FAKE_AGREEMENT_ID);
-
-        DamGenerator damGenerator = new DamGenerator(MONITOR_URL, MONITOR_PORT, SLA_ENDPOINT, INFLUXDB_URL, INFLUXDB_PORT);
+        DamGenerator damGenerator = getDamGenerator();
         damGenerator.setAgreementManager(fakeAgreementManager);
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
@@ -267,10 +285,51 @@ public class DamGeneratorTest {
 
         Map<String, Object> generatedGroups = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.GROUPS);
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
+        testSeaCloudsPolicy(generatedGroups);
 
         assertEquals(generatedGroups.get("operation_Chat"), expectedGroups.get("operation_Chat"));
         assertEquals(generatedGroups.get("operation_MessageDatabase"), expectedGroups.get("operation_MessageDatabase"));
         assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_c1_medium_us_west_2"), expectedGroups.get("add_brooklyn_location_Amazon_EC2_c1_medium_us_west_2"));
         assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_c1_medium_sa_east_1"), expectedGroups.get("add_brooklyn_location_Amazon_EC2_c1_medium_sa_east_1"));
+    }
+
+
+    public void testSeaCloudsPolicy(Map<String, Object> groups){
+        assertNotNull(groups);
+        assertTrue(groups.containsKey(DamGenerator.SEACLOUDS_APPLICATION_CONFIGURATION));
+        Map<String, Object> policyGroup = (Map<String, Object>) groups
+                .get(DamGenerator.SEACLOUDS_APPLICATION_CONFIGURATION);
+
+        assertTrue(policyGroup.containsKey(DamGenerator.MEMBERS));
+        assertTrue(policyGroup.get(DamGenerator.MEMBERS) instanceof List);
+        assertTrue(((List)policyGroup.get(DamGenerator.MEMBERS)).isEmpty());
+
+        assertTrue(policyGroup.containsKey(DamGenerator.POLICIES));
+        assertTrue(policyGroup.get(DamGenerator.POLICIES) instanceof List);
+        List<Object> policies = (List<Object>)policyGroup.get(DamGenerator.POLICIES);
+
+        assertEquals(policies.size(), 1);
+        assertTrue(policies.get(0) instanceof Map);
+        Map<String, Object> seacloudsManagementPolicy = (Map<String, Object>) policies.get(0);
+        assertEquals(seacloudsManagementPolicy.size(), 1);
+        assertTrue(seacloudsManagementPolicy.containsKey(DamGenerator.SEACLOUDS_APPLICATION_CONFIGURATION_POLICY));
+
+        Map<String, Object> seacloudsManagementPolicyProperties = (Map<String, Object>)
+                seacloudsManagementPolicy.get(DamGenerator.SEACLOUDS_APPLICATION_CONFIGURATION_POLICY);
+        assertEquals(seacloudsManagementPolicyProperties.size(), 12);
+
+        assertEquals(seacloudsManagementPolicyProperties.get(DamGenerator.TYPE),
+                DamGenerator.SEACLOUDS_MANAGEMENT_POLICY);
+        assertEquals(seacloudsManagementPolicyProperties.get("slaEndpoint"), SLA_ENDPOINT);
+        assertFalse(Strings.isBlank((String) seacloudsManagementPolicyProperties.get("slaAgreement")));
+        assertEquals(seacloudsManagementPolicyProperties.get("t4cEndpoint"), getMonitorEndpoint());
+        assertFalse(Strings.isBlank((String) seacloudsManagementPolicyProperties.get("t4cRules")));
+        assertEquals(seacloudsManagementPolicyProperties.get("influxdbEndpoint"), getInfluxDbEndpoint());
+        assertEquals(seacloudsManagementPolicyProperties.get("influxdbDatabase"), DamGenerator.INFLUXDB_DATABASE);
+        assertEquals(seacloudsManagementPolicyProperties.get("influxdbUsername"), DamGenerator.INFLUXDB_USERNAME);
+        assertEquals(seacloudsManagementPolicyProperties.get("influxdbPassword"), DamGenerator.INFLUXDB_PASSWORD);
+        assertEquals(seacloudsManagementPolicyProperties.get("grafanaEndpoint"), GRAFANA_ENDPOINT);
+        assertEquals(seacloudsManagementPolicyProperties.get("grafanaUsername"), DamGenerator.GRAFANA_USERNAME);
+        assertEquals(seacloudsManagementPolicyProperties.get("grafanaPassword"), DamGenerator.GRAFANA_PASSWORD);
     }
 }

@@ -16,7 +16,8 @@
        limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.seaclouds-project</groupId>
     <artifactId>platform</artifactId>
@@ -25,9 +26,9 @@
         <module>common</module>
         <module>deployer</module>
         <module>planner</module>
-		<module>discoverer</module>
+        <module>discoverer</module>
         <module>monitor</module>
-	<module>dashboard</module>
+        <module>dashboard</module>
         <module>sla</module>
         <module>qa</module>
     </modules>
@@ -82,7 +83,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <includedTestGroups />
+        <includedTestGroups/>
         <excludedTestGroups>Integration,Live</excludedTestGroups>
 
         <!-- Dependencies -->
@@ -196,6 +197,10 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>deib-polimi-releases</id>
+            <url>https://github.com/deib-polimi/deib-polimi-mvn-repo/raw/master/releases</url>
+        </repository>
     </repositories>
 
     <distributionManagement>
@@ -288,7 +293,7 @@
                             <exclude>**/seaclouds_id_rsa</exclude>
                             <exclude>**/seaclouds_id_rsa.pub</exclude>
                             <exclude>**/*.yml.template</exclude>
-                        <exclude>**/*.out</exclude>
+                            <exclude>**/*.out</exclude>
                         </excludes>
                     </configuration>
                 </plugin>
@@ -316,11 +321,11 @@
                             <!-- Checks for whitespace                               -->
                             <!-- See http://checkstyle.sf.net/config_whitespace.html -->
                             <module name="FileTabCharacter">
-                                <property name="eachLine" value="true" />
+                                <property name="eachLine" value="true"/>
                             </module>
                             <module name="TreeWalker">
                                 <module name="IllegalImport">
-                                    <property name="illegalPkgs" value="com.google.api.client.repackaged" />
+                                    <property name="illegalPkgs" value="com.google.api.client.repackaged"/>
                                 </module>
                             </module>
                         </module>
@@ -336,7 +341,7 @@
                     <serverId>sonatype-nexus-staging</serverId>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                    </configuration>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -351,25 +356,25 @@
                     <goals>deploy</goals>
                 </configuration>
             </plugin>
-	    <plugin>
-		<groupId>org.jacoco</groupId>
-		<artifactId>jacoco-maven-plugin</artifactId>
-		<version>0.7.5.201505241946</version>
-		<executions>
-			<execution>
-				<goals>
-		        		<goal>prepare-agent</goal>
-		      		</goals>
-			</execution>
-			<execution>
-				<id>report</id>
-				<phase>test</phase>
-				<goals>
-					<goal>report</goal>
-				</goals>
-			</execution>
-		</executions>
-	     </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.5.201505241946</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -527,7 +532,8 @@
             <dependency>
                 <groupId>org.json</groupId>
                 <artifactId>json</artifactId>
-                <version>${json.version}</version>            <!-- This version doesn't require Java 8 -->
+                <version>${json.version}</version>
+                <!-- This version doesn't require Java 8 -->
             </dependency>
             <dependency>
                 <groupId>org.hsqldb</groupId>

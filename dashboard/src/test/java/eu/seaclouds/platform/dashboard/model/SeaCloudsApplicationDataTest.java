@@ -17,29 +17,31 @@
 
 package eu.seaclouds.platform.dashboard.model;
 
+import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
 import org.apache.commons.io.FileUtils;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.yaml.snakeyaml.Yaml;
 
+import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.net.URL;
 import java.util.Map;
+import java.util.Set;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 
 public class SeaCloudsApplicationDataTest {
-    private static final String TOSCA_DAM_WITHOUT_SLA_MR_FILE_PATH = "fixtures/tosca-dam-without-mr-and-sla.yml";
     private static final String TOSCA_DAM_FILE_PATH = "fixtures/tosca-dam.yml";
-    private static final String DESCRIPTION = "Sample 3-tier application";
-    private static final String MONITORING_RULES_TEMPLATE_ID = "3e63723c-9715-457a-9aeb-2ae1b274e8b1";
-    private static final String AGREEMENT_TEMPLATE_ID = "3e63723c-9715-457a-9aeb-2ae1b274e8b2";
+    private static final String DESCRIPTION = "web-chat.tomca-dc-compute.mysql-compute.na";
+    private static final String AGREEMENT_ID = "appid";
+    private static final Set<String> MONITORING_RULES_IDS =
+            Sets.newHashSet("appid_mysql_server_cpu_utilization", "appid_mysql_server_ram_utilization");
+
 
     private Map toscaDamMap;
-    private Map toscaDamMapWithoutMRandSLA;
-
     private SeaCloudsApplicationData applicationData;
 
     //TODO: Modify this class when we will take Objects as and input for the setters instead of strings.
@@ -48,8 +50,6 @@ public class SeaCloudsApplicationDataTest {
     public void setUp() throws Exception {
         URL resource = Resources.getResource(TOSCA_DAM_FILE_PATH);
         toscaDamMap = (Map) new Yaml().load(FileUtils.openInputStream(new File(resource.getFile())));
-        resource = Resources.getResource(TOSCA_DAM_WITHOUT_SLA_MR_FILE_PATH);
-        toscaDamMapWithoutMRandSLA = (Map) new Yaml().load(FileUtils.openInputStream(new File(resource.getFile())));
     }
 
     @Test
@@ -59,29 +59,21 @@ public class SeaCloudsApplicationDataTest {
     }
 
     @Test
-    public void testExtractAgreementTemplateId() {
-        String toscaAgreementTemplateId = SeaCloudsApplicationData.extractAgreementTemplateId(toscaDamMap);
-        assertEquals(toscaAgreementTemplateId, AGREEMENT_TEMPLATE_ID);
-
-        toscaAgreementTemplateId = SeaCloudsApplicationData.extractAgreementTemplateId(toscaDamMapWithoutMRandSLA);
-        assertNull(toscaAgreementTemplateId);
+    public void testExtractAgreementId() throws Exception {
+       assertEquals(SeaCloudsApplicationData.extractAgreementId(toscaDamMap), AGREEMENT_ID);
     }
 
     @Test
-    public void testExtractMonitoringRulesemplateId() {
-        String monitoringRulesId = SeaCloudsApplicationData.extractMonitoringRulesemplateId(toscaDamMap);
-        assertEquals(monitoringRulesId, MONITORING_RULES_TEMPLATE_ID);
-
-        monitoringRulesId = SeaCloudsApplicationData.extractMonitoringRulesemplateId(toscaDamMapWithoutMRandSLA);
-        assertNull(monitoringRulesId);
+    public void testExtractMonitoringRulesIds() throws Exception {
+        assertEquals(SeaCloudsApplicationData.extractMonitoringRulesIds(toscaDamMap), MONITORING_RULES_IDS);
     }
 
     @Test
-    public void testCreateSeaCloudsApplicationData(){
+    public void testCreateSeaCloudsApplicationData() throws Exception {
         SeaCloudsApplicationData application = new SeaCloudsApplicationData(toscaDamMap);
         assertEquals(application.getName(), DESCRIPTION);
-        assertEquals(application.getAgreementTemplateId(), AGREEMENT_TEMPLATE_ID);
-        assertEquals(application.getMonitoringRulesTemplateId(), MONITORING_RULES_TEMPLATE_ID);
+        assertEquals(application.getAgreementId(), AGREEMENT_ID);
+        assertEquals(application.getMonitoringRulesIds(), MONITORING_RULES_IDS);
     }
 
 }

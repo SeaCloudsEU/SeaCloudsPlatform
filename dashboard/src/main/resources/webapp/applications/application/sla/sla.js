@@ -36,33 +36,40 @@ angular.module('seacloudsDashboard.applications.application.sla', ['datatables',
         $scope.dtOptions = DTOptionsBuilder.newOptions().withDisplayLength(3);
 
         $scope.SeaCloudsApi.getAgreement($scope.seaCloudsApplicationId)
-            .success(function (agreement) {
-                $scope.agreement = agreement;
-            }).error(function () {
-                notificationService.error("SLA Agreements are not available of this application")
+            .then(function (result) {
+                $scope.agreement = result.data;
+                return $scope.SeaCloudsApi.getAgreementStatus($scope.seaCloudsApplicationId);
             })
-
-        $scope.SeaCloudsApi.getAgreementStatus($scope.seaCloudsApplicationId).
-            success(function (value) {
-                $scope.agreementStatus = value;
+            .then(function (result) {
+                $scope.agreementStatus = result.data;
 
                 // View first term is it exists
-                if($scope.agreementStatus && $scope.agreementStatus.guaranteeterms.length){
+                if ($scope.agreementStatus && $scope.agreementStatus.guaranteeterms.length) {
                     $scope.viewSLATerm($scope.agreementStatus.guaranteeterms[0].name);
                 }
-            }).
-            error(function () {
+            })
+            .catch(function () {
+                notificationService.error("SLA Agreements are not available of this application")
+            })
+            .finally(function () {
+                $scope.agrementLoaded = true;
             })
 
+
+        var retrievalErrors = 0;
         $scope.updateFunction = $interval(function () {
-            $scope.SeaCloudsApi.getAgreementStatus($scope.seaCloudsApplicationId).
-                success(function (value) {
-                    $scope.agreementStatus = value;
-                }).
-                error(function () {
-                    $interval.cancel($scope.updateFunction);
-                    $scope.updateFunction = undefined;
-                    notificationService.error("It was not possible to retrieve the SLA's status after several attempts. Disabling automatic refresh.");
+            $scope.SeaCloudsApi.getAgreementStatus($scope.seaCloudsApplicationId)
+                .then(function (result) {
+                    $scope.agreementStatus = result.data;
+                })
+                .catch(function () {
+                    retrievalErrors++;
+
+                    if (retrievalErrors > 3) {
+                        $interval.cancel($scope.updateFunction);
+                        $scope.updateFunction = undefined;
+                        notificationService.error("It was not possible to retrieve the SLA's status after several attempts. Disabling automatic refresh.");
+                    }
                 })
         }, 5000);
 
@@ -77,6 +84,8 @@ angular.module('seacloudsDashboard.applications.application.sla', ['datatables',
         var selectedTermViolations;
         var rawAgreementVisible;
 
+        $scope.codemirror = { agreement:  "RAW Agreement visualizer is not ready yet."};
+
         $scope.isRawAgreementVisible = function () {
             return rawAgreementVisible;
         }
@@ -88,17 +97,17 @@ angular.module('seacloudsDashboard.applications.application.sla', ['datatables',
         $scope.viewSLATerm = function (name) {
             selectedTermName = name;
 
-            $scope.agreement.terms.allTerms.guaranteeTerms[index].forEach(function(term, index){
-                if(term.name == selectedTermName){
+            $scope.agreement.terms.allTerms.guaranteeTerms.forEach(function (term, index) {
+                if (term.name == selectedTermName) {
                     selectedTermIndex = index;
                 }
             })
 
-            scope.SeaCloudsApi.getAgreementTermViolations($scope.seaCloudsApplicationId, name).
-                success(function(violations){
+            $scope.SeaCloudsApi.getAgreementTermViolations($scope.seaCloudsApplicationId, name).
+                success(function (violations) {
                     selectedTermViolations = violations;
                 }).
-                error(function(){
+                error(function () {
                     // Handle error
                 })
 
@@ -108,23 +117,23 @@ angular.module('seacloudsDashboard.applications.application.sla', ['datatables',
             return selectedTermName;
         }
 
-        $scope.getActiveTermViolations = function(){
+        $scope.getActiveTermViolations = function () {
             return selectedTermViolations;
         }
         $scope.getSlaTermQoS = function () {
-            if($scope.agreement) {
+            if ($scope.agreement) {
                 var obj = JSON.parse($scope.agreement.terms.allTerms.guaranteeTerms[selectedTermIndex].serviceLevelObjetive.kpitarget.customServiceLevel);
                 return obj.qos;
-            }else{
+            } else {
                 return "Not available yet"
             }
         }
-        
+
         $scope.getSlaTermConstrain = function () {
-            if($scope.agreement){
+            if ($scope.agreement) {
                 var obj = JSON.parse($scope.agreement.terms.allTerms.guaranteeTerms[selectedTermIndex].serviceLevelObjetive.kpitarget.customServiceLevel);
                 return obj.constraint;
-            }else{
+            } else {
                 return "Not available yet"
             }
 

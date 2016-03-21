@@ -69,14 +69,14 @@ public class DashboardApplication extends Application<DashboardConfiguration> {
     public void run(DashboardConfiguration configuration, Environment environment) throws Exception {
         // Configuring HealthChecks
         DashboardHealthCheck healthCheck = new DashboardHealthCheck(configuration.getDeployerProxy(),
-                configuration.getMonitorProxy(), configuration.getGrafanaProxy(), configuration.getSlaProxy(), configuration.getPlannerProxy());
+                 configuration.getGrafanaProxy(), configuration.getSlaProxy(), configuration.getPlannerProxy());
         environment.healthChecks().register(healthCheck.getName(), healthCheck);
 
         // Registering REST API Endpoints
         environment.jersey().register(new CoreResource(configuration.getDeployerProxy(),
-                configuration.getMonitorProxy(), configuration.getGrafanaProxy(), configuration.getPlannerProxy(),
+                configuration.getGrafanaProxy(), configuration.getPlannerProxy(),
                 configuration.getSlaProxy()));
-        environment.jersey().register(new DeployerResource(configuration.getDeployerProxy(), configuration.getMonitorProxy(), configuration.getSlaProxy(), configuration.getPlannerProxy()));
+        environment.jersey().register(new DeployerResource(configuration.getDeployerProxy(), configuration.getSlaProxy()));
         environment.jersey().register(new MonitorResource(configuration.getDeployerProxy()));
         environment.jersey().register(new PlannerResource(configuration.getPlannerProxy()));
         environment.jersey().register(new SlaResource(configuration.getSlaProxy()));

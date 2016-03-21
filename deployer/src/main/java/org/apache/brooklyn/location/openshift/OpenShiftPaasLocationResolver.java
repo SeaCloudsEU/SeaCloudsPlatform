@@ -24,6 +24,7 @@ import org.apache.brooklyn.api.location.LocationResolver;
 import org.apache.brooklyn.api.location.LocationSpec;
 import org.apache.brooklyn.api.mgmt.ManagementContext;
 import org.apache.brooklyn.core.location.BasicLocationRegistry;
+import org.apache.brooklyn.core.location.LocationConfigUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,21 +53,19 @@ public class OpenShiftPaasLocationResolver implements LocationResolver {
 
     @Override
     public boolean accepts(String spec, LocationRegistry registry) {
-        if (BasicLocationRegistry.isResolverPrefixForSpec(this, spec, true)) {
-            return true;
-        } else {
-            // TODO: check valid OpenShift format on spec
-        }
-        return false;
+        return BasicLocationRegistry.isResolverPrefixForSpec(this, spec, true);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Location newLocationFromString(Map locationFlags,
-                                          String spec,
-                                          LocationRegistry registry) {
-        // TODO: TODO
-        return managementContext.getLocationManager().createLocation(
-                LocationSpec.create(locationFlags, OpenShiftPaasLocation.class));
+    public boolean isEnabled() {
+        return LocationConfigUtils.isResolverPrefixEnabled(managementContext, getPrefix());
     }
+
+    @Override
+    public LocationSpec<? extends Location> newLocationSpecFromString(String s, Map<?, ?> map, LocationRegistry locationRegistry) {
+        return LocationSpec.create(OpenShiftPaasLocation.class)
+                .configure(map);
+    }
+
+
 }
