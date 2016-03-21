@@ -33,24 +33,42 @@ public class DamGenResource {
 
     private final String monitorGeneratorURL;
     private final String slaGeneratorURL;
-    private final String influxdbURL;
 
     private final String[] genURLs;
     private final String monitorGeneratorPort;
-    private final String influxdbPort;
 
-    private static final String GRAFANA_ENDPOINT = "http://52.48.187.2:3000";
+    private final String influxdbURL;
+    private final String influxdbPort;
+    private final String influxdbDatabase;
+    private final String influxdbUsername;
+    private final String influxdbPassword;
+
+    private final String grafanaEndpoint;
+    private final String grafanaUsername;
+    private final String grafanaPassword;
 
     public DamGenResource(String monitorGeneratorURL,
                           String monitorGeneratorPort,
                           String slaGeneratorURL,
                           String influxdbURL,
-                          String influxdbPort) {
+                          String influxdbPort,
+                          String influxdbDatabase,
+                          String influxdbUsername,
+                          String influxdbPassword,
+                          String grafanaUsername,
+                          String grafanaPassword,
+                          String grafanaEndpoint) {
         this.monitorGeneratorURL = monitorGeneratorURL;
         this.slaGeneratorURL = slaGeneratorURL;
         this.monitorGeneratorPort = monitorGeneratorPort;
         this.influxdbURL = influxdbURL;
         this.influxdbPort = influxdbPort;
+        this.influxdbDatabase = influxdbDatabase;
+        this.influxdbUsername = influxdbUsername;
+        this.influxdbPassword = influxdbPassword;
+        this.grafanaUsername = grafanaUsername;
+        this.grafanaPassword = grafanaPassword;
+        this.grafanaEndpoint = grafanaEndpoint;
 
         this.genURLs = new String[]{
                 monitorGeneratorURL,
@@ -67,7 +85,12 @@ public class DamGenResource {
                 .slaUrl(slaGeneratorURL)
                 .influxdbUrl(influxdbURL)
                 .influxdbPort(influxdbPort)
-                .grafanaEndpoint(GRAFANA_ENDPOINT)
+                .influxdbDatabase(influxdbDatabase)
+                .influxdbUsername(influxdbUsername)
+                .influxdbPassword(influxdbPassword)
+                .grafanaUsername(grafanaUsername)
+                .grafanaPassword(grafanaPassword)
+                .grafanaEndpoint(grafanaEndpoint)
                 .build();
         return new DamGeneratorResponse(damGenerator.generateDam(adp));
     }
@@ -81,7 +104,12 @@ public class DamGenResource {
                 .slaUrl(slaGeneratorURL)
                 .influxdbUrl(influxdbURL)
                 .influxdbPort(influxdbPort)
-                .grafanaEndpoint(GRAFANA_ENDPOINT)
+                .influxdbDatabase(influxdbDatabase)
+                .influxdbUsername(influxdbUsername)
+                .influxdbPassword(influxdbPassword)
+                .grafanaUsername(grafanaUsername)
+                .grafanaPassword(grafanaPassword)
+                .grafanaEndpoint(grafanaEndpoint)
                 .build();
         return new DamGeneratorResponse(damGenerator.generateDam(adp));
     }

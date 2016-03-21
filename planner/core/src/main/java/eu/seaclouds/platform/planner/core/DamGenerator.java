@@ -104,12 +104,6 @@ public class DamGenerator {
     public static final String SEACLOUDS_MANAGEMENT_POLICY =
             "eu.seaclouds.policy.SeaCloudsManagementPolicy";
 
-    public static final String INFLUXDB_DATABASE = "tower4clouds";
-    public static final String INFLUXDB_USERNAME = "root";
-    public static final String INFLUXDB_PASSWORD = "root";
-    public static final String GRAFANA_USERNAME = "admin";
-    public static final String GRAFANA_PASSWORD = "admin";
-
     private DeployerTypesResolver deployerTypesResolver;
 
     private Map<String, MonitoringInfo> monitoringInfoByApplication = new HashMap<>();
@@ -118,7 +112,13 @@ public class DamGenerator {
     private String slaEndpoint;
     private String influxdbUrl;
     private String influxdbPort;
+    private String infludbDatabase;
+    private String influxdbUsername;
+    private String influxdbPassword;
+    private String grafanaUsername;
+    private String grafanaPassword;
     private String grafanaEndpoint;
+
     private SlaAgreementManager agreementManager;
     private Map<String, Object> template;
 
@@ -128,6 +128,11 @@ public class DamGenerator {
         this.slaEndpoint = builder.slaUrl;
         this.influxdbUrl = builder.influxdbUrl;
         this.influxdbPort = builder.influxdbPort;
+        this.infludbDatabase = builder.influxdbDatabase;
+        this.influxdbUsername = builder.influxdbUsername;
+        this.influxdbPassword = builder.influxdbPassword;
+        this.grafanaUsername = builder.grafanaUsername;
+        this.grafanaPassword = builder.grafanaPassword;
         this.grafanaEndpoint = builder.grafanaEndpoint;
         init();
     }
@@ -388,13 +393,13 @@ public class DamGenerator {
         seaCloudsPolicyConfiguration.put("t4cRules", encodeBase64MonitoringRules(monitoringInfo));
         seaCloudsPolicyConfiguration.put("influxdbEndpoint", getInfluxDbEndpoint().toString());
 
-        seaCloudsPolicyConfiguration.put("influxdbDatabase", INFLUXDB_DATABASE);
-        seaCloudsPolicyConfiguration.put("influxdbUsername", INFLUXDB_USERNAME);
-        seaCloudsPolicyConfiguration.put("influxdbPassword", INFLUXDB_PASSWORD);
+        seaCloudsPolicyConfiguration.put("influxdbDatabase", infludbDatabase);
+        seaCloudsPolicyConfiguration.put("influxdbUsername", influxdbUsername);
+        seaCloudsPolicyConfiguration.put("influxdbPassword", influxdbPassword);
 
         seaCloudsPolicyConfiguration.put("grafanaEndpoint", grafanaEndpoint);
-        seaCloudsPolicyConfiguration.put("grafanaUsername", GRAFANA_USERNAME);
-        seaCloudsPolicyConfiguration.put("grafanaPassword", GRAFANA_PASSWORD);
+        seaCloudsPolicyConfiguration.put("grafanaUsername", grafanaUsername);
+        seaCloudsPolicyConfiguration.put("grafanaPassword", grafanaPassword);
 
         Map<String, Object> seaCloudsPolicy = MutableMap.of();
         seaCloudsPolicy.put(SEACLOUDS_APPLICATION_CONFIGURATION_POLICY, seaCloudsPolicyConfiguration);
@@ -587,6 +592,11 @@ public class DamGenerator {
         private String influxdbUrl;
         private String influxdbPort;
         private String grafanaEndpoint;
+        private String influxdbDatabase;
+        private String influxdbUsername;
+        private String influxdbPassword;
+        private String grafanaUsername;
+        private String grafanaPassword;
 
         public Builder() {
         }
@@ -613,6 +623,32 @@ public class DamGenerator {
 
         public Builder influxdbPort(String influxdbPort) {
             this.influxdbPort = influxdbPort;
+            return this;
+        }
+
+        public Builder influxdbDatabase(String influxdbDatabase) {
+            this.influxdbDatabase = influxdbDatabase;
+            return this;
+        }
+
+        public Builder influxdbUsername(String influxdbUsername) {
+            this.influxdbUsername = influxdbUsername;
+            return this;
+        }
+
+        public Builder influxdbPassword(String influxdbPassword) {
+            this.influxdbPassword = influxdbPassword;
+            return this;
+        }
+
+        public Builder grafanaUsername(String grafanaUsername) {
+            this.grafanaUsername = grafanaUsername;
+            return this;
+        }
+
+
+        public Builder grafanaPassword(String grafanaPassword) {
+            this.grafanaPassword = grafanaPassword;
             return this;
         }
 

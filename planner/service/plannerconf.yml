@@ -13,3 +13,9 @@ deployableProviders: ["openstack-nova","openstack-keystone","openstack-nova-ec2"
 filterOfferings: true
 influxdbPort: 8086
 influxdbURL: 52.48.187.2
+influxdbDatabase: tower4clouds
+influxdbUsername: root
+influxdbPassword: root
+grafanaUsername: admin
+grafanaPassword: admin
+grafanaEndpoint: http://52.48.187.2:3000

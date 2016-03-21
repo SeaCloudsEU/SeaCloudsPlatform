@@ -34,7 +34,13 @@ public class PlannerApplication extends Application<PlannerConfiguration> {
                                                 plannerConfiguration.getMonitorGeneratorPort(),
                                                 plannerConfiguration.getSlaGeneratorURL(),
                                                 plannerConfiguration.getInfluxdbURL(),
-                                                plannerConfiguration.getInfluxdbPort());
+                                                plannerConfiguration.getInfluxdbPort(),
+                                                plannerConfiguration.getInfluxdbDatabase(),
+                                                plannerConfiguration.getInfluxdbUsername(),
+                                                plannerConfiguration.getInfluxdbPassword(),
+                                                plannerConfiguration.getGrafanaUsername(),
+                                                plannerConfiguration.getGrafanaPassword(),
+                                                plannerConfiguration.getGrafanaEndpoint());
 
         environment.jersey().register(pr);
         environment.jersey().register(rpr);
