@@ -2,7 +2,7 @@ package eu.seaclouds.monitor.monitoringdamgenerator;
 
 import it.polimi.tower4clouds.rules.MonitoringRules;
 
-public final class MonitoringInfo {
+public class MonitoringInfo {
 
     private String returnedAdp;
     private MonitoringRules applicationRules;

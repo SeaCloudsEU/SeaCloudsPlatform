@@ -1,0 +1,138 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: nuro-paas-cf
+imports:
+- tosca-normative-types:1.0.0.wd06-SNAPSHOT
+topology_template:
+  node_templates:
+    db:
+      type: sc_req.db
+      properties:
+        db_name: databaseName
+        db_user: user123
+        db_password: paas123
+        autoscale: false
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5'
+          - less_or_equal: '5.6'
+      artifacts:
+      - creationScriptUrl: https://www.dropbox.com/s/rp7owcgyhaa692f/create.sql?dl=1
+        type: tosca.artifacts.File
+      requirements:
+      - host: Amazon_EC2_c3_2xlarge_ap_southeast_2
+        instancesPOC: 1
+    php:
+      type: sc_req.php
+      properties:
+        language: PHP
+        autoscale: false
+      artifacts:
+      - git.url: https://seaclDem:seaclouds@bitbucket.org/seaclDem/nuro-casestudy.git
+        type: tosca.artifacts.File
+      requirements:
+      - host: Cloud_Foundry
+        instancesPOC: 1
+    Amazon_EC2_c3_2xlarge_ap_southeast_2:
+      type: seaclouds.nodes.Compute.Amazon_EC2
+      properties:
+        num_cpus: 8
+        country: Australia
+        cost: 0.47
+        city: SYDNEY
+        resource_type: compute
+        disk_size: 160
+        availability: 0.9995
+        performance: 173
+        hardwareId: c3.2xlarge
+        disk_type: ssd
+        location: aws-ec2
+        num_disks: 2
+        region: ap-southeast-2
+        ram: 15
+    Cloud_Foundry:
+      type: seaclouds.nodes.Platform.Cloud_Foundry
+      properties:
+        node_support: true
+        go_support: true
+        tomcat_version: 7
+        private_hosting: true
+        resource_type: platform
+        tomcat_support: true
+        auto_scaling: false
+        public_hosting: false
+        java_support: true
+        horizontal_scaling: true
+        ruby_support: true
+        python_support: true
+        scala_support: true
+        vertical_scaling: true
+        location: cloudfoundry-instance
+        go_version: 1.4
+        php_support: true
+        performance: 192
+        availability: 0.99871
+        cost: 0.04
+node_types:
+  sc_req.db:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      resource_type:
+        constraints:
+        - equal: compute
+  sc_req.php:
+    derived_from: seaclouds.nodes.php.httpd.PhpHttpdServer
+    properties:
+      php_support:
+        constraints:
+        - equal: true
+      php_version:
+        constraints:
+        - greater_or_equal: '5.1'
+        - less_or_equal: '5.5'
+      resource_type:
+        constraints:
+        - equal: platform
+  seaclouds.nodes.Compute:
+    derived_from: tosca.nodes.Compute
+    description: Custom compute
+    properties:
+      hardwareId:
+        required: false
+        type: string
+groups:
+  operation_db:
+    members:
+    - db
+    policies:
+    - QoSInfo:
+        execution_time: 100 ms
+        benchmark_platform: Amazon_EC2_m1_small_us_east_1
+    - dependencies: {}
+    - QoSRequirements:
+        AppAvailable:
+          greater_than: 99.0
+  operation_php:
+    members:
+    - php
+    policies:
+    - QoSInfo:
+        execution_time: 100 ms
+        benchmark_platform: Amazon_EC2_m1_small_us_east_1
+    - dependencies: {}
+    - AppQoSRequirements:
+        response_time:
+          less_than: 200.0 ms
+        availability:
+          greater_than: 0.9990000000000001
+        cost:
+          less_or_equal: 1000.0 euros_per_month
+        workload:
+          less_or_equal: 24000.0 req_per_min
+    - QoSRequirements:
+        AppAvailable:
+          greater_than: 99.0
+    - ExpectedQualityPOC:
+        expectedAvailabilityPOC: 0.99871
+        fitnessPOC: 0.5917312661498397
+        expectedCostPOC: 367.2
+        expectedExecutionTimePOC: .inf

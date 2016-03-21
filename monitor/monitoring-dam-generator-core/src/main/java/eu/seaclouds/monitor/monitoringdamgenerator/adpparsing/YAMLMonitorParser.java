@@ -1,5 +1,6 @@
 package eu.seaclouds.monitor.monitoringdamgenerator.adpparsing;
 
+import eu.seaclouds.monitor.monitoringdamgenerator.DeploymentType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
-import eu.seaclouds.monitor.monitoringdamgenerator.DeploymentType;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class YAMLMonitorParser {
@@ -20,6 +24,7 @@ public class YAMLMonitorParser {
     public static final String COMPUTE_NODE_PREFIX = "seaclouds.nodes.Compute";
     public static final String PLATFORM_NODE_PREFIX = "seaclouds.nodes.Platform";
     public static final String QOS_REQUIREMENT_POLICY = "AppQoSRequirements";
+    public static final String TOSCA_COMPUTE_NODE_PREFIX = "tosca.nodes.Compute";
     public static final String RESPONSE_TIME_REQUIREMENT = "response_time";
     public static final String AVAILABILITY_REQUIREMENT = "availability";
     public static final String COST_REQUIREMENT = "cost";
@@ -64,7 +69,8 @@ public class YAMLMonitorParser {
         for (String nodeTemplate : nodeTemplates.keySet()) {
             String type = getNodeTemplateTypeName((Map<String, Object>) nodeTemplates
                     .get(nodeTemplate));
-            if (type.startsWith(COMPUTE_NODE_PREFIX)) {
+            if (type.startsWith(COMPUTE_NODE_PREFIX)
+                    || type.startsWith(TOSCA_COMPUTE_NODE_PREFIX)) {
                 tempHost = new Host();
                 tempHost.setHostName(nodeTemplate);
                 tempHost.setDeploymentType(DeploymentType.IaaS);
@@ -74,15 +80,16 @@ public class YAMLMonitorParser {
                 tempHost.setHostName(nodeTemplate);
                 tempHost.setDeploymentType(DeploymentType.PaaS);
                 hosts.put(tempHost.getHostName(), tempHost);
-            } 
+            }
         }
-        
+
         for (String nodeTemplate : nodeTemplates.keySet()) {
             String type = getNodeTemplateTypeName((Map<String, Object>) nodeTemplates
                     .get(nodeTemplate));
-            
-            if (!(type.startsWith(COMPUTE_NODE_PREFIX) || type
-                    .startsWith(PLATFORM_NODE_PREFIX))){
+
+            if (!(type.startsWith(COMPUTE_NODE_PREFIX)
+                    || type.startsWith(TOSCA_COMPUTE_NODE_PREFIX)
+                    || type.startsWith(PLATFORM_NODE_PREFIX))) {
                 tempModule = new Module();
 
                 tempModule.setModuleName(nodeTemplate);
@@ -90,19 +97,19 @@ public class YAMLMonitorParser {
                 Map<String, Object> nodeType = (Map<String, Object>) nodeTypes.get(type);
                 String rawType = (String) nodeType.get(RAW_TYPE_KEY);
                 tempModule.setType(rawType);
-                
+
                 if (getNodeTemplateLanguage((Map<String, Object>) nodeTemplates
                         .get(nodeTemplate)) != null) {
                     tempModule.setLanguage(getNodeTemplateLanguage((Map<String, Object>) nodeTemplates
                             .get(nodeTemplate)));
                 }
-                
+
                 if (getNodeTemplatePort((Map<String, Object>) nodeTemplates
                         .get(nodeTemplate)) != null) {
                     tempModule.setPort(getNodeTemplatePort((Map<String, Object>) nodeTemplates
                             .get(nodeTemplate)));
                 }
-                
+
                 if (getNodeTemplateHost((Map<String, Object>) nodeTemplates
                         .get(nodeTemplate)) != null) {
                     tempModule
@@ -155,7 +162,7 @@ public class YAMLMonitorParser {
     }
 
     private void setQosRequirements(Map<String, Object> qosRequirements,
-            Module module) throws AdpParsingException {
+                                    Module module) throws AdpParsingException {
 
         if (qosRequirements != null) {
             for (String requirement : qosRequirements.keySet()) {
@@ -184,7 +191,7 @@ public class YAMLMonitorParser {
                                     .get(key).toString().split(" ")[0]));
                         }
                     }
-                } 
+                }
             }
         }
 
@@ -216,9 +223,9 @@ public class YAMLMonitorParser {
         }
 
     }
-    
-    private String getNodeTemplatePort(Map<String, Object> nodeTemplate) throws AdpParsingException{
-        
+
+    private String getNodeTemplatePort(Map<String, Object> nodeTemplate) throws AdpParsingException {
+
         try {
             Map<String, Object> properties = (Map<String, Object>) nodeTemplate
                     .get(PROPERTIES_KEY);
@@ -227,8 +234,8 @@ public class YAMLMonitorParser {
             logger.error("The parser was not able to retrieve the 'port' property from one of the node templates in the current ADP.");
             throw new AdpParsingException(
                     "The parser was not able to retrieve the 'port' property from one of the node templates in the current ADP.");
-        } 
-        
+        }
+
     }
 
     private String getNodeTemplateHost(Map<String, Object> nodeTemplate)
@@ -281,7 +288,7 @@ public class YAMLMonitorParser {
                     "The parser was not able to retrieve the 'node_templates' from the current ADP.");
         }
     }
-    
+
     private Map<String, Object> getNodeTypesFromAdp(Map<String, Object> adp)
             throws AdpParsingException {
 
@@ -301,7 +308,7 @@ public class YAMLMonitorParser {
         try {
             for (String key : group.keySet()) {
                 if (key.equals(MEMBERS_KEY)) {
-                    return coerceStringList((ArrayList)group.get(key));
+                    return coerceStringList((ArrayList) group.get(key));
                 }
             }
 
@@ -315,11 +322,11 @@ public class YAMLMonitorParser {
 
     }
 
-    private List<String> coerceStringList(List list){
+    private List<String> coerceStringList(List list) {
         List<String> result = new ArrayList<>();
-        if(list!=null){
-            for(Object item: list){
-                result.add((String)item);
+        if (list != null) {
+            for (Object item : list) {
+                result.add((String) item);
             }
         }
         return result;

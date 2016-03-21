@@ -1,0 +1,146 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: testWebChat
+imports:
+- tosca-normative-types:1.0.0.wd06-SNAPSHOT
+topology_template:
+  node_templates:
+    db:
+      type: sc_req.db
+      properties:
+        db_name: visitors
+        db_user: brooklyn
+        db_password: br00k11n
+        autoscale: false
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5'
+          - less_or_equal: '5.6'
+      artifacts:
+      - creationScriptUrl: https://raw.githubusercontent.com/apache/incubator-brooklyn/master/brooklyn-server/launcher/src/test/resources/visitors-creation-script.sql
+        type: tosca.artifacts.File
+      requirements:
+      - host: Amazon_EC2_c3_xlarge_ap_southeast_2
+        instancesPOC: 1
+    tomcat_server:
+      type: sc_req.tomcat_server
+      properties:
+        language: JAVA
+        autoscale: false
+      artifacts:
+      - wars.root: https://s3-us-west-2.amazonaws.com/seaclouds-usescases-artifacts/webchat/webchat-jm.war
+        type: tosca.artifacts.File
+      requirements:
+      - endpoint: db
+        type: seaclouds.relations.databaseconnections.jdbc
+        properties:
+          prop.name: connurl
+      - host: Cloud_Foundry
+        instancesPOC: 1
+    Amazon_EC2_c3_xlarge_ap_southeast_2:
+      type: seaclouds.nodes.Compute.Amazon_EC2
+      properties:
+        num_cpus: 4
+        country: Australia
+        cost: 0.24
+        city: SYDNEY
+        resource_type: compute
+        disk_size: 80
+        availability: 0.9995
+        performance: 92
+        hardwareId: c3.xlarge
+        disk_type: ssd
+        location: aws-ec2
+        num_disks: 2
+        region: ap-southeast-2
+        ram: 7
+    Cloud_Foundry:
+      type: seaclouds.nodes.Platform.Cloud_Foundry
+      properties:
+        node_support: true
+        go_support: true
+        tomcat_version: 7
+        private_hosting: true
+        resource_type: platform
+        tomcat_support: true
+        auto_scaling: false
+        public_hosting: false
+        java_support: true
+        horizontal_scaling: true
+        ruby_support: true
+        python_support: true
+        scala_support: true
+        vertical_scaling: true
+        location: cloudfoundry-instance
+        go_version: 1.4
+        php_support: true
+        performance: 192
+        availability: 0.99871
+        cost: 0.04
+node_types:
+  sc_req.db:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      resource_type:
+        constraints:
+        - equal: compute
+  sc_req.tomcat_server:
+    derived_from: seaclouds.nodes.webapp.tomcat.TomcatServer
+    properties:
+      java_support:
+        constraints:
+        - equal: true
+      tomcat_support:
+        constraints:
+        - equal: true
+      java_version:
+        constraints:
+        - greater_or_equal: '4'
+        - less_or_equal: '8'
+      resource_type:
+        constraints:
+        - equal: platform
+  seaclouds.nodes.Compute:
+    derived_from: tosca.nodes.Compute
+    description: Custom compute
+    properties:
+      hardwareId:
+        required: false
+        type: string
+groups:
+  operation_db:
+    members:
+    - db
+    policies:
+    - QoSInfo:
+        execution_time: 100 ms
+        benchmark_platform: Amazon_EC2_m1_small_us_east_1
+    - dependencies: {}
+    - QoSRequirements:
+        AppAvailable:
+          greater_than: 99.9
+  operation_tomcat_server:
+    members:
+    - tomcat_server
+    policies:
+    - QoSInfo:
+        execution_time: 100 ms
+        benchmark_platform: Amazon_EC2_m1_small_us_east_1
+    - dependencies:
+        operation_db: '1'
+    - AppQoSRequirements:
+        response_time:
+          less_than: 200.0 ms
+        availability:
+          greater_than: 0.9990000000000001
+        cost:
+          less_or_equal: 1000.0 euros_per_month
+        workload:
+          less_or_equal: 24000.0 req_per_min
+    - QoSRequirements:
+        AppAvailable:
+          greater_than: 99.9
+    - ExpectedQualityPOC:
+        expectedAvailabilityPOC: 0.998210645
+        fitnessPOC: 0.5196201983396055
+        expectedCostPOC: 201.59999999999997
+        expectedExecutionTimePOC: .inf

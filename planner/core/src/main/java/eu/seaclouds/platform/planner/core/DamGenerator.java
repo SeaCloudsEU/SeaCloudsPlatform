@@ -1,42 +1,3 @@
-package eu.seaclouds.platform.planner.core;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Resources;
-import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
-import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
-import it.polimi.tower4clouds.rules.MonitoringRules;
-import org.apache.brooklyn.util.collections.MutableList;
-import org.apache.brooklyn.util.collections.MutableMap;
-import org.apache.brooklyn.util.exceptions.Exceptions;
-import org.apache.brooklyn.util.text.Identifiers;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-
-
 /**
  * Copyright 2014 SeaClouds
  * Contact: SeaClouds
@@ -53,25 +14,54 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package eu.seaclouds.platform.planner.core;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.io.Resources;
+import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
+import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
+import eu.seaclouds.platform.planner.core.template.AbstractNodeTemplate;
+import eu.seaclouds.platform.planner.core.template.ApplicationMetadata;
+import eu.seaclouds.platform.planner.core.template.NodeTemplate;
+import eu.seaclouds.platform.planner.core.template.NodeTemplateFactory;
+import eu.seaclouds.platform.planner.core.template.host.HostNodeTemplate;
+import eu.seaclouds.platform.planner.core.template.host.PlatformNodeTemplate;
+import eu.seaclouds.platform.planner.core.template.policies.SeaCloudsManagementPolicy;
+import eu.seaclouds.platform.planner.core.resolver.DeployerTypesResolver;
+import org.apache.brooklyn.util.collections.MutableList;
+import org.apache.brooklyn.util.collections.MutableMap;
+import org.apache.brooklyn.util.exceptions.Exceptions;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
+
 public class DamGenerator {
 
     static Logger log = LoggerFactory.getLogger(DamGenerator.class);
 
-    private static final String SLA_INFO_GROUPNAME = "sla_gen_info";
-    private static final String MONITOR_INFO_GROUPNAME = "monitoringInformation";
+    public static final String SLA_INFO_GROUPNAME = "sla_gen_info";
+    public static final String MONITOR_INFO_GROUPNAME = "monitoringInformation";
 
-    public static final String ADD_BROOKLYN_LOCATION = "add_brooklyn_location_";
-    public static final String BROOKLYN_LOCATION = "brooklyn.location";
-    public static final String LOCATION = "location";
-    public static final String REGION = "region";
-    public static final String HARDWARE_ID = "hardwareId";
     public static final String TYPE = "type";
-    public static final String CLOUD_FOUNDRY = "CloudFoundry";
     public static final String POLICIES = "policies";
     public static final String GROUPS = "groups";
-    public static final String HOST = "host";
-    public static final String INSTANCES_POC = "instancesPOC";
-    public static final String REQUIREMENTS = "requirements";
     public static final String MEMBERS = "members";
     public static final String ID = "id";
     public static final String APPLICATION = "application";
@@ -79,18 +69,11 @@ public class DamGenerator {
     public static final String NODE_TEMPLATES = "node_templates";
     public static final String NODE_TYPES = "node_types";
     public static final String PROPERTIES = "properties";
-    public static final String BROOKLYN_TYPES_MAPPING = "mapping/brooklyn-types-mapping.yaml";
+    public static final String BROOKLYN_IAAS_TYPES_MAPPING = "mapping/brooklyn-iaas-types-mapping.yaml";
+    public static final String BROOKLYN_PAAS_TYPES_MAPPING = "mapping/brooklyn-paas-types-mapping.yaml";
     public static final String BROOKLYN_POLICY_TYPE = "brooklyn.location";
-    public static final String IMPORTS = "imports";
-    public static final String TOSCA_NORMATIVE_TYPES = "tosca-normative-types";
-    public static final String TOSCA_NORMATIVE_TYPES_VERSION = "1.0.0.wd06-SNAPSHOT";
-    public static final String SEACLOUDS_NODE_TYPES = "seaclouds-types";
-    public static final String SEACLOUDS_NODE_TYPES_VERSION = "0.8.0-SNAPSHOT";
 
-    public static final String TEMPLATE_NAME = "template_name";
-    public static final String TEMPLATE_NAME_PREFIX = "seaclouds.app.";
-    public static final String TEMPLATE_VERSION = "template_version";
-    public static final String DEFAULT_TEMPLATE_VERSION = "1.0.0-SNAPSHOT";
+
     public static final String SEACLOUDS_MONITORING_RULES_ID_POLICY = "seaclouds.policies.monitoringrules";
     public static final String MONITORING_RULES_POLICY_NAME = "monitoringrules.information.policy";
     public static final String SEACLOUDS_APPLICATION_INFORMATION_POLICY_TYPE = "seaclouds.policies.app.information";
@@ -99,10 +82,9 @@ public class DamGenerator {
 
     public static final String SEACLOUDS_APPLICATION_CONFIGURATION =
             "seaclouds_configuration_policy";
-    public static final String SEACLOUDS_APPLICATION_CONFIGURATION_POLICY =
-            "configuration";
-    public static final String SEACLOUDS_MANAGEMENT_POLICY =
-            "eu.seaclouds.policy.SeaCloudsManagementPolicy";
+
+    public static final String REQUIREMENTS = "requirements";
+    public static final String HOST = "host";
 
     private DeployerTypesResolver deployerTypesResolver;
 
@@ -112,7 +94,7 @@ public class DamGenerator {
     private String slaEndpoint;
     private String influxdbUrl;
     private String influxdbPort;
-    private String infludbDatabase;
+    private String influxdbDatabase;
     private String influxdbUsername;
     private String influxdbPassword;
     private String grafanaUsername;
@@ -121,6 +103,10 @@ public class DamGenerator {
 
     private SlaAgreementManager agreementManager;
     private Map<String, Object> template;
+    private Map<String, NodeTemplate> nodeTemplateFacades;
+    private Map<String, Object> originalAdp;
+    private Map<String, ArrayList<String>> topologyTree;
+    private Map<String, HostNodeTemplate> hostNodeTemplateFacades;
 
     private DamGenerator(Builder builder) {
         this.monitorUrl = builder.monitorUrl;
@@ -128,7 +114,7 @@ public class DamGenerator {
         this.slaEndpoint = builder.slaUrl;
         this.influxdbUrl = builder.influxdbUrl;
         this.influxdbPort = builder.influxdbPort;
-        this.infludbDatabase = builder.influxdbDatabase;
+        this.influxdbDatabase = builder.influxdbDatabase;
         this.influxdbUsername = builder.influxdbUsername;
         this.influxdbPassword = builder.influxdbPassword;
         this.grafanaUsername = builder.grafanaUsername;
@@ -139,62 +125,76 @@ public class DamGenerator {
 
     private void init() {
         agreementManager = new SlaAgreementManager(slaEndpoint);
-    }
-
-    public DeployerTypesResolver getDeployerIaaSTypeResolver() {
-        try {
-            if (deployerTypesResolver == null) {
-                deployerTypesResolver = new DeployerTypesResolver(Resources
-                        .getResource(BROOKLYN_TYPES_MAPPING).toURI().toString());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return deployerTypesResolver;
-    }
-
-    public Yaml getYamlParser() {
-        DumperOptions options = new DumperOptions();
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        return new Yaml(options);
+        nodeTemplateFacades = MutableMap.of();
+        topologyTree = MutableMap.of();
+        hostNodeTemplateFacades = MutableMap.of();
     }
 
     public String generateDam(String adp) {
         String applicationInfoId;
-        Map<String, Object> adpYaml =
-                manageTemplateMetada((Map<String, Object>) getYamlParser().load(adp));
+        originalAdp =
+                normalizeComputeTypes((Map<String, Object>) getYamlParser().load(adp));
+
+        ApplicationMetadata applicationMetadata = new ApplicationMetadata(originalAdp);
+        Map<String, Object> adpYaml = applicationMetadata.normalizeMetadata();
+        adpYaml = normalizeComputeTypes(adpYaml);
 
         template = translateAPD(adpYaml);
         MonitoringInfo monitoringInfo = generateMonitoringInfo();
         addMonitorInfo(monitoringInfo);
-        manageNodeTypes();
         applicationInfoId = getAgreementManager().generateAgreeemntId(template);
         addApplicationInfo(applicationInfoId);
-        relationManagement();
-
         addSeaCloudsPolicy(monitoringInfo, applicationInfoId);
 
-        manageGroups();
+        customize();
 
         return getYamlParser().dump(template);
+    }
+
+    private void customize() {
+        normalizePlatformNodeTemplates();
+        relationManagement();
+        manageNodeTypes();
+        manageGroups();
+    }
+
+    private void addSeaCloudsPolicy(MonitoringInfo monitoringInfo, String applicationInfoId) {
+        SeaCloudsManagementPolicy policyFacade =
+                new SeaCloudsManagementPolicy.Builder()
+                        .agreementManager(agreementManager)
+                        .slaEndpoint(slaEndpoint)
+                        .t4cEndpoint(getMonitoringEndpoint().toString())
+                        .influxdbEndpoint(getInfluxDbEndpoint().toString())
+                        .influxdbDatabase(influxdbDatabase)
+                        .influxdbUsername(influxdbUsername)
+                        .influxdbPassword(influxdbPassword)
+                        .grafanaEndpoint(grafanaEndpoint)
+                        .grafanaUsername(grafanaUsername)
+                        .grafanaPassword(grafanaPassword)
+                        .build();
+        Map<String, Object> groups = (Map<String, Object>) template.get(GROUPS);
+        groups.put(SEACLOUDS_APPLICATION_CONFIGURATION,
+                policyFacade.getPolicy(monitoringInfo, applicationInfoId));
     }
 
     private void manageNodeTypes() {
         if (template.containsKey(NODE_TYPES)) {
             template.remove(NODE_TYPES);
         }
+    }
 
-        Map<String, Object> topologyTemplate = (Map<String, Object>) template.get(TOPOLOGY_TEMPLATE);
+    private Map<String, Object> normalizeComputeTypes(Map<String, Object> adpTemplate) {
+        Map<String, Object> topologyTemplate = (Map<String, Object>) adpTemplate.get(TOPOLOGY_TEMPLATE);
         Map<String, Object> nodeTemplates = (Map<String, Object>) topologyTemplate.get(NODE_TEMPLATES);
-
         //Solve offerings Types issue
         for (Map.Entry<String, Object> nodeTemplateEntry : nodeTemplates.entrySet()) {
             Map<String, Object> nodeTemplate = (Map<String, Object>) nodeTemplateEntry.getValue();
             String nodeTemplateType = (String) nodeTemplate.get(TYPE);
             if (nodeTemplateType.contains("seaclouds.nodes.Compute")) {
-                nodeTemplate.put(TYPE, getDeployerIaaSTypeResolver().resolveNodeType("seaclouds.nodes.Compute"));
+                nodeTemplate.put(TYPE, "seaclouds.nodes.Compute");
             }
         }
+        return adpTemplate;
     }
 
     @SuppressWarnings("unchecked")
@@ -204,33 +204,41 @@ public class DamGenerator {
         ((Map) template.get(TOPOLOGY_TEMPLATE)).put(GROUPS, groups);
     }
 
-    @SuppressWarnings("unchecked")
-    public Map<String, Object> manageTemplateMetada(Map<String, Object> template) {
-        if (template.containsKey(IMPORTS)) {
-            List<String> imports = (List<String>) template.get(IMPORTS);
-            if (imports != null) {
-                String importedNormativeTypes = null;
-                for (String dependency : imports) {
-                    if (dependency.contains(TOSCA_NORMATIVE_TYPES)) {
-                        importedNormativeTypes = dependency;
-                    }
+    private void normalizePlatformNodeTemplates() {
+        Map<String, Object> topologyTemplate = (Map<String, Object>) template.get(TOPOLOGY_TEMPLATE);
+        Map<String, Object> nodeTemplates = (Map<String, Object>) topologyTemplate.get(NODE_TEMPLATES);
+
+        Map<String, Object> groups = (Map<String, Object>) template.get(GROUPS);
+
+        for (Map.Entry<String, HostNodeTemplate> entry : hostNodeTemplateFacades.entrySet()) {
+            HostNodeTemplate hostNodeTemplate = entry.getValue();
+            if (hostNodeTemplate instanceof PlatformNodeTemplate) {
+                nodeTemplates.remove(entry.getKey());
+                String platformPolicyGroupName =
+                        hostNodeTemplate.getLocationPolicyGroupName();
+
+                Map<String, Object> platformPolicyGroupValues =
+                        (Map<String, Object>) groups.get(platformPolicyGroupName);
+
+                ArrayList<String> nodeTemplatesDeployedOnPlatform = topologyTree.get(entry.getKey());
+                if (nodeTemplatesDeployedOnPlatform.size() != 1) {
+                    throw new IllegalStateException("just one NodeTemplate can be deployed " +
+                            "on a PlatformNodeTemplate and " + entry.getKey() + " contains " +
+                            nodeTemplatesDeployedOnPlatform.size() + ": " +
+                            nodeTemplatesDeployedOnPlatform.toString());
                 }
-                if ((importedNormativeTypes != null) && (!importedNormativeTypes.equals(TOSCA_NORMATIVE_TYPES + ":" + TOSCA_NORMATIVE_TYPES_VERSION))) {
-                    imports.remove(importedNormativeTypes);
-                    imports.add(TOSCA_NORMATIVE_TYPES + ":" + TOSCA_NORMATIVE_TYPES_VERSION);
-                }
-                imports.add(SEACLOUDS_NODE_TYPES + ":" + SEACLOUDS_NODE_TYPES_VERSION);
+                String nodeTemplateDeployedPlatform = nodeTemplatesDeployedOnPlatform.get(0);
+
+                platformPolicyGroupValues.put(MEMBERS, Arrays.asList(nodeTemplateDeployedPlatform));
+                groups.remove(platformPolicyGroupName);
+                groups.put(HostNodeTemplate.ADD_BROOKLYN_LOCATION_PEFIX + nodeTemplateDeployedPlatform, platformPolicyGroupValues);
+
+                nodeTemplates.get(nodeTemplateDeployedPlatform);
+                AbstractNodeTemplate nodeTemplate = (AbstractNodeTemplate) nodeTemplateFacades.get(nodeTemplateDeployedPlatform);
+                nodeTemplate.deleteHostRequirement();
+                nodeTemplates.put(nodeTemplateDeployedPlatform, nodeTemplate.transform());
             }
         }
-
-        if (!template.containsKey(TEMPLATE_NAME)) {
-            template.put(TEMPLATE_NAME, TEMPLATE_NAME_PREFIX + Identifiers.makeRandomId(8));
-        }
-
-        if (!template.containsKey(TEMPLATE_VERSION)) {
-            template.put(TEMPLATE_VERSION, DEFAULT_TEMPLATE_VERSION);
-        }
-        return template;
     }
 
     public MonitoringInfo generateMonitoringInfo() {
@@ -264,9 +272,9 @@ public class DamGenerator {
     }
 
     public Map<String, Object> translateAPD(Map<String, Object> adpYaml) {
-        DeployerTypesResolver deployerTypesResolver = getDeployerIaaSTypeResolver();
-        Map<String, Object> damUsedNodeTypes = new HashMap<>();
-        Map<String, ArrayList<String>> groups = new HashMap<>();
+
+        Map<String, Object> damUsedNodeTypes = MutableMap.of();
+
         Map<String, Object> ADPgroups = (Map<String, Object>) adpYaml.get(GROUPS);
         Map<String, Object> topologyTemplate = (Map<String, Object>) adpYaml.get(TOPOLOGY_TEMPLATE);
         Map<String, Object> nodeTemplates = (Map<String, Object>) topologyTemplate.get(NODE_TEMPLATES);
@@ -275,36 +283,17 @@ public class DamGenerator {
         for (String moduleName : nodeTemplates.keySet()) {
             Map<String, Object> module = (Map<String, Object>) nodeTemplates.get(moduleName);
 
-            ArrayList<Map<String, Object>> artifactsList = (ArrayList<Map<String, Object>>) module.get("artifacts");
-            if (artifactsList != null) {
-                Map<String, Object> artifacts = artifactsList.get(0);
-                artifacts.remove("type");
+            NodeTemplate nodeTemplate =
+                    NodeTemplateFactory.createNodeTemplate(originalAdp, moduleName);
+            nodeTemplateFacades.put(moduleName, nodeTemplate);
 
-                Set<String> artifactKeys = artifacts.keySet();
-                if (artifactKeys.size() > 1) {
-                    throw new IllegalArgumentException();
-                }
-
-                String[] keys = artifactKeys.toArray(new String[1]);
-
-                Map<String, Object> properties = (Map<String, Object>) module.get("properties");
-                properties.put(keys[0], artifacts.get(keys[0]));
-
-                module.remove("artifacts");
-            }
-
-            //type replacement
-            String moduleType = (String) module.get("type");
+            String moduleType = nodeTemplate.getModuleType();
             if (nodeTypes.containsKey(moduleType)) {
-                Map<String, Object> type = (HashMap<String, Object>) nodeTypes.get(moduleType);
-                String sourceType = (String) type.get("derived_from");
-                String targetType = deployerTypesResolver.resolveNodeType(sourceType);
-
+                String targetType = nodeTemplate.getType();
                 if (targetType != null) {
-                    module.put("type", targetType);
-                    if (deployerTypesResolver.getNodeTypeDefinition(targetType) != null) {
+                    if (nodeTemplate.getNodeTypeDefinition() != null) {
                         damUsedNodeTypes.put(targetType,
-                                deployerTypesResolver.getNodeTypeDefinition(targetType));
+                                nodeTemplate.getNodeTypeDefinition());
                     } else {
                         log.error("TargetType definition " + targetType + "was not found" +
                                 "so it will not added to DAM");
@@ -314,131 +303,29 @@ public class DamGenerator {
                 }
             }
 
+            nodeTemplates.put(moduleName, nodeTemplate.transform());
 
-            if (module.keySet().contains(REQUIREMENTS)) {
-                List<Map<String, Object>> requirements = (ArrayList<Map<String, Object>>) module.get(REQUIREMENTS);
-                for (Map<String, Object> req : requirements) {
-                    if (req.keySet().contains(HOST)) {
-                        String host = (String) req.get(HOST);
-                        if (!groups.keySet().contains(host)) {
-                            groups.put(host, new ArrayList<String>());
-                        }
-                        groups.get(host).add(moduleName);
-                    }
-                    req.remove(INSTANCES_POC);
+            if (nodeTemplate instanceof HostNodeTemplate) {
+                hostNodeTemplateFacades
+                        .put(moduleName, (HostNodeTemplate) nodeTemplate);
+            } else {
+                String hostNodeTemplateName = nodeTemplate.getHostNodeName();
+                if (!topologyTree.containsKey(hostNodeTemplateName)) {
+                    topologyTree.put(hostNodeTemplateName, new ArrayList<String>());
                 }
+                topologyTree.get(hostNodeTemplateName).add(moduleName);
             }
         }
 
         adpYaml.put(NODE_TYPES, damUsedNodeTypes);
 
         //get brookly location from host
-        for (String group : groups.keySet()) {
-            HashMap<String, Object> policyGroup = new HashMap<>();
-            policyGroup.put(MEMBERS, Arrays.asList(group));
-
-            HashMap<String, Object> cloudOffering = (HashMap<String, Object>) nodeTemplates.get(group);
-            HashMap<String, Object> properties = (HashMap<String, Object>) cloudOffering.get(PROPERTIES);
-
-            String location = (String) properties.get(LOCATION);
-            String region = (String) properties.get(REGION);
-            String hardwareId = (String) properties.get(HARDWARE_ID);
-
-            ArrayList<HashMap<String, Object>> policy = new ArrayList<>();
-            HashMap<String, Object> p = new HashMap<>();
-            if (location != null) {
-                p.put(BROOKLYN_LOCATION, location + (location.equals(CLOUD_FOUNDRY) ? "" : ":" + region));
-            } else {
-                p.put(BROOKLYN_LOCATION, group);
-            }
-            policy.add(p);
-
-            policyGroup.put(POLICIES, policy);
-
-            ADPgroups.put(ADD_BROOKLYN_LOCATION + group, policyGroup);
+        for (Map.Entry<String, HostNodeTemplate> hostEntry : hostNodeTemplateFacades.entrySet()) {
+            HostNodeTemplate hostNodeTemplate = hostEntry.getValue();
+            ADPgroups.put(hostNodeTemplate.getLocationPolicyGroupName(),
+                    hostNodeTemplate.getLocationPolicyGroupValues());
         }
         return adpYaml;
-    }
-
-
-    public URL getMonitoringEndpoint() {
-        try {
-            return new URL("http://" + monitorUrl + ":" + monitorPort + "");
-        } catch (MalformedURLException e) {
-            Exceptions.propagateIfFatal(e);
-            log.warn("Error creating MonitoringEndpoint: http://" + monitorUrl + ":" + monitorPort);
-        }
-        return null;
-    }
-
-    public URL getInfluxDbEndpoint() {
-        try {
-            return new URL("http://" + influxdbUrl + ":" + influxdbPort + "");
-
-        } catch (MalformedURLException e) {
-            Exceptions.propagateIfFatal(e);
-            log.warn("Error creating InfluxDbEndpoint: http://" + influxdbUrl + ":" + influxdbPort);
-        }
-        return null;
-    }
-
-
-    public void addSeaCloudsPolicy(MonitoringInfo monitoringInfo,
-                                   String applicationMonitorId) {
-        Map<String, Object> seaCloudsPolicyConfiguration = MutableMap.of();
-        seaCloudsPolicyConfiguration.put(TYPE, SEACLOUDS_MANAGEMENT_POLICY);
-        seaCloudsPolicyConfiguration.put("slaEndpoint", slaEndpoint);
-        seaCloudsPolicyConfiguration.put("slaAgreement", encodeAgreement(applicationMonitorId));
-        seaCloudsPolicyConfiguration.put("t4cEndpoint", getMonitoringEndpoint().toString());
-        seaCloudsPolicyConfiguration.put("t4cRules", encodeBase64MonitoringRules(monitoringInfo));
-        seaCloudsPolicyConfiguration.put("influxdbEndpoint", getInfluxDbEndpoint().toString());
-
-        seaCloudsPolicyConfiguration.put("influxdbDatabase", infludbDatabase);
-        seaCloudsPolicyConfiguration.put("influxdbUsername", influxdbUsername);
-        seaCloudsPolicyConfiguration.put("influxdbPassword", influxdbPassword);
-
-        seaCloudsPolicyConfiguration.put("grafanaEndpoint", grafanaEndpoint);
-        seaCloudsPolicyConfiguration.put("grafanaUsername", grafanaUsername);
-        seaCloudsPolicyConfiguration.put("grafanaPassword", grafanaPassword);
-
-        Map<String, Object> seaCloudsPolicy = MutableMap.of();
-        seaCloudsPolicy.put(SEACLOUDS_APPLICATION_CONFIGURATION_POLICY, seaCloudsPolicyConfiguration);
-
-        Map<String, Object> seaCloudsApplicationGroup = MutableMap.of();
-        seaCloudsApplicationGroup.put(MEMBERS, ImmutableList.of());
-        seaCloudsApplicationGroup.put(POLICIES, ImmutableList.of(seaCloudsPolicy));
-
-        Map<String, Object> groups = (Map<String, Object>) template.get(GROUPS);
-        groups.put(SEACLOUDS_APPLICATION_CONFIGURATION, seaCloudsApplicationGroup);
-
-    }
-
-    public String encodeAgreement(String applicationMonitorId) {
-        String agreement = agreementManager.getAgreement(applicationMonitorId);
-        return Base64.encodeBase64String(agreement.getBytes());
-    }
-
-    public static String encodeBase64MonitoringRules(MonitoringInfo monitoringInfo) {
-        StringWriter sw = new StringWriter();
-        String encodeMonitoringRules;
-        JAXBContext jaxbContext;
-        String marshalledMonitoringRules = null;
-        try {
-            jaxbContext = JAXBContext.newInstance(MonitoringRules.class);
-            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-            jaxbMarshaller.marshal(monitoringInfo.getApplicationMonitoringRules(), sw);
-            marshalledMonitoringRules = sw.toString();
-        } catch (JAXBException e) {
-            log.error("Monitoring rules {} can not be marshalled by addSeaCloudsPolicy in " +
-                            "DamGenerator",
-                    monitoringInfo.getApplicationMonitoringRules());
-        }
-
-        encodeMonitoringRules = Base64
-                .encodeBase64String(marshalledMonitoringRules.getBytes());
-        return encodeMonitoringRules;
     }
 
     public void addApplicationInfo(String applicationInfoId) {
@@ -474,15 +361,17 @@ public class DamGenerator {
             List<Map<String, Object>> fixedRequirements = MutableList.of();
             if (requirements != null) {
                 for (Map<String, Object> requirement : requirements) {
-                    if (requirement.containsKey("host")) {
+                    if (requirement.containsKey(HOST)) {
                         fixedRequirements.add(requirement);
                     }
                 }
-                nodeTemplate.put(REQUIREMENTS, fixedRequirements);
+                if (fixedRequirements.isEmpty()) {
+                    nodeTemplate.remove(REQUIREMENTS);
+                } else {
+                    nodeTemplate.put(REQUIREMENTS, fixedRequirements);
+                }
             }
         }
-
-
     }
 
     @SuppressWarnings("unchecked")
@@ -583,6 +472,91 @@ public class DamGenerator {
         this.agreementManager = agManager;
     }
 
+    public DeployerTypesResolver getDeployerIaaSTypeResolver() {
+        try {
+            if (deployerTypesResolver == null) {
+                deployerTypesResolver = new DeployerTypesResolver(Resources
+                        .getResource(BROOKLYN_IAAS_TYPES_MAPPING).toURI().toString());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return deployerTypesResolver;
+    }
+
+    public DeployerTypesResolver getDeployerPaaSTypeResolver() {
+        try {
+            if (deployerTypesResolver == null) {
+                deployerTypesResolver = new DeployerTypesResolver(Resources
+                        .getResource(BROOKLYN_PAAS_TYPES_MAPPING).toURI().toString());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return deployerTypesResolver;
+    }
+
+    public Yaml getYamlParser() {
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        return new Yaml(options);
+    }
+
+    public URL getMonitoringEndpoint() {
+        try {
+            return new URL("http://" + monitorUrl + ":" + monitorPort + "");
+        } catch (MalformedURLException e) {
+            Exceptions.propagateIfFatal(e);
+            log.warn("Error creating MonitoringEndpoint: http://" + monitorUrl + ":" + monitorPort);
+        }
+        return null;
+    }
+
+    public URL getInfluxDbEndpoint() {
+        try {
+            return new URL("http://" + influxdbUrl + ":" + influxdbPort + "");
+
+        } catch (MalformedURLException e) {
+            Exceptions.propagateIfFatal(e);
+            log.warn("Error creating InfluxDbEndpoint: http://" + influxdbUrl + ":" + influxdbPort);
+        }
+        return null;
+    }
+
+    public class SlaAgreementManager {
+
+        private static final String SLA_GEN_OP = "/seaclouds/templates";
+        private static final String GET_AGREEMENT_OP = "/seaclouds/commands/fromtemplate";
+
+        private String slaUrl;
+
+        public SlaAgreementManager(String slaUrl) {
+            this.slaUrl = slaUrl;
+        }
+
+        public String generateAgreeemntId(Map<String, Object> template) {
+            String result = null;
+            String slaInfoResponse = new HttpHelper(slaUrl)
+                    .postInBody(SLA_GEN_OP, getYamlParser().dump(template));
+            checkNotNull(slaInfoResponse, "Error getting SLA info");
+            try {
+                ApplicationMonitorId applicationMonitoringId = new ObjectMapper()
+                        .readValue(slaInfoResponse, ApplicationMonitorId.class);
+                result = applicationMonitoringId.getId();
+            } catch (IOException e) {
+                log.error("Error AgreementTemplateId during dam generation {}", this);
+            }
+            return result;
+        }
+
+        public String getAgreement(String applicationMonitorId) {
+            List<NameValuePair> paremeters = MutableList.of((NameValuePair)
+                    new BasicNameValuePair("templateId", applicationMonitorId));
+            return new HttpHelper(slaEndpoint).getRequest(GET_AGREEMENT_OP, paremeters);
+
+        }
+    }
+
 
     public static class Builder {
 
@@ -662,38 +636,5 @@ public class DamGenerator {
         }
     }
 
-    public class SlaAgreementManager {
-
-        private static final String SLA_GEN_OP = "/seaclouds/templates";
-        private static final String GET_AGREEMENT_OP = "/seaclouds/commands/fromtemplate";
-
-        private String slaUrl;
-
-        public SlaAgreementManager(String slaUrl) {
-            this.slaUrl = slaUrl;
-        }
-
-        public String generateAgreeemntId(Map<String, Object> template) {
-            String result = null;
-            String slaInfoResponse = new HttpHelper(slaUrl)
-                    .postInBody(SLA_GEN_OP, getYamlParser().dump(template));
-            checkNotNull(slaInfoResponse, "Error getting SLA info");
-            try {
-                ApplicationMonitorId applicationMonitoringId = new ObjectMapper()
-                        .readValue(slaInfoResponse, ApplicationMonitorId.class);
-                result = applicationMonitoringId.getId();
-            } catch (IOException e) {
-                log.error("Error AgreementTemplateId during dam generation {}", this);
-            }
-            return result;
-        }
-
-        public String getAgreement(String applicationMonitorId) {
-            List<NameValuePair> paremeters = MutableList.of((NameValuePair)
-                    new BasicNameValuePair("templateId", applicationMonitorId));
-            return new HttpHelper(slaEndpoint).getRequest(GET_AGREEMENT_OP, paremeters);
-
-        }
-    }
 
 }

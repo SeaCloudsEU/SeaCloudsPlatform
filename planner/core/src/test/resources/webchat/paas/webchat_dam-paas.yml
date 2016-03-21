@@ -1,0 +1,173 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: testWebChat
+imports:
+- tosca-normative-types:1.0.0.wd06-SNAPSHOT
+- seaclouds-types:0.8.0-SNAPSHOT
+
+topology_template:
+  node_templates:
+    db:
+      requirements:
+      - host: Amazon_EC2_c3_xlarge_ap_southeast_2
+      properties:
+        db_name: visitors
+        db_user: brooklyn
+        db_password: br00k11n
+        autoscale: false
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5'
+          - less_or_equal: '5.6'
+        creationScriptUrl: https://raw.githubusercontent.com/apache/incubator-brooklyn/master/brooklyn-server/launcher/src/test/resources/visitors-creation-script.sql
+      type: org.apache.brooklyn.entity.database.mysql.MySqlNode
+    tomcat_server:
+      properties:
+        language: JAVA
+        autoscale: false
+        application-url: https://s3-us-west-2.amazonaws.com/seaclouds-usescases-artifacts/webchat/webchat-jm.war
+      type: org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
+    Amazon_EC2_c3_xlarge_ap_southeast_2:
+      properties:
+        num_cpus: 4
+        country: Australia
+        cost: 0.24
+        city: SYDNEY
+        resource_type: compute
+        disk_size: 80
+        availability: 0.9995
+        performance: 92
+        hardwareId: c3.xlarge
+        disk_type: ssd
+        location: aws-ec2
+        num_disks: 2
+        region: ap-southeast-2
+        ram: 7
+      type: tosca.nodes.Compute
+    modacloudsDc_db:
+      interfaces:
+        Standard:
+          start: https://s3-eu-west-1.amazonaws.com/modacloudsdc-start-script/installModacloudsDc.sh
+      properties:
+        shell.env:
+          MODACLOUDS_TOWER4CLOUDS_DC_SYNC_PERIOD: '10'
+          MODACLOUDS_TOWER4CLOUDS_VM_ID: Amazon_EC2_c3_xlarge_ap_southeast_2_ID
+          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP: 52.48.187.2
+          MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT: '8170'
+          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID: db_ID
+          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT: '8086'
+          METRICS: AverageCpuUtilization;AverageRamUtilization
+          MODACLOUDS_TOWER4CLOUDS_RESOURCES_KEEP_ALIVE_PERIOD: '25'
+          MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 52.48.187.2
+          MODACLOUDS_TOWER4CLOUDS_VM_TYPE: Amazon_EC2_c3_xlarge_ap_southeast_2
+          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE: db
+        installLatch: $brooklyn:component("db").attributeWhenReady("service.isUp")
+      type: seaclouds.nodes.Datacollector
+      requirements:
+      - host: Amazon_EC2_c3_xlarge_ap_southeast_2
+    seacloudsDc_db:
+      interfaces:
+        Standard:
+          start: https://s3-eu-west-1.amazonaws.com/seaclouds-dc/installSeaCloudsDc.sh
+      properties:
+        shell.env:
+          MODULE_PORT: '8080'
+          MODULE_IP: $brooklyn:component("db").attributeWhenReady("host.address")
+          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP: 52.48.187.2
+          MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT: '8170'
+          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID: db_ID
+          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT: '8086'
+          METRICS: AppAvailability
+          MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 52.48.187.2
+          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE: db
+        installLatch: $brooklyn:component("db").attributeWhenReady("service.isUp")
+      type: seaclouds.nodes.Datacollector
+      requirements:
+      - host: Amazon_EC2_c3_xlarge_ap_southeast_2
+  groups:
+    operation_db:
+      members:
+      - db
+      policies:
+      - QoSInfo:
+          execution_time: 100 ms
+          benchmark_platform: Amazon_EC2_m1_small_us_east_1
+          type: seaclouds.policies.QoSInfo
+      - dependencies:
+          type: seaclouds.policies.dependencies
+      - QoSRequirements:
+          AppAvailable:
+            greater_than: 99.9
+          type: seaclouds.policies.QoSRequirements
+    operation_tomcat_server:
+      members:
+      - tomcat_server
+      policies:
+      - QoSInfo:
+          execution_time: 100 ms
+          benchmark_platform: Amazon_EC2_m1_small_us_east_1
+          type: seaclouds.policies.QoSInfo
+      - dependencies:
+          operation_db: '1'
+          type: seaclouds.policies.dependencies
+      - AppQoSRequirements:
+          response_time:
+            less_than: 200.0 ms
+          availability:
+            greater_than: 0.9990000000000001
+          cost:
+            less_or_equal: 1000.0 euros_per_month
+          workload:
+            less_or_equal: 24000.0 req_per_min
+          type: seaclouds.policies.AppQoSRequirements
+      - QoSRequirements:
+          AppAvailable:
+            greater_than: 99.9
+          type: seaclouds.policies.QoSRequirements
+      - ExpectedQualityPOC:
+          expectedAvailabilityPOC: 0.998210645
+          fitnessPOC: 0.5196201983396055
+          expectedCostPOC: 201.59999999999997
+          expectedExecutionTimePOC: .inf
+          type: seaclouds.policies.ExpectedQualityPOC
+    add_brooklyn_location_Amazon_EC2_c3_xlarge_ap_southeast_2:
+      members:
+      - Amazon_EC2_c3_xlarge_ap_southeast_2
+      policies:
+      - brooklyn.location: aws-ec2:ap-southeast-2
+    monitoringInformation:
+      policies:
+      - monitoringrules.information.policy:
+          id: bf1a6456-fdd9-4a1c-aec8-5db8b717306d
+          type: seaclouds.policies.monitoringrules
+      members:
+      - application
+    sla_gen_info:
+      policies:
+      - seaclouds.app.information:
+          id: agreement-1234567890
+          type: seaclouds.policies.app.information
+      members:
+      - application
+    seaclouds_configuration_policy:
+      members: []
+      policies:
+      - configuration:
+          type: eu.seaclouds.policy.SeaCloudsManagementPolicy
+          slaEndpoint: 127.0.0.3:9003
+          slaAgreement: PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8d3NhZzpBZ3JlZW1lbnQgeG1sbnM6c2xhPSJodHRwOi8vc2xhLmF0b3MuZXUiIHhtbG5zOndzYWc9Imh0dHA6Ly93d3cuZ2dmLm9yZy9uYW1lc3BhY2VzL3dzLWFncmVlbWVudCIgd3NhZzpBZ3JlZW1lbnRJZD0iYXBwaWQiPgogICAgPHdzYWc6TmFtZT51c2VyLXNlYWNsb3Vkcy1DaGF0IEFwcGxpY2F0aW9uIHVzaW5nIEpCb3NzPC93c2FnOk5hbWU+CiAgICA8d3NhZzpDb250ZXh0PgogICAgICAgIDx3c2FnOkFncmVlbWVudEluaXRpYXRvcj51c2VyPC93c2FnOkFncmVlbWVudEluaXRpYXRvcj4KICAgICAgICA8d3NhZzpBZ3JlZW1lbnRSZXNwb25kZXI+c2VhY2xvdWRzPC93c2FnOkFncmVlbWVudFJlc3BvbmRlcj4KICAgICAgICA8d3NhZzpTZXJ2aWNlUHJvdmlkZXI+QWdyZWVtZW50UmVzcG9uZGVyPC93c2FnOlNlcnZpY2VQcm92aWRlcj4KICAgICAgICA8d3NhZzpFeHBpcmF0aW9uVGltZT4yMDE3LTAyLTA4VDE2OjQxOjI5KzAwMDA8L3dzYWc6RXhwaXJhdGlvblRpbWU+CiAgICAgICAgPHNsYTpTZXJ2aWNlPkNoYXQgQXBwbGljYXRpb24gdXNpbmcgSkJvc3M8L3NsYTpTZXJ2aWNlPgogICAgPC93c2FnOkNvbnRleHQ+CiAgICA8d3NhZzpUZXJtcz4KICAgICAgICA8d3NhZzpBbGw+CiAgICAgICAgICAgIDx3c2FnOlNlcnZpY2VEZXNjcmlwdGlvblRlcm0vPgogICAgICAgICAgICA8d3NhZzpHdWFyYW50ZWVUZXJtIHdzYWc6TmFtZT0iYXBwaWRfbXlzcWxfc2VydmVyX2NwdV91dGlsaXphdGlvbiI+CiAgICAgICAgICAgICAgICA8d3NhZzpTZXJ2aWNlU2NvcGUgd3NhZzpTZXJ2aWNlTmFtZT0ic2VydmljZSI+YXBwaWRfbXlzcWxfc2VydmVyPC93c2FnOlNlcnZpY2VTY29wZT4KICAgICAgICAgICAgICAgIDx3c2FnOlNlcnZpY2VMZXZlbE9iamVjdGl2ZT4KICAgICAgICAgICAgICAgICAgICA8d3NhZzpLUElUYXJnZXQ+CiAgICAgICAgICAgICAgICAgICAgICAgIDx3c2FnOktQSU5hbWU+YXBwaWRfbXlzcWxfc2VydmVyL0NQVVV0aWxpemF0aW9uPC93c2FnOktQSU5hbWU+CiAgICAgICAgICAgICAgICAgICAgICAgIDx3c2FnOkN1c3RvbVNlcnZpY2VMZXZlbD57ImNvbnN0cmFpbnQiOiAiYXBwaWRfbXlzcWxfc2VydmVyX2NwdV91dGlsaXphdGlvbiBOT1RfRVhJU1RTIiwgInFvcyI6ICJNRVRSSUMgTEUgMC41IiB9PC93c2FnOkN1c3RvbVNlcnZpY2VMZXZlbD4KICAgICAgICAgICAgICAgICAgICA8L3dzYWc6S1BJVGFyZ2V0PgogICAgICAgICAgICAgICAgPC93c2FnOlNlcnZpY2VMZXZlbE9iamVjdGl2ZT4KICAgICAgICAgICAgPC93c2FnOkd1YXJhbnRlZVRlcm0+CiAgICAgICAgPC93c2FnOkFsbD4KICAgIDwvd3NhZzpUZXJtcz4KPC93c2FnOkFncmVlbWVudD4=
+          t4cEndpoint: http://52.48.187.2:8170
+          t4cRules: PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8bW9uaXRvcmluZ1J1bGVzIHhtbG5zPSJodHRwOi8vd3d3Lm1vZGFjbG91ZHMuZXUveHNkLzEuMC9tb25pdG9yaW5nX3J1bGVzX3NjaGVtYSI+CiAgICA8bW9uaXRvcmluZ1J1bGUgaWQ9ImNwdVJ1bGVfX19BbWF6b25fRUMyX2MzX3hsYXJnZV9hcF9zb3V0aGVhc3RfMiIgdGltZVN0ZXA9IjEwIiB0aW1lV2luZG93PSIxMCI+CiAgICAgICAgPG1vbml0b3JlZFRhcmdldHM+CiAgICAgICAgICAgIDxtb25pdG9yZWRUYXJnZXQgdHlwZT0iQW1hem9uX0VDMl9jM194bGFyZ2VfYXBfc291dGhlYXN0XzIiIGNsYXNzPSJWTSIvPgogICAgICAgIDwvbW9uaXRvcmVkVGFyZ2V0cz4KICAgICAgICA8Y29sbGVjdGVkTWV0cmljIG1ldHJpY05hbWU9IkNQVVV0aWxpemF0aW9uIj4KICAgICAgICAgICAgPHBhcmFtZXRlciBuYW1lPSJzYW1wbGluZ1RpbWUiPjEwPC9wYXJhbWV0ZXI+CiAgICAgICAgICAgIDxwYXJhbWV0ZXIgbmFtZT0ic2FtcGxpbmdQcm9iYWJpbGl0eSI+MTwvcGFyYW1ldGVyPgogICAgICAgIDwvY29sbGVjdGVkTWV0cmljPgogICAgICAgIDxtZXRyaWNBZ2dyZWdhdGlvbiBncm91cGluZ0NsYXNzPSJWTSIgYWdncmVnYXRlRnVuY3Rpb249IkF2ZXJhZ2UiLz4KICAgICAgICA8YWN0aW9ucz4KICAgICAgICAgICAgPGFjdGlvbiBuYW1lPSJPdXRwdXRNZXRyaWMiPgogICAgICAgICAgICAgICAgPHBhcmFtZXRlciBuYW1lPSJtZXRyaWMiPkF2ZXJhZ2VDcHVVdGlsaXphdGlvbl9BbWF6b25fRUMyX2MzX3hsYXJnZV9hcF9zb3V0aGVhc3RfMjwvcGFyYW1ldGVyPgogICAgICAgICAgICAgICAgPHBhcmFtZXRlciBuYW1lPSJ2YWx1ZSI+TUVUUklDPC9wYXJhbWV0ZXI+CiAgICAgICAgICAgICAgICA8cGFyYW1ldGVyIG5hbWU9InJlc291cmNlSWQiPklEPC9wYXJhbWV0ZXI+CiAgICAgICAgICAgIDwvYWN0aW9uPgogICAgICAgIDwvYWN0aW9ucz4KICAgIDwvbW9uaXRvcmluZ1J1bGU+CiAgICA8bW9uaXRvcmluZ1J1bGUgaWQ9InJhbVJ1bGVfX19BbWF6b25fRUMyX2MzX3hsYXJnZV9hcF9zb3V0aGVhc3RfMiIgdGltZVN0ZXA9IjEwIiB0aW1lV2luZG93PSIxMCI+CiAgICAgICAgPG1vbml0b3JlZFRhcmdldHM+CiAgICAgICAgICAgIDxtb25pdG9yZWRUYXJnZXQgdHlwZT0iQW1hem9uX0VDMl9jM194bGFyZ2VfYXBfc291dGhlYXN0XzIiIGNsYXNzPSJWTSIvPgogICAgICAgIDwvbW9uaXRvcmVkVGFyZ2V0cz4KICAgICAgICA8Y29sbGVjdGVkTWV0cmljIG1ldHJpY05hbWU9Ik1lbVVzZWQiPgogICAgICAgICAgICA8cGFyYW1ldGVyIG5hbWU9InNhbXBsaW5nVGltZSI+MTA8L3BhcmFtZXRlcj4KICAgICAgICAgICAgPHBhcmFtZXRlciBuYW1lPSJzYW1wbGluZ1Byb2JhYmlsaXR5Ij4xPC9wYXJhbWV0ZXI+CiAgICAgICAgPC9jb2xsZWN0ZWRNZXRyaWM+CiAgICAgICAgPG1ldHJpY0FnZ3JlZ2F0aW9uIGdyb3VwaW5nQ2xhc3M9IlZNIiBhZ2dyZWdhdGVGdW5jdGlvbj0iQXZlcmFnZSIvPgogICAgICAgIDxhY3Rpb25zPgogICAgICAgICAgICA8YWN0aW9uIG5hbWU9Ik91dHB1dE1ldHJpYyI+CiAgICAgICAgICAgICAgICA8cGFyYW1ldGVyIG5hbWU9Im1ldHJpYyI+QXZlcmFnZVJhbVV0aWxpemF0aW9uX0FtYXpvbl9FQzJfYzNfeGxhcmdlX2FwX3NvdXRoZWFzdF8yPC9wYXJhbWV0ZXI+CiAgICAgICAgICAgICAgICA8cGFyYW1ldGVyIG5hbWU9InZhbHVlIj5NRVRSSUM8L3BhcmFtZXRlcj4KICAgICAgICAgICAgICAgIDxwYXJhbWV0ZXIgbmFtZT0icmVzb3VyY2VJZCI+SUQ8L3BhcmFtZXRlcj4KICAgICAgICAgICAgPC9hY3Rpb24+CiAgICAgICAgPC9hY3Rpb25zPgogICAgPC9tb25pdG9yaW5nUnVsZT4KICAgIDxtb25pdG9yaW5nUnVsZSBpZD0iYXBwQXZhaWxhYmxlUnVsZV9fX2RiIiB0aW1lU3RlcD0iMTAiIHRpbWVXaW5kb3c9IjEwIj4KICAgICAgICA8bW9uaXRvcmVkVGFyZ2V0cz4KICAgICAgICAgICAgPG1vbml0b3JlZFRhcmdldCB0eXBlPSJkYiIgY2xhc3M9IkludGVybmFsQ29tcG9uZW50Ii8+CiAgICAgICAgPC9tb25pdG9yZWRUYXJnZXRzPgogICAgICAgIDxjb2xsZWN0ZWRNZXRyaWMgbWV0cmljTmFtZT0iUGFhU01vZHVsZUF2YWlsYWJpbGl0eSI+CiAgICAgICAgICAgIDxwYXJhbWV0ZXIgbmFtZT0ic2FtcGxpbmdUaW1lIj4xMDwvcGFyYW1ldGVyPgogICAgICAgIDwvY29sbGVjdGVkTWV0cmljPgogICAgICAgIDxhY3Rpb25zPgogICAgICAgICAgICA8YWN0aW9uIG5hbWU9Ik91dHB1dE1ldHJpYyI+CiAgICAgICAgICAgICAgICA8cGFyYW1ldGVyIG5hbWU9Im1ldHJpYyI+QXBwQXZhaWxhYmlsaXR5X2RiPC9wYXJhbWV0ZXI+CiAgICAgICAgICAgICAgICA8cGFyYW1ldGVyIG5hbWU9InZhbHVlIj5NRVRSSUM8L3BhcmFtZXRlcj4KICAgICAgICAgICAgICAgIDxwYXJhbWV0ZXIgbmFtZT0icmVzb3VyY2VJZCI+SUQ8L3BhcmFtZXRlcj4KICAgICAgICAgICAgPC9hY3Rpb24+CiAgICAgICAgPC9hY3Rpb25zPgogICAgPC9tb25pdG9yaW5nUnVsZT4KICAgIDxtb25pdG9yaW5nUnVsZSBpZD0iY2hlY2tTdGF0dXNSdWxlX19fZGIiIHRpbWVTdGVwPSIxMCIgdGltZVdpbmRvdz0iMTAiPgogICAgICAgIDxtb25pdG9yZWRUYXJnZXRzPgogICAgICAgICAgICA8bW9uaXRvcmVkVGFyZ2V0IHR5cGU9ImRiIiBjbGFzcz0iSW50ZXJuYWxDb21wb25lbnQiLz4KICAgICAgICA8L21vbml0b3JlZFRhcmdldHM+CiAgICAgICAgPGNvbGxlY3RlZE1ldHJpYyBtZXRyaWNOYW1lPSJpc0FwcE9uRmlyZSI+CiAgICAgICAgICAgIDxwYXJhbWV0ZXIgbmFtZT0ic2FtcGxpbmdUaW1lIj4xMDwvcGFyYW1ldGVyPgogICAgICAgIDwvY29sbGVjdGVkTWV0cmljPgogICAgICAgIDxhY3Rpb25zPgogICAgICAgICAgICA8YWN0aW9uIG5hbWU9Ik91dHB1dE1ldHJpYyI+CiAgICAgICAgICAgICAgICA8cGFyYW1ldGVyIG5hbWU9Im1ldHJpYyI+QXBwbGljYXRpb25TdGF0dXNfZGI8L3BhcmFtZXRlcj4KICAgICAgICAgICAgICAgIDxwYXJhbWV0ZXIgbmFtZT0idmFsdWUiPk1FVFJJQzwvcGFyYW1ldGVyPgogICAgICAgICAgICAgICAgPHBhcmFtZXRlciBuYW1lPSJyZXNvdXJjZUlkIj5JRDwvcGFyYW1ldGVyPgogICAgICAgICAgICA8L2FjdGlvbj4KICAgICAgICA8L2FjdGlvbnM+CiAgICA8L21vbml0b3JpbmdSdWxlPgo8L21vbml0b3JpbmdSdWxlcz4K
+          influxdbEndpoint: http://52.48.187.2:8086
+          influxdbDatabase: tower4clouds
+          influxdbUsername: root
+          influxdbPassword: root
+          grafanaEndpoint: http://127.0.0.4:1234
+          grafanaUsername: admin
+          grafanaPassword: admin
+    add_brooklyn_location_tomcat_server:
+      members:
+      - tomcat_server
+      policies:
+      - brooklyn.location: cloudfoundry-instance
+template_name: seaclouds.app.RvqdMemE
+template_version: 1.0.0-SNAPSHOT
