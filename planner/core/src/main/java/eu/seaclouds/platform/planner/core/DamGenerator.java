@@ -66,7 +66,8 @@ public class DamGenerator {
     public static final String REGION = "region";
     public static final String HARDWARE_ID = "hardwareId";
     public static final String TYPE = "type";
-    public static final String CLOUD_FOUNDRY = "CloudFoundry";
+    public static final String RESOURCE_TYPE = "resource_type";
+    public static final String PLATFORM = "platform";;
     public static final String POLICIES = "policies";
     public static final String GROUPS = "groups";
     public static final String HOST = "host";
@@ -79,7 +80,8 @@ public class DamGenerator {
     public static final String NODE_TEMPLATES = "node_templates";
     public static final String NODE_TYPES = "node_types";
     public static final String PROPERTIES = "properties";
-    public static final String BROOKLYN_TYPES_MAPPING = "mapping/brooklyn-types-mapping.yaml";
+    public static final String IAAS_BROOKLYN_TYPES_MAPPING = "mapping/brooklyn-types-mapping.yaml";
+    public static final String PAAS_BROOKLYN_TYPES_MAPPING = "mapping/brooklyn-paas-types-mapping.yaml";
     public static final String BROOKLYN_POLICY_TYPE = "brooklyn.location";
     public static final String IMPORTS = "imports";
     public static final String TOSCA_NORMATIVE_TYPES = "tosca-normative-types";
@@ -104,7 +106,8 @@ public class DamGenerator {
     public static final String SEACLOUDS_MANAGEMENT_POLICY =
             "eu.seaclouds.policy.SeaCloudsManagementPolicy";
 
-    private DeployerTypesResolver deployerTypesResolver;
+    private DeployerTypesResolver deployerIaasTypesResolver;
+    private DeployerTypesResolver deployerPaasTypesResolver;
 
     private Map<String, MonitoringInfo> monitoringInfoByApplication = new HashMap<>();
     private String monitorUrl;
@@ -143,14 +146,26 @@ public class DamGenerator {
 
     public DeployerTypesResolver getDeployerIaaSTypeResolver() {
         try {
-            if (deployerTypesResolver == null) {
-                deployerTypesResolver = new DeployerTypesResolver(Resources
-                        .getResource(BROOKLYN_TYPES_MAPPING).toURI().toString());
+            if (deployerIaasTypesResolver == null) {
+                deployerIaasTypesResolver = new DeployerTypesResolver(Resources
+                        .getResource(IAAS_BROOKLYN_TYPES_MAPPING).toURI().toString());
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return deployerTypesResolver;
+        return deployerIaasTypesResolver;
+    }
+
+    public DeployerTypesResolver getDeployerPaaSTypeResolver() {
+        try {
+            if (deployerPaasTypesResolver == null) {
+                deployerPaasTypesResolver = new DeployerTypesResolver(Resources
+                        .getResource(PAAS_BROOKLYN_TYPES_MAPPING).toURI().toString());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return deployerPaasTypesResolver;
     }
 
     public Yaml getYamlParser() {
@@ -167,6 +182,7 @@ public class DamGenerator {
         template = translateAPD(adpYaml);
         MonitoringInfo monitoringInfo = generateMonitoringInfo();
         addMonitorInfo(monitoringInfo);
+        manageNodeTemplatesForPaas();
         manageNodeTypes();
         applicationInfoId = getAgreementManager().generateAgreeemntId(template);
         addApplicationInfo(applicationInfoId);
@@ -177,6 +193,59 @@ public class DamGenerator {
         manageGroups();
 
         return getYamlParser().dump(template);
+    }
+
+    private void manageNodeTemplatesForPaas() {
+        Map<String, Object> topologyTemplate = (Map<String, Object>) template.get(TOPOLOGY_TEMPLATE);
+        Map<String, Object> nodeTemplates = (Map<String, Object>) topologyTemplate.get(NODE_TEMPLATES);
+        ArrayList<String> modulesToRemove = new ArrayList<>();
+
+
+        for (String moduleName : nodeTemplates.keySet()) {
+            Map<String, Object> module = (Map<String, Object>) nodeTemplates.get(moduleName);
+
+            Map<String, Object> properties = (Map<String, Object>) module.get(PROPERTIES);
+
+            /* it's a PaaS offering and must be removed */
+            if (properties != null && properties.containsKey(RESOURCE_TYPE) && properties.get(RESOURCE_TYPE).equals(PLATFORM)) {
+                modulesToRemove.add(moduleName);
+            } else {
+                String hostName = getHostName(module, nodeTemplates);
+                Map<String, Object> host = (Map<String, Object>) nodeTemplates.get(hostName);
+
+                if (host != null) {
+                    /* getting the type of the offering on which the module will be deployed */
+                    Map<String, Object> hostProperties = (Map<String, Object>) host.get(PROPERTIES);
+                    String resourceType = (String) hostProperties.get(RESOURCE_TYPE);
+
+                    /* if the module will be deployed on PaaS host requirement must be removed */
+                    if (resourceType.equals(PLATFORM)) {
+                        removeHostRequirement(module);
+                    }
+                }
+            }
+        }
+
+        /* removing PaaS offerings */
+        for (String moduleName : modulesToRemove) {
+            nodeTemplates.remove(moduleName);
+        }
+    }
+
+    private void removeHostRequirement(Map<String, Object> module) {
+        List<Map<String, Object>> requirements = (List<Map<String, Object>>) module.get(REQUIREMENTS);
+        Map<String, Object> hostRequirement = null;
+
+        /* getting the offering where the module will be deployed */
+        for (Map<String, Object> requirement : requirements) {
+            if (requirement.containsKey(HOST)) {
+                hostRequirement = requirement;
+            }
+        }
+
+        if (hostRequirement != null) {
+            requirements.remove(hostRequirement);
+        }
     }
 
     private void manageNodeTypes() {
@@ -264,7 +333,6 @@ public class DamGenerator {
     }
 
     public Map<String, Object> translateAPD(Map<String, Object> adpYaml) {
-        DeployerTypesResolver deployerTypesResolver = getDeployerIaaSTypeResolver();
         Map<String, Object> damUsedNodeTypes = new HashMap<>();
         Map<String, ArrayList<String>> groups = new HashMap<>();
         Map<String, Object> ADPgroups = (Map<String, Object>) adpYaml.get(GROUPS);
@@ -275,27 +343,64 @@ public class DamGenerator {
         for (String moduleName : nodeTemplates.keySet()) {
             Map<String, Object> module = (Map<String, Object>) nodeTemplates.get(moduleName);
 
-            ArrayList<Map<String, Object>> artifactsList = (ArrayList<Map<String, Object>>) module.get("artifacts");
-            if (artifactsList != null) {
-                Map<String, Object> artifacts = artifactsList.get(0);
-                artifacts.remove("type");
+            manageArtifacts(module);
+            typeReplacement(damUsedNodeTypes, nodeTemplates, nodeTypes, module);
+            manageRequirements(groups, moduleName, module);
+        }
 
-                Set<String> artifactKeys = artifacts.keySet();
-                if (artifactKeys.size() > 1) {
-                    throw new IllegalArgumentException();
-                }
+        adpYaml.put(NODE_TYPES, damUsedNodeTypes);
 
-                String[] keys = artifactKeys.toArray(new String[1]);
+        //get brookly location from host
+        for (String group : groups.keySet()) {
+            manageGroups(ADPgroups, nodeTemplates, group);
+        }
+        return adpYaml;
+    }
 
-                Map<String, Object> properties = (Map<String, Object>) module.get("properties");
-                properties.put(keys[0], artifacts.get(keys[0]));
+    private void manageArtifacts(Map<String, Object> module) {
+        ArrayList<Map<String, Object>> artifactsList = (ArrayList<Map<String, Object>>) module.get("artifacts");
+        if (artifactsList != null) {
+            Map<String, Object> artifacts = artifactsList.get(0);
+            artifacts.remove("type");
 
-                module.remove("artifacts");
+            Set<String> artifactKeys = artifacts.keySet();
+            if (artifactKeys.size() > 1) {
+                throw new IllegalArgumentException();
             }
 
-            //type replacement
-            String moduleType = (String) module.get("type");
-            if (nodeTypes.containsKey(moduleType)) {
+            String[] keys = artifactKeys.toArray(new String[1]);
+
+            Map<String, Object> properties = (Map<String, Object>) module.get("properties");
+            properties.put(keys[0], artifacts.get(keys[0]));
+
+            module.remove("artifacts");
+        }
+    }
+
+    private void typeReplacement(Map<String, Object> damUsedNodeTypes,
+                                 Map<String, Object> nodeTemplates,
+                                 Map<String, Object> nodeTypes,
+                                 Map<String, Object> module) {
+        DeployerTypesResolver deployerTypesResolver;
+
+        String moduleType = (String) module.get("type");
+        if (nodeTypes.containsKey(moduleType)) {
+            String hostName = getHostName(module, nodeTemplates);
+            Map<String, Object> host = (Map<String, Object>) nodeTemplates.get(hostName);
+
+            if (host != null) {
+                /* getting the type of the offering on which the module will be deployed */
+                Map<String, Object> properties = (Map<String, Object>) host.get(PROPERTIES);
+                String resourceType = (String) properties.get(RESOURCE_TYPE);
+
+                /* choose right DeployerTypesResolver based on what kind of deploy is needed (PaaS or IaaS) */
+                if (resourceType.equals(PLATFORM)) {
+                    deployerTypesResolver = getDeployerPaaSTypeResolver();
+                } else {
+                    deployerTypesResolver = getDeployerIaaSTypeResolver();
+                }
+
+                /* getting module type */
                 Map<String, Object> type = (HashMap<String, Object>) nodeTypes.get(moduleType);
                 String sourceType = (String) type.get("derived_from");
                 String targetType = deployerTypesResolver.resolveNodeType(sourceType);
@@ -313,53 +418,93 @@ public class DamGenerator {
                     damUsedNodeTypes.put(moduleType, nodeTypes.get(moduleType));
                 }
             }
+        }
+    }
 
-
-            if (module.keySet().contains(REQUIREMENTS)) {
-                List<Map<String, Object>> requirements = (ArrayList<Map<String, Object>>) module.get(REQUIREMENTS);
-                for (Map<String, Object> req : requirements) {
-                    if (req.keySet().contains(HOST)) {
-                        String host = (String) req.get(HOST);
-                        if (!groups.keySet().contains(host)) {
-                            groups.put(host, new ArrayList<String>());
-                        }
-                        groups.get(host).add(moduleName);
+    private void manageRequirements(Map<String, ArrayList<String>> groups, String moduleName, Map<String, Object> module) {
+        if (module.keySet().contains(REQUIREMENTS)) {
+            List<Map<String, Object>> requirements = (ArrayList<Map<String, Object>>) module.get(REQUIREMENTS);
+            for (Map<String, Object> req : requirements) {
+                if (req.keySet().contains(HOST)) {
+                    String host = (String) req.get(HOST);
+                    if (!groups.keySet().contains(host)) {
+                        groups.put(host, new ArrayList<String>());
                     }
-                    req.remove(INSTANCES_POC);
+                    groups.get(host).add(moduleName);
+                }
+                req.remove(INSTANCES_POC);
+            }
+        }
+    }
+
+    private void manageGroups(Map<String, Object> ADPgroups, Map<String, Object> nodeTemplates, String group) {
+        HashMap<String, Object> policyGroup = new HashMap<>();
+
+        HashMap<String, Object> cloudOffering = (HashMap<String, Object>) nodeTemplates.get(group);
+        HashMap<String, Object> properties = (HashMap<String, Object>) cloudOffering.get(PROPERTIES);
+
+        String location = (String) properties.get(LOCATION);
+        String region = (String) properties.get(REGION);
+        String resourceType = (String) properties.get(RESOURCE_TYPE);
+
+        if (resourceType.equals(PLATFORM)) {
+            policyGroup.put(MEMBERS, getModuleHostedOn(group, nodeTemplates));
+        } else {
+            policyGroup.put(MEMBERS, Arrays.asList(group));
+        }
+
+        ArrayList<HashMap<String, Object>> policy = new ArrayList<>();
+        HashMap<String, Object> p = new HashMap<>();
+        if (location != null) {
+            if (resourceType.equals(PLATFORM)) {
+                HashMap<String, Object> authenticationMap = new HashMap<>();
+                authenticationMap.put(location, new HashMap<>());
+                p.put(BROOKLYN_LOCATION, authenticationMap);
+            } else {
+                String iaasLocation = location + ":" + region;
+                p.put(BROOKLYN_LOCATION, iaasLocation);
+            }
+
+        } else {
+            p.put(BROOKLYN_LOCATION, group);
+        }
+        policy.add(p);
+
+        policyGroup.put(POLICIES, policy);
+
+        ADPgroups.put(ADD_BROOKLYN_LOCATION + group, policyGroup);
+    }
+
+    private ArrayList<String> getModuleHostedOn(String offeringName, Map<String, Object> nodeTemplates) {
+        ArrayList<String> modulesHostedOn = new ArrayList<>();
+
+        for (String moduleName : nodeTemplates.keySet()) {
+            Map<String, Object> module = (Map<String, Object>) nodeTemplates.get(moduleName);
+            String host = getHostName(module, nodeTemplates);
+
+            if (host != null && host.equals(offeringName))
+                modulesHostedOn.add(moduleName);
+        }
+
+        return modulesHostedOn;
+    }
+
+    private String getHostName(Map<String, Object> module, Map<String, Object> nodeTemplates) {
+        List<Map<String, Object>> requirements = (List<Map<String, Object>>) module.get(REQUIREMENTS);
+        String host = null;
+
+        if (requirements != null) {
+            /* getting the offering where the module will be deployed */
+            for (Map<String, Object> requirement : requirements) {
+                if (requirement.containsKey(HOST)) {
+                    host = (String) requirement.get(HOST);
                 }
             }
         }
 
-        adpYaml.put(NODE_TYPES, damUsedNodeTypes);
 
-        //get brookly location from host
-        for (String group : groups.keySet()) {
-            HashMap<String, Object> policyGroup = new HashMap<>();
-            policyGroup.put(MEMBERS, Arrays.asList(group));
-
-            HashMap<String, Object> cloudOffering = (HashMap<String, Object>) nodeTemplates.get(group);
-            HashMap<String, Object> properties = (HashMap<String, Object>) cloudOffering.get(PROPERTIES);
-
-            String location = (String) properties.get(LOCATION);
-            String region = (String) properties.get(REGION);
-            String hardwareId = (String) properties.get(HARDWARE_ID);
-
-            ArrayList<HashMap<String, Object>> policy = new ArrayList<>();
-            HashMap<String, Object> p = new HashMap<>();
-            if (location != null) {
-                p.put(BROOKLYN_LOCATION, location + (location.equals(CLOUD_FOUNDRY) ? "" : ":" + region));
-            } else {
-                p.put(BROOKLYN_LOCATION, group);
-            }
-            policy.add(p);
-
-            policyGroup.put(POLICIES, policy);
-
-            ADPgroups.put(ADD_BROOKLYN_LOCATION + group, policyGroup);
-        }
-        return adpYaml;
+        return host;
     }
-
 
     public URL getMonitoringEndpoint() {
         try {
