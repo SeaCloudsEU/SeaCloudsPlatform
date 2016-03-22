@@ -51,6 +51,11 @@ public class DamGeneratorTest {
     private static final String INFLUXDB_URL = "52.48.187.2";
     private static final String INFLUXDB_PORT = "8086";
     private static final String SLA_ENDPOINT = "127.0.0.3:9003";
+    private static final String INFLUXDB_DATABASE = "tower4clouds";
+    private static final String INFLUXDB_USERNAME = "root";
+    private static final String INFLUXDB_PASSWORD = "root";
+    private static final String GRAFANA_USERNAME = "admin";
+    private static final String GRAFANA_PASSWORD = "admin";
     private static final String GRAFANA_ENDPOINT = "http://127.0.0.4:1234";
 
     Yaml yamlParser;
@@ -81,6 +86,11 @@ public class DamGeneratorTest {
                 .slaUrl(SLA_ENDPOINT)
                 .influxdbUrl(INFLUXDB_URL)
                 .influxdbPort(INFLUXDB_PORT)
+                .influxdbDatabase(INFLUXDB_DATABASE)
+                .influxdbUsername(INFLUXDB_USERNAME)
+                .influxdbPassword(INFLUXDB_PASSWORD)
+                .grafanaUsername(GRAFANA_USERNAME)
+                .grafanaPassword(GRAFANA_PASSWORD)
                 .grafanaEndpoint(GRAFANA_ENDPOINT)
                 .build();
         return damGenerator;
@@ -325,11 +335,11 @@ public class DamGeneratorTest {
         assertEquals(seacloudsManagementPolicyProperties.get("t4cEndpoint"), getMonitorEndpoint());
         assertFalse(Strings.isBlank((String) seacloudsManagementPolicyProperties.get("t4cRules")));
         assertEquals(seacloudsManagementPolicyProperties.get("influxdbEndpoint"), getInfluxDbEndpoint());
-        assertEquals(seacloudsManagementPolicyProperties.get("influxdbDatabase"), DamGenerator.INFLUXDB_DATABASE);
-        assertEquals(seacloudsManagementPolicyProperties.get("influxdbUsername"), DamGenerator.INFLUXDB_USERNAME);
-        assertEquals(seacloudsManagementPolicyProperties.get("influxdbPassword"), DamGenerator.INFLUXDB_PASSWORD);
+        assertEquals(seacloudsManagementPolicyProperties.get("influxdbDatabase"), INFLUXDB_DATABASE);
+        assertEquals(seacloudsManagementPolicyProperties.get("influxdbUsername"), INFLUXDB_USERNAME);
+        assertEquals(seacloudsManagementPolicyProperties.get("influxdbPassword"), INFLUXDB_PASSWORD);
         assertEquals(seacloudsManagementPolicyProperties.get("grafanaEndpoint"), GRAFANA_ENDPOINT);
-        assertEquals(seacloudsManagementPolicyProperties.get("grafanaUsername"), DamGenerator.GRAFANA_USERNAME);
-        assertEquals(seacloudsManagementPolicyProperties.get("grafanaPassword"), DamGenerator.GRAFANA_PASSWORD);
+        assertEquals(seacloudsManagementPolicyProperties.get("grafanaUsername"), GRAFANA_USERNAME);
+        assertEquals(seacloudsManagementPolicyProperties.get("grafanaPassword"), GRAFANA_PASSWORD);
     }
 }

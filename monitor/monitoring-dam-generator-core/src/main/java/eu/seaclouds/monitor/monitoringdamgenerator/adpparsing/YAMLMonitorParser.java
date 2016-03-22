@@ -19,7 +19,7 @@ public class YAMLMonitorParser {
 
     public static final String COMPUTE_NODE_PREFIX = "seaclouds.nodes.Compute";
     public static final String PLATFORM_NODE_PREFIX = "seaclouds.nodes.Platform";
-    public static final String QOS_REQUIREMENT_POLICY = "QoSRequirements";
+    public static final String QOS_REQUIREMENT_POLICY = "AppQoSRequirements";
     public static final String RESPONSE_TIME_REQUIREMENT = "response_time";
     public static final String AVAILABILITY_REQUIREMENT = "availability";
     public static final String COST_REQUIREMENT = "cost";
