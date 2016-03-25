@@ -5,21 +5,21 @@ jdk:
 
 install: true
 before_script:
-- chmod 600 qa/src/main/resources/brooklyn.properties
-- ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
-- cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-- echo "Host localhost" >> /home/travis/.ssh/config
-- echo "    StrictHostKeyChecking no" >> /home/travis/.ssh/config
-- ssh-keyscan -t rsa localhost >> ~/.ssh/known_hosts
-- chmod g-rw,o-rw /home/travis/.ssh/*
-- pip install --user codecov
+  - chmod 600 ./byon/files/brooklyn.properties
+  - ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
+  - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+  - echo "Host localhost" >> /home/travis/.ssh/config
+  - echo "    StrictHostKeyChecking no" >> /home/travis/.ssh/config
+  - ssh-keyscan -t rsa localhost >> ~/.ssh/known_hosts
+  - chmod g-rw,o-rw /home/travis/.ssh/*
+  - pip install --user codecov
 script:
-- export MAVEN_OPTS="-Dmaven.repo.local=$HOME/.m2/repository -Xmx2469m -XX:MaxPermSize=512m"
-- mvn -q clean install -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
-#- mkdir -p qa/target/brooklyn-maven-plugin/
-#- touch qa/target/brooklyn-maven-plugin/brooklyn.debug.log
-#- mvn verify -pl qa -Ptravis -DskipTests
-#- cat qa/target/brooklyn-maven-plugin/brooklyn.debug.log
+  - export MAVEN_OPTS="-Dmaven.repo.local=$HOME/.m2/repository -Xmx2469m -XX:MaxPermSize=512m"
+  #- mvn -q clean install -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
+  - mkdir -p qa/target/brooklyn-maven-plugin/
+  - touch qa/target/brooklyn-maven-plugin/brooklyn.debug.log
+  - mvn -q clean verify -pl qa -Pintegration
+  - cat qa/target/brooklyn-maven-plugin/brooklyn.debug.log
 after_success:
   - ".buildscript/deploy_snapshot.sh"
   - codecov
@@ -30,6 +30,8 @@ branches:
 cache:
   directories:
     - $HOME/.m2
+    - ./dashaboard/node_modules
+
 env:
   global:
   - secure: "q6oLIb4TpyVxy6jcauijVcGkkTr3xe5dfcII5yJs48r2FzcZeAYqPvifb9G9tlOiK5igXJrEa2GmNytlI9NijOIAt8BBV34xIovwkupwJ9qGAxG2E5hHbAjGiRaICTglkH+psgaPuPe4W8UgmWCSNt9bM12F1bVHsXXftWx/880="
