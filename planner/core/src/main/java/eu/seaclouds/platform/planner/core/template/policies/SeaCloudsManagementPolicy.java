@@ -67,7 +67,6 @@ public class SeaCloudsManagementPolicy {
     private String grafanaPassword;
     private DamGenerator.SlaAgreementManager agreementManager;
 
-
     public SeaCloudsManagementPolicy(Builder builder) {
         slaEndpoint = builder.slaEndpoint;
         t4cEndpoint = builder.t4cEndpoint;

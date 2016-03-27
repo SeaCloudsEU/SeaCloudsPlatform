@@ -29,6 +29,7 @@ import eu.seaclouds.platform.planner.core.template.NodeTemplateFactory;
 import eu.seaclouds.platform.planner.core.template.host.HostNodeTemplate;
 import eu.seaclouds.platform.planner.core.template.host.PlatformNodeTemplate;
 import eu.seaclouds.platform.planner.core.template.policies.SeaCloudsManagementPolicy;
+import eu.seaclouds.platform.planner.core.utils.HttpHelper;
 import org.apache.brooklyn.util.collections.MutableList;
 import org.apache.brooklyn.util.collections.MutableMap;
 import org.apache.brooklyn.util.exceptions.Exceptions;

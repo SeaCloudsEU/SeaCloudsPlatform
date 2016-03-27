@@ -212,5 +212,5 @@ public class DamGeneratorConfigBag {
             return new DamGeneratorConfigBag(this);
         }
     }
-    
+
 }

@@ -3,7 +3,7 @@ package eu.seaclouds.platform.planner.core.agreements;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.seaclouds.platform.planner.core.ApplicationMonitorId;
-import eu.seaclouds.platform.planner.core.HttpHelper;
+import eu.seaclouds.platform.planner.core.utils.HttpHelper;
 import eu.seaclouds.platform.planner.core.utils.YamlParser;
 import org.apache.brooklyn.util.collections.MutableList;
 import org.apache.http.NameValuePair;

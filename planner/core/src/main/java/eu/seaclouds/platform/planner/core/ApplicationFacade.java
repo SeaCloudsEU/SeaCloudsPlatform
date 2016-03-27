@@ -17,9 +17,9 @@
 package eu.seaclouds.platform.planner.core;
 
 
-import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
 import eu.seaclouds.platform.planner.core.agreements.AgreementGenerator;
+import eu.seaclouds.platform.planner.core.decorators.MonitoringInformationDecorator;
 import eu.seaclouds.platform.planner.core.template.ApplicationMetadata;
 import eu.seaclouds.platform.planner.core.template.NodeTemplate;
 import eu.seaclouds.platform.planner.core.template.TopologyTemplateFacade;
@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class ApplicationFacade {
 
@@ -45,6 +44,7 @@ public class ApplicationFacade {
     private Map<String, Object> nodeTypes;
     private AgreementGenerator agreementGenerator;
     private String applicationInfoId;
+    private MonitoringInfo monitoringInfo;
 
     public ApplicationFacade(Map<String, Object> adp, DamGeneratorConfigBag configBag) {
         this.adp = adp;
@@ -69,7 +69,9 @@ public class ApplicationFacade {
         this.topologyTemplate = new TopologyTemplateFacade(adp);
         updateNodeTypes(topologyTemplate.getRequiredNodeTypes());
         updateNodeTemplates();
-        addMonitoringInfo();
+
+        applyDecorators();
+        //addMonitoringInfo();
         addSlaInformation();
 
         //TODO:join Platform Elements
@@ -77,6 +79,12 @@ public class ApplicationFacade {
         addPoliciesLocations();
 
         //TODO:add SeaCloudsPolicies
+    }
+
+    private void applyDecorators() {
+        MonitoringInformationDecorator monitoringInformationDecorator =
+                new MonitoringInformationDecorator();
+        monitoringInformationDecorator.apply(this);
     }
 
     private void addPoliciesLocations() {
@@ -92,44 +100,12 @@ public class ApplicationFacade {
         }
     }
 
-    private void addMonitoringInfo() {
-        MonitoringInfo monitoringInfo = generateMonitoringInfo();
-        addMonitorInfoToTemplate(monitoringInfo);
+    public void addMonitoringInfo(MonitoringInfo monitoringInfo) {
+        this.monitoringInfo = monitoringInfo;
+        template = (Map<String, Object>) YamlParser.getYamlParser().load(monitoringInfo.getReturnedAdp());
+        //addMonitorInfoToTemplate(monitoringInfo);
         topologyTemplate.updateNoExistNodeTemplate(template);
         updateNodeTemplates();
-    }
-
-    public MonitoringInfo generateMonitoringInfo() {
-        MonitoringDamGenerator monDamGen;
-        monDamGen = new MonitoringDamGenerator(configBag.getMonitorEndpoint(), configBag.getInfluxDbEndpoint());
-        return monDamGen.generateMonitoringInfo(templateToString());
-    }
-
-    public void addMonitorInfoToTemplate(MonitoringInfo monitoringInfo) {
-        String generatedApplicationId = UUID.randomUUID().toString();
-
-        //TODO: DELETE this map??
-        Map<String, MonitoringInfo> monitoringInfoByApplication = MutableMap.of();
-        monitoringInfoByApplication.put(generatedApplicationId, monitoringInfo);
-
-        //TODO: SPLIT in a new method policyGeneration
-        HashMap<String, Object> appGroup = new HashMap<>();
-        appGroup.put(DamGenerator.MEMBERS, Arrays.asList(DamGenerator.APPLICATION));
-        Map<String, Object> policy = new HashMap<>();
-
-        HashMap<String, String> policyProperties = new HashMap<>();
-        policyProperties.put(DamGenerator.ID, generatedApplicationId);
-        policyProperties.put(DamGenerator.TYPE, DamGenerator.SEACLOUDS_MONITORING_RULES_ID_POLICY);
-        policy.put(DamGenerator.MONITORING_RULES_POLICY_NAME, policyProperties);
-
-        ArrayList<Map<String, Object>> policiesList = new ArrayList<>();
-        policiesList.add(policy);
-
-        appGroup.put(DamGenerator.POLICIES, policiesList);
-
-        template = (Map<String, Object>) YamlParser.getYamlParser().load(monitoringInfo.getReturnedAdp());
-        Map<String, Object> groups = (Map<String, Object>) template.get(DamGenerator.GROUPS);
-        groups.put(DamGenerator.MONITOR_INFO_GROUPNAME, appGroup);
     }
 
     private void addSlaInformation() {
@@ -234,6 +210,10 @@ public class ApplicationFacade {
 
     public void addGroup(String groupName, Map<String, Object> groupValue) {
         getGroups().put(groupName, groupValue);
+    }
+
+    public DamGeneratorConfigBag getConfigBag() {
+        return configBag;
     }
 
 
