@@ -64,8 +64,6 @@ public class DamGenerator {
     public static final String HOST = "host";
     private final DamGeneratorConfigBag configBag;
 
-    private DeployerTypesResolver deployerTypesResolver;
-
     private Map<String, Object> template;
     private Map<String, Object> originalAdp;
     private AgreementGenerator agreementGenerator;
@@ -124,7 +122,6 @@ public class DamGenerator {
     @SuppressWarnings("unchecked")
     private void manageGroups() {
         Map groups = (Map) template.remove(GROUPS);
-        addPoliciesTypeIfNotPresent(groups);
         ((Map) template.get(TOPOLOGY_TEMPLATE)).put(GROUPS, groups);
     }
 
@@ -193,107 +190,6 @@ public class DamGenerator {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public void addPoliciesTypeIfNotPresent(Map<String, Object> groups) {
-
-        for (Map.Entry<String, Object> entryGroup : groups.entrySet()) {
-            List<Map<String, Object>> policies =
-                    (List<Map<String, Object>>) ((Map<String, Object>) entryGroup.getValue()).get(POLICIES);
-            if (policies != null) {
-                for (Map<String, Object> policy : policies) {
-                    String policyName = getPolicyName(policy);
-                    if (!isLocationPolicy(policy)
-                            && !(policy.get(policyName) instanceof String)) {
-                        Map<String, Object> policyProperties = getPolicyProperties(policy);
-
-                        if (getPolicyType(policyProperties) == null) {
-                            policyProperties.put(TYPE, ((Object) "seaclouds.policies." + policyName));
-                        } else {
-                            translatePolicyToDeployerPolicy(policyProperties);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private boolean isLocationPolicy(Map<String, Object> policy) {
-
-        return policy.containsKey(BROOKLYN_POLICY_TYPE);
-    }
-
-    private String getPolicyType(Map<String, Object> policyProperties) {
-        return (String) policyProperties.get(TYPE);
-    }
-
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> getPolicyProperties(Map<String, Object> policy) {
-        if (policy != null) {
-            for (Map.Entry<String, Object> policyEntry : policy.entrySet()) {
-                return (Map<String, Object>) policyEntry.getValue();
-            }
-        }
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    private String getPolicyName(Map<String, Object> policy) {
-        if (policy != null) {
-            for (Map.Entry<String, Object> policyEntry : policy.entrySet()) {
-                return policyEntry.getKey();
-            }
-        }
-        return null;
-    }
-
-    private Map<String, Object> translatePolicyToDeployerPolicy(Map<String, Object> policyProperties) {
-        String deployerPolicyType = getDeployerIaaSTypeResolver()
-                .resolvePolicyType(getPolicyType(policyProperties));
-        if (deployerPolicyType != null) {
-            policyProperties = resolverDeployerTypesInProperties(policyProperties);
-            policyProperties.remove(TYPE);
-            policyProperties.put(TYPE, deployerPolicyType);
-        }
-        return policyProperties;
-    }
-
-    private Map<String, Object> resolverDeployerTypesInProperties(Map<String, Object> properties) {
-        String property, propertyName;
-        for (Map.Entry<String, Object> entry : ImmutableMap.copyOf(properties).entrySet()) {
-            if (entry.getValue() instanceof String) {
-                property = (String) entry.getValue();
-                propertyName = entry.getKey();
-                if (property.contains(SEACLOUDS_NODE_PREFIX)) {
-                    properties.remove(propertyName);
-                    properties.put(propertyName, resolverDeployerTypesInAProperty(property));
-                }
-            }
-        }
-        return properties;
-    }
-
-    private String resolverDeployerTypesInAProperty(String property) {
-        String[] slices = property.split("\"|\\s+|-|\\(|\\)|,");
-        for (String slice : slices) {
-            if (getDeployerIaaSTypeResolver().resolveNodeType(slice) != null) {
-                property = property
-                        .replaceAll(slice, getDeployerIaaSTypeResolver().resolveNodeType(slice));
-            }
-        }
-        return property;
-    }
-
-    public DeployerTypesResolver getDeployerIaaSTypeResolver() {
-        try {
-            if (deployerTypesResolver == null) {
-                deployerTypesResolver = new DeployerTypesResolver(Resources
-                        .getResource(BROOKLYN_IAAS_TYPES_MAPPING).toURI().toString());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return deployerTypesResolver;
-    }
 
     public void setAgreementGenerator(AgreementGenerator agreementGenerator) {
         this.agreementGenerator = agreementGenerator;

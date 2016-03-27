@@ -20,6 +20,7 @@ package eu.seaclouds.platform.planner.core;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
 import eu.seaclouds.platform.planner.core.agreements.AgreementGenerator;
 import eu.seaclouds.platform.planner.core.decorators.MonitoringInformationDecorator;
+import eu.seaclouds.platform.planner.core.decorators.MissingPolicyTypesDecorator;
 import eu.seaclouds.platform.planner.core.decorators.SeaCloudsManagmentPolicyDecorator;
 import eu.seaclouds.platform.planner.core.decorators.SlaInformationDecorator;
 import eu.seaclouds.platform.planner.core.template.ApplicationMetadata;
@@ -93,6 +94,9 @@ public class ApplicationFacade {
         SeaCloudsManagmentPolicyDecorator seaCloudsManagmentPolicyDecorator =
                 new SeaCloudsManagmentPolicyDecorator();
         seaCloudsManagmentPolicyDecorator.apply(this);
+
+        MissingPolicyTypesDecorator missingPolicyTypesDecorator = new MissingPolicyTypesDecorator();
+        missingPolicyTypesDecorator.apply(this);
     }
 
     private void addPoliciesLocations() {
@@ -186,7 +190,7 @@ public class ApplicationFacade {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> getGroups() {
+    public Map<String, Object> getGroups() {
         return (Map<String, Object>) template.get(DamGenerator.GROUPS);
     }
 
