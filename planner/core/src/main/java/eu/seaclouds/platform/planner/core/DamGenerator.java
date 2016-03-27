@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
+import eu.seaclouds.platform.planner.core.resolver.DeployerTypesResolver;
 import eu.seaclouds.platform.planner.core.template.AbstractNodeTemplate;
 import eu.seaclouds.platform.planner.core.template.ApplicationMetadata;
 import eu.seaclouds.platform.planner.core.template.NodeTemplate;
@@ -28,7 +29,6 @@ import eu.seaclouds.platform.planner.core.template.NodeTemplateFactory;
 import eu.seaclouds.platform.planner.core.template.host.HostNodeTemplate;
 import eu.seaclouds.platform.planner.core.template.host.PlatformNodeTemplate;
 import eu.seaclouds.platform.planner.core.template.policies.SeaCloudsManagementPolicy;
-import eu.seaclouds.platform.planner.core.resolver.DeployerTypesResolver;
 import org.apache.brooklyn.util.collections.MutableList;
 import org.apache.brooklyn.util.collections.MutableMap;
 import org.apache.brooklyn.util.exceptions.Exceptions;
@@ -108,7 +108,7 @@ public class DamGenerator {
     private Map<String, ArrayList<String>> topologyTree;
     private Map<String, HostNodeTemplate> hostNodeTemplateFacades;
 
-    private DamGenerator(Builder builder) {
+    public DamGenerator(Builder builder) {
         this.monitorUrl = builder.monitorUrl;
         this.monitorPort = builder.monitorPort;
         this.slaEndpoint = builder.slaUrl;

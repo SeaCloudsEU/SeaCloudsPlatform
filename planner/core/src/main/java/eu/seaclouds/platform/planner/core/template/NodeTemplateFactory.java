@@ -17,6 +17,7 @@
 package eu.seaclouds.platform.planner.core.template;
 
 import eu.seaclouds.platform.planner.core.DamGenerator;
+import eu.seaclouds.platform.planner.core.template.datacollector.Datacollector;
 import eu.seaclouds.platform.planner.core.template.host.ComputeNodeTemplate;
 import eu.seaclouds.platform.planner.core.template.host.PlatformNodeTemplate;
 
@@ -25,7 +26,7 @@ import java.util.Map;
 public class NodeTemplateFactory {
 
     public static NodeTemplate createNodeTemplate(Map<String, Object> applicationTemplate,
-                                                        String nodeTemplateId) {
+                                                  String nodeTemplateId) {
 
         Map<String, Object> topologyTemplate = (Map<String, Object>) applicationTemplate.get(DamGenerator.TOPOLOGY_TEMPLATE);
         Map<String, Object> nodeTemplates = (Map<String, Object>) topologyTemplate.get(DamGenerator.NODE_TEMPLATES);
@@ -37,6 +38,8 @@ public class NodeTemplateFactory {
             return new ComputeNodeTemplate(applicationTemplate, nodeTemplateId);
         } else if (PlatformNodeTemplate.isSupported(moduleType)) {
             return new PlatformNodeTemplate(applicationTemplate, nodeTemplateId);
+        } else if (Datacollector.isSupported(moduleType)) {
+            return new Datacollector(applicationTemplate, nodeTemplateId);
         } else {
             return new AbstractNodeTemplate(applicationTemplate, nodeTemplateId);
         }

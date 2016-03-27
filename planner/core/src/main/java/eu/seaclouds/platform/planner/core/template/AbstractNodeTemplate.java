@@ -19,10 +19,10 @@ package eu.seaclouds.platform.planner.core.template;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
 import eu.seaclouds.platform.planner.core.DamGenerator;
+import eu.seaclouds.platform.planner.core.resolver.DeployerTypesResolver;
 import eu.seaclouds.platform.planner.core.template.host.ComputeNodeTemplate;
 import eu.seaclouds.platform.planner.core.template.modifiers.JavaPaasArtifactsModifier;
 import eu.seaclouds.platform.planner.core.template.modifiers.PhpPaasArtifactsModifier;
-import eu.seaclouds.platform.planner.core.resolver.DeployerTypesResolver;
 import org.apache.brooklyn.util.collections.MutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,7 @@ public class AbstractNodeTemplate implements NodeTemplate {
             "mapping/brooklyn-paas-types-mapping.yaml";
 
     protected final String nodeTemplateId;
-    private Map<String, Object> module;
+    protected Map<String, Object> module;
     private final Map<String, Object> applicationTemplate;
     private List<Map<String, Object>> requirements;
     private List<Map<String, Object>> artifacts;
@@ -84,7 +84,7 @@ public class AbstractNodeTemplate implements NodeTemplate {
     }
 
     @SuppressWarnings("unchecked")
-    private void init() {
+    protected void init() {
         this.topologyTemplate = (Map<String, Object>) applicationTemplate.get(DamGenerator.TOPOLOGY_TEMPLATE);
         this.nodeTemplates = (Map<String, Object>) topologyTemplate.get(DamGenerator.NODE_TEMPLATES);
         this.module = (Map<String, Object>) nodeTemplates.get(nodeTemplateId);
@@ -158,7 +158,7 @@ public class AbstractNodeTemplate implements NodeTemplate {
     }
 
     //TODO This method HAS TO BE DELETED. A new object has to be created which knows the Platform and NodeTemplate
-    public void deleteHostRequirement(){
+    public void deleteHostRequirement() {
         requirements.remove(getHostRequirement());
     }
 
@@ -286,7 +286,7 @@ public class AbstractNodeTemplate implements NodeTemplate {
     }
 
     @Override
-    public List<Map<String, Object>> getArtifacts(){
+    public List<Map<String, Object>> getArtifacts() {
         return artifacts;
     }
 }
