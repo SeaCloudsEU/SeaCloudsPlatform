@@ -23,6 +23,8 @@ public interface NodeTemplate {
 
     public static final String TYPE = "type";
 
+    public String getNodeTemplateId();
+
     public Map<String, Object> transform();
 
     boolean isDeployedOnIaaS();
@@ -36,4 +38,5 @@ public interface NodeTemplate {
     public String getHostNodeName();
 
     List<Map<String, Object>> getArtifacts();
+    
 }

@@ -19,8 +19,8 @@ package eu.seaclouds.platform.planner.core;
 
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
 import eu.seaclouds.platform.planner.core.agreements.AgreementGenerator;
-import eu.seaclouds.platform.planner.core.decorators.MonitoringInformationDecorator;
 import eu.seaclouds.platform.planner.core.decorators.MissingPolicyTypesDecorator;
+import eu.seaclouds.platform.planner.core.decorators.MonitoringInformationDecorator;
 import eu.seaclouds.platform.planner.core.decorators.SeaCloudsManagmentPolicyDecorator;
 import eu.seaclouds.platform.planner.core.decorators.SlaInformationDecorator;
 import eu.seaclouds.platform.planner.core.template.ApplicationMetadata;
@@ -63,24 +63,35 @@ public class ApplicationFacade {
     }
 
     public void generateDam() {
+        normalizeMetadata();
+        createTopologyTemplate();
+        applyDecorators();
+        joinPlatformsAndHostedNodeTemplates();
+        addPoliciesLocations();
+    }
+
+    private void normalizeMetadata() {
         ApplicationMetadata applicationMetadata = new ApplicationMetadata(template);
         applicationMetadata.normalizeMetadata();
+    }
 
+    private void createTopologyTemplate() {
         this.topologyTemplate = new TopologyTemplateFacade(adp);
+        updateTypesAndTemplates();
+    }
+
+    private void updateTypesAndTemplates() {
         updateNodeTypes(topologyTemplate.getRequiredNodeTypes());
-
-        //TODO: delete?
         updateNodeTemplates();
-
-        applyDecorators();
-
-        //TODO:join Platform Elements
-        addPoliciesLocations();
-
     }
 
     public void addSlaInformation(String agreementId) {
         this.applicationSlaId = agreementId;
+    }
+
+    private void joinPlatformsAndHostedNodeTemplates() {
+        topologyTemplate.joinPlatformNodeTemplates();
+        updateNodeTemplates();
     }
 
     private void applyDecorators() {
@@ -115,7 +126,6 @@ public class ApplicationFacade {
     public void addMonitoringInfo(MonitoringInfo monitoringInfo) {
         this.monitoringInfo = monitoringInfo;
         template = (Map<String, Object>) YamlParser.getYamlParser().load(monitoringInfo.getReturnedAdp());
-        //addMonitorInfoToTemplate(monitoringInfo);
         topologyTemplate.updateNoExistNodeTemplate(template);
         updateNodeTemplates();
     }

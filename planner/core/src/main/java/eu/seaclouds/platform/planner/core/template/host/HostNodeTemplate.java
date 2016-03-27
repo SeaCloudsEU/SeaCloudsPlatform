@@ -16,9 +16,11 @@
  */
 package eu.seaclouds.platform.planner.core.template.host;
 
+import eu.seaclouds.platform.planner.core.template.NodeTemplate;
+
 import java.util.Map;
 
-public interface HostNodeTemplate {
+public interface HostNodeTemplate extends NodeTemplate {
 
     public static final String BROOKLYN_LOCATION = "brooklyn.location";
     public static final String ADD_BROOKLYN_LOCATION_PEFIX = "add_brooklyn_location_";

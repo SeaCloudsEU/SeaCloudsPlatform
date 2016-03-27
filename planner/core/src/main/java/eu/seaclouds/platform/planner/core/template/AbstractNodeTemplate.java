@@ -289,4 +289,9 @@ public class AbstractNodeTemplate implements NodeTemplate {
     public List<Map<String, Object>> getArtifacts() {
         return artifacts;
     }
+
+    @Override
+    public String getNodeTemplateId() {
+        return nodeTemplateId;
+    }
 }

@@ -19,11 +19,13 @@ package eu.seaclouds.platform.planner.core.template;
 
 import eu.seaclouds.platform.planner.core.DamGenerator;
 import eu.seaclouds.platform.planner.core.template.host.HostNodeTemplate;
+import eu.seaclouds.platform.planner.core.template.host.PlatformNodeTemplate;
 import org.apache.brooklyn.util.collections.MutableList;
 import org.apache.brooklyn.util.collections.MutableMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -109,9 +111,9 @@ public class TopologyTemplateFacade {
         return transformedNodeTemplates;
     }
 
-    public Map<String, Object> getLocationPoliciesGroups(){
+    public Map<String, Object> getLocationPoliciesGroups() {
         Map<String, Object> policiesGroups = MutableMap.of();
-        for(Map.Entry<String, HostNodeTemplate> hostEntry : hostNodeTemplates.entrySet()) {
+        for (Map.Entry<String, HostNodeTemplate> hostEntry : hostNodeTemplates.entrySet()) {
             HostNodeTemplate hostNodeTemplate = hostEntry.getValue();
             policiesGroups.put(hostNodeTemplate.getLocationPolicyGroupName(),
                     hostNodeTemplate.getLocationPolicyGroupValues());
@@ -132,7 +134,75 @@ public class TopologyTemplateFacade {
                 addNodeTemplate(nodeTemplateId, nodeTemplate);
             }
         }
+    }
 
+    public void joinPlatformNodeTemplates() {
+        Map<HostNodeTemplate, List<NodeTemplate>> platformAndChildren =
+                extractPlatformTemplatesAndChildren();
+        removeHostAndHostedChildren(platformAndChildren.keySet());
+        addGeneratedPaasFacades(generatedPaasFacades(platformAndChildren));
+
+    }
+
+    private void addGeneratedPaasFacades(List<PaasNodeTemplateFacade> paasNodeTemplateFacades) {
+        for (PaasNodeTemplateFacade paasFacade : paasNodeTemplateFacades) {
+            addNodeTemplate(paasFacade.getNodeTemplateId(), paasFacade);
+        }
+    }
+
+    private Map<HostNodeTemplate, List<NodeTemplate>> extractPlatformTemplatesAndChildren() {
+        Map<HostNodeTemplate, List<NodeTemplate>> extracted = MutableMap.of();
+        for (Map.Entry<String, HostNodeTemplate> hostEntry : hostNodeTemplates.entrySet()) {
+            HostNodeTemplate hostNodeTemplate = hostEntry.getValue();
+            if (hostNodeTemplate instanceof PlatformNodeTemplate) {
+                extracted.put(hostNodeTemplate, getHostedChildren(hostNodeTemplate));
+            }
+        }
+        return extracted;
+    }
+
+    private void removeHostAndHostedChildren(Set<HostNodeTemplate> hostNodeteTemplates) {
+        for (HostNodeTemplate hostNodeTemplate : hostNodeteTemplates) {
+            List<NodeTemplate> hostedNodeTemplates = topologyTree.get(hostNodeTemplate.getNodeTemplateId());
+            hostNodeTemplates.remove(hostNodeTemplate.getNodeTemplateId());
+            topologyTree.remove(hostNodeTemplate.getNodeTemplateId());
+            removeHostedNodeTemplates(hostedNodeTemplates);
+        }
+    }
+
+    private void removeHostedNodeTemplates(List<NodeTemplate> hostedNodeTemplates) {
+        for (NodeTemplate hostedNodeTemplate : hostedNodeTemplates) {
+            nodeTemplates.remove(hostedNodeTemplate.getNodeTemplateId());
+        }
+    }
+
+    private List<NodeTemplate> getHostedChildren(HostNodeTemplate host) {
+        return topologyTree.get(host.getNodeTemplateId());
+    }
+
+    private List<PaasNodeTemplateFacade> generatedPaasFacades(Map<HostNodeTemplate, List<NodeTemplate>> hostAndChildren) {
+        MutableList<PaasNodeTemplateFacade> paasNodeTemplateFacades = MutableList.of();
+
+        for (Map.Entry<HostNodeTemplate, List<NodeTemplate>> entry : hostAndChildren.entrySet()) {
+            paasNodeTemplateFacades.addAll(
+                    generatePaasFacadesFromAPlatform(
+                            (PlatformNodeTemplate) entry.getKey(),
+                            entry.getValue()));
+        }
+        return paasNodeTemplateFacades;
+    }
+
+    private List<PaasNodeTemplateFacade> generatePaasFacadesFromAPlatform(
+            PlatformNodeTemplate platformNodeTemplate,
+            List<NodeTemplate> childNodeTemplates) {
+
+        List<PaasNodeTemplateFacade> paasNodeTemplateFacades = MutableList.of();
+        for (NodeTemplate hostedNode : childNodeTemplates) {
+            paasNodeTemplateFacades.add(new PaasNodeTemplateFacade(
+                    (AbstractNodeTemplate) hostedNode,
+                    platformNodeTemplate));
+        }
+        return paasNodeTemplateFacades;
     }
 
     private boolean contained(String nodeTemplateId) {
