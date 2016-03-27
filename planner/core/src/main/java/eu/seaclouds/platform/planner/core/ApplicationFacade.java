@@ -23,12 +23,11 @@ import eu.seaclouds.platform.planner.core.agreements.AgreementGenerator;
 import eu.seaclouds.platform.planner.core.template.ApplicationMetadata;
 import eu.seaclouds.platform.planner.core.template.NodeTemplate;
 import eu.seaclouds.platform.planner.core.template.TopologyTemplateFacade;
+import eu.seaclouds.platform.planner.core.utils.YamlParser;
 import org.apache.brooklyn.util.collections.MutableMap;
 import org.apache.brooklyn.util.exceptions.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -84,9 +83,24 @@ public class ApplicationFacade {
         addMonitoringInfo();
         addSlaInformation();
 
-        //join Platform Elements
-        //add SeaCloudsPolicies
-        //add location policies
+        //TODO:join Platform Elements
+
+        addPoliciesLocations();
+
+        //TODO:add SeaCloudsPolicies
+    }
+
+    private void addPoliciesLocations() {
+        Map<String, Object> locationGroups = topologyTemplate.getLocationPoliciesGroups();
+        addGroupds(locationGroups);
+    }
+
+    private void addGroupds(Map<String, Object> groups) {
+        for (Map.Entry<String, Object> groupEntry : groups.entrySet()) {
+            String groupName = groupEntry.getKey();
+            Map<String, Object> groupValue = (Map<String, Object>) groupEntry.getValue();
+            addGroup(groupName, groupValue);
+        }
     }
 
     private void addMonitoringInfo() {
@@ -124,7 +138,7 @@ public class ApplicationFacade {
 
         appGroup.put(DamGenerator.POLICIES, policiesList);
 
-        template = (Map<String, Object>) getYamlParser().load(monitoringInfo.getReturnedAdp());
+        template = (Map<String, Object>) YamlParser.getYamlParser().load(monitoringInfo.getReturnedAdp());
         Map<String, Object> groups = (Map<String, Object>) template.get(DamGenerator.GROUPS);
         groups.put(DamGenerator.MONITOR_INFO_GROUPNAME, appGroup);
     }
@@ -136,7 +150,6 @@ public class ApplicationFacade {
 
 
     public void addApplicationInfo(String applicationInfoId) {
-
         Map<String, Object> groups = (Map<String, Object>) template.get(DamGenerator.GROUPS);
         HashMap<String, Object> appGroup = new HashMap<>();
         appGroup.put(DamGenerator.MEMBERS, Arrays.asList(DamGenerator.APPLICATION));
@@ -234,18 +247,12 @@ public class ApplicationFacade {
         return null;
     }
 
-    private Yaml getYamlParser() {
-        DumperOptions options = new DumperOptions();
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        return new Yaml(options);
-    }
-
     private String getSlaEndpoint() {
         return slaEndpoint;
     }
 
     public String templateToString() {
-        return getYamlParser().dump(template);
+        return YamlParser.getYamlParser().dump(template);
     }
 
     private AgreementGenerator getAgreementGenerator() {
@@ -255,4 +262,15 @@ public class ApplicationFacade {
     public void setAgreementGenerator(AgreementGenerator agreementGenerator) {
         this.agreementGenerator = agreementGenerator;
     }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getGroups() {
+        return (Map<String, Object>) template.get(DamGenerator.GROUPS);
+    }
+
+    public void addGroup(String groupName, Map<String, Object> groupValue) {
+        getGroups().put(groupName, groupValue);
+    }
+
+
 }

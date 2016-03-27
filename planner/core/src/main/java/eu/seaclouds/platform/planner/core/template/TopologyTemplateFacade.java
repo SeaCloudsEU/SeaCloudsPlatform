@@ -109,12 +109,14 @@ public class TopologyTemplateFacade {
         return transformedNodeTemplates;
     }
 
-    public Map<String, NodeTemplate> getNodeTemplates() {
-        return nodeTemplates;
-    }
-
-    private boolean contained(String nodeTemplateId) {
-        return nodeTemplates.containsKey(nodeTemplateId);
+    public Map<String, Object> getLocationPoliciesGroups(){
+        Map<String, Object> policiesGroups = MutableMap.of();
+        for(Map.Entry<String, HostNodeTemplate> hostEntry : hostNodeTemplates.entrySet()) {
+            HostNodeTemplate hostNodeTemplate = hostEntry.getValue();
+            policiesGroups.put(hostNodeTemplate.getLocationPolicyGroupName(),
+                    hostNodeTemplate.getLocationPolicyGroupValues());
+        }
+        return policiesGroups;
     }
 
     public void updateNoExistNodeTemplate(Map<String, Object> adp) {
@@ -131,5 +133,13 @@ public class TopologyTemplateFacade {
             }
         }
 
+    }
+
+    private boolean contained(String nodeTemplateId) {
+        return nodeTemplates.containsKey(nodeTemplateId);
+    }
+
+    public Map<String, NodeTemplate> getNodeTemplates() {
+        return nodeTemplates;
     }
 }
