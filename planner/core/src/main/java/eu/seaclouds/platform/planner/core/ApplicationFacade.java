@@ -20,6 +20,7 @@ package eu.seaclouds.platform.planner.core;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
 import eu.seaclouds.platform.planner.core.agreements.AgreementGenerator;
 import eu.seaclouds.platform.planner.core.decorators.MonitoringInformationDecorator;
+import eu.seaclouds.platform.planner.core.decorators.SeaCloudsManagmentPolicyDecorator;
 import eu.seaclouds.platform.planner.core.decorators.SlaInformationDecorator;
 import eu.seaclouds.platform.planner.core.template.ApplicationMetadata;
 import eu.seaclouds.platform.planner.core.template.NodeTemplate;
@@ -66,18 +67,17 @@ public class ApplicationFacade {
 
         this.topologyTemplate = new TopologyTemplateFacade(adp);
         updateNodeTypes(topologyTemplate.getRequiredNodeTypes());
-        updateNodeTemplates();
 
+        //TODO: delete?
+        updateNodeTemplates();
         applyDecorators();
-        //addMonitoringInfo();
-        //addSlaInformation();
+
 
         //TODO:join Platform Elements
-
         addPoliciesLocations();
 
-        //TODO:add SeaCloudsPolicies
     }
+
     public void addSlaInformation(String agreementId) {
         this.applicationSlaId = agreementId;
     }
@@ -89,6 +89,10 @@ public class ApplicationFacade {
 
         SlaInformationDecorator slaInformationDecorator = new SlaInformationDecorator();
         slaInformationDecorator.apply(this);
+
+        SeaCloudsManagmentPolicyDecorator seaCloudsManagmentPolicyDecorator =
+                new SeaCloudsManagmentPolicyDecorator();
+        seaCloudsManagmentPolicyDecorator.apply(this);
     }
 
     private void addPoliciesLocations() {
@@ -194,5 +198,12 @@ public class ApplicationFacade {
         return configBag;
     }
 
+    public MonitoringInfo getMonitoringInfo() {
+        return monitoringInfo;
+    }
+
+    public String getApplicationSlaId() {
+        return applicationSlaId;
+    }
 
 }
