@@ -86,21 +86,11 @@ public class DamGenerator {
 
     public static final String REQUIREMENTS = "requirements";
     public static final String HOST = "host";
+    private final DamGeneratorConfigBag configBag;
 
     private DeployerTypesResolver deployerTypesResolver;
 
     private Map<String, MonitoringInfo> monitoringInfoByApplication = new HashMap<>();
-    private String monitorUrl;
-    private String monitorPort;
-    private String slaEndpoint;
-    private String influxdbUrl;
-    private String influxdbPort;
-    private String influxdbDatabase;
-    private String influxdbUsername;
-    private String influxdbPassword;
-    private String grafanaUsername;
-    private String grafanaPassword;
-    private String grafanaEndpoint;
 
     private SlaAgreementManager agreementManager;
     private Map<String, Object> template;
@@ -109,23 +99,13 @@ public class DamGenerator {
     private Map<String, ArrayList<String>> topologyTree;
     private Map<String, HostNodeTemplate> hostNodeTemplateFacades;
 
-    public DamGenerator(Builder builder) {
-        this.monitorUrl = builder.monitorUrl;
-        this.monitorPort = builder.monitorPort;
-        this.slaEndpoint = builder.slaUrl;
-        this.influxdbUrl = builder.influxdbUrl;
-        this.influxdbPort = builder.influxdbPort;
-        this.influxdbDatabase = builder.influxdbDatabase;
-        this.influxdbUsername = builder.influxdbUsername;
-        this.influxdbPassword = builder.influxdbPassword;
-        this.grafanaUsername = builder.grafanaUsername;
-        this.grafanaPassword = builder.grafanaPassword;
-        this.grafanaEndpoint = builder.grafanaEndpoint;
+    public DamGenerator(DamGeneratorConfigBag configBag) {
+        this.configBag = configBag;
         init();
     }
 
     private void init() {
-        agreementManager = new SlaAgreementManager(slaEndpoint);
+        agreementManager = new SlaAgreementManager(configBag.getSlaEndpoint());
         nodeTemplateFacades = MutableMap.of();
         topologyTree = MutableMap.of();
         hostNodeTemplateFacades = MutableMap.of();
@@ -163,15 +143,15 @@ public class DamGenerator {
         SeaCloudsManagementPolicy policyFacade =
                 new SeaCloudsManagementPolicy.Builder()
                         .agreementManager(agreementManager)
-                        .slaEndpoint(slaEndpoint)
-                        .t4cEndpoint(getMonitoringEndpoint().toString())
-                        .influxdbEndpoint(getInfluxDbEndpoint().toString())
-                        .influxdbDatabase(influxdbDatabase)
-                        .influxdbUsername(influxdbUsername)
-                        .influxdbPassword(influxdbPassword)
-                        .grafanaEndpoint(grafanaEndpoint)
-                        .grafanaUsername(grafanaUsername)
-                        .grafanaPassword(grafanaPassword)
+                        .slaEndpoint(configBag.getSlaEndpoint())
+                        .t4cEndpoint(configBag.getMonitorEndpoint().toString())
+                        .influxdbEndpoint(configBag.getInfluxDbEndpoint().toString())
+                        .influxdbDatabase(configBag.getInfluxdbDatabase())
+                        .influxdbUsername(configBag.getInfluxdbUsername())
+                        .influxdbPassword(configBag.getInfluxdbPassword())
+                        .grafanaEndpoint(configBag.getGrafanaEndpoint())
+                        .grafanaUsername(configBag.getGrafanaUsername())
+                        .grafanaPassword(configBag.getGrafanaPassword())
                         .build();
         Map<String, Object> groups = (Map<String, Object>) template.get(GROUPS);
         groups.put(SEACLOUDS_APPLICATION_CONFIGURATION,
@@ -244,7 +224,7 @@ public class DamGenerator {
 
     public MonitoringInfo generateMonitoringInfo() {
         MonitoringDamGenerator monDamGen;
-        monDamGen = new MonitoringDamGenerator(getMonitoringEndpoint(), getInfluxDbEndpoint());
+        monDamGen = new MonitoringDamGenerator(configBag.getMonitorEndpoint(), configBag.getInfluxDbEndpoint());
         return monDamGen.generateMonitoringInfo(getYamlParser().dump(template));
     }
 
@@ -503,26 +483,6 @@ public class DamGenerator {
         return new Yaml(options);
     }
 
-    public URL getMonitoringEndpoint() {
-        try {
-            return new URL("http://" + monitorUrl + ":" + monitorPort + "");
-        } catch (MalformedURLException e) {
-            Exceptions.propagateIfFatal(e);
-            log.warn("Error creating MonitoringEndpoint: http://" + monitorUrl + ":" + monitorPort);
-        }
-        return null;
-    }
-
-    public URL getInfluxDbEndpoint() {
-        try {
-            return new URL("http://" + influxdbUrl + ":" + influxdbPort + "");
-
-        } catch (MalformedURLException e) {
-            Exceptions.propagateIfFatal(e);
-            log.warn("Error creating InfluxDbEndpoint: http://" + influxdbUrl + ":" + influxdbPort);
-        }
-        return null;
-    }
 
     public class SlaAgreementManager {
 
@@ -553,89 +513,12 @@ public class DamGenerator {
         public String getAgreement(String applicationMonitorId) {
             List<NameValuePair> paremeters = MutableList.of((NameValuePair)
                     new BasicNameValuePair("templateId", applicationMonitorId));
-            return new HttpHelper(slaEndpoint).getRequest(GET_AGREEMENT_OP, paremeters);
+            return new HttpHelper(slaUrl).getRequest(GET_AGREEMENT_OP, paremeters);
 
         }
     }
 
 
-    public static class Builder {
-
-        private String monitorUrl;
-        private String monitorPort;
-        private String slaUrl;
-        private String influxdbUrl;
-        private String influxdbPort;
-        private String grafanaEndpoint;
-        private String influxdbDatabase;
-        private String influxdbUsername;
-        private String influxdbPassword;
-        private String grafanaUsername;
-        private String grafanaPassword;
-
-        public Builder() {
-        }
-
-        public Builder monitorUrl(String monitorUrl) {
-            this.monitorUrl = monitorUrl;
-            return this;
-        }
-
-        public Builder monitorPort(String monitorPort) {
-            this.monitorPort = monitorPort;
-            return this;
-        }
-
-        public Builder slaUrl(String slaUrl) {
-            this.slaUrl = slaUrl;
-            return this;
-        }
-
-        public Builder influxdbUrl(String influxdbUrl) {
-            this.influxdbUrl = influxdbUrl;
-            return this;
-        }
-
-        public Builder influxdbPort(String influxdbPort) {
-            this.influxdbPort = influxdbPort;
-            return this;
-        }
-
-        public Builder influxdbDatabase(String influxdbDatabase) {
-            this.influxdbDatabase = influxdbDatabase;
-            return this;
-        }
-
-        public Builder influxdbUsername(String influxdbUsername) {
-            this.influxdbUsername = influxdbUsername;
-            return this;
-        }
-
-        public Builder influxdbPassword(String influxdbPassword) {
-            this.influxdbPassword = influxdbPassword;
-            return this;
-        }
-
-        public Builder grafanaUsername(String grafanaUsername) {
-            this.grafanaUsername = grafanaUsername;
-            return this;
-        }
-
-
-        public Builder grafanaPassword(String grafanaPassword) {
-            this.grafanaPassword = grafanaPassword;
-            return this;
-        }
-
-        public Builder grafanaEndpoint(String grafanaEndpoint) {
-            this.grafanaEndpoint = grafanaEndpoint;
-            return this;
-        }
-
-        public DamGenerator build() {
-            return new DamGenerator(this);
-        }
-    }
 
 
 }

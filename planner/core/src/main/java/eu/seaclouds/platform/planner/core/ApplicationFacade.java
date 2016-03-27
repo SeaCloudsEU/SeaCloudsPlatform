@@ -70,8 +70,8 @@ public class ApplicationFacade {
 
         //TODO: delete?
         updateNodeTemplates();
-        applyDecorators();
 
+        applyDecorators();
 
         //TODO:join Platform Elements
         addPoliciesLocations();

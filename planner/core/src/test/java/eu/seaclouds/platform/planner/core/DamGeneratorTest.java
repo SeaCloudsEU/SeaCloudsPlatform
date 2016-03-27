@@ -65,6 +65,7 @@ public class DamGeneratorTest {
 
     @Mock
     private DamGenerator.SlaAgreementManager fakeAgreementManager;
+    private DamGenerator damGenerator;
 
     @BeforeMethod
     public void setUp() throws URISyntaxException, FileNotFoundException {
@@ -78,10 +79,12 @@ public class DamGeneratorTest {
         DumperOptions options = new DumperOptions();
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         yamlParser = new Yaml(options);
+        damGenerator = new DamGenerator(getDamGeneratorConfigBag());
+        damGenerator.setAgreementManager(fakeAgreementManager);
     }
 
-    private DamGenerator getDamGenerator() {
-        DamGenerator damGenerator = new DamGenerator.Builder()
+    private DamGeneratorConfigBag getDamGeneratorConfigBag() {
+        return new DamGeneratorConfigBag.Builder()
                 .monitorUrl(MONITOR_URL)
                 .monitorPort(MONITOR_PORT)
                 .slaUrl(SLA_ENDPOINT)
@@ -94,7 +97,6 @@ public class DamGeneratorTest {
                 .grafanaPassword(GRAFANA_PASSWORD)
                 .grafanaEndpoint(GRAFANA_ENDPOINT)
                 .build();
-        return damGenerator;
     }
 
     @Test
@@ -102,8 +104,6 @@ public class DamGeneratorTest {
     public void testGroupsAsTopologyChild() throws Exception {
         String adp = new Scanner(new File(Resources.getResource("nuro/iaas/nuro_adp-iaas.yml").toURI())).useDelimiter("\\Z").next();
 
-        DamGenerator damGenerator = getDamGenerator();
-        damGenerator.setAgreementManager(fakeAgreementManager);
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
 
@@ -133,8 +133,6 @@ public class DamGeneratorTest {
     public void testNuroGenerationForIaaS() throws Exception {
         String adp = new Scanner(new File(Resources.getResource("nuro/iaas/nuro_adp-iaas.yml").toURI())).useDelimiter("\\Z").next();
 
-        DamGenerator damGenerator = getDamGenerator();
-        damGenerator.setAgreementManager(fakeAgreementManager);
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
 
@@ -177,8 +175,6 @@ public class DamGeneratorTest {
     public void testNuroGenerationForPaaS() throws Exception {
         String adp = new Scanner(new File(Resources.getResource("nuro/paas/nuro_adp-paas.yml").toURI())).useDelimiter("\\Z").next();
 
-        DamGenerator damGenerator = getDamGenerator();
-        damGenerator.setAgreementManager(fakeAgreementManager);
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
 
@@ -223,8 +219,6 @@ public class DamGeneratorTest {
     public void testAtosDam() throws Exception {
         String adp = new Scanner(new File(Resources.getResource("atos/atos_adp.yml").toURI())).useDelimiter("\\Z").next();
 
-        DamGenerator damGenerator = getDamGenerator();
-        damGenerator.setAgreementManager(fakeAgreementManager);
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
 
@@ -276,8 +270,6 @@ public class DamGeneratorTest {
     public void testWebChatGenerationForIaaS() throws Exception {
         String adp = new Scanner(new File(Resources.getResource("webchat/iaas/webchat_adp-iaas.yml").toURI())).useDelimiter("\\Z").next();
 
-        DamGenerator damGenerator = getDamGenerator();
-        damGenerator.setAgreementManager(fakeAgreementManager);
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
 
@@ -322,8 +314,6 @@ public class DamGeneratorTest {
     public void testWebChatGenerationForPaaS() throws Exception {
         String adp = new Scanner(new File(Resources.getResource("webchat/paas/webchat_adp-paas.yml").toURI())).useDelimiter("\\Z").next();
 
-        DamGenerator damGenerator = getDamGenerator();
-        damGenerator.setAgreementManager(fakeAgreementManager);
         dam = damGenerator.generateDam(adp);
         template = (Map<String, Object>) yamlParser.load(dam);
 
