@@ -125,7 +125,7 @@ public class ApplicationFacade {
 
     public void addMonitoringInfo(MonitoringInfo monitoringInfo) {
         this.monitoringInfo = monitoringInfo;
-        template = (Map<String, Object>) YamlParser.getYamlParser().load(monitoringInfo.getReturnedAdp());
+        template = YamlParser.load(monitoringInfo.getReturnedAdp());
         topologyTemplate.updateNoExistNodeTemplate(template);
         updateNodeTemplates();
     }
@@ -188,7 +188,7 @@ public class ApplicationFacade {
     }
 
     public String templateToString() {
-        return YamlParser.getYamlParser().dump(template);
+        return YamlParser.dump(template);
     }
 
     public AgreementGenerator getAgreementGenerator() {

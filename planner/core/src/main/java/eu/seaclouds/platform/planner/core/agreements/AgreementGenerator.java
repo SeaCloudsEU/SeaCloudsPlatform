@@ -48,10 +48,9 @@ public class AgreementGenerator {
 
     public String generateAgreeemntId(String templateDescription) {
         String result = null;
-        Map<String, Object> template = (Map<String, Object>)
-                YamlParser.getYamlParser().load(templateDescription);
+        Map<String, Object> template = YamlParser.load(templateDescription);
         String slaInfoResponse = new HttpHelper(slaUrl)
-                .postInBody(SLA_GEN_OP, YamlParser.getYamlParser().dump(template));
+                .postInBody(SLA_GEN_OP, YamlParser.dump(template));
         checkNotNull(slaInfoResponse, "Error getting SLA info");
         try {
             ApplicationMonitorId applicationMonitoringId = new ObjectMapper()

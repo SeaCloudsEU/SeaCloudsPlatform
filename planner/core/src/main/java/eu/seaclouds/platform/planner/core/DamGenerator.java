@@ -79,17 +79,17 @@ public class DamGenerator {
 
     public String generateDam(String adp) {
         originalAdp =
-                normalizeComputeTypes((Map<String, Object>) YamlParser.getYamlParser().load(adp));
+                normalizeComputeTypes((Map<String, Object>) YamlParser.load(adp));
 
         ApplicationFacade applicationFacade = new ApplicationFacade(originalAdp, configBag);
         applicationFacade.setAgreementGenerator(agreementGenerator);
         applicationFacade.generateDam();
         String generatedDam = applicationFacade.templateToString();
-        template = (Map<String, Object>) YamlParser.getYamlParser().load(generatedDam);
+        template = YamlParser.load(generatedDam);
 
         customize();
 
-        return YamlParser.getYamlParser().dump(template);
+        return YamlParser.dump(template);
     }
 
     private void customize() {

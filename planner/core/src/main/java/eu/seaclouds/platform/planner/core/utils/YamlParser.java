@@ -20,13 +20,22 @@ package eu.seaclouds.platform.planner.core.utils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-//TODO refactor to a non-static object
+import java.util.Map;
+
 public class YamlParser {
 
-    public static Yaml getYamlParser() {
+    private static Yaml getYamlParser() {
         DumperOptions options = new DumperOptions();
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         return new Yaml(options);
+    }
+
+    public static Map<String, Object> load(String value){
+        return (Map<String, Object>) getYamlParser().load(value);
+    }
+
+    public static String dump(Map<String, Object> yaml){
+        return getYamlParser().dump(yaml);
     }
 
 }

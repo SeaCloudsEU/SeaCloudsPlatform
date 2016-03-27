@@ -102,7 +102,7 @@ public class DamGeneratorTest {
         String adp = new Scanner(new File(Resources.getResource("nuro/iaas/nuro_adp-iaas.yml").toURI())).useDelimiter("\\Z").next();
 
         dam = damGenerator.generateDam(adp);
-        template = (Map<String, Object>) YamlParser.getYamlParser().load(dam);
+        template = YamlParser.load(dam);
 
         testMetadataTemplate(template);
 
@@ -131,12 +131,12 @@ public class DamGeneratorTest {
         String adp = new Scanner(new File(Resources.getResource("nuro/iaas/nuro_adp-iaas.yml").toURI())).useDelimiter("\\Z").next();
 
         dam = damGenerator.generateDam(adp);
-        template = (Map<String, Object>) YamlParser.getYamlParser().load(dam);
+        template = YamlParser.load(dam);
 
         testMetadataTemplate(template);
 
         String expectedDamString = new Scanner(new File(Resources.getResource("nuro/iaas/nuro_dam-iaas.yml").toURI())).useDelimiter("\\Z").next();
-        Map<String, Object> expectedDam = (Map<String, Object>) YamlParser.getYamlParser().load(expectedDamString);
+        Map<String, Object> expectedDam = YamlParser.load(expectedDamString);
 
         assertNotNull(template);
 
@@ -173,12 +173,12 @@ public class DamGeneratorTest {
         String adp = new Scanner(new File(Resources.getResource("nuro/paas/nuro_adp-paas.yml").toURI())).useDelimiter("\\Z").next();
 
         dam = damGenerator.generateDam(adp);
-        template = (Map<String, Object>) YamlParser.getYamlParser().load(dam);
+        template = YamlParser.load(dam);
 
         testMetadataTemplate(template);
 
         String expectedDamString = new Scanner(new File(Resources.getResource("nuro/paas/nuro_dam-paas.yml").toURI())).useDelimiter("\\Z").next();
-        Map<String, Object> expectedDam = (Map<String, Object>) YamlParser.getYamlParser().load(expectedDamString);
+        Map<String, Object> expectedDam = YamlParser.load(expectedDamString);
 
         assertNotNull(template);
 
@@ -217,12 +217,12 @@ public class DamGeneratorTest {
         String adp = new Scanner(new File(Resources.getResource("atos/atos_adp.yml").toURI())).useDelimiter("\\Z").next();
 
         dam = damGenerator.generateDam(adp);
-        template = (Map<String, Object>) YamlParser.getYamlParser().load(dam);
+        template = YamlParser.load(dam);
 
         testMetadataTemplate(template);
 
         String expectedDamString = new Scanner(new File(Resources.getResource("atos/atos_dam.yml").toURI())).useDelimiter("\\Z").next();
-        Map<String, Object> expectedDam = (Map<String, Object>) YamlParser.getYamlParser().load(expectedDamString);
+        Map<String, Object> expectedDam = YamlParser.load(expectedDamString);
 
         assertNotNull(template);
 
@@ -268,12 +268,12 @@ public class DamGeneratorTest {
         String adp = new Scanner(new File(Resources.getResource("webchat/iaas/webchat_adp-iaas.yml").toURI())).useDelimiter("\\Z").next();
 
         dam = damGenerator.generateDam(adp);
-        template = (Map<String, Object>) YamlParser.getYamlParser().load(dam);
+        template = YamlParser.load(dam);
 
         testMetadataTemplate(template);
 
         String expectedDamString = new Scanner(new File(Resources.getResource("webchat/iaas/webchat_dam-iaas.yml").toURI())).useDelimiter("\\Z").next();
-        Map<String, Object> expectedDam = (Map<String, Object>) YamlParser.getYamlParser().load(expectedDamString);
+        Map<String, Object> expectedDam = YamlParser.load(expectedDamString);
 
         assertNotNull(template);
 
@@ -312,12 +312,12 @@ public class DamGeneratorTest {
         String adp = new Scanner(new File(Resources.getResource("webchat/paas/webchat_adp-paas.yml").toURI())).useDelimiter("\\Z").next();
 
         dam = damGenerator.generateDam(adp);
-        template = (Map<String, Object>) YamlParser.getYamlParser().load(dam);
+        template = YamlParser.load(dam);
 
         testMetadataTemplate(template);
 
         String expectedDamString = new Scanner(new File(Resources.getResource("webchat/paas/webchat_dam-paas.yml").toURI())).useDelimiter("\\Z").next();
-        Map<String, Object> expectedDam = (Map<String, Object>) YamlParser.getYamlParser().load(expectedDamString);
+        Map<String, Object> expectedDam = YamlParser.load(expectedDamString);
 
         assertNotNull(template);
 

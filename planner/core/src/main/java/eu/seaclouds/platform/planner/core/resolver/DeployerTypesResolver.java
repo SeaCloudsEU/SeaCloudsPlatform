@@ -18,9 +18,9 @@ package eu.seaclouds.platform.planner.core.resolver;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import eu.seaclouds.platform.planner.core.utils.YamlParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.net.URL;
@@ -46,9 +46,7 @@ public class DeployerTypesResolver {
     }
 
     public DeployerTypesResolver(URL mappingFileUrl) throws IOException {
-        Yaml yml = new Yaml();
-        mapping = (Map<String, Object>) yml.load(
-                Resources.toString(mappingFileUrl, Charsets.UTF_8));
+        mapping = YamlParser.load(Resources.toString(mappingFileUrl, Charsets.UTF_8));
         initTypesMapping();
     }
 
@@ -73,12 +71,12 @@ public class DeployerTypesResolver {
                     .get(RELATIONSHIP_TYPES_MAPPING_SECTION);
         }
 
-        if(mapping.containsKey(NODE_TYPES_DEFINITIONS)){
+        if (mapping.containsKey(NODE_TYPES_DEFINITIONS)) {
             log.debug("Mapping contains NodeTypes description");
             nodeTypesDefinitions = (Map<String, Object>) mapping.get(NODE_TYPES_DEFINITIONS);
         }
 
-        if(mapping.containsKey(POLICY_TYPES_MAPPING_SECTION)){
+        if (mapping.containsKey(POLICY_TYPES_MAPPING_SECTION)) {
             log.debug("Mapping contains Policy mapping");
             policyTypesMapping = (Map<String, String>) mapping.get(POLICY_TYPES_MAPPING_SECTION);
         }
@@ -100,8 +98,8 @@ public class DeployerTypesResolver {
         return relationshipTypesMapping.get(sourceRelationshipType);
     }
 
-    public Object getNodeTypeDefinition(String nodeType){
-        if(nodeTypesDefinitions == null){
+    public Object getNodeTypeDefinition(String nodeType) {
+        if (nodeTypesDefinitions == null) {
             log.debug("NodeTypes definitions was not initialized for " + this);
             return null;
         }
