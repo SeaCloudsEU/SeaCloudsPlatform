@@ -63,6 +63,7 @@ public class ApplicationMetadata {
                 : (String) template.get(TEMPLATE_NAME);
     }
 
+    @SuppressWarnings("unchecked")
     private void initImports() {
         this.imports = (template.get(IMPORTS) != null)
                 ? (List<String>) template.get(IMPORTS)
@@ -85,7 +86,6 @@ public class ApplicationMetadata {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public Map<String, Object> normalizeMetadata() {
         addTemplateImports();
         addTemplateName();
@@ -101,7 +101,7 @@ public class ApplicationMetadata {
         template.put(TEMPLATE_VERSION, templateVersion);
     }
 
-    private void addTemplateImports(){
+    private void addTemplateImports() {
         template.put(IMPORTS, imports);
     }
 

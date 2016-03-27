@@ -27,7 +27,6 @@ public interface HostNodeTemplate extends NodeTemplate {
     public static final String MEMBERS = "members";
     public static final String POLICIES = "policies";
 
-
     //TODO: should be connected with policies facades
     public Map<String, Object> getLocationPolicyGroupValues();
 

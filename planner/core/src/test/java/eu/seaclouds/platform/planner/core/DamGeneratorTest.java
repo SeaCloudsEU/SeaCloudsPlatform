@@ -19,7 +19,9 @@ package eu.seaclouds.platform.planner.core;
 import com.google.common.collect.Iterators;
 import com.google.common.io.Resources;
 import eu.seaclouds.platform.planner.core.agreements.AgreementGenerator;
+import eu.seaclouds.platform.planner.core.decorators.MonitoringInformationDecorator;
 import eu.seaclouds.platform.planner.core.decorators.SeaCloudsManagmentPolicyDecorator;
+import eu.seaclouds.platform.planner.core.decorators.SlaInformationDecorator;
 import eu.seaclouds.platform.planner.core.template.ApplicationMetadata;
 import eu.seaclouds.platform.planner.core.utils.YamlParser;
 import org.apache.brooklyn.util.text.Strings;
@@ -387,22 +389,22 @@ public class DamGeneratorTest {
 
     @SuppressWarnings("unchecked")
     private void testMonitoringConfiguration(Map<String, Object> generatedGroups) {
-        Map<String, Object> monitoringInformation = (Map<String, Object>) generatedGroups.get(DamGenerator.MONITOR_INFO_GROUPNAME);
-        Map<String, Object> slaInformation = (Map<String, Object>) generatedGroups.get(DamGenerator.SLA_INFO_GROUPNAME);
+        Map<String, Object> monitoringInformation = (Map<String, Object>) generatedGroups.get(MonitoringInformationDecorator.MONITOR_INFO_GROUPNAME);
+        Map<String, Object> slaInformation = (Map<String, Object>) generatedGroups.get(SlaInformationDecorator.SLA_INFO_GROUPNAME);
         testMonitoringInformation(monitoringInformation);
         testSlaInformation(slaInformation);
     }
 
     private void testMonitoringInformation(Map<String, Object> monitoringInformation) {
         testMonitoringConfigurationPolicy(monitoringInformation,
-                DamGenerator.MONITORING_RULES_POLICY_NAME,
-                DamGenerator.SEACLOUDS_MONITORING_RULES_ID_POLICY);
+                MonitoringInformationDecorator.MONITORING_RULES_POLICY_NAME,
+                MonitoringInformationDecorator.SEACLOUDS_MONITORING_RULES_ID_POLICY);
     }
 
     private void testSlaInformation(Map<String, Object> slaInformation) {
         testMonitoringConfigurationPolicy(slaInformation,
-                DamGenerator.SEACLOUDS_APPLICATION_POLICY_NAME,
-                DamGenerator.SEACLOUDS_APPLICATION_INFORMATION_POLICY_TYPE);
+                SlaInformationDecorator.SEACLOUDS_APPLICATION_POLICY_NAME,
+                SlaInformationDecorator.SEACLOUDS_APPLICATION_INFORMATION_POLICY_TYPE);
     }
 
     @SuppressWarnings("unchecked")

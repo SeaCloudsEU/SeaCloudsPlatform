@@ -30,7 +30,10 @@ import java.util.UUID;
 
 public class MonitoringInformationDecorator implements ApplicationFacadeDecorator {
 
-    //TODO: put here constants
+    public static final String MONITOR_INFO_GROUPNAME = "monitoringInformation";
+    public static final String SEACLOUDS_MONITORING_RULES_ID_POLICY = "seaclouds.policies.monitoringrules";
+    public static final String MONITORING_RULES_POLICY_NAME = "monitoringrules.information.policy";
+
 
     private DamGeneratorConfigBag configBag;
     private ApplicationFacade applicationFacade;
@@ -60,15 +63,15 @@ public class MonitoringInformationDecorator implements ApplicationFacadeDecorato
 
         HashMap<String, String> policyProperties = new HashMap<>();
         policyProperties.put(DamGenerator.ID, generatedApplicationId);
-        policyProperties.put(DamGenerator.TYPE, DamGenerator.SEACLOUDS_MONITORING_RULES_ID_POLICY);
-        policy.put(DamGenerator.MONITORING_RULES_POLICY_NAME, policyProperties);
+        policyProperties.put(DamGenerator.TYPE, SEACLOUDS_MONITORING_RULES_ID_POLICY);
+        policy.put(MONITORING_RULES_POLICY_NAME, policyProperties);
 
         ArrayList<Map<String, Object>> policiesList = new ArrayList<>();
         policiesList.add(policy);
 
         appGroup.put(DamGenerator.POLICIES, policiesList);
 
-        applicationFacade.addGroup(DamGenerator.MONITOR_INFO_GROUPNAME, appGroup);
+        applicationFacade.addGroup(MONITOR_INFO_GROUPNAME, appGroup);
     }
 
 }

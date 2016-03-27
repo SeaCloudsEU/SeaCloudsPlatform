@@ -36,7 +36,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class AgreementGenerator {
     static Logger log = LoggerFactory.getLogger(AgreementGenerator.class);
 
-
     private static final String SLA_GEN_OP = "/seaclouds/templates";
     private static final String GET_AGREEMENT_OP = "/seaclouds/commands/fromtemplate";
 

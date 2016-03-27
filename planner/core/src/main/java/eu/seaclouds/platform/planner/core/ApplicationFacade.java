@@ -19,10 +19,6 @@ package eu.seaclouds.platform.planner.core;
 
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
 import eu.seaclouds.platform.planner.core.agreements.AgreementGenerator;
-import eu.seaclouds.platform.planner.core.decorators.MissingPolicyTypesDecorator;
-import eu.seaclouds.platform.planner.core.decorators.MonitoringInformationDecorator;
-import eu.seaclouds.platform.planner.core.decorators.SeaCloudsManagmentPolicyDecorator;
-import eu.seaclouds.platform.planner.core.decorators.SlaInformationDecorator;
 import eu.seaclouds.platform.planner.core.template.ApplicationMetadata;
 import eu.seaclouds.platform.planner.core.template.NodeTemplate;
 import eu.seaclouds.platform.planner.core.template.TopologyTemplateFacade;
@@ -62,6 +58,51 @@ public class ApplicationFacade {
         agreementGenerator = new AgreementGenerator(configBag.getSlaEndpoint());
     }
 
+
+    public void addGroup(String groupName, Map<String, Object> groupValue) {
+        getGroups().put(groupName, groupValue);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> getGroups() {
+        return (Map<String, Object>) template.get(DamGenerator.GROUPS);
+    }
+
+    public void addSlaInformation(String agreementId) {
+        this.applicationSlaId = agreementId;
+    }
+
+    public DamGeneratorConfigBag getConfigBag() {
+        return configBag;
+    }
+
+    public AgreementGenerator getAgreementGenerator() {
+        return agreementGenerator;
+    }
+
+    public void setAgreementGenerator(AgreementGenerator agreementGenerator) {
+        this.agreementGenerator = agreementGenerator;
+    }
+
+    public MonitoringInfo getMonitoringInfo() {
+        return monitoringInfo;
+    }
+
+    public void addMonitoringInfo(MonitoringInfo monitoringInfo) {
+        this.monitoringInfo = monitoringInfo;
+        template = YamlParser.load(monitoringInfo.getReturnedAdp());
+        topologyTemplate.updateNoExistNodeTemplate(template);
+        updateNodeTemplates();
+    }
+
+    public String getApplicationSlaId() {
+        return applicationSlaId;
+    }
+
+    public String templateToString() {
+        return YamlParser.dump(template);
+    }
+
     public void generateDam() {
         normalizeMetadata();
         createTopologyTemplate();
@@ -85,49 +126,20 @@ public class ApplicationFacade {
         updateNodeTemplates();
     }
 
-    public void addSlaInformation(String agreementId) {
-        this.applicationSlaId = agreementId;
-    }
-
     private void joinPlatformsAndHostedNodeTemplates() {
         topologyTemplate.joinPlatformNodeTemplates();
         updateNodeTemplates();
     }
 
     private void applyDecorators() {
-        MonitoringInformationDecorator monitoringInformationDecorator =
-                new MonitoringInformationDecorator();
-        monitoringInformationDecorator.apply(this);
-
-        SlaInformationDecorator slaInformationDecorator = new SlaInformationDecorator();
-        slaInformationDecorator.apply(this);
-
-        SeaCloudsManagmentPolicyDecorator seaCloudsManagmentPolicyDecorator =
-                new SeaCloudsManagmentPolicyDecorator();
-        seaCloudsManagmentPolicyDecorator.apply(this);
-
-        MissingPolicyTypesDecorator missingPolicyTypesDecorator = new MissingPolicyTypesDecorator();
-        missingPolicyTypesDecorator.apply(this);
+        ApplicationFacadeDecoratorApplicator applicator =
+                new ApplicationFacadeDecoratorApplicator();
+        applicator.applyDecorators(this);
     }
 
     private void addPoliciesLocations() {
         Map<String, Object> locationGroups = topologyTemplate.getLocationPoliciesGroups();
-        addGroupds(locationGroups);
-    }
-
-    private void addGroupds(Map<String, Object> groups) {
-        for (Map.Entry<String, Object> groupEntry : groups.entrySet()) {
-            String groupName = groupEntry.getKey();
-            Map<String, Object> groupValue = (Map<String, Object>) groupEntry.getValue();
-            addGroup(groupName, groupValue);
-        }
-    }
-
-    public void addMonitoringInfo(MonitoringInfo monitoringInfo) {
-        this.monitoringInfo = monitoringInfo;
-        template = YamlParser.load(monitoringInfo.getReturnedAdp());
-        topologyTemplate.updateNoExistNodeTemplate(template);
-        updateNodeTemplates();
+        addGroups(locationGroups);
     }
 
     private void updateNodeTemplates() {
@@ -166,58 +178,28 @@ public class ApplicationFacade {
         setNodeTypes(usedNodeTemplates);
     }
 
-    private void setNodeTypes(Map<String, Object> nodeTypes) {
-        this.nodeTypes = nodeTypes;
-        template.put(DamGenerator.NODE_TYPES, nodeTypes);
-    }
-
     private Map<String, Object> getNodeTypes() {
         return nodeTypes;
     }
 
+    @SuppressWarnings("unchecked")
     private void setNodeTemplates(Map<String, Object> nodeTemplates) {
         Map<String, Object> topologyTem =
                 (Map<String, Object>) template.get(DamGenerator.TOPOLOGY_TEMPLATE);
         topologyTem.put(DamGenerator.NODE_TEMPLATES, nodeTemplates);
     }
 
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> getNodeTemplates() {
-        Map<String, Object> topologyTemplate = (Map<String, Object>) template.get(DamGenerator.TOPOLOGY_TEMPLATE);
-        return (Map<String, Object>) topologyTemplate.get(DamGenerator.NODE_TEMPLATES);
+    private void addGroups(Map<String, Object> groups) {
+        for (Map.Entry<String, Object> groupEntry : groups.entrySet()) {
+            String groupName = groupEntry.getKey();
+            Map<String, Object> groupValue = (Map<String, Object>) groupEntry.getValue();
+            addGroup(groupName, groupValue);
+        }
     }
 
-    public String templateToString() {
-        return YamlParser.dump(template);
-    }
-
-    public AgreementGenerator getAgreementGenerator() {
-        return agreementGenerator;
-    }
-
-    public void setAgreementGenerator(AgreementGenerator agreementGenerator) {
-        this.agreementGenerator = agreementGenerator;
-    }
-
-    @SuppressWarnings("unchecked")
-    public Map<String, Object> getGroups() {
-        return (Map<String, Object>) template.get(DamGenerator.GROUPS);
-    }
-
-    public void addGroup(String groupName, Map<String, Object> groupValue) {
-        getGroups().put(groupName, groupValue);
-    }
-
-    public DamGeneratorConfigBag getConfigBag() {
-        return configBag;
-    }
-
-    public MonitoringInfo getMonitoringInfo() {
-        return monitoringInfo;
-    }
-
-    public String getApplicationSlaId() {
-        return applicationSlaId;
+    private void setNodeTypes(Map<String, Object> nodeTypes) {
+        this.nodeTypes = nodeTypes;
+        template.put(DamGenerator.NODE_TYPES, nodeTypes);
     }
 
 }

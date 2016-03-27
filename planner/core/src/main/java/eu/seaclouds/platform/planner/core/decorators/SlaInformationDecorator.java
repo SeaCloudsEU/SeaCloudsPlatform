@@ -25,9 +25,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SlaInformationDecorator implements ApplicationFacadeDecorator{
+public class SlaInformationDecorator implements ApplicationFacadeDecorator {
 
-    //TODO: put here constants
+    public static final String SLA_INFO_GROUPNAME = "sla_gen_info";
+    public static final String SEACLOUDS_APPLICATION_INFORMATION_POLICY_TYPE = "seaclouds.policies.app.information";
+    public static final String SEACLOUDS_APPLICATION_POLICY_NAME = "seaclouds.app.information";
 
     private ApplicationFacade applicationFacade;
     private AgreementGenerator agreementGenerator;
@@ -41,7 +43,6 @@ public class SlaInformationDecorator implements ApplicationFacadeDecorator{
         addApplicationInfo(agreementId);
     }
 
-
     public void addApplicationInfo(String applicationInfoId) {
         HashMap<String, Object> appGroup = new HashMap<>();
         appGroup.put(DamGenerator.MEMBERS, Arrays.asList(DamGenerator.APPLICATION));
@@ -50,14 +51,14 @@ public class SlaInformationDecorator implements ApplicationFacadeDecorator{
         Map<String, Object> policy = new HashMap<>();
         HashMap<String, String> policyProperties = new HashMap<>();
         policyProperties.put(DamGenerator.ID, applicationInfoId);
-        policyProperties.put(DamGenerator.TYPE, DamGenerator.SEACLOUDS_APPLICATION_INFORMATION_POLICY_TYPE);
-        policy.put(DamGenerator.SEACLOUDS_APPLICATION_POLICY_NAME, policyProperties);
+        policyProperties.put(DamGenerator.TYPE, SEACLOUDS_APPLICATION_INFORMATION_POLICY_TYPE);
+        policy.put(SEACLOUDS_APPLICATION_POLICY_NAME, policyProperties);
 
         ArrayList<Map<String, Object>> policiesList = new ArrayList<>();
         policiesList.add(policy);
 
         appGroup.put(DamGenerator.POLICIES, policiesList);
-        applicationFacade.addGroup(DamGenerator.SLA_INFO_GROUPNAME, appGroup);
+        applicationFacade.addGroup(SLA_INFO_GROUPNAME, appGroup);
     }
 
 }
