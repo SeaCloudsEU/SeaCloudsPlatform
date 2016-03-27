@@ -19,6 +19,7 @@ package eu.seaclouds.platform.planner.core;
 
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
+import eu.seaclouds.platform.planner.core.agreements.AgreementGenerator;
 import eu.seaclouds.platform.planner.core.template.ApplicationMetadata;
 import eu.seaclouds.platform.planner.core.template.NodeTemplate;
 import eu.seaclouds.platform.planner.core.template.TopologyTemplateFacade;
@@ -46,11 +47,14 @@ public class ApplicationFacade {
     private final String monitorUrl;
     private final String monitorPort;
     private final String influxdbUrl;
+    private final String slaEndpoint;
     private Map<String, Object> template;
     private TopologyTemplateFacade topologyTemplate;
     private Map<String, Object> nodeTypes;
+    private AgreementGenerator agreementGenerator;
+    private String applicationInfoId;
 
-    public ApplicationFacade(Map<String, Object> adp, String monitorUrl, String monitorPort, String influxdbUrl, String influxdbPort) {
+    public ApplicationFacade(Map<String, Object> adp, String monitorUrl, String monitorPort, String influxdbUrl, String influxdbPort, String slaEndpoint) {
         this.adp = adp;
         this.template = MutableMap.copyOf(adp);
         this.topologyTemplate = new TopologyTemplateFacade(adp);
@@ -58,6 +62,7 @@ public class ApplicationFacade {
         this.monitorPort = monitorPort;
         this.influxdbUrl = influxdbUrl;
         this.influxdbPort = influxdbPort;
+        this.slaEndpoint = slaEndpoint;
         init();
     }
 
@@ -66,6 +71,7 @@ public class ApplicationFacade {
         nodeTypes = (template.get(DamGenerator.NODE_TYPES) != null)
                 ? (Map<String, Object>) template.get(DamGenerator.NODE_TYPES)
                 : MutableMap.<String, Object>of();
+        agreementGenerator = new AgreementGenerator(slaEndpoint);
     }
 
     public void generateDam() {
@@ -73,10 +79,11 @@ public class ApplicationFacade {
         applicationMetadata.normalizeMetadata();
 
         this.topologyTemplate = new TopologyTemplateFacade(adp);
-        updateCurrentNodeTypes(topologyTemplate.getRequiredNodeTypes());
+        updateNodeTypes(topologyTemplate.getRequiredNodeTypes());
         updateNodeTemplates();
         addMonitoringInfo();
-        //add sla
+        addSlaInformation();
+
         //join Platform Elements
         //add SeaCloudsPolicies
         //add location policies
@@ -122,13 +129,40 @@ public class ApplicationFacade {
         groups.put(DamGenerator.MONITOR_INFO_GROUPNAME, appGroup);
     }
 
+    private void addSlaInformation() {
+        applicationInfoId = getAgreementGenerator().generateAgreeemntId(template);
+        addApplicationInfo(applicationInfoId);
+    }
+
+
+    public void addApplicationInfo(String applicationInfoId) {
+
+        Map<String, Object> groups = (Map<String, Object>) template.get(DamGenerator.GROUPS);
+        HashMap<String, Object> appGroup = new HashMap<>();
+        appGroup.put(DamGenerator.MEMBERS, Arrays.asList(DamGenerator.APPLICATION));
+
+        //TODO: split in some methods or objects
+        Map<String, Object> policy = new HashMap<>();
+        HashMap<String, String> policyProperties = new HashMap<>();
+        policyProperties.put(DamGenerator.ID, applicationInfoId);
+        policyProperties.put(DamGenerator.TYPE, DamGenerator.SEACLOUDS_APPLICATION_INFORMATION_POLICY_TYPE);
+        policy.put(DamGenerator.SEACLOUDS_APPLICATION_POLICY_NAME, policyProperties);
+
+        ArrayList<Map<String, Object>> policiesList = new ArrayList<>();
+        policiesList.add(policy);
+
+        appGroup.put(DamGenerator.POLICIES, policiesList);
+        groups.put(DamGenerator.SLA_INFO_GROUPNAME, appGroup);
+    }
+
+
     private void updateNodeTemplates() {
         Map<String, Object> transformedNodeTemplates =
                 topologyTemplate.getNodeTransformedNodeTemplates();
         setNodeTemplates(transformedNodeTemplates);
     }
 
-    private void updateCurrentNodeTypes(Map<String, Object> newNodeTypes) {
+    private void updateNodeTypes(Map<String, Object> newNodeTypes) {
         Map<String, Object> currentNodeTypes = getNodeTypes();
         Map<String, NodeTemplate> nodeTemplates = topologyTemplate.getNodeTemplates();
         Map<String, Object> usedNodeTemplates = MutableMap.of();
@@ -207,10 +241,18 @@ public class ApplicationFacade {
     }
 
     private String getSlaEndpoint() {
-        return "";
+        return slaEndpoint;
     }
 
     public String templateToString() {
         return getYamlParser().dump(template);
+    }
+
+    private AgreementGenerator getAgreementGenerator() {
+        return agreementGenerator;
+    }
+
+    public void setAgreementGenerator(AgreementGenerator agreementGenerator) {
+        this.agreementGenerator = agreementGenerator;
     }
 }
