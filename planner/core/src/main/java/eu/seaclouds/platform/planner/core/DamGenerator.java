@@ -16,41 +16,17 @@
  */
 package eu.seaclouds.platform.planner.core;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
-import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
-import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
+import eu.seaclouds.platform.planner.core.agreements.AgreementGenerator;
 import eu.seaclouds.platform.planner.core.resolver.DeployerTypesResolver;
-import eu.seaclouds.platform.planner.core.template.AbstractNodeTemplate;
-import eu.seaclouds.platform.planner.core.template.ApplicationMetadata;
-import eu.seaclouds.platform.planner.core.template.NodeTemplate;
-import eu.seaclouds.platform.planner.core.template.NodeTemplateFactory;
-import eu.seaclouds.platform.planner.core.template.host.HostNodeTemplate;
-import eu.seaclouds.platform.planner.core.template.host.PlatformNodeTemplate;
-import eu.seaclouds.platform.planner.core.template.policies.SeaCloudsManagementPolicy;
-import eu.seaclouds.platform.planner.core.utils.HttpHelper;
+import eu.seaclouds.platform.planner.core.utils.YamlParser;
 import org.apache.brooklyn.util.collections.MutableList;
-import org.apache.brooklyn.util.collections.MutableMap;
-import org.apache.brooklyn.util.exceptions.Exceptions;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 
 public class DamGenerator {
@@ -90,14 +66,9 @@ public class DamGenerator {
 
     private DeployerTypesResolver deployerTypesResolver;
 
-    private Map<String, MonitoringInfo> monitoringInfoByApplication = new HashMap<>();
-
-    private SlaAgreementManager agreementManager;
     private Map<String, Object> template;
-    private Map<String, NodeTemplate> nodeTemplateFacades;
     private Map<String, Object> originalAdp;
-    private Map<String, ArrayList<String>> topologyTree;
-    private Map<String, HostNodeTemplate> hostNodeTemplateFacades;
+    private AgreementGenerator agreementGenerator;
 
     public DamGenerator(DamGeneratorConfigBag configBag) {
         this.configBag = configBag;
@@ -105,31 +76,22 @@ public class DamGenerator {
     }
 
     private void init() {
-        agreementManager = new SlaAgreementManager(configBag.getSlaEndpoint());
-        nodeTemplateFacades = MutableMap.of();
-        topologyTree = MutableMap.of();
-        hostNodeTemplateFacades = MutableMap.of();
+        agreementGenerator = new AgreementGenerator(configBag.getSlaEndpoint());
     }
 
     public String generateDam(String adp) {
-        String applicationInfoId;
         originalAdp =
-                normalizeComputeTypes((Map<String, Object>) getYamlParser().load(adp));
+                normalizeComputeTypes((Map<String, Object>) YamlParser.getYamlParser().load(adp));
 
-        ApplicationMetadata applicationMetadata = new ApplicationMetadata(originalAdp);
-        Map<String, Object> adpYaml = applicationMetadata.normalizeMetadata();
-        adpYaml = normalizeComputeTypes(adpYaml);
-
-        template = translateAPD(adpYaml);
-        MonitoringInfo monitoringInfo = generateMonitoringInfo();
-        addMonitorInfo(monitoringInfo);
-        applicationInfoId = getAgreementManager().generateAgreeemntId(template);
-        addApplicationInfo(applicationInfoId);
-        addSeaCloudsPolicy(monitoringInfo, applicationInfoId);
+        ApplicationFacade applicationFacade = new ApplicationFacade(originalAdp, configBag);
+        applicationFacade.setAgreementGenerator(agreementGenerator);
+        applicationFacade.generateDam();
+        String generatedDam = applicationFacade.templateToString();
+        template = (Map<String, Object>) YamlParser.getYamlParser().load(generatedDam);
 
         customize();
 
-        return getYamlParser().dump(template);
+        return YamlParser.getYamlParser().dump(template);
     }
 
     private void customize() {
@@ -137,25 +99,6 @@ public class DamGenerator {
         relationManagement();
         manageNodeTypes();
         manageGroups();
-    }
-
-    private void addSeaCloudsPolicy(MonitoringInfo monitoringInfo, String applicationInfoId) {
-        SeaCloudsManagementPolicy policyFacade =
-                new SeaCloudsManagementPolicy.Builder()
-                        .agreementManager(agreementManager)
-                        .slaEndpoint(configBag.getSlaEndpoint())
-                        .t4cEndpoint(configBag.getMonitorEndpoint().toString())
-                        .influxdbEndpoint(configBag.getInfluxDbEndpoint().toString())
-                        .influxdbDatabase(configBag.getInfluxdbDatabase())
-                        .influxdbUsername(configBag.getInfluxdbUsername())
-                        .influxdbPassword(configBag.getInfluxdbPassword())
-                        .grafanaEndpoint(configBag.getGrafanaEndpoint())
-                        .grafanaUsername(configBag.getGrafanaUsername())
-                        .grafanaPassword(configBag.getGrafanaPassword())
-                        .build();
-        Map<String, Object> groups = (Map<String, Object>) template.get(GROUPS);
-        groups.put(SEACLOUDS_APPLICATION_CONFIGURATION,
-                policyFacade.getPolicy(monitoringInfo, applicationInfoId));
     }
 
     private void manageNodeTypes() {
@@ -186,146 +129,41 @@ public class DamGenerator {
     }
 
     private void normalizePlatformNodeTemplates() {
-        Map<String, Object> topologyTemplate = (Map<String, Object>) template.get(TOPOLOGY_TEMPLATE);
-        Map<String, Object> nodeTemplates = (Map<String, Object>) topologyTemplate.get(NODE_TEMPLATES);
-
-        Map<String, Object> groups = (Map<String, Object>) template.get(GROUPS);
-
-        for (Map.Entry<String, HostNodeTemplate> entry : hostNodeTemplateFacades.entrySet()) {
-            HostNodeTemplate hostNodeTemplate = entry.getValue();
-            if (hostNodeTemplate instanceof PlatformNodeTemplate) {
-                nodeTemplates.remove(entry.getKey());
-                String platformPolicyGroupName =
-                        hostNodeTemplate.getLocationPolicyGroupName();
-
-                Map<String, Object> platformPolicyGroupValues =
-                        (Map<String, Object>) groups.get(platformPolicyGroupName);
-
-                ArrayList<String> nodeTemplatesDeployedOnPlatform = topologyTree.get(entry.getKey());
-                if (nodeTemplatesDeployedOnPlatform.size() != 1) {
-                    throw new IllegalStateException("just one NodeTemplate can be deployed " +
-                            "on a PlatformNodeTemplate and " + entry.getKey() + " contains " +
-                            nodeTemplatesDeployedOnPlatform.size() + ": " +
-                            nodeTemplatesDeployedOnPlatform.toString());
-                }
-                String nodeTemplateDeployedPlatform = nodeTemplatesDeployedOnPlatform.get(0);
-
-                platformPolicyGroupValues.put(MEMBERS, Arrays.asList(nodeTemplateDeployedPlatform));
-                groups.remove(platformPolicyGroupName);
-                groups.put(HostNodeTemplate.ADD_BROOKLYN_LOCATION_PEFIX + nodeTemplateDeployedPlatform, platformPolicyGroupValues);
-
-                nodeTemplates.get(nodeTemplateDeployedPlatform);
-                AbstractNodeTemplate nodeTemplate = (AbstractNodeTemplate) nodeTemplateFacades.get(nodeTemplateDeployedPlatform);
-                nodeTemplate.deleteHostRequirement();
-                nodeTemplates.put(nodeTemplateDeployedPlatform, nodeTemplate.transform());
-            }
-        }
-    }
-
-    public MonitoringInfo generateMonitoringInfo() {
-        MonitoringDamGenerator monDamGen;
-        monDamGen = new MonitoringDamGenerator(configBag.getMonitorEndpoint(), configBag.getInfluxDbEndpoint());
-        return monDamGen.generateMonitoringInfo(getYamlParser().dump(template));
-    }
-
-    public void addMonitorInfo(MonitoringInfo monitoringInfo) {
-        String generatedApplicationId = UUID.randomUUID().toString();
-
-        monitoringInfoByApplication.put(generatedApplicationId, monitoringInfo);
-
-        HashMap<String, Object> appGroup = new HashMap<>();
-        appGroup.put(MEMBERS, Arrays.asList(APPLICATION));
-        Map<String, Object> policy = new HashMap<>();
-
-        HashMap<String, String> policyProperties = new HashMap<>();
-        policyProperties.put(ID, generatedApplicationId);
-        policyProperties.put(TYPE, SEACLOUDS_MONITORING_RULES_ID_POLICY);
-        policy.put(MONITORING_RULES_POLICY_NAME, policyProperties);
-
-        ArrayList<Map<String, Object>> policiesList = new ArrayList<>();
-        policiesList.add(policy);
-
-        appGroup.put(POLICIES, policiesList);
-
-        template = (Map<String, Object>) getYamlParser().load(monitoringInfo.getReturnedAdp());
-        Map<String, Object> groups = (Map<String, Object>) template.get(GROUPS);
-        groups.put(MONITOR_INFO_GROUPNAME, appGroup);
-    }
-
-    public Map<String, Object> translateAPD(Map<String, Object> adpYaml) {
-
-        Map<String, Object> damUsedNodeTypes = MutableMap.of();
-
-        Map<String, Object> ADPgroups = (Map<String, Object>) adpYaml.get(GROUPS);
-        Map<String, Object> topologyTemplate = (Map<String, Object>) adpYaml.get(TOPOLOGY_TEMPLATE);
-        Map<String, Object> nodeTemplates = (Map<String, Object>) topologyTemplate.get(NODE_TEMPLATES);
-        Map<String, Object> nodeTypes = (Map<String, Object>) adpYaml.get(NODE_TYPES);
-
-        for (String moduleName : nodeTemplates.keySet()) {
-            Map<String, Object> module = (Map<String, Object>) nodeTemplates.get(moduleName);
-
-            NodeTemplate nodeTemplate =
-                    NodeTemplateFactory.createNodeTemplate(originalAdp, moduleName);
-            nodeTemplateFacades.put(moduleName, nodeTemplate);
-
-            String moduleType = nodeTemplate.getModuleType();
-            if (nodeTypes.containsKey(moduleType)) {
-                String targetType = nodeTemplate.getType();
-                if (targetType != null) {
-                    if (nodeTemplate.getNodeTypeDefinition() != null) {
-                        damUsedNodeTypes.put(targetType,
-                                nodeTemplate.getNodeTypeDefinition());
-                    } else {
-                        log.error("TargetType definition " + targetType + "was not found" +
-                                "so it will not added to DAM");
-                    }
-                } else {
-                    damUsedNodeTypes.put(moduleType, nodeTypes.get(moduleType));
-                }
-            }
-
-            nodeTemplates.put(moduleName, nodeTemplate.transform());
-
-            if (nodeTemplate instanceof HostNodeTemplate) {
-                hostNodeTemplateFacades
-                        .put(moduleName, (HostNodeTemplate) nodeTemplate);
-            } else {
-                String hostNodeTemplateName = nodeTemplate.getHostNodeName();
-                if (!topologyTree.containsKey(hostNodeTemplateName)) {
-                    topologyTree.put(hostNodeTemplateName, new ArrayList<String>());
-                }
-                topologyTree.get(hostNodeTemplateName).add(moduleName);
-            }
-        }
-
-        adpYaml.put(NODE_TYPES, damUsedNodeTypes);
-
-        //get brookly location from host
-        for (Map.Entry<String, HostNodeTemplate> hostEntry : hostNodeTemplateFacades.entrySet()) {
-            HostNodeTemplate hostNodeTemplate = hostEntry.getValue();
-            ADPgroups.put(hostNodeTemplate.getLocationPolicyGroupName(),
-                    hostNodeTemplate.getLocationPolicyGroupValues());
-        }
-        return adpYaml;
-    }
-
-    public void addApplicationInfo(String applicationInfoId) {
-
-        Map<String, Object> groups = (Map<String, Object>) template.get(GROUPS);
-        HashMap<String, Object> appGroup = new HashMap<>();
-        appGroup.put(MEMBERS, Arrays.asList(APPLICATION));
-
-        Map<String, Object> policy = new HashMap<>();
-        HashMap<String, String> policyProperties = new HashMap<>();
-        policyProperties.put(ID, applicationInfoId);
-        policyProperties.put(TYPE, SEACLOUDS_APPLICATION_INFORMATION_POLICY_TYPE);
-        policy.put(SEACLOUDS_APPLICATION_POLICY_NAME, policyProperties);
-
-        ArrayList<Map<String, Object>> policiesList = new ArrayList<>();
-        policiesList.add(policy);
-
-        appGroup.put(POLICIES, policiesList);
-        groups.put(SLA_INFO_GROUPNAME, appGroup);
+        //TODO: refactoring
+//        Map<String, Object> topologyTemplate = (Map<String, Object>) template.get(TOPOLOGY_TEMPLATE);
+//        Map<String, Object> nodeTemplates = (Map<String, Object>) topologyTemplate.get(NODE_TEMPLATES);
+//
+//        Map<String, Object> groups = (Map<String, Object>) template.get(GROUPS);
+//
+//        for (Map.Entry<String, HostNodeTemplate> entry : hostNodeTemplateFacades.entrySet()) {
+//            HostNodeTemplate hostNodeTemplate = entry.getValue();
+//            if (hostNodeTemplate instanceof PlatformNodeTemplate) {
+//                nodeTemplates.remove(entry.getKey());
+//                String platformPolicyGroupName =
+//                        hostNodeTemplate.getLocationPolicyGroupName();
+//
+//                Map<String, Object> platformPolicyGroupValues =
+//                        (Map<String, Object>) groups.get(platformPolicyGroupName);
+//
+//                ArrayList<String> nodeTemplatesDeployedOnPlatform = topologyTree.get(entry.getKey());
+//                if (nodeTemplatesDeployedOnPlatform.size() != 1) {
+//                    throw new IllegalStateException("just one NodeTemplate can be deployed " +
+//                            "on a PlatformNodeTemplate and " + entry.getKey() + " contains " +
+//                            nodeTemplatesDeployedOnPlatform.size() + ": " +
+//                            nodeTemplatesDeployedOnPlatform.toString());
+//                }
+//                String nodeTemplateDeployedPlatform = nodeTemplatesDeployedOnPlatform.get(0);
+//
+//                platformPolicyGroupValues.put(MEMBERS, Arrays.asList(nodeTemplateDeployedPlatform));
+//                groups.remove(platformPolicyGroupName);
+//                groups.put(HostNodeTemplate.ADD_BROOKLYN_LOCATION_PEFIX + nodeTemplateDeployedPlatform, platformPolicyGroupValues);
+//
+//                nodeTemplates.get(nodeTemplateDeployedPlatform);
+//                AbstractNodeTemplate nodeTemplate = (AbstractNodeTemplate) nodeTemplateFacades.get(nodeTemplateDeployedPlatform);
+//                nodeTemplate.deleteHostRequirement();
+//                nodeTemplates.put(nodeTemplateDeployedPlatform, nodeTemplate.transform());
+//            }
+//        }
     }
 
     /*This method filters current requirements and avoid non-host requirements. It is only a temporal
@@ -445,14 +283,6 @@ public class DamGenerator {
         return property;
     }
 
-    public SlaAgreementManager getAgreementManager() {
-        return agreementManager;
-    }
-
-    public void setAgreementManager(SlaAgreementManager agManager) {
-        this.agreementManager = agManager;
-    }
-
     public DeployerTypesResolver getDeployerIaaSTypeResolver() {
         try {
             if (deployerTypesResolver == null) {
@@ -465,60 +295,8 @@ public class DamGenerator {
         return deployerTypesResolver;
     }
 
-    public DeployerTypesResolver getDeployerPaaSTypeResolver() {
-        try {
-            if (deployerTypesResolver == null) {
-                deployerTypesResolver = new DeployerTypesResolver(Resources
-                        .getResource(BROOKLYN_PAAS_TYPES_MAPPING).toURI().toString());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return deployerTypesResolver;
+    public void setAgreementGenerator(AgreementGenerator agreementGenerator) {
+        this.agreementGenerator = agreementGenerator;
     }
-
-    public Yaml getYamlParser() {
-        DumperOptions options = new DumperOptions();
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        return new Yaml(options);
-    }
-
-
-    public class SlaAgreementManager {
-
-        private static final String SLA_GEN_OP = "/seaclouds/templates";
-        private static final String GET_AGREEMENT_OP = "/seaclouds/commands/fromtemplate";
-
-        private String slaUrl;
-
-        public SlaAgreementManager(String slaUrl) {
-            this.slaUrl = slaUrl;
-        }
-
-        public String generateAgreeemntId(Map<String, Object> template) {
-            String result = null;
-            String slaInfoResponse = new HttpHelper(slaUrl)
-                    .postInBody(SLA_GEN_OP, getYamlParser().dump(template));
-            checkNotNull(slaInfoResponse, "Error getting SLA info");
-            try {
-                ApplicationMonitorId applicationMonitoringId = new ObjectMapper()
-                        .readValue(slaInfoResponse, ApplicationMonitorId.class);
-                result = applicationMonitoringId.getId();
-            } catch (IOException e) {
-                log.error("Error AgreementTemplateId during dam generation {}", this);
-            }
-            return result;
-        }
-
-        public String getAgreement(String applicationMonitorId) {
-            List<NameValuePair> paremeters = MutableList.of((NameValuePair)
-                    new BasicNameValuePair("templateId", applicationMonitorId));
-            return new HttpHelper(slaUrl).getRequest(GET_AGREEMENT_OP, paremeters);
-
-        }
-    }
-
-
-
 
 }
