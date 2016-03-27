@@ -25,12 +25,9 @@ import eu.seaclouds.platform.planner.core.template.NodeTemplate;
 import eu.seaclouds.platform.planner.core.template.TopologyTemplateFacade;
 import eu.seaclouds.platform.planner.core.utils.YamlParser;
 import org.apache.brooklyn.util.collections.MutableMap;
-import org.apache.brooklyn.util.exceptions.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,26 +39,18 @@ public class ApplicationFacade {
     static Logger log = LoggerFactory.getLogger(ApplicationFacade.class);
 
     private final Map<String, Object> adp;
-    private final String influxdbPort;
-    private final String monitorUrl;
-    private final String monitorPort;
-    private final String influxdbUrl;
-    private final String slaEndpoint;
+    private final DamGeneratorConfigBag configBag;
     private Map<String, Object> template;
     private TopologyTemplateFacade topologyTemplate;
     private Map<String, Object> nodeTypes;
     private AgreementGenerator agreementGenerator;
     private String applicationInfoId;
 
-    public ApplicationFacade(Map<String, Object> adp, String monitorUrl, String monitorPort, String influxdbUrl, String influxdbPort, String slaEndpoint) {
+    public ApplicationFacade(Map<String, Object> adp, DamGeneratorConfigBag configBag) {
         this.adp = adp;
         this.template = MutableMap.copyOf(adp);
         this.topologyTemplate = new TopologyTemplateFacade(adp);
-        this.monitorUrl = monitorUrl;
-        this.monitorPort = monitorPort;
-        this.influxdbUrl = influxdbUrl;
-        this.influxdbPort = influxdbPort;
-        this.slaEndpoint = slaEndpoint;
+        this.configBag = configBag;
         init();
     }
 
@@ -70,7 +59,7 @@ public class ApplicationFacade {
         nodeTypes = (template.get(DamGenerator.NODE_TYPES) != null)
                 ? (Map<String, Object>) template.get(DamGenerator.NODE_TYPES)
                 : MutableMap.<String, Object>of();
-        agreementGenerator = new AgreementGenerator(slaEndpoint);
+        agreementGenerator = new AgreementGenerator(configBag.getSlaEndpoint());
     }
 
     public void generateDam() {
@@ -112,7 +101,7 @@ public class ApplicationFacade {
 
     public MonitoringInfo generateMonitoringInfo() {
         MonitoringDamGenerator monDamGen;
-        monDamGen = new MonitoringDamGenerator(getMonitoringEndpoint(), getInfluxDbEndpoint());
+        monDamGen = new MonitoringDamGenerator(configBag.getMonitorEndpoint(), configBag.getInfluxDbEndpoint());
         return monDamGen.generateMonitoringInfo(templateToString());
     }
 
@@ -224,31 +213,6 @@ public class ApplicationFacade {
     private Map<String, Object> getNodeTemplates() {
         Map<String, Object> topologyTemplate = (Map<String, Object>) template.get(DamGenerator.TOPOLOGY_TEMPLATE);
         return (Map<String, Object>) topologyTemplate.get(DamGenerator.NODE_TEMPLATES);
-    }
-
-    public URL getMonitoringEndpoint() {
-        try {
-            return new URL("http://" + monitorUrl + ":" + monitorPort + "");
-        } catch (MalformedURLException e) {
-            Exceptions.propagateIfFatal(e);
-            log.warn("Error creating MonitoringEndpoint: http://" + monitorUrl + ":" + monitorPort);
-        }
-        return null;
-    }
-
-    public URL getInfluxDbEndpoint() {
-        try {
-            return new URL("http://" + influxdbUrl + ":" + influxdbPort + "");
-
-        } catch (MalformedURLException e) {
-            Exceptions.propagateIfFatal(e);
-            log.warn("Error creating InfluxDbEndpoint: http://" + influxdbUrl + ":" + influxdbPort);
-        }
-        return null;
-    }
-
-    private String getSlaEndpoint() {
-        return slaEndpoint;
     }
 
     public String templateToString() {
