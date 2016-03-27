@@ -20,6 +20,7 @@ package eu.seaclouds.platform.planner.core;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
 import eu.seaclouds.platform.planner.core.agreements.AgreementGenerator;
 import eu.seaclouds.platform.planner.core.decorators.MonitoringInformationDecorator;
+import eu.seaclouds.platform.planner.core.decorators.SlaInformationDecorator;
 import eu.seaclouds.platform.planner.core.template.ApplicationMetadata;
 import eu.seaclouds.platform.planner.core.template.NodeTemplate;
 import eu.seaclouds.platform.planner.core.template.TopologyTemplateFacade;
@@ -28,9 +29,6 @@ import org.apache.brooklyn.util.collections.MutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ApplicationFacade {
@@ -43,7 +41,7 @@ public class ApplicationFacade {
     private TopologyTemplateFacade topologyTemplate;
     private Map<String, Object> nodeTypes;
     private AgreementGenerator agreementGenerator;
-    private String applicationInfoId;
+    private String applicationSlaId;
     private MonitoringInfo monitoringInfo;
 
     public ApplicationFacade(Map<String, Object> adp, DamGeneratorConfigBag configBag) {
@@ -72,7 +70,7 @@ public class ApplicationFacade {
 
         applyDecorators();
         //addMonitoringInfo();
-        addSlaInformation();
+        //addSlaInformation();
 
         //TODO:join Platform Elements
 
@@ -80,11 +78,17 @@ public class ApplicationFacade {
 
         //TODO:add SeaCloudsPolicies
     }
+    public void addSlaInformation(String agreementId) {
+        this.applicationSlaId = agreementId;
+    }
 
     private void applyDecorators() {
         MonitoringInformationDecorator monitoringInformationDecorator =
                 new MonitoringInformationDecorator();
         monitoringInformationDecorator.apply(this);
+
+        SlaInformationDecorator slaInformationDecorator = new SlaInformationDecorator();
+        slaInformationDecorator.apply(this);
     }
 
     private void addPoliciesLocations() {
@@ -107,32 +111,6 @@ public class ApplicationFacade {
         topologyTemplate.updateNoExistNodeTemplate(template);
         updateNodeTemplates();
     }
-
-    private void addSlaInformation() {
-        applicationInfoId = getAgreementGenerator().generateAgreeemntId(template);
-        addApplicationInfo(applicationInfoId);
-    }
-
-
-    public void addApplicationInfo(String applicationInfoId) {
-        Map<String, Object> groups = (Map<String, Object>) template.get(DamGenerator.GROUPS);
-        HashMap<String, Object> appGroup = new HashMap<>();
-        appGroup.put(DamGenerator.MEMBERS, Arrays.asList(DamGenerator.APPLICATION));
-
-        //TODO: split in some methods or objects
-        Map<String, Object> policy = new HashMap<>();
-        HashMap<String, String> policyProperties = new HashMap<>();
-        policyProperties.put(DamGenerator.ID, applicationInfoId);
-        policyProperties.put(DamGenerator.TYPE, DamGenerator.SEACLOUDS_APPLICATION_INFORMATION_POLICY_TYPE);
-        policy.put(DamGenerator.SEACLOUDS_APPLICATION_POLICY_NAME, policyProperties);
-
-        ArrayList<Map<String, Object>> policiesList = new ArrayList<>();
-        policiesList.add(policy);
-
-        appGroup.put(DamGenerator.POLICIES, policiesList);
-        groups.put(DamGenerator.SLA_INFO_GROUPNAME, appGroup);
-    }
-
 
     private void updateNodeTemplates() {
         Map<String, Object> transformedNodeTemplates =
@@ -195,7 +173,7 @@ public class ApplicationFacade {
         return YamlParser.getYamlParser().dump(template);
     }
 
-    private AgreementGenerator getAgreementGenerator() {
+    public AgreementGenerator getAgreementGenerator() {
         return agreementGenerator;
     }
 

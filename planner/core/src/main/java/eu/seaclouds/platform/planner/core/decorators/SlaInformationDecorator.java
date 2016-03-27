@@ -16,59 +16,48 @@
  */
 package eu.seaclouds.platform.planner.core.decorators;
 
-import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
-import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
 import eu.seaclouds.platform.planner.core.ApplicationFacade;
 import eu.seaclouds.platform.planner.core.DamGenerator;
-import eu.seaclouds.platform.planner.core.DamGeneratorConfigBag;
+import eu.seaclouds.platform.planner.core.agreements.AgreementGenerator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
-public class MonitoringInformationDecorator implements ApplicationFacadeDecorator {
+public class SlaInformationDecorator implements ApplicationFacadeDecorator{
 
     //TODO: put here constants
 
-    private DamGeneratorConfigBag configBag;
     private ApplicationFacade applicationFacade;
-    private MonitoringInfo monitoringInfo;
+    private AgreementGenerator agreementGenerator;
 
     @Override
     public void apply(ApplicationFacade applicationFacade) {
         this.applicationFacade = applicationFacade;
-        configBag = applicationFacade.getConfigBag();
-        monitoringInfo = generateMonitoringInfo();
-        applicationFacade.addMonitoringInfo(monitoringInfo);
-        addMonitorInfoToTemplate();
+        this.agreementGenerator = applicationFacade.getAgreementGenerator();
+        String agreementId = agreementGenerator.generateAgreeemntId(applicationFacade.templateToString());
+        applicationFacade.addSlaInformation(agreementId);
+        addApplicationInfo(agreementId);
     }
 
-    private MonitoringInfo generateMonitoringInfo() {
-        MonitoringDamGenerator monDamGen = new MonitoringDamGenerator(configBag.getMonitorEndpoint(), configBag.getInfluxDbEndpoint());
-        return monDamGen.generateMonitoringInfo(applicationFacade.templateToString());
-    }
 
-    private void addMonitorInfoToTemplate() {
-        String generatedApplicationId = UUID.randomUUID().toString();
-
-        //TODO: SPLIT in a new method policyGeneration
+    public void addApplicationInfo(String applicationInfoId) {
         HashMap<String, Object> appGroup = new HashMap<>();
         appGroup.put(DamGenerator.MEMBERS, Arrays.asList(DamGenerator.APPLICATION));
-        Map<String, Object> policy = new HashMap<>();
 
+        //TODO: split in some methods or objects
+        Map<String, Object> policy = new HashMap<>();
         HashMap<String, String> policyProperties = new HashMap<>();
-        policyProperties.put(DamGenerator.ID, generatedApplicationId);
-        policyProperties.put(DamGenerator.TYPE, DamGenerator.SEACLOUDS_MONITORING_RULES_ID_POLICY);
-        policy.put(DamGenerator.MONITORING_RULES_POLICY_NAME, policyProperties);
+        policyProperties.put(DamGenerator.ID, applicationInfoId);
+        policyProperties.put(DamGenerator.TYPE, DamGenerator.SEACLOUDS_APPLICATION_INFORMATION_POLICY_TYPE);
+        policy.put(DamGenerator.SEACLOUDS_APPLICATION_POLICY_NAME, policyProperties);
 
         ArrayList<Map<String, Object>> policiesList = new ArrayList<>();
         policiesList.add(policy);
 
         appGroup.put(DamGenerator.POLICIES, policiesList);
-
-        applicationFacade.addGroup(DamGenerator.MONITOR_INFO_GROUPNAME, appGroup);
+        applicationFacade.addGroup(DamGenerator.SLA_INFO_GROUPNAME, appGroup);
     }
 
 }
