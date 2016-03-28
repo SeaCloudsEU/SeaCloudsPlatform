@@ -218,15 +218,15 @@ public class DamGeneratorTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testAtosDam() throws Exception {
-        String adp = new Scanner(new File(Resources.getResource("atos/atos_adp.yml").toURI())).useDelimiter("\\Z").next();
+    public void testSoftcareGenerationForIaaS() throws Exception {
+        String adp = new Scanner(new File(Resources.getResource("softcare/iaas/softcare_adp-iaas.yml").toURI())).useDelimiter("\\Z").next();
 
         dam = damGenerator.generateDam(adp);
         template = YamlParser.load(dam);
 
         testMetadataTemplate(template);
 
-        String expectedDamString = new Scanner(new File(Resources.getResource("atos/atos_dam.yml").toURI())).useDelimiter("\\Z").next();
+        String expectedDamString = new Scanner(new File(Resources.getResource("softcare/iaas/softcare_dam-iaas.yml").toURI())).useDelimiter("\\Z").next();
         Map<String, Object> expectedDam = YamlParser.load(expectedDamString);
 
         assertNotNull(template);
@@ -237,38 +237,136 @@ public class DamGeneratorTest {
         Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
         Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
 
-        assertEquals(generatedNodeTemplates.size(), 14);
-        assertEquals(generatedNodeTemplates.get("www"), expectedNodeTemplates.get("www"));
-        assertEquals(generatedNodeTemplates.get("webservices"), expectedNodeTemplates.get("webservices"));
-        assertEquals(generatedNodeTemplates.get("db1"), expectedNodeTemplates.get("db1"));
+        assertEquals(generatedNodeTemplates.size(), 23);
 
-        assertEquals(generatedNodeTemplates.get("modacloudsDc_www"), expectedNodeTemplates.get("modacloudsDc_www"));
-        assertEquals(generatedNodeTemplates.get("javaAppDc_www"), expectedNodeTemplates.get("javaAppDc_www"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_www"), expectedNodeTemplates.get("seacloudsDc_www"));
+        assertEquals(generatedNodeTemplates.get("Softcare_dashboard"), expectedNodeTemplates.get("Softcare_dashboard"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_Softcare_dashboard"), expectedNodeTemplates.get("modacloudsDc_Softcare_dashboard"));
+        assertEquals(generatedNodeTemplates.get("javaAppDc_Softcare_dashboard"), expectedNodeTemplates.get("javaAppDc_Softcare_dashboard"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_Softcare_dashboard"), expectedNodeTemplates.get("seacloudsDc_Softcare_dashboard"));
 
-        assertEquals(generatedNodeTemplates.get("modacloudsDc_webservices"), expectedNodeTemplates.get("modacloudsDc_webservices"));
-        assertEquals(generatedNodeTemplates.get("javaAppDc_webservices"), expectedNodeTemplates.get("javaAppDc_webservices"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_webservices"), expectedNodeTemplates.get("seacloudsDc_webservices"));
+        assertEquals(generatedNodeTemplates.get("Forum"), expectedNodeTemplates.get("Forum"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_Forum"), expectedNodeTemplates.get("modacloudsDc_Forum"));
+        assertEquals(generatedNodeTemplates.get("javaAppDc_Forum"), expectedNodeTemplates.get("javaAppDc_Forum"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_Forum"), expectedNodeTemplates.get("seacloudsDc_Forum"));
 
-        assertEquals(generatedNodeTemplates.get("modacloudsDc_db1"), expectedNodeTemplates.get("modacloudsDc_db1"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_db1"), expectedNodeTemplates.get("seacloudsDc_db1"));
+        assertEquals(generatedNodeTemplates.get("SoftcareWS"), expectedNodeTemplates.get("SoftcareWS"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_SoftcareWS"), expectedNodeTemplates.get("modacloudsDc_SoftcareWS"));
+        assertEquals(generatedNodeTemplates.get("javaAppDc_SoftcareWS"), expectedNodeTemplates.get("javaAppDc_SoftcareWS"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_SoftcareWS"), expectedNodeTemplates.get("seacloudsDc_SoftcareWS"));
 
-        assertEquals(generatedNodeTemplates.get("Amazon_EC2_c1_xlarge_eu_central_1"), expectedNodeTemplates.get("Amazon_EC2_c1_xlarge_eu_central_1"));
-        assertEquals(generatedNodeTemplates.get("Amazon_EC2_m4_large_eu_west_1"), expectedNodeTemplates.get("Amazon_EC2_m4_large_eu_west_1"));
-        assertEquals(generatedNodeTemplates.get("Amazon_EC2_t2_micro_us_east_1"), expectedNodeTemplates.get("Amazon_EC2_t2_micro_us_east_1"));
+        assertEquals(generatedNodeTemplates.get("ForumDB"), expectedNodeTemplates.get("ForumDB"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_ForumDB"), expectedNodeTemplates.get("modacloudsDc_ForumDB"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_ForumDB"), expectedNodeTemplates.get("seacloudsDc_ForumDB"));
+
+        assertEquals(generatedNodeTemplates.get("SoftcareDB"), expectedNodeTemplates.get("SoftcareDB"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_SoftcareDB"), expectedNodeTemplates.get("modacloudsDc_SoftcareDB"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_SoftcareDB"), expectedNodeTemplates.get("seacloudsDc_SoftcareDB"));
+
+        assertEquals(generatedNodeTemplates.get("Amazon_EC2_m3_medium_ap_southeast_2"), expectedNodeTemplates.get("Amazon_EC2_m3_medium_ap_southeast_2"));
+        assertEquals(generatedNodeTemplates.get("Amazon_EC2_t2_medium_us_east_1"), expectedNodeTemplates.get("Amazon_EC2_t2_medium_us_east_1"));
+        assertEquals(generatedNodeTemplates.get("Amazon_EC2_t2_large_us_west_1"), expectedNodeTemplates.get("Amazon_EC2_t2_large_us_west_1"));
+        assertEquals(generatedNodeTemplates.get("Amazon_EC2_m3_large_eu_central_1"), expectedNodeTemplates.get("Amazon_EC2_m3_large_eu_central_1"));
+        assertEquals(generatedNodeTemplates.get("Amazon_EC2_m4_large_us_west_1"), expectedNodeTemplates.get("Amazon_EC2_m4_large_us_west_1"));
+
 
         Map<String, Object> generatedGroups = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.GROUPS);
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
         testSeaCloudsPolicy(generatedGroups);
         testMonitoringConfiguration(generatedGroups);
 
-        assertEquals(generatedGroups.get("operation_www"), expectedGroups.get("operation_www"));
-        assertEquals(generatedGroups.get("operation_webservices"), expectedGroups.get("operation_webservices"));
-        assertEquals(generatedGroups.get("operation_db1"), expectedGroups.get("operation_db1"));
-        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_c1_xlarge_eu_central_1"), expectedGroups.get("add_brooklyn_location_Amazon_EC2_c1_xlarge_eu_central_1"));
-        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_t2_micro_us_east_1"), expectedGroups.get("add_brooklyn_location_Amazon_EC2_t2_micro_us_east_1"));
-        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_m4_large_eu_west_1"), expectedGroups.get("add_brooklyn_location_Amazon_EC2_m4_large_eu_west_1"));
+        assertEquals(generatedGroups.size(), 13);
+        assertEquals(generatedGroups.get("operation_ForumDB"), expectedGroups.get("operation_ForumDB"));
+        assertEquals(generatedGroups.get("operation_SoftcareDB"), expectedGroups.get("operation_SoftcareDB"));
+        assertEquals(generatedGroups.get("operation_Forum"), expectedGroups.get("operation_Forum"));
+        assertEquals(generatedGroups.get("operation_SoftcareWS"), expectedGroups.get("operation_SoftcareWS"));
+        assertEquals(generatedGroups.get("operation_Softcare_dashboard"), expectedGroups.get("operation_Softcare_dashboard"));
+        assertEquals(generatedGroups.get("seaclouds_configuration_policy"), expectedGroups.get("seaclouds_configuration_policy"));
+
+        //locationPolicies
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_m3_medium_ap_southeast_2"),
+                expectedGroups.get("add_brooklyn_location_Amazon_EC2_m3_medium_ap_southeast_2"));
+
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_t2_medium_us_east_1"),
+                expectedGroups.get("add_brooklyn_location_Amazon_EC2_t2_medium_us_east_1"));
+
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_t2_large_us_west_1"),
+                expectedGroups.get("add_brooklyn_location_Amazon_EC2_t2_large_us_west_1"));
+
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_m3_large_eu_central_1"),
+                expectedGroups.get("add_brooklyn_location_Amazon_EC2_m3_large_eu_central_1"));
+
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_m4_large_us_west_1"),
+                expectedGroups.get("add_brooklyn_location_Amazon_EC2_m4_large_us_west_1"));
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testSoftcareGenerationForPaaS() throws Exception {
+        String adp = new Scanner(new File(Resources.getResource("softcare/paas/softcare_adp-paas.yml").toURI())).useDelimiter("\\Z").next();
+
+        dam = damGenerator.generateDam(adp);
+        template = YamlParser.load(dam);
+
+        testMetadataTemplate(template);
+
+        String expectedDamString = new Scanner(new File(Resources.getResource("softcare/paas/softcare_dam-paas.yml").toURI())).useDelimiter("\\Z").next();
+        Map<String, Object> expectedDam = YamlParser.load(expectedDamString);
+
+        assertNotNull(template);
+
+        Map<String, Object> generatedTopologyTemplate = (Map<String, Object>) template.get(DamGenerator.TOPOLOGY_TEMPLATE);
+        Map<String, Object> expectedTopologyTemplate = (Map<String, Object>) expectedDam.get(DamGenerator.TOPOLOGY_TEMPLATE);
+
+        Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
+        Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
+
+        assertEquals(generatedNodeTemplates.size(), 11);
+
+        assertEquals(generatedNodeTemplates.get("Softcare_dashboard"), expectedNodeTemplates.get("Softcare_dashboard"));
+        assertEquals(generatedNodeTemplates.get("Forum"), expectedNodeTemplates.get("Forum"));
+        assertEquals(generatedNodeTemplates.get("SoftcareWS"), expectedNodeTemplates.get("SoftcareWS"));
+
+        assertEquals(generatedNodeTemplates.get("ForumDB"), expectedNodeTemplates.get("ForumDB"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_ForumDB"), expectedNodeTemplates.get("modacloudsDc_ForumDB"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_ForumDB"), expectedNodeTemplates.get("seacloudsDc_ForumDB"));
+
+        assertEquals(generatedNodeTemplates.get("SoftcareDB"), expectedNodeTemplates.get("SoftcareDB"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_SoftcareDB"), expectedNodeTemplates.get("modacloudsDc_SoftcareDB"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_SoftcareDB"), expectedNodeTemplates.get("seacloudsDc_SoftcareDB"));
+
+        assertEquals(generatedNodeTemplates.get("Amazon_EC2_t2_micro_eu_central_1"), expectedNodeTemplates.get("Amazon_EC2_t2_micro_eu_central_1"));
+        assertEquals(generatedNodeTemplates.get("Amazon_EC2_t2_micro_ap_northeast_1"), expectedNodeTemplates.get("Amazon_EC2_t2_micro_ap_northeast_1"));
+
+        Map<String, Object> generatedGroups = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.GROUPS);
+        Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
+        testSeaCloudsPolicy(generatedGroups);
+        testMonitoringConfiguration(generatedGroups);
+
+        assertEquals(generatedGroups.size(), 13);
+        assertEquals(generatedGroups.get("operation_ForumDB"), expectedGroups.get("operation_ForumDB"));
+        assertEquals(generatedGroups.get("operation_SoftcareDB"), expectedGroups.get("operation_SoftcareDB"));
+        assertEquals(generatedGroups.get("operation_Forum"), expectedGroups.get("operation_Forum"));
+        assertEquals(generatedGroups.get("operation_SoftcareWS"), expectedGroups.get("operation_SoftcareWS"));
+        assertEquals(generatedGroups.get("operation_Softcare_dashboard"), expectedGroups.get("operation_Softcare_dashboard"));
+        assertEquals(generatedGroups.get("seaclouds_configuration_policy"), expectedGroups.get("seaclouds_configuration_policy"));
+
+        //locationPolicies
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_t2_micro_eu_central_1"),
+                expectedGroups.get("add_brooklyn_location_Amazon_EC2_t2_micro_eu_central_1"));
+
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_t2_micro_ap_northeast_1"),
+                expectedGroups.get("add_brooklyn_location_Amazon_EC2_t2_micro_ap_northeast_1"));
+
+        assertEquals(generatedGroups.get("add_brooklyn_location_Forum"),
+                expectedGroups.get("add_brooklyn_location_Forum"));
+
+        assertEquals(generatedGroups.get("add_brooklyn_location_SoftcareWS"),
+                expectedGroups.get("add_brooklyn_location_SoftcareWS"));
+
+        assertEquals(generatedGroups.get("add_brooklyn_location_Softcare_dashboard"),
+                expectedGroups.get("add_brooklyn_location_Softcare_dashboard"));
+    }
+
 
     @Test(enabled = true)
     @SuppressWarnings("unchecked")

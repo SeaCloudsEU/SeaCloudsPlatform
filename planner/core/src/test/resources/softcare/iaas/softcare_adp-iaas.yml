@@ -1,0 +1,346 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: sofcare-iaas
+imports:
+- tosca-normative-types:1.0.0.wd06-SNAPSHOT
+topology_template:
+  node_templates:
+    ForumDB:
+      type: sc_req.ForumDB
+      properties:
+        db_name: forumdb
+        db_user: sc-forumdb-admin
+        db_password: pass123
+        autoscale: false
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5'
+          - less_or_equal: '5.6'
+      artifacts:
+      - creationScriptUrl: https://s3-eu-west-1.amazonaws.com/atos-paas/v3/forumdb.sql
+        type: tosca.artifacts.File
+      requirements:
+      - host: Amazon_EC2_t2_medium_us_east_1
+        instancesPOC: 6
+    SoftcareDB:
+      type: sc_req.SoftcareDB
+      properties:
+        db_name: softcare
+        db_user: sc-admin
+        db_password: pass123
+        autoscale: false
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5'
+          - less_or_equal: '5.6'
+      artifacts:
+      - creationScriptUrl: https://s3-eu-west-1.amazonaws.com/atos-paas/v3/softcare_db.sql
+        type: tosca.artifacts.File
+      requirements:
+      - host: Amazon_EC2_m3_medium_ap_southeast_2
+        instancesPOC: 2
+    Forum:
+      type: sc_req.Forum
+      properties:
+        language: JAVA
+        autoscale: false
+        java_version:
+          constraints:
+          - greater_or_equal: '5'
+          - less_or_equal: '7'
+      artifacts:
+      - wars.root: https://s3-eu-west-1.amazonaws.com/atos-paas/v3/softcare-forum.war
+        type: tosca.artifacts.File
+      requirements:
+      - endpoint:
+          node: ForumDB
+          type: seaclouds.relations.databaseconnections.jdbc
+          properties:
+            prop.name: connUrl
+      - host: Amazon_EC2_m3_large_eu_central_1
+        instancesPOC: 8
+    SoftcareWS:
+      type: sc_req.SoftcareWS
+      properties:
+        language: JAVA
+        autoscale: false
+        java_version:
+          constraints:
+          - greater_or_equal: '5'
+          - less_or_equal: '7'
+      artifacts:
+      - wars.root: https://s3-eu-west-1.amazonaws.com/atos-paas/v3/softcare-ws.war
+        type: tosca.artifacts.File
+      requirements:
+      - endpoint:
+          node: SoftcareDB
+          type: seaclouds.relations.databaseconnections.jdbc
+          properties:
+            prop.name: connUrl
+      - host: Amazon_EC2_m4_large_us_west_1
+        instancesPOC: 1
+    Softcare_dashboard:
+      type: sc_req.Softcare_dashboard
+      properties:
+        language: JAVA
+        autoscale: false
+        java_version:
+          constraints:
+          - greater_or_equal: '5'
+          - less_or_equal: '7'
+      artifacts:
+      - wars.root: https://s3-eu-west-1.amazonaws.com/atos-paas/v3/softcare-gui.war
+        type: tosca.artifacts.File
+      requirements:
+      - endpoint:
+          node: SoftcareWS
+          type: seaclouds.relation.connection.endpoint.host
+          properties:
+            prop.name: softcarews
+      - endpoint:
+          node: Forum
+          type: seaclouds.relation.connection.endpoint.host
+          properties:
+            prop.name: softcareforum
+      - host: Amazon_EC2_t2_large_us_west_1
+        instancesPOC: 2
+    Amazon_EC2_m3_medium_ap_southeast_2:
+      type: seaclouds.nodes.Compute.Amazon_EC2
+      properties:
+        num_cpus: 1
+        country: Australia
+        cost: 0.089
+        city: SYDNEY
+        resource_type: compute
+        disk_size: 4
+        availability: 0.9995
+        performance: 19
+        hardwareId: m3.medium
+        disk_type: ssd
+        location: aws-ec2
+        num_disks: 1
+        region: ap-southeast-2
+        ram: 3.75
+    Amazon_EC2_t2_medium_us_east_1:
+      type: seaclouds.nodes.Compute.Amazon_EC2
+      properties:
+        num_cpus: 2
+        country: United States
+        performance: 42
+        cost: 0.074
+        hardwareId: t2.medium
+        city: ASHBURN
+        resource_type: compute
+        location: aws-ec2
+        availability: 0.9995
+        region: us-east-1
+        ram: 4
+    Amazon_EC2_t2_large_us_west_1:
+      type: seaclouds.nodes.Compute.Amazon_EC2
+      properties:
+        num_cpus: 2
+        country: United States
+        cost: 0.15
+        hardwareId: t2.large
+        city: SAN JOSE
+        resource_type: compute
+        location: aws-ec2
+        availability: 0.9995
+        region: us-west-1
+        ram: 8
+        performance: 111
+    Amazon_EC2_m3_large_eu_central_1:
+      type: seaclouds.nodes.Compute.Amazon_EC2
+      properties:
+        num_cpus: 2
+        country: Germany
+        cost: 0.18
+        city: FRANKFURT
+        resource_type: compute
+        disk_size: 32
+        availability: 0.9995
+        performance: 46
+        hardwareId: m3.large
+        disk_type: ssd
+        location: aws-ec2
+        num_disks: 1
+        region: eu-central-1
+        ram: 7.5
+    Amazon_EC2_m4_large_us_west_1:
+      type: seaclouds.nodes.Compute.Amazon_EC2
+      properties:
+        num_cpus: 2
+        country: United States
+        performance: 47
+        cost: 0.17
+        hardwareId: m4.large
+        city: SAN JOSE
+        resource_type: compute
+        location: aws-ec2
+        availability: 0.9995
+        region: us-west-1
+        ram: 8
+node_types:
+  sc_req.ForumDB:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      resource_type:
+        constraints:
+        - equal: compute
+  sc_req.SoftcareDB:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      resource_type:
+        constraints:
+        - equal: compute
+  sc_req.Forum:
+    derived_from: seaclouds.nodes.webapp.tomcat.TomcatServer
+    properties:
+      java_support:
+        constraints:
+        - equal: true
+      tomcat_support:
+        constraints:
+        - equal: true
+      java_version:
+        constraints:
+        - greater_or_equal: '5'
+        - less_or_equal: '7'
+  sc_req.SoftcareWS:
+    derived_from: seaclouds.nodes.webapp.tomcat.TomcatServer
+    properties:
+      java_support:
+        constraints:
+        - equal: true
+      tomcat_support:
+        constraints:
+        - equal: true
+      java_version:
+        constraints:
+        - greater_or_equal: '5'
+        - less_or_equal: '7'
+  sc_req.Softcare_dashboard:
+    derived_from: seaclouds.nodes.webapp.tomcat.TomcatServer
+    properties:
+      java_support:
+        constraints:
+        - equal: true
+      tomcat_support:
+        constraints:
+        - equal: true
+      java_version:
+        constraints:
+        - greater_or_equal: '5'
+        - less_or_equal: '7'
+  seaclouds.nodes.Compute:
+    derived_from: tosca.nodes.Compute
+    description: Custom compute
+    properties:
+      hardwareId:
+        required: false
+        type: string
+groups:
+  operation_ForumDB:
+    members:
+    - ForumDB
+    policies:
+    - QoSInfo:
+        execution_time: 1000 ms
+        benchmark_platform: Amazon_EC2_m1_small_us_east_1
+    - dependencies: {}
+    - QoSRequirements:
+        AppAvailable:
+          greater_than: 99.0
+    - autoscaling:
+        autoscaler.resizeDownStabilizationDelay: 120000
+        maxPoolSize: 6
+        metric: seaclouds.metrics.requestPerNode
+        minPoolSize: 1
+        metricUpperBound: 66.66666666666667
+        type: seaclouds.policies.autoscaling.AutoScalerPolicy
+        metricLowerBound: 33.333333333333336
+  operation_SoftcareDB:
+    members:
+    - SoftcareDB
+    policies:
+    - QoSInfo:
+        execution_time: 1000 ms
+        benchmark_platform: Amazon_EC2_m1_small_us_east_1
+    - dependencies: {}
+    - QoSRequirements:
+        AppAvailable:
+          greater_than: 99.0
+    - autoscaling:
+        autoscaler.resizeDownStabilizationDelay: 120000
+        maxPoolSize: 2
+        metric: seaclouds.metrics.requestPerNode
+        minPoolSize: 1
+        metricUpperBound: 200.0
+        type: seaclouds.policies.autoscaling.AutoScalerPolicy
+        metricLowerBound: 100.0
+  operation_Forum:
+    members:
+    - Forum
+    policies:
+    - QoSInfo:
+        execution_time: 1000 ms
+        benchmark_platform: Amazon_EC2_m1_small_us_east_1
+    - dependencies:
+        operation_ForumDB: ''
+    - QoSRequirements:
+        AppAvailable:
+          greater_than: 99.0
+    - autoscaling:
+        autoscaler.resizeDownStabilizationDelay: 120000
+        maxPoolSize: 8
+        metric: seaclouds.metrics.requestPerNode
+        minPoolSize: 1
+        metricUpperBound: 50.0
+        type: seaclouds.policies.autoscaling.AutoScalerPolicy
+        metricLowerBound: 25.0
+  operation_SoftcareWS:
+    members:
+    - SoftcareWS
+    policies:
+    - QoSInfo:
+        execution_time: 1000 ms
+        benchmark_platform: Amazon_EC2_m1_small_us_east_1
+    - dependencies:
+        operation_SoftcareDB: ''
+    - QoSRequirements:
+        AppAvailable:
+          greater_than: 99.0
+  operation_Softcare_dashboard:
+    members:
+    - Softcare_dashboard
+    policies:
+    - QoSInfo:
+        execution_time: 1000 ms
+        benchmark_platform: Amazon_EC2_m1_small_us_east_1
+    - dependencies:
+        operation_SoftcareWS: ''
+        operation_Forum: ''
+    - AppQoSRequirements:
+        response_time:
+          less_than: 200.0 ms
+        availability:
+          greater_than: 0.9990000000000001
+        cost:
+          less_or_equal: 1000.0 euros_per_month
+        workload:
+          less_or_equal: 24000.0 req_per_min
+    - QoSRequirements:
+        AppAvailable:
+          greater_than: 99.0
+    - ExpectedQualityPOC:
+        expectedAvailabilityPOC: 0.9994995002500625
+        fitnessPOC: 0.8495114387689426
+        expectedCostPOC: 1823.04
+        expectedExecutionTimePOC: 0.8
+    - autoscaling:
+        autoscaler.resizeDownStabilizationDelay: 120000
+        maxPoolSize: 2
+        metric: seaclouds.metrics.requestPerNode
+        minPoolSize: 1
+        metricUpperBound: 200.0
+        type: seaclouds.policies.autoscaling.AutoScalerPolicy
+        metricLowerBound: 100.0
