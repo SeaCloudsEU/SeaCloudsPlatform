@@ -75,6 +75,10 @@ public class TopologyElement implements Iterable<TopologyElementCalled> {
       return this.execTimeInPowerlessMachine;
    }
 
+   public boolean hasPerformanceInformation() {
+     return getDefaultExecutionTime()!=0.0;
+   }
+   
    public void addElementCalled(TopologyElement e) {
       TopologyElementCalled elementCalled = new TopologyElementCalled(e);
       dependences.add(elementCalled);
@@ -139,5 +143,7 @@ public class TopologyElement implements Iterable<TopologyElementCalled> {
       };
       return it;
    }
+
+
 
 }

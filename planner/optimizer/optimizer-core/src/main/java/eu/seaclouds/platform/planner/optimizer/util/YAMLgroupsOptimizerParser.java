@@ -159,7 +159,6 @@ public class YAMLgroupsOptimizerParser {
 
    public static List<String> getListDependentGroupsOfModule(String moduleName, Map<String, Object> groups) {
 
-      Map<String, Object> moduleDependencies = null;
 
       Map<String, Object> dependenciesInfoOfGroupOfModule = YAMLgroupsOptimizerParser
             .getDependenciesInfoOfMemberName(moduleName, groups);

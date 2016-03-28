@@ -39,23 +39,7 @@ public class AbstractTest {
    protected static Logger log;
 
    public void openInputFiles() {
-      final String dir = System.getProperty("user.dir");
-      log.debug("Trying to open files: current executino dir = " + dir);
-
-      try {
-         appModel = filenameToString(TestConstants.APP_MODEL_FILENAME);
-      } catch (IOException e) {
-         log.error("File for APPmodel not found");
-         e.printStackTrace();
-      }
-
-      try {
-         suitableCloudOffer = filenameToString(TestConstants.CLOUD_OFFER_FILENAME_IN_JSON);
-      } catch (IOException e) {
-         log.error("File for Cloud Offers not found");
-         e.printStackTrace();
-      }
-      
+      openInputFiles(TestConstants.APP_MODEL_FILENAME,TestConstants.CLOUD_OFFER_FILENAME_IN_JSON);      
    }
    
    public void openInputFiles(String appmodel, String cloudOffers) {

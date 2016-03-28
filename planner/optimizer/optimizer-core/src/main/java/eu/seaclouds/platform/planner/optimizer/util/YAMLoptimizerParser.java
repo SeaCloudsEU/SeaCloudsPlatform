@@ -483,7 +483,8 @@ public class YAMLoptimizerParser {
       for (Map.Entry<String, Object> module : modules.entrySet()) {
          if (!topology.contains(module.getKey())) {
             // Add module to topology
-            log.debug("DisconnectedModules method found that element {} was not included in the topology. Adding it", module.getKey());
+            log.debug("DisconnectedModules method found that element {} was not included in the topology. Adding it",
+                  module.getKey());
             TopologyElement newelement = getNewTopologyElementCharacteristics(module.getKey(), groups,
                   benchmarkPlatforms, modules);
 
@@ -582,14 +583,17 @@ public class YAMLoptimizerParser {
          Map<String, CloudOffer> benchmarkPlatforms, Map<String, Object> modules) {
       TopologyElement newelement = new TopologyElement(elementName);
 
-      double hostPerformance = benchmarkPlatforms
-            .get(YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups)).getPerformance();
-
-      if (log.isDebugEnabled()) {
-         log.debug("Found performance of benchmark platform "
-               + YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups) + "=" + benchmarkPlatforms
-                     .get(YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups)).getPerformance());
+      log.debug("Creating topologyElement for module name:{} ", elementName);
+      String benchmarkedHostName = YAMLmodulesOptimizerParser.getMeasuredPerformanceHost(elementName, groups);
+      double hostPerformance = 0.0;
+      if (benchmarkedHostName != null) {
+         hostPerformance = benchmarkPlatforms.get(benchmarkedHostName).getPerformance();
+         log.debug("Found performance of benchmark platform {}={}", benchmarkedHostName, hostPerformance);
+      } else {
+         log.debug("Not found benchmark platform for element {} . Performance of host is: {} ", elementName,
+               hostPerformance);
       }
+
       boolean elementCanScale = YAMLmodulesOptimizerParser.getScalabilityCapabilitiesOfModule(modules, elementName);
 
       newelement.setExecTimeMillis(
@@ -821,6 +825,22 @@ public class YAMLoptimizerParser {
    public static void addComputeTypeToTypes(Map<String, Object> appMap) {
       YAMLtypesOptimizerParser.addComputeType(YAMLoptimizerParser.getTypesMapFromAppMap(appMap));
 
+   }
+
+   public static String getModelDescriptionFromAppMap(Map<String, Object> appMap) {
+
+      if (appMap.containsKey(TOSCAkeywords.DESCRIPTION)) {
+         return (String) appMap.get(TOSCAkeywords.DESCRIPTION);
+      } else {
+         log.info("It has not been found the information of '{}'", TOSCAkeywords.DESCRIPTION);
+      }
+      return "";
+   }
+
+   public static void setModelDescriptionOfAppMap(Map<String, Object> appMap, String descriptoinInfo) {
+     
+      appMap.put(TOSCAkeywords.DESCRIPTION, descriptoinInfo);
+      
    }
 
 }
