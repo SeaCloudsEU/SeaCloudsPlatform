@@ -21,7 +21,6 @@ import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
 import eu.seaclouds.platform.planner.core.DamGenerator;
 import eu.seaclouds.platform.planner.core.DamGeneratorConfigBag;
 import eu.seaclouds.platform.planner.core.application.agreements.AgreementGenerator;
-import eu.seaclouds.platform.planner.core.application.topology.ApplicationMetadata;
 import eu.seaclouds.platform.planner.core.application.topology.TopologyTemplateFacade;
 import eu.seaclouds.platform.planner.core.application.topology.modifier.TopologFacadeyModifierApplicator;
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplate;
@@ -116,8 +115,8 @@ public class ApplicationFacade {
     }
 
     private void normalizeMetadata() {
-        ApplicationMetadata applicationMetadata = new ApplicationMetadata(template);
-        applicationMetadata.normalizeMetadata();
+        ApplicationMetadataGenerator applicationMetadata = new ApplicationMetadataGenerator(template);
+        applicationMetadata.addMetadataMetadataToTemplate();
     }
 
     private void createTopologyTemplate() {

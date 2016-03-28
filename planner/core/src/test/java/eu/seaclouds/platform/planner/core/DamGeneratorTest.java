@@ -18,11 +18,11 @@ package eu.seaclouds.platform.planner.core;
 
 import com.google.common.collect.Iterators;
 import com.google.common.io.Resources;
+import eu.seaclouds.platform.planner.core.application.ApplicationMetadataGenerator;
 import eu.seaclouds.platform.planner.core.application.agreements.AgreementGenerator;
 import eu.seaclouds.platform.planner.core.application.decorators.MonitoringInformationDecorator;
 import eu.seaclouds.platform.planner.core.application.decorators.SeaCloudsManagmentPolicyDecorator;
 import eu.seaclouds.platform.planner.core.application.decorators.SlaInformationDecorator;
-import eu.seaclouds.platform.planner.core.application.topology.ApplicationMetadata;
 import eu.seaclouds.platform.planner.core.utils.YamlParser;
 import org.apache.brooklyn.util.text.Strings;
 import org.mockito.Mock;
@@ -441,18 +441,18 @@ public class DamGeneratorTest {
     @SuppressWarnings("unchecked")
     public void testMetadataTemplate(Map<String, Object> template) throws Exception {
         assertNotNull(template);
-        assertNotNull(template.get(ApplicationMetadata.TEMPLATE_NAME));
-        assertTrue(((String) template.get(ApplicationMetadata.TEMPLATE_NAME)).contains(ApplicationMetadata.TEMPLATE_NAME_PREFIX));
+        assertNotNull(template.get(ApplicationMetadataGenerator.TEMPLATE_NAME));
+        assertTrue(((String) template.get(ApplicationMetadataGenerator.TEMPLATE_NAME)).contains(ApplicationMetadataGenerator.TEMPLATE_NAME_PREFIX));
 
-        assertNotNull(template.get(ApplicationMetadata.TEMPLATE_VERSION));
-        assertTrue(((String) template.get(ApplicationMetadata.TEMPLATE_VERSION)).contains(ApplicationMetadata.DEFAULT_TEMPLATE_VERSION));
+        assertNotNull(template.get(ApplicationMetadataGenerator.TEMPLATE_VERSION));
+        assertTrue(((String) template.get(ApplicationMetadataGenerator.TEMPLATE_VERSION)).contains(ApplicationMetadataGenerator.DEFAULT_TEMPLATE_VERSION));
 
-        assertNotNull(template.get(ApplicationMetadata.IMPORTS));
-        assertTrue(template.get(ApplicationMetadata.IMPORTS) instanceof List);
-        List imports = (List) template.get(ApplicationMetadata.IMPORTS);
+        assertNotNull(template.get(ApplicationMetadataGenerator.IMPORTS));
+        assertTrue(template.get(ApplicationMetadataGenerator.IMPORTS) instanceof List);
+        List imports = (List) template.get(ApplicationMetadataGenerator.IMPORTS);
         assertEquals(imports.size(), 2);
-        assertTrue(imports.contains(ApplicationMetadata.TOSCA_NORMATIVE_TYPES + ":" + ApplicationMetadata.TOSCA_NORMATIVE_TYPES_VERSION));
-        assertTrue(imports.contains(ApplicationMetadata.SEACLOUDS_NODE_TYPES + ":" + ApplicationMetadata.SEACLOUDS_NODE_TYPES_VERSION));
+        assertTrue(imports.contains(ApplicationMetadataGenerator.TOSCA_NORMATIVE_TYPES + ":" + ApplicationMetadataGenerator.TOSCA_NORMATIVE_TYPES_VERSION));
+        assertTrue(imports.contains(ApplicationMetadataGenerator.SEACLOUDS_NODE_TYPES + ":" + ApplicationMetadataGenerator.SEACLOUDS_NODE_TYPES_VERSION));
     }
 
 }
