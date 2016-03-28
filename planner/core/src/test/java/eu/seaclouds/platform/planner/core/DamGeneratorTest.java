@@ -148,11 +148,13 @@ public class DamGeneratorTest {
         Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
         Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
 
+        assertEquals(generatedNodeTemplates.size(), 8);
         assertEquals(generatedNodeTemplates.get("www"), expectedNodeTemplates.get("www"));
         assertEquals(generatedNodeTemplates.get("db"), expectedNodeTemplates.get("db"));
 
         assertEquals(generatedNodeTemplates.get("modacloudsDc_www"), expectedNodeTemplates.get("modacloudsDc_www"));
         assertEquals(generatedNodeTemplates.get("seacloudsDc_www"), expectedNodeTemplates.get("seacloudsDc_www"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_db"), expectedNodeTemplates.get("modacloudsDc_db"));
         assertEquals(generatedNodeTemplates.get("seacloudsDc_db"), expectedNodeTemplates.get("seacloudsDc_db"));
 
         assertEquals(generatedNodeTemplates.get("Amazon_EC2_m1_small_eu_central_1"), expectedNodeTemplates.get("Amazon_EC2_m1_small_eu_central_1"));
@@ -190,6 +192,7 @@ public class DamGeneratorTest {
         Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
         Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
 
+        assertEquals(generatedNodeTemplates.size(), 5);
         assertEquals(generatedNodeTemplates.get("php"), expectedNodeTemplates.get("php"));
         assertEquals(generatedNodeTemplates.get("db"), expectedNodeTemplates.get("db"));
 
@@ -234,6 +237,7 @@ public class DamGeneratorTest {
         Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
         Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
 
+        assertEquals(generatedNodeTemplates.size(), 14);
         assertEquals(generatedNodeTemplates.get("www"), expectedNodeTemplates.get("www"));
         assertEquals(generatedNodeTemplates.get("webservices"), expectedNodeTemplates.get("webservices"));
         assertEquals(generatedNodeTemplates.get("db1"), expectedNodeTemplates.get("db1"));
@@ -241,9 +245,11 @@ public class DamGeneratorTest {
         assertEquals(generatedNodeTemplates.get("modacloudsDc_www"), expectedNodeTemplates.get("modacloudsDc_www"));
         assertEquals(generatedNodeTemplates.get("javaAppDc_www"), expectedNodeTemplates.get("javaAppDc_www"));
         assertEquals(generatedNodeTemplates.get("seacloudsDc_www"), expectedNodeTemplates.get("seacloudsDc_www"));
+
         assertEquals(generatedNodeTemplates.get("modacloudsDc_webservices"), expectedNodeTemplates.get("modacloudsDc_webservices"));
         assertEquals(generatedNodeTemplates.get("javaAppDc_webservices"), expectedNodeTemplates.get("javaAppDc_webservices"));
         assertEquals(generatedNodeTemplates.get("seacloudsDc_webservices"), expectedNodeTemplates.get("seacloudsDc_webservices"));
+
         assertEquals(generatedNodeTemplates.get("modacloudsDc_db1"), expectedNodeTemplates.get("modacloudsDc_db1"));
         assertEquals(generatedNodeTemplates.get("seacloudsDc_db1"), expectedNodeTemplates.get("seacloudsDc_db1"));
 
@@ -285,6 +291,7 @@ public class DamGeneratorTest {
         Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
         Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
 
+        assertEquals(generatedNodeTemplates.size(), 9);
         assertEquals(generatedNodeTemplates.get("Chat"), expectedNodeTemplates.get("Chat"));
         assertEquals(generatedNodeTemplates.get("MessageDatabase"), expectedNodeTemplates.get("MessageDatabase"));
 
@@ -329,6 +336,7 @@ public class DamGeneratorTest {
         Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
         Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
 
+        assertEquals(generatedNodeTemplates.size(), 5);
         assertEquals(generatedNodeTemplates.get("tomcat_server"), expectedNodeTemplates.get("tomcat_server"));
         assertEquals(generatedNodeTemplates.get("db"), expectedNodeTemplates.get("db"));
 

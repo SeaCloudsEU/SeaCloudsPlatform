@@ -148,6 +148,30 @@ public class ApplicationFacade {
         setNodeTemplates(transformedNodeTemplates);
     }
 
+    private Map<String, Object> getNodeTypes() {
+        return nodeTypes;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void setNodeTemplates(Map<String, Object> nodeTemplates) {
+        Map<String, Object> topologyTem =
+                (Map<String, Object>) template.get(DamGenerator.TOPOLOGY_TEMPLATE);
+        topologyTem.put(DamGenerator.NODE_TEMPLATES, nodeTemplates);
+    }
+
+    private void addGroups(Map<String, Object> groups) {
+        for (Map.Entry<String, Object> groupEntry : groups.entrySet()) {
+            String groupName = groupEntry.getKey();
+            Map<String, Object> groupValue = (Map<String, Object>) groupEntry.getValue();
+            addGroup(groupName, groupValue);
+        }
+    }
+
+    private void setNodeTypes(Map<String, Object> nodeTypes) {
+        this.nodeTypes = nodeTypes;
+        template.put(DamGenerator.NODE_TYPES, nodeTypes);
+    }
+
     private void updateNodeTypes(Map<String, Object> newNodeTypes) {
         Map<String, Object> currentNodeTypes = getNodeTypes();
         Map<String, NodeTemplate> nodeTemplates = topologyTemplate.getNodeTemplates();
@@ -176,30 +200,6 @@ public class ApplicationFacade {
             }
         }
         setNodeTypes(usedNodeTemplates);
-    }
-
-    private Map<String, Object> getNodeTypes() {
-        return nodeTypes;
-    }
-
-    @SuppressWarnings("unchecked")
-    private void setNodeTemplates(Map<String, Object> nodeTemplates) {
-        Map<String, Object> topologyTem =
-                (Map<String, Object>) template.get(DamGenerator.TOPOLOGY_TEMPLATE);
-        topologyTem.put(DamGenerator.NODE_TEMPLATES, nodeTemplates);
-    }
-
-    private void addGroups(Map<String, Object> groups) {
-        for (Map.Entry<String, Object> groupEntry : groups.entrySet()) {
-            String groupName = groupEntry.getKey();
-            Map<String, Object> groupValue = (Map<String, Object>) groupEntry.getValue();
-            addGroup(groupName, groupValue);
-        }
-    }
-
-    private void setNodeTypes(Map<String, Object> nodeTypes) {
-        this.nodeTypes = nodeTypes;
-        template.put(DamGenerator.NODE_TYPES, nodeTypes);
     }
 
 }

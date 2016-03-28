@@ -52,7 +52,6 @@ public class TopologyTemplateFacade {
         hostNodeTemplates = MutableMap.of();
         topologyTree = MutableMap.of();
         initNodeTemplates();
-
     }
 
     private void initOriginalTopologyTemplate() {
@@ -121,6 +120,7 @@ public class TopologyTemplateFacade {
         return policiesGroups;
     }
 
+    @SuppressWarnings("unchecked")
     public void updateNoExistNodeTemplate(Map<String, Object> adp) {
         //TODO: it could be better create a new Template
         topologyTemplate = (Map<String, Object>) adp.get(DamGenerator.TOPOLOGY_TEMPLATE);
@@ -141,7 +141,6 @@ public class TopologyTemplateFacade {
                 extractPlatformTemplatesAndChildren();
         removeHostAndHostedChildren(platformAndChildren.keySet());
         addGeneratedPaasFacades(generatedPaasFacades(platformAndChildren));
-
     }
 
     private void addGeneratedPaasFacades(List<PaasNodeTemplateFacade> paasNodeTemplateFacades) {
@@ -164,6 +163,7 @@ public class TopologyTemplateFacade {
     private void removeHostAndHostedChildren(Set<HostNodeTemplate> hostNodeteTemplates) {
         for (HostNodeTemplate hostNodeTemplate : hostNodeteTemplates) {
             List<NodeTemplate> hostedNodeTemplates = topologyTree.get(hostNodeTemplate.getNodeTemplateId());
+            nodeTemplates.remove(hostNodeTemplate.getNodeTemplateId());
             hostNodeTemplates.remove(hostNodeTemplate.getNodeTemplateId());
             topologyTree.remove(hostNodeTemplate.getNodeTemplateId());
             removeHostedNodeTemplates(hostedNodeTemplates);
