@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core.decorators;
+package eu.seaclouds.platform.planner.core.application.decorators;
 
-import eu.seaclouds.platform.planner.core.ApplicationFacade;
 import eu.seaclouds.platform.planner.core.DamGenerator;
+import eu.seaclouds.platform.planner.core.application.ApplicationFacade;
 
 import java.util.List;
 import java.util.Map;

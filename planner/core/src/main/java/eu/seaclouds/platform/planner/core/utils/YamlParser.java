@@ -30,11 +30,11 @@ public class YamlParser {
         return new Yaml(options);
     }
 
-    public static Map<String, Object> load(String value){
+    public static Map<String, Object> load(String value) {
         return (Map<String, Object>) getYamlParser().load(value);
     }
 
-    public static String dump(Map<String, Object> yaml){
+    public static String dump(Map<String, Object> yaml) {
         return getYamlParser().dump(yaml);
     }
 

@@ -14,15 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core.template;
+package eu.seaclouds.platform.planner.core.application.topology.nodetemplate;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
 import eu.seaclouds.platform.planner.core.DamGenerator;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.host.ComputeNodeTemplate;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.modifiers.JavaPaasArtifactsModifier;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.modifiers.PhpPaasArtifactsModifier;
 import eu.seaclouds.platform.planner.core.resolver.DeployerTypesResolver;
-import eu.seaclouds.platform.planner.core.template.host.ComputeNodeTemplate;
-import eu.seaclouds.platform.planner.core.template.modifiers.JavaPaasArtifactsModifier;
-import eu.seaclouds.platform.planner.core.template.modifiers.PhpPaasArtifactsModifier;
 import org.apache.brooklyn.util.collections.MutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

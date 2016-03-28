@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core.agreements;
+package eu.seaclouds.platform.planner.core.application.agreements;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.seaclouds.platform.planner.core.ApplicationMonitorId;
+import eu.seaclouds.platform.planner.core.application.ApplicationMonitorId;
 import eu.seaclouds.platform.planner.core.utils.HttpHelper;
 import eu.seaclouds.platform.planner.core.utils.YamlParser;
 import org.apache.brooklyn.util.collections.MutableList;

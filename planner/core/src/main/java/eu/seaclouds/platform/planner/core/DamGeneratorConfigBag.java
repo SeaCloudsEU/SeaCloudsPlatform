@@ -131,7 +131,7 @@ public class DamGeneratorConfigBag {
         return monitorEndPoint;
     }
 
-    public URL getInfluxDbEndpoint(){
+    public URL getInfluxDbEndpoint() {
         return influxDbEndpoint;
     }
 

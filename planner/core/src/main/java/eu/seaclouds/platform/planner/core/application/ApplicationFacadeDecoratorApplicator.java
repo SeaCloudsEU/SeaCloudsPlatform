@@ -1,9 +1,10 @@
-package eu.seaclouds.platform.planner.core;
+package eu.seaclouds.platform.planner.core.application;
 
-import eu.seaclouds.platform.planner.core.decorators.MissingPolicyTypesDecorator;
-import eu.seaclouds.platform.planner.core.decorators.MonitoringInformationDecorator;
-import eu.seaclouds.platform.planner.core.decorators.SeaCloudsManagmentPolicyDecorator;
-import eu.seaclouds.platform.planner.core.decorators.SlaInformationDecorator;
+
+import eu.seaclouds.platform.planner.core.application.decorators.MissingPolicyTypesDecorator;
+import eu.seaclouds.platform.planner.core.application.decorators.MonitoringInformationDecorator;
+import eu.seaclouds.platform.planner.core.application.decorators.SeaCloudsManagmentPolicyDecorator;
+import eu.seaclouds.platform.planner.core.application.decorators.SlaInformationDecorator;
 
 public class ApplicationFacadeDecoratorApplicator {
 

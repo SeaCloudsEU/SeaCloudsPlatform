@@ -14,14 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core;
+package eu.seaclouds.platform.planner.core.application;
 
 
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
-import eu.seaclouds.platform.planner.core.agreements.AgreementGenerator;
-import eu.seaclouds.platform.planner.core.template.ApplicationMetadata;
-import eu.seaclouds.platform.planner.core.template.NodeTemplate;
-import eu.seaclouds.platform.planner.core.template.TopologyTemplateFacade;
+import eu.seaclouds.platform.planner.core.DamGenerator;
+import eu.seaclouds.platform.planner.core.DamGeneratorConfigBag;
+import eu.seaclouds.platform.planner.core.application.agreements.AgreementGenerator;
+import eu.seaclouds.platform.planner.core.application.topology.ApplicationMetadata;
+import eu.seaclouds.platform.planner.core.application.topology.TopologyTemplateFacade;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplate;
 import eu.seaclouds.platform.planner.core.utils.YamlParser;
 import org.apache.brooklyn.util.collections.MutableMap;
 import org.slf4j.Logger;

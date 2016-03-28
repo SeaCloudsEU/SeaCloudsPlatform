@@ -1,4 +1,4 @@
-package eu.seaclouds.platform.planner.core;
+package eu.seaclouds.platform.planner.core.application;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -21,11 +21,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ApplicationMonitorId {
     public String id;
 
-    public ApplicationMonitorId() {}
+    public ApplicationMonitorId() {
+    }
 
     @JsonProperty
-    public void setId(String id) { this.id = id; }
+    public void setId(String id) {
+        this.id = id;
+    }
 
     @JsonProperty
-    public String getId() { return this.id; }
+    public String getId() {
+        return this.id;
+    }
 }

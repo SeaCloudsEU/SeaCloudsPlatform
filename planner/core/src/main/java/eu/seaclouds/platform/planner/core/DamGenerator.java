@@ -16,7 +16,8 @@
  */
 package eu.seaclouds.platform.planner.core;
 
-import eu.seaclouds.platform.planner.core.agreements.AgreementGenerator;
+import eu.seaclouds.platform.planner.core.application.ApplicationFacade;
+import eu.seaclouds.platform.planner.core.application.agreements.AgreementGenerator;
 import eu.seaclouds.platform.planner.core.utils.YamlParser;
 import org.apache.brooklyn.util.collections.MutableList;
 import org.slf4j.Logger;

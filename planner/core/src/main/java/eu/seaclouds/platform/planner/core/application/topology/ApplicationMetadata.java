@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core.template;
+package eu.seaclouds.platform.planner.core.application.topology;
 
 import org.apache.brooklyn.util.collections.MutableList;
 import org.apache.brooklyn.util.text.Identifiers;

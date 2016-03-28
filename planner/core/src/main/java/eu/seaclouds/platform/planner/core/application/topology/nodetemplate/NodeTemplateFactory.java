@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core.template;
+package eu.seaclouds.platform.planner.core.application.topology.nodetemplate;
 
 import eu.seaclouds.platform.planner.core.DamGenerator;
-import eu.seaclouds.platform.planner.core.template.datacollector.Datacollector;
-import eu.seaclouds.platform.planner.core.template.host.ComputeNodeTemplate;
-import eu.seaclouds.platform.planner.core.template.host.PlatformNodeTemplate;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.datacollectors.Datacollector;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.host.ComputeNodeTemplate;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.host.PlatformNodeTemplate;
 
 import java.util.Map;
 

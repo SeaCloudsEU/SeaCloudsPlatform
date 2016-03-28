@@ -48,7 +48,6 @@ public class HttpHelper {
     static Logger log = LoggerFactory.getLogger(HttpHelper.class);
 
     /**
-     *
      * @param serviceURL
      */
     public HttpHelper(String serviceURL) {
@@ -58,17 +57,16 @@ public class HttpHelper {
     }
 
     /**
-     *
      * @param restPath
      * @param params
      * @return
      */
-    public String getRequest(String restPath, List<NameValuePair> params){
+    public String getRequest(String restPath, List<NameValuePair> params) {
         log.info("Getting request for " + this.serviceURL + restPath);
 
         HttpGet httpGet = new HttpGet(prepareRequestURL(restPath, params));
         CloseableHttpResponse response = null;
-        String content ="";
+        String content = "";
         try {
             response = httpclient.execute(httpGet);
             HttpEntity entity = response.getEntity();
@@ -87,7 +85,7 @@ public class HttpHelper {
         return content;
     }
 
-    public String postInBody(String restPath, String bodyContent){
+    public String postInBody(String restPath, String bodyContent) {
         log.info("Posting request for " + this.serviceURL + restPath);
         HttpPost post = new HttpPost(prepareRequestURL(restPath));
         String result = "";
@@ -96,7 +94,7 @@ public class HttpHelper {
             post.setEntity(entity);
             HttpResponse response = httpclient.execute(post);
             result = EntityUtils.toString(response.getEntity());
-        }catch (ClientProtocolException e) {
+        } catch (ClientProtocolException e) {
             log.error("ClientProtocolException", e);
         } catch (UnsupportedEncodingException e) {
             log.error("UnsupportedEncodingException", e);
@@ -108,12 +106,11 @@ public class HttpHelper {
     }
 
     /**
-     *
      * @param restPath
      * @param params
      * @return
      */
-    public Pair<String, String> postRequest(String restPath, List<NameValuePair> params){
+    public Pair<String, String> postRequest(String restPath, List<NameValuePair> params) {
         log.info("Posting request for " + this.serviceURL + restPath);
         HttpPost httpPost = new HttpPost(prepareRequestURL(restPath, new ArrayList<NameValuePair>()));
         CloseableHttpResponse response = null;
@@ -124,10 +121,10 @@ public class HttpHelper {
             HttpEntity entity = response.getEntity();
             int status = response.getStatusLine().getStatusCode();
 
-            if(status == 200) {
+            if (status == 200) {
                 content = EntityUtils.toString(entity);
-            }else{
-                content =response.getStatusLine().getReasonPhrase();
+            } else {
+                content = response.getStatusLine().getReasonPhrase();
             }
 
             EntityUtils.consume(entity);
@@ -140,7 +137,7 @@ public class HttpHelper {
             log.error("ClientProtocolException", e);
         } catch (IOException e) {
             log.error("IOException", e);
-        }finally {
+        } finally {
             try {
                 response.close();
             } catch (IOException e) {
@@ -150,7 +147,7 @@ public class HttpHelper {
         return new Pair<>("500", "Post Exception for: " + httpPost.toString());
     }
 
-    public Pair<String, String> postRequestWithParams(String restPath, List<NameValuePair> params){
+    public Pair<String, String> postRequestWithParams(String restPath, List<NameValuePair> params) {
         log.info("Posting request for " + this.serviceURL + restPath);
         HttpPost httpPost = new HttpPost(prepareRequestURL(restPath, params));
         CloseableHttpResponse response = null;
@@ -161,10 +158,10 @@ public class HttpHelper {
             String content = "";
             int status = response.getStatusLine().getStatusCode();
 
-            if(status == 200) {
+            if (status == 200) {
                 content = EntityUtils.toString(entity); //new Scanner(entity.getContent()).useDelimiter("\\Z").next();
-            }else{
-                content =response.getStatusLine().getReasonPhrase();
+            } else {
+                content = response.getStatusLine().getReasonPhrase();
             }
 
             EntityUtils.consume(entity);
@@ -180,7 +177,7 @@ public class HttpHelper {
         } catch (IOException e) {
             log.error("IOException");
             return new Pair<String, String>("500", "Exception: " + e.getCause().getMessage());
-        }finally {
+        } finally {
             try {
                 response.close();
             } catch (IOException e) {
@@ -190,19 +187,19 @@ public class HttpHelper {
         }
     }
 
-    private String prepareRequestURL(String restPath){
+    private String prepareRequestURL(String restPath) {
         return prepareRequestURL(restPath, new ArrayList<NameValuePair>());
     }
 
-    private String prepareRequestURL(String restPath, List<NameValuePair> params){
+    private String prepareRequestURL(String restPath, List<NameValuePair> params) {
         StringBuilder operationBuilder = new StringBuilder();
         operationBuilder.append(serviceURL);
         operationBuilder.append(restPath);
-        if(params.size() > 0) {
+        if (params.size() > 0) {
             operationBuilder.append("?");
             URLCodec coded = new URLCodec();
             try {
-                for(NameValuePair p: params)
+                for (NameValuePair p : params)
                     operationBuilder.append(p.getName() + "=" + coded.encode(p.getValue()));
 
             } catch (EncoderException e) {

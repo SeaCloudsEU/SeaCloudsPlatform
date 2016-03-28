@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core.decorators;
+package eu.seaclouds.platform.planner.core.application.decorators;
 
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringDamGenerator;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
-import eu.seaclouds.platform.planner.core.ApplicationFacade;
 import eu.seaclouds.platform.planner.core.DamGenerator;
 import eu.seaclouds.platform.planner.core.DamGeneratorConfigBag;
+import eu.seaclouds.platform.planner.core.application.ApplicationFacade;
 
 import java.util.ArrayList;
 import java.util.Arrays;

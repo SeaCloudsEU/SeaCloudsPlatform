@@ -1,6 +1,6 @@
-package eu.seaclouds.platform.planner.core.template.datacollector;
+package eu.seaclouds.platform.planner.core.application.topology.nodetemplate.datacollectors;
 
-import eu.seaclouds.platform.planner.core.template.AbstractNodeTemplate;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.AbstractNodeTemplate;
 import org.apache.brooklyn.util.collections.MutableMap;
 
 import java.util.Map;

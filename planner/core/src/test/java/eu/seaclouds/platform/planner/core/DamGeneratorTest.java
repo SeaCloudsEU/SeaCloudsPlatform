@@ -18,11 +18,11 @@ package eu.seaclouds.platform.planner.core;
 
 import com.google.common.collect.Iterators;
 import com.google.common.io.Resources;
-import eu.seaclouds.platform.planner.core.agreements.AgreementGenerator;
-import eu.seaclouds.platform.planner.core.decorators.MonitoringInformationDecorator;
-import eu.seaclouds.platform.planner.core.decorators.SeaCloudsManagmentPolicyDecorator;
-import eu.seaclouds.platform.planner.core.decorators.SlaInformationDecorator;
-import eu.seaclouds.platform.planner.core.template.ApplicationMetadata;
+import eu.seaclouds.platform.planner.core.application.agreements.AgreementGenerator;
+import eu.seaclouds.platform.planner.core.application.decorators.MonitoringInformationDecorator;
+import eu.seaclouds.platform.planner.core.application.decorators.SeaCloudsManagmentPolicyDecorator;
+import eu.seaclouds.platform.planner.core.application.decorators.SlaInformationDecorator;
+import eu.seaclouds.platform.planner.core.application.topology.ApplicationMetadata;
 import eu.seaclouds.platform.planner.core.utils.YamlParser;
 import org.apache.brooklyn.util.text.Strings;
 import org.mockito.Mock;

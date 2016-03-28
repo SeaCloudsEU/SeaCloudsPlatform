@@ -14,19 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core.template.modifiers;
+package eu.seaclouds.platform.planner.core.application.topology.nodetemplate.modifiers;
 
 
-import eu.seaclouds.platform.planner.core.template.NodeTemplate;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplate;
 
 import java.util.List;
 import java.util.Map;
 
-public class PhpPaasArtifactsModifier implements NodeTemplateFacadeModifier {
+public class JavaPaasArtifactsModifier implements NodeTemplateFacadeModifier {
 
-    private static final String TARGET_TYPE = "org.apache.brooklyn.entity.cloudfoundry.webapp.php.PhpCloudFoundryPaasWebApp";
-    private static final String GIT_URL_ARTIFACT = "git.url";
-    private static final String TARBALL_URL_ARTIFACT = "tarball.url";
+    private static final String TARGET_TYPE = "org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp";
+    private static final String WARS_ROOT_ARTIFACT = "wars.root";
     private static final String APPLICATION_URL_ARTIFACT = "application-url";
 
     private boolean isApplicable(NodeTemplate nodeTemplate) {
@@ -44,23 +43,14 @@ public class PhpPaasArtifactsModifier implements NodeTemplateFacadeModifier {
     private void modifyTargetArtifactProperty(NodeTemplate nodeTemplate) {
         List<Map<String, Object>> artifacts = nodeTemplate.getArtifacts();
         for (Map<String, Object> artifact : artifacts) {
-            modifyGitUrlArtifact(artifact);
-            modifyTarballUrlArtifact(artifact);
+            modifyWarsRootArtifact(artifact);
         }
     }
 
-    private void modifyTarballUrlArtifact(Map<String, Object> artifact) {
-        if (artifact.containsKey(TARBALL_URL_ARTIFACT)) {
-            String targetUrlArtifact = (String) artifact.get(TARBALL_URL_ARTIFACT);
-            artifact.remove(TARBALL_URL_ARTIFACT);
-            addApplicationUrlArtifact(artifact, targetUrlArtifact);
-        }
-    }
-
-    private void modifyGitUrlArtifact(Map<String, Object> artifact) {
-        if (artifact.containsKey(GIT_URL_ARTIFACT)) {
-            String targetUrlArtifact = (String) artifact.get(GIT_URL_ARTIFACT);
-            artifact.remove(GIT_URL_ARTIFACT);
+    private void modifyWarsRootArtifact(Map<String, Object> artifact) {
+        if (artifact.containsKey(WARS_ROOT_ARTIFACT)) {
+            String targetUrlArtifact = (String) artifact.get(WARS_ROOT_ARTIFACT);
+            artifact.remove(WARS_ROOT_ARTIFACT);
             addApplicationUrlArtifact(artifact, targetUrlArtifact);
         }
     }

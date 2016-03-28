@@ -14,21 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core.template.host;
+package eu.seaclouds.platform.planner.core.application.topology.nodetemplate.modifiers;
 
-import eu.seaclouds.platform.planner.core.template.NodeTemplate;
 
-import java.util.Map;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplate;
 
-public interface HostNodeTemplate extends NodeTemplate {
+/**
+ * A NodeTemplateFacadeModifier applies a set of changes to an NodeTemplate according to Deployer
+ * reqirements
+ */
+public interface NodeTemplateFacadeModifier {
 
-    public static final String BROOKLYN_LOCATION = "brooklyn.location";
-    public static final String ADD_BROOKLYN_LOCATION_PEFIX = "add_brooklyn_location_";
-    public static final String MEMBERS = "members";
-    public static final String POLICIES = "policies";
+    void apply(NodeTemplate entitySpec);
 
-    //TODO: should be connected with policies facades
-    public Map<String, Object> getLocationPolicyGroupValues();
-
-    public String getLocationPolicyGroupName();
 }
+
+
+

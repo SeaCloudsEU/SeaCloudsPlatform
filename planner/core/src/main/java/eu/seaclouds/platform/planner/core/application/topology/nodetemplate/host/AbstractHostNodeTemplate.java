@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core.template.host;
+package eu.seaclouds.platform.planner.core.application.topology.nodetemplate.host;
 
-import eu.seaclouds.platform.planner.core.template.AbstractNodeTemplate;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.AbstractNodeTemplate;
 import org.apache.brooklyn.util.collections.MutableMap;
 
 import java.util.ArrayList;

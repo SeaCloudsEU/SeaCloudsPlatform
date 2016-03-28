@@ -14,12 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core.template;
+package eu.seaclouds.platform.planner.core.application.topology;
 
 
 import eu.seaclouds.platform.planner.core.DamGenerator;
-import eu.seaclouds.platform.planner.core.template.host.HostNodeTemplate;
-import eu.seaclouds.platform.planner.core.template.host.PlatformNodeTemplate;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.AbstractNodeTemplate;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplate;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplateFactory;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.host.HostNodeTemplate;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.host.PaasNodeTemplateFacade;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.host.PlatformNodeTemplate;
 import org.apache.brooklyn.util.collections.MutableList;
 import org.apache.brooklyn.util.collections.MutableMap;
 

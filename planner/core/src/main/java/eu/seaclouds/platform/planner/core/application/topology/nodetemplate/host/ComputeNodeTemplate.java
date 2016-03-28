@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core.template.host;
+package eu.seaclouds.platform.planner.core.application.topology.nodetemplate.host;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.brooklyn.util.collections.MutableMap;

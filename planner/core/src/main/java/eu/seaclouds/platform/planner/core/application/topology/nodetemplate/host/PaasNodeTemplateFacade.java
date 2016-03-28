@@ -1,7 +1,6 @@
-package eu.seaclouds.platform.planner.core.template;
+package eu.seaclouds.platform.planner.core.application.topology.nodetemplate.host;
 
-import eu.seaclouds.platform.planner.core.template.host.HostNodeTemplate;
-import eu.seaclouds.platform.planner.core.template.host.PlatformNodeTemplate;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.AbstractNodeTemplate;
 
 import java.util.Arrays;
 import java.util.List;

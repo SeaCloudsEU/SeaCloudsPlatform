@@ -17,7 +17,6 @@
 package eu.seaclouds.platform.planner.core.resolver;
 
 import com.google.common.io.Resources;
-import eu.seaclouds.platform.planner.core.resolver.DeployerTypesResolver;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
