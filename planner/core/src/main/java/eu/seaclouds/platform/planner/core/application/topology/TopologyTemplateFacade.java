@@ -18,6 +18,7 @@ package eu.seaclouds.platform.planner.core.application.topology;
 
 
 import eu.seaclouds.platform.planner.core.DamGenerator;
+import eu.seaclouds.platform.planner.core.application.topology.modifier.TopologyModifierApplication;
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.AbstractNodeTemplate;
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplate;
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplateFactory;
@@ -140,6 +141,12 @@ public class TopologyTemplateFacade {
         }
     }
 
+    public void applyModifierApplicator(TopologyModifierApplication applicator) {
+        for (Map.Entry<String, NodeTemplate> nodeTemplateEntry : nodeTemplates.entrySet()) {
+            applicator.applyModifiers(nodeTemplateEntry.getValue(), this);
+        }
+    }
+
     public void joinPlatformNodeTemplates() {
         Map<HostNodeTemplate, List<NodeTemplate>> platformAndChildren =
                 extractPlatformTemplatesAndChildren();
@@ -213,7 +220,30 @@ public class TopologyTemplateFacade {
         return nodeTemplates.containsKey(nodeTemplateId);
     }
 
+    public Object getPropertyValue(String nodeTemplateId, String propertyName) {
+        checkNotNull(nodeTemplates.get(nodeTemplateId),
+                "Error finding property, nodeTemplate " + nodeTemplateId + "not found");
+        return nodeTemplates.get(nodeTemplateId).getPropertyValue(propertyName);
+    }
+
+    public String getNodeTypeOf(String nodeTemplateId){
+        checkNotNull(nodeTemplates.get(nodeTemplateId),
+                "Error finding nodeTemplate type, " + nodeTemplateId + "not found");
+        return nodeTemplates.get(nodeTemplateId).getType();
+
+    }
+
     public Map<String, NodeTemplate> getNodeTemplates() {
         return nodeTemplates;
     }
+
+    public boolean isDeployedOnIaaS(String nodeId) {
+        return nodeTemplates.containsKey(nodeId) && nodeTemplates.get(nodeId).isDeployedOnIaaS();
+    }
+
+    public boolean isDeployedOnPaaS(String nodeId) {
+        return !isDeployedOnIaaS(nodeId);
+    }
+
+
 }

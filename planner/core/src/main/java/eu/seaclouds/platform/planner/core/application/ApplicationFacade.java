@@ -23,6 +23,7 @@ import eu.seaclouds.platform.planner.core.DamGeneratorConfigBag;
 import eu.seaclouds.platform.planner.core.application.agreements.AgreementGenerator;
 import eu.seaclouds.platform.planner.core.application.topology.ApplicationMetadata;
 import eu.seaclouds.platform.planner.core.application.topology.TopologyTemplateFacade;
+import eu.seaclouds.platform.planner.core.application.topology.modifier.TopologFacadeyModifierApplicator;
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplate;
 import eu.seaclouds.platform.planner.core.utils.YamlParser;
 import org.apache.brooklyn.util.collections.MutableMap;
@@ -109,6 +110,7 @@ public class ApplicationFacade {
         normalizeMetadata();
         createTopologyTemplate();
         applyDecorators();
+        applyTopologyModifiers();
         joinPlatformsAndHostedNodeTemplates();
         addPoliciesLocations();
     }
@@ -138,6 +140,11 @@ public class ApplicationFacade {
                 new ApplicationFacadeDecoratorApplicator();
         applicator.applyDecorators(this);
     }
+
+    private void applyTopologyModifiers() {
+        topologyTemplate.applyModifierApplicator(new TopologFacadeyModifierApplicator());
+    }
+
 
     private void addPoliciesLocations() {
         Map<String, Object> locationGroups = topologyTemplate.getLocationPoliciesGroups();

@@ -125,6 +125,12 @@ public class DamGenerator {
                     if (requirement.containsKey(HOST)) {
                         fixedRequirements.add(requirement);
                     }
+
+                    //TODO: delete when relations will be supported
+                    else if(requirement.containsKey("dbConnection")){
+                        fixedRequirements.add(requirement);
+                    }
+
                 }
                 if (fixedRequirements.isEmpty()) {
                     nodeTemplate.remove(REQUIREMENTS);

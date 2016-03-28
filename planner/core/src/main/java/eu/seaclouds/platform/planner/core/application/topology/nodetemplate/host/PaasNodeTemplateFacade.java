@@ -74,5 +74,15 @@ public class PaasNodeTemplateFacade implements HostNodeTemplate {
         return nodeTemplate.getArtifacts();
     }
 
+    @Override
+    public List<Map<String, Object>> getRequirements() {
+        return nodeTemplate.getRequirements();
+    }
+
+    @Override
+    public Object getPropertyValue(String propertyName) {
+        return nodeTemplate.getPropertyValue(propertyName);
+    }
+
 
 }

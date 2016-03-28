@@ -39,4 +39,8 @@ public interface NodeTemplate {
 
     List<Map<String, Object>> getArtifacts();
 
+    public List<Map<String, Object>> getRequirements();
+
+    public Object getPropertyValue(String propertyName);
+
 }

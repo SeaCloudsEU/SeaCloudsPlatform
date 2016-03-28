@@ -23,6 +23,7 @@ import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.host
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.modifiers.JavaPaasArtifactsModifier;
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.modifiers.PhpPaasArtifactsModifier;
 import eu.seaclouds.platform.planner.core.resolver.DeployerTypesResolver;
+import org.apache.brooklyn.util.collections.MutableList;
 import org.apache.brooklyn.util.collections.MutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,7 +113,7 @@ public class AbstractNodeTemplate implements NodeTemplate {
     }
 
     private List<Map<String, Object>> initRequirements() {
-        requirements = ImmutableList.of();
+        requirements = MutableList.of();
         if (module.containsKey(REQUIREMENTS)) {
             requirements = (ArrayList<Map<String, Object>>) module.get(REQUIREMENTS);
         }
@@ -288,6 +289,16 @@ public class AbstractNodeTemplate implements NodeTemplate {
     @Override
     public List<Map<String, Object>> getArtifacts() {
         return artifacts;
+    }
+
+    @Override
+    public List<Map<String, Object>> getRequirements() {
+        return requirements;
+    }
+
+    @Override
+    public Object getPropertyValue(String propertyName) {
+        return properties.get(propertyName);
     }
 
     @Override

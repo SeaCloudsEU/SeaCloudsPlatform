@@ -1,0 +1,72 @@
+package eu.seaclouds.platform.planner.core.application.topology.modifier;
+
+
+import com.google.common.collect.ImmutableList;
+import eu.seaclouds.platform.planner.core.DamGenerator;
+
+import java.util.List;
+import java.util.Map;
+
+public class JdbcIaasRelationModifier extends AbstractRelationModifier implements TopologyTemplateModifier {
+
+    public static final String SUPPORTED_RELATIONS = "seaclouds.relations.databaseconnections.jdbc";
+    public static final List<String> VALID_TARGET_NODES_TYPES =
+            ImmutableList.of("org.apache.brooklyn.entity.database.mysql.MySqlNode");
+
+    private static final String DB_NAME_PROPERTY_NAME = "db_name";
+    private static final String DB_USER_PROPERTY_NAME = "db_user";
+    private static final String DB_PASSWORD_PROPERTY_NAME = "db_password";
+
+    @Override
+    protected List<String> getSupportedRelationTypes() {
+        return ImmutableList.of(SUPPORTED_RELATIONS);
+    }
+
+
+    @Override
+    protected boolean isValidTargetNode(Map<String, Object> requirement) {
+        return VALID_TARGET_NODES_TYPES.contains(getNodeTargetType(requirement));
+    }
+
+    @Override
+    protected String getPropValue(Map<String, Object> requirement) {
+        return createPropertyValue(requirement);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected String getPropName(Map<String, Object> requirement) {
+        Map<String, Object> properties =
+                (Map<String, Object>) getRequirementValues(requirement)
+                        .get(DamGenerator.PROPERTIES);
+        return (String) properties.get(PROP_NAME);
+    }
+
+    @Override
+    protected String getPropCollection(Map<String, Object> requirementValues) {
+        return "java.sysprops";
+    }
+
+    @Override
+    protected String getRelationName() {
+        return "dbConnection";
+    }
+
+    @SuppressWarnings("unchecked")
+    private String createPropertyValue(Map<String, Object> requirement) {
+        String targetId = getTargetNodeId(requirement);
+        String dbName = (String) topologyTemplate.getPropertyValue(targetId, DB_NAME_PROPERTY_NAME);
+        String dbUSer = (String) topologyTemplate.getPropertyValue(targetId, DB_USER_PROPERTY_NAME);
+        String dbPass = (String) topologyTemplate.getPropertyValue(targetId, DB_PASSWORD_PROPERTY_NAME);
+
+        return "$brooklyn:formatString(\"jdbc:%s%s?user=%s" + getSeparator() + "&password=%s\", " +
+                "component(\"" + targetId + "\").attributeWhenReady(\"datastore.url\"), " +
+                "\"" + dbName + "\", " +
+                "\"" + dbUSer + "\", " +
+                "\"" + dbPass + "\")";
+    }
+
+    public String getSeparator() {
+        return nodeTemplate.getType().contains("JBoss") ? "\\\\" : "";
+    }
+}

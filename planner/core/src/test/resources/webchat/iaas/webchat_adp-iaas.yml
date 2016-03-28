@@ -12,6 +12,11 @@ topology_template:
       - wars.root: http://search.maven.org/remotecontent?filepath=io/brooklyn/example/brooklyn-example-hello-world-sql-webapp/0.6.0/brooklyn-example-hello-world-sql-webapp-0.6.0.war
         type: tosca.artifacts.File
       requirements:
+      - dbconnection:
+          node: MessageDatabase
+          type: seaclouds.relations.databaseconnections.jdbc
+          properties:
+            prop.name: brooklyn.example.db.url
       - host: Amazon_EC2_c1_medium_us_west_2
         instancesPOC: 1
     MessageDatabase:
@@ -24,6 +29,10 @@ topology_template:
           constraints:
           - greater_or_equal: '5.0'
           - less_or_equal: '5.0'
+        db_name: visitors
+        db_user: brooklyn
+        db_password: br00k11n
+
       requirements:
       - host: Amazon_EC2_c1_medium_sa_east_1
         instancesPOC: 2

@@ -270,7 +270,7 @@ public class DamGeneratorTest {
         assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_m4_large_eu_west_1"), expectedGroups.get("add_brooklyn_location_Amazon_EC2_m4_large_eu_west_1"));
     }
 
-    @Test
+    @Test(enabled = true)
     @SuppressWarnings("unchecked")
     public void testWebChatGenerationForIaaS() throws Exception {
         String adp = new Scanner(new File(Resources.getResource("webchat/iaas/webchat_adp-iaas.yml").toURI())).useDelimiter("\\Z").next();
@@ -315,7 +315,7 @@ public class DamGeneratorTest {
         assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_c1_medium_sa_east_1"), expectedGroups.get("add_brooklyn_location_Amazon_EC2_c1_medium_sa_east_1"));
     }
 
-    @Test(enabled = true)
+    @Test(enabled = false)
     @SuppressWarnings("unchecked")
     public void testWebChatGenerationForPaaS() throws Exception {
         String adp = new Scanner(new File(Resources.getResource("webchat/paas/webchat_adp-paas.yml").toURI())).useDelimiter("\\Z").next();
