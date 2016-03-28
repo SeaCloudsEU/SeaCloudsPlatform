@@ -66,16 +66,11 @@ public abstract class AbstractJdbcRelationModifier extends AbstractRelationModif
         String targetId = getTargetNodeId(requirement);
         String dbName = (String) topologyTemplate.getPropertyValue(targetId, DB_NAME_PROPERTY_NAME);
         String dbUSer = (String) topologyTemplate.getPropertyValue(targetId, DB_USER_PROPERTY_NAME);
-        String dbPass = (String) topologyTemplate.getPropertyValue(targetId, DB_PASSWORD_PROPERTY_NAME);
+        String dbPass = (String) topologyTemplate
+                .getPropertyValue(targetId, DB_PASSWORD_PROPERTY_NAME);
 
-        return "$brooklyn:formatString(\"jdbc:%s%s?user=%s" + getSeparator() + "&password=%s\", " +
-                "component(\"" + targetId + "\").attributeWhenReady(\"datastore.url\"), " +
-                "\"" + dbName + "\", " +
-                "\"" + dbUSer + "\", " +
-                "\"" + dbPass + "\")";
+        return JdbcStringBuilder
+                .buildConnectionString(targetId, nodeTemplate.getType(), dbName, dbUSer, dbPass);
     }
 
-    public String getSeparator() {
-        return nodeTemplate.getType().contains("JBoss") ? "\\\\" : "";
-    }
 }
