@@ -18,6 +18,9 @@ package eu.seaclouds.platform.planner.core.application.topology.modifier;
 
 public class JdbcStringBuilder {
 
+    private static final String JBOSS_SEPARATOR = "\\\\";
+    private static final String DEFAULT_SEPARATOR =  "";
+
     public static String buildConnectionString(String targetId, String sourceNodeType, String dbName, String dbUSer, String dbPass) {
         return "$brooklyn:formatString(\"jdbc:%s%s?user=%s" + getSeparator(sourceNodeType) + "&password=%s\", " +
                 "component(\"" + targetId + "\").attributeWhenReady(\"datastore.url\"), " +
@@ -27,6 +30,6 @@ public class JdbcStringBuilder {
     }
 
     private static  String getSeparator(String sourceNodeType) {
-        return sourceNodeType.contains("JBoss") ? "\\\\" : "";
+        return sourceNodeType.contains("JBoss") ? JBOSS_SEPARATOR : DEFAULT_SEPARATOR;
     }
 }

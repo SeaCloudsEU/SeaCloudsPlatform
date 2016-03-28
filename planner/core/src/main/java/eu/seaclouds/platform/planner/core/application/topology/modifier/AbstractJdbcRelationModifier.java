@@ -22,7 +22,7 @@ import eu.seaclouds.platform.planner.core.DamGenerator;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractJdbcRelationModifier extends AbstractRelationModifier implements TopologyTemplateModifier {
+public abstract class AbstractJdbcRelationModifier extends AbstractRelationModifier {
 
     public static final String SUPPORTED_RELATIONS = "seaclouds.relations.databaseconnections.jdbc";
     public static final List<String> VALID_TARGET_NODES_TYPES =

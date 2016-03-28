@@ -144,7 +144,8 @@ public abstract class AbstractRelationModifier implements TopologyTemplateModifi
     }
 
     private String getNotHostRequirement(Map<String, Object> requirement) {
-        checkState(requirement.size() == 1, "Not valid Requirement, too arguments");
+        checkState(requirement.size() == 1, "Not valid Requirement, too properties " +
+                "for non-Host requirement. Expected a map with just an entry");
         return Iterators.getOnlyElement(requirement.keySet().iterator());
     }
 
