@@ -832,7 +832,7 @@ public class YAMLoptimizerParser {
       if (appMap.containsKey(TOSCAkeywords.DESCRIPTION)) {
          return (String) appMap.get(TOSCAkeywords.DESCRIPTION);
       } else {
-         log.info("It has not been found the information of '{}'", TOSCAkeywords.DESCRIPTION);
+         log.info("It has not been found the information of '{}' in the model", TOSCAkeywords.DESCRIPTION);
       }
       return "";
    }

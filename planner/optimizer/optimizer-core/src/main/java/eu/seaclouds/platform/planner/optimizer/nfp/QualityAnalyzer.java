@@ -533,15 +533,15 @@ public class QualityAnalyzer {
          // Stop condition is the highest allowed cost or, if cost is not
          // specified, ten times the expected worklaod
 
-         log.info("Creating threshold for workload above {}", limitWorkload);
+         log.debug("Creating threshold for workload above {}", limitWorkload);
 
          limitWorkload = findWorkloadForWhichRespTimeIsExceeded(requirements.getResponseTime(), limitWorkload, mus,
                modifSol, topology, cloudCharacteristics);
-         log.info("Workload for which current topoloy will exceed the response time is {}", limitWorkload);
+         log.debug("Workload for which current topoloy will exceed the response time is {}", limitWorkload);
          // get highest utilization
          String moduleWithHighestUtilization = findHighestUtilizationModuleThatCanScale(limitWorkload, mus, modifSol,
                topology, cloudCharacteristics);
-         log.info("The bottleneck module for workload {} is {}", limitWorkload, moduleWithHighestUtilization);
+         log.debug("The bottleneck module for workload {} is {}", limitWorkload, moduleWithHighestUtilization);
 
          // put the value in the hashMap. "moduleWithHighestUtilization" may be
          // null
@@ -664,21 +664,21 @@ public class QualityAnalyzer {
       // Stop also if the highest allowed cost or, if cost is not specified, ten
       // times the expected workload
 
-      log.info("checking if continue generating thresholds for: ");
+      log.debug("checking if continue generating thresholds for: ");
 
       if (!existModulesToScaleOut) {
-         log.info("Nothing, there are not any module to scale out");
+         log.debug("Nothing, there are not any module to scale out");
          return false;
       }
       if (requirements.existCostRequirement()) {
 
-         log.info("  current cost: {}  cost limit: {}", computeCost(sol, cloudCharacteristics),
+         log.debug("  current cost: {}  cost limit: {}", computeCost(sol, cloudCharacteristics),
                requirements.getCostHour());
 
          return computeCost(sol, cloudCharacteristics) <= requirements.getCostHour();
       }
 
-      log.info("  limitWorkload: {} current workload {}", limitWorkload,
+      log.debug("  limitWorkload: {} current workload {}", limitWorkload,
             (MAX_TIMES_WORKLOAD_FOR_THRESHOLDS * workload));
 
       return limitWorkload <= (MAX_TIMES_WORKLOAD_FOR_THRESHOLDS * workload);
