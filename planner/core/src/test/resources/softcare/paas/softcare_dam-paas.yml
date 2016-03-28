@@ -11,11 +11,26 @@ topology_template:
   node_templates:
 
     Softcare_dashboard:
+      type: org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
       properties:
         language: JAVA
         autoscale: false
         application-url: https://s3-eu-west-1.amazonaws.com/atos-paas/v3/softcare-gui.war
-      type: org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
+      requirements:
+      - endpoint_configuration:
+          node: SoftcareWS
+          relationship: brooklyn.relationships.Configure
+          properties:
+            prop.collection: env
+            prop.name: softcarews
+            prop.value: $brooklyn:component("SoftcareWS").attributeWhenReady("webapp.url")
+      - endpoint_configuration:
+          node: Forum
+          relationship: brooklyn.relationships.Configure
+          properties:
+            prop.collection: env
+            prop.name: softcareforum
+            prop.value: $brooklyn:component("Forum").attributeWhenReady("webapp.url")
 
     Forum:
       requirements:

@@ -127,7 +127,8 @@ public class DamGenerator {
                     }
 
                     //TODO: delete when relations will be supported
-                    else if(requirement.containsKey("dbConnection")){
+                    else if(requirement.containsKey("dbConnection")
+                            ||(requirement.containsKey("endpoint_configuration"))){
                         fixedRequirements.add(requirement);
                     }
 

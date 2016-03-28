@@ -21,13 +21,13 @@ import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.Node
 
 import java.util.Map;
 
-public class JdbcPaasRelationModifier extends AbstractJdbcRelationModifier {
+public class EndpointIaasRelationModifier extends AbstractEndpointRelationModifier {
 
-    private static final String PROP_COLLECTION_VALUE = "env";
+    private static final String PROP_COLLECTION_VALUE = "java.sysprops";
 
     @Override
     protected boolean nodeTemplateCanBeModified(NodeTemplate nodeTemplate) {
-        return topologyTemplate.isDeployedOnPaaS(nodeTemplate.getNodeTemplateId());
+        return topologyTemplate.isDeployedOnIaaS(nodeTemplate.getNodeTemplateId());
     }
 
     @Override

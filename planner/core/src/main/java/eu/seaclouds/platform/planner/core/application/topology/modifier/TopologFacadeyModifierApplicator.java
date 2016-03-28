@@ -35,7 +35,10 @@ public class TopologFacadeyModifierApplicator implements TopologyModifierApplica
     private List<TopologyTemplateModifier> getTopologyModifiers() {
         return ImmutableList.of(
                 (TopologyTemplateModifier) new JdbcIaasRelationModifier(),
-                (TopologyTemplateModifier) new JdbcPaasRelationModifier());
+                (TopologyTemplateModifier) new JdbcPaasRelationModifier(),
+                (TopologyTemplateModifier) new EndpointIaasRelationModifier(),
+                (TopologyTemplateModifier) new EndpointPaasRelationModifier()
+        );
     }
 
 }

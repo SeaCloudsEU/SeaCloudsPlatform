@@ -76,8 +76,7 @@ topology_template:
         wars.root: https://s3-eu-west-1.amazonaws.com/atos-paas/v3/softcare-ws.war
       type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
     Softcare_dashboard:
-      requirements:
-      - host: Amazon_EC2_t2_large_us_west_1
+      type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
       properties:
         language: JAVA
         autoscale: false
@@ -86,7 +85,22 @@ topology_template:
           - greater_or_equal: '5'
           - less_or_equal: '7'
         wars.root: https://s3-eu-west-1.amazonaws.com/atos-paas/v3/softcare-gui.war
-      type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
+      requirements:
+      - host: Amazon_EC2_t2_large_us_west_1
+      - endpoint_configuration:
+          node: SoftcareWS
+          relationship: brooklyn.relationships.Configure
+          properties:
+            prop.collection: java.sysprops
+            prop.name: softcarews
+            prop.value: $brooklyn:component("SoftcareWS").attributeWhenReady("webapp.url")
+      - endpoint_configuration:
+          node: Forum
+          relationship: brooklyn.relationships.Configure
+          properties:
+            prop.collection: java.sysprops
+            prop.name: softcareforum
+            prop.value: $brooklyn:component("Forum").attributeWhenReady("webapp.url")
     Amazon_EC2_m3_medium_ap_southeast_2:
       properties:
         num_cpus: 1

@@ -21,7 +21,7 @@ import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.Node
 
 import java.util.Map;
 
-public class JdbcPaasRelationModifier extends AbstractJdbcRelationModifier {
+public class EndpointPaasRelationModifier extends AbstractEndpointRelationModifier {
 
     private static final String PROP_COLLECTION_VALUE = "env";
 
