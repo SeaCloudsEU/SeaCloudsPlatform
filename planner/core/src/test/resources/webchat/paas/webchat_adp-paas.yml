@@ -30,10 +30,11 @@ topology_template:
       - wars.root: https://s3-us-west-2.amazonaws.com/seaclouds-usescases-artifacts/webchat/webchat-jm.war
         type: tosca.artifacts.File
       requirements:
-      - endpoint: db
-        type: seaclouds.relations.databaseconnections.jdbc
-        properties:
-          prop.name: connurl
+      - endpoint:
+          node: db
+          type: seaclouds.relations.databaseconnections.jdbc
+          properties:
+            prop.name: brooklyn.example.db.url
       - host: Cloud_Foundry
         instancesPOC: 1
     Amazon_EC2_c3_xlarge_ap_southeast_2:

@@ -1,3 +1,19 @@
+/**
+ * Copyright 2014 SeaClouds
+ * Contact: SeaClouds
+ * <p/>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package eu.seaclouds.platform.planner.core.application.topology.modifier;
 
 
@@ -29,6 +45,12 @@ public abstract class AbstractRelationModifier implements TopologyTemplateModifi
     public void apply(NodeTemplate nodeTemplate, TopologyTemplateFacade topologyTemplateFacade) {
         this.topologyTemplate = topologyTemplateFacade;
         this.nodeTemplate = nodeTemplate;
+        if (nodeTemplateCanBeModified(nodeTemplate)) {
+            applyTransformation(nodeTemplate, topologyTemplateFacade);
+        }
+    }
+
+    protected void applyTransformation(NodeTemplate nodeTemplate, TopologyTemplateFacade topologyTemplateFacade) {
         List<Map<String, Object>> requirements = findTargetRelations(nodeTemplate);
         List<Map<String, Object>> transformedRequirements = transformRequirements(requirements);
         deleteRequirements(nodeTemplate, requirements);
@@ -69,6 +91,10 @@ public abstract class AbstractRelationModifier implements TopologyTemplateModifi
         return properties;
     }
 
+    protected final String getNodeTargetType(Map<String, Object> requirement) {
+        return topologyTemplate.getNodeTypeOf(getTargetNodeId(requirement));
+    }
+
     protected List<Map<String, Object>> findTargetRelations(NodeTemplate nodeTemplate) {
         List<Map<String, Object>> requirements = nodeTemplate.getRequirements();
         List<Map<String, Object>> foundRelations = MutableList.of();
@@ -79,6 +105,16 @@ public abstract class AbstractRelationModifier implements TopologyTemplateModifi
             }
         }
         return foundRelations;
+    }
+
+    private boolean canBeTransformed(Map<String, Object> requirement) {
+        return !isHostRequirement(requirement)
+                && isSupportedRelation(requirement)
+                && isValidTargetNode(requirement);
+    }
+
+    private boolean isSupportedRelation(Map<String, Object> requirement) {
+        return getSupportedRelationTypes().contains(getRequirmentType(requirement));
     }
 
     private void deleteRequirements(NodeTemplate nodeTemplate, List<Map<String, Object>> requirements) {
@@ -116,23 +152,11 @@ public abstract class AbstractRelationModifier implements TopologyTemplateModifi
         return (String) getRequirementValues(requirement).get(NODE);
     }
 
-    private boolean canBeTransformed(Map<String, Object> requirement) {
-        return !isHostRequirement(requirement)
-                && isSupportedRelation(requirement)
-                && isValidTargetNode(requirement);
-    }
-
-    private boolean isSupportedRelation(Map<String, Object> requirement) {
-        return getSupportedRelationTypes().contains(getRequirmentType(requirement));
-    }
-
     private String getRequirmentType(Map<String, Object> requirement) {
         return (String) getRequirementValues(requirement).get(DamGenerator.TYPE);
     }
 
-    protected final String getNodeTargetType(Map<String, Object> requirement){
-        return topologyTemplate.getNodeTypeOf(getTargetNodeId(requirement));
-    }
+    protected abstract boolean nodeTemplateCanBeModified(NodeTemplate nodeTemplate);
 
     protected abstract List<String> getSupportedRelationTypes();
 

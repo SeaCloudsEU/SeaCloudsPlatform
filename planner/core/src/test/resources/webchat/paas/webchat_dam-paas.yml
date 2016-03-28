@@ -25,6 +25,14 @@ topology_template:
         language: JAVA
         autoscale: false
         application-url: https://s3-us-west-2.amazonaws.com/seaclouds-usescases-artifacts/webchat/webchat-jm.war
+      requirements:
+      - dbConnection:
+          node: db
+          relationship: brooklyn.relationships.Configure
+          properties:
+            prop.collection: env
+            prop.name: brooklyn.example.db.url
+            prop.value: $brooklyn:formatString("jdbc:%s%s?user=%s&password=%s", component("db").attributeWhenReady("datastore.url"), "visitors", "brooklyn", "br00k11n")
       type: org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
     Amazon_EC2_c3_xlarge_ap_southeast_2:
       properties:
