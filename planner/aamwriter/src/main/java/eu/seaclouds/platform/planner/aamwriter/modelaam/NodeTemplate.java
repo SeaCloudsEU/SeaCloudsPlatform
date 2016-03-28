@@ -99,12 +99,14 @@ public class NodeTemplate extends LinkedHashMap {
         Map<String, Object> requirement = new LinkedHashMap();
         
         String requirementName = "endpoint";
-        requirement.put(requirementName, target.getName());
-        requirement.put("type", type);
+        Map requirementMap = new LinkedHashMap<String, Object>();
+        requirement.put(requirementName, requirementMap);
+        requirementMap.put("node", target.getName());
+        requirementMap.put("type", type);
         if (!varName.isEmpty()) {
             Map<String, String> properties = new LinkedHashMap();
             properties.put("prop.name", varName);
-            requirement.put("properties", properties);
+            requirementMap.put("properties", properties);
         }
         requirements().add(requirement);
         

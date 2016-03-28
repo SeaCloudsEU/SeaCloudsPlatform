@@ -14,8 +14,11 @@ topology_template:
           - greater_or_equal: '5.1'
           - less_or_equal: '5.5'
       requirements:
-      - endpoint: db1
-        type: seaclouds.relations.databaseconnections.jdbc
+      - endpoint:
+          node: db1
+          type: seaclouds.relations.databaseconnections.jdbc
+          properties:
+            prop.name: connurl
     db1:
       type: sc_req.db1
       properties:
@@ -62,4 +65,4 @@ groups:
     - db1
     policies:
     - dependencies: {}
-
+

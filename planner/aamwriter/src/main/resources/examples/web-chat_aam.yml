@@ -9,15 +9,18 @@ topology_template:
       properties:
         language: JAVA
       artifacts:
-      - war: http://www.seaclouds.eu/artifacts/chat-webApplication.war
+      - wars.root: http://www.seaclouds.eu/artifacts/chat-webApplication.war
         type: tosca.artifacts.File
       requirements:
-      - endpoint: MessageDatabase
-        type: seaclouds.relations.databaseconnections.jdbc
+      - endpoint:
+          node: MessageDatabase
+          type: seaclouds.relations.databaseconnections.jdbc
+          properties:
+            prop.name: connurl
     MessageDatabase:
       type: sc_req.MessageDatabase
       artifacts:
-      - db_create: http://www.seaclouds.eu/artifacts/create-message-database.sql
+      - creationScriptUrl: http://www.seaclouds.eu/artifacts/create-message-database.sql
         type: tosca.artifacts.File
       properties:
         mysql_version:
@@ -76,4 +79,4 @@ groups:
         execution_time: 30 ms
         benchmark_platform: hp_cloud_services.2xl
     - dependencies: {}
-
+
