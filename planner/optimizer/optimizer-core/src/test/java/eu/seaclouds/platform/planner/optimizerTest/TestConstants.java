@@ -42,5 +42,7 @@ public abstract class TestConstants {
 
    public static final String APP_MODEL_FILENAME_MULTIPLE_INPUT_POINT = "./src/test/resources/aam_atos_case_studyDisconnected26Feb16.yml";
    public static final String CLOUD_OFFER_FILENAME_IN_JSON_ATOS_7_MODULES = "./src/test/resources/mmOutputExampleForTestingAtosDisconnectedGraph.json";
+
+   public static final String CLOUD_OFFER_FILENAME_IN_JSON_ATOS_SAME_OFFER_FOR_ALL_MODULES = "./src/test/resources/mmOutputExampleForTestingAtosModulesInSameOffer.json";;
    
 }

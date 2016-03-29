@@ -42,7 +42,7 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 //Version of September 2015
 public class YAMLoptimizerParser {
 
-   static Logger log = LoggerFactory.getLogger(YAMLoptimizerParser.class);
+   private static Logger log = LoggerFactory.getLogger(YAMLoptimizerParser.class);
 
    public static void cleanSuitableOfferForModule(String modulename, Map<String, Object> appMap) {
 
@@ -801,7 +801,7 @@ public class YAMLoptimizerParser {
                + "' in the TOSCA model");
          return;
       }
-      modulesMap.put(key, value);
+      modulesMap.put(key, YAMLoptimizerParser.cloneYAML(value));
 
    }
 

@@ -480,7 +480,7 @@ public abstract class AbstractHeuristic {
 
       // remove one by one from sols and check whether sols still contains the
       // removed one.
-      for (int i = 0; i < sols.length; i++) {
+      for (int i = sols.length-1; i >=0 ; i--) {
          Solution current = sols[i];
          sols[i] = null;
 

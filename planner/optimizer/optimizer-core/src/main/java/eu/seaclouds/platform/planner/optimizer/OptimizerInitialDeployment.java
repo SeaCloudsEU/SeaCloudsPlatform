@@ -337,14 +337,17 @@ public class OptimizerInitialDeployment {
          } catch (Exception E) {
             instances = "Exception!";
          }
-         log.debug("Before adding instances to '" + solkey + "': cloudOffer="
-               + currentSol.getCloudOfferNameForModule(solkey) + " instances=" + instances);
+         
+         //Name of the node template of host is $cloudoffername_$modulename
+         String nameOfNodeTemplateForHost = currentSol.getCloudOfferNameForModule(solkey) + "_"+solkey;
+         
+         log.debug("Before adding instances to ' {} ': cloudOffer={} instances={}", solkey,nameOfNodeTemplateForHost, instances);
 
          try {
-            YAMLoptimizerParser.addSuitableOfferForModule(solkey, currentSol.getCloudOfferNameForModule(solkey),
+            YAMLoptimizerParser.addSuitableOfferForModule(solkey, nameOfNodeTemplateForHost,
                   currentSol.getCloudInstancesForModule(solkey), applicationMap);
          } catch (Exception E) {
-            YAMLoptimizerParser.addSuitableOfferForModule(solkey, currentSol.getCloudOfferNameForModule(solkey), -1,
+            YAMLoptimizerParser.addSuitableOfferForModule(solkey, nameOfNodeTemplateForHost, -1,
                   applicationMap);
          }
 
@@ -352,7 +355,7 @@ public class OptimizerInitialDeployment {
 
          Map<String, Object> cloudInfo = YAMLmatchmakerToOptimizerParser.getOfferInformationOfModule(solkey,
                currentSol.getCloudOfferNameForModule(solkey), suitableCloudOffer);
-         YAMLoptimizerParser.addNodeTemplate(currentSol.getCloudOfferNameForModule(solkey), cloudInfo, applicationMap);
+         YAMLoptimizerParser.addNodeTemplate(nameOfNodeTemplateForHost, cloudInfo, applicationMap);
       }
 
       log.debug("Solution number shape after adding the host and befor adding the quality addSolutionToAppMap:");
