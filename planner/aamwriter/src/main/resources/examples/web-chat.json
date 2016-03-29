@@ -35,7 +35,7 @@
             "target": "MessageDatabase",
             "properties": {
                 "calls": "2",
-                "credentials_file": "",
+                "env_var": "connurl",
                 "operation_type": "seaclouds.relations.databaseconnections.jdbc"
             }
         },

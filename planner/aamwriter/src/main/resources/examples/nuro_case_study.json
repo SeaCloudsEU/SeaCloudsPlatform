@@ -29,7 +29,7 @@
         "target": "db1",
         "properties": {
             "calls": "1",
-            "credentials_file": "",
+            "env_var": "connurl",
             "operation_type": "seaclouds.relations.databaseconnections.jdbc"
         },
     }],

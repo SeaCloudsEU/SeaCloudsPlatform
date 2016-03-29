@@ -346,7 +346,7 @@ public class TranslatorTest {
             fail(String.format("No connection found for (%s, %s)", l.getSource().getName(), l.getTarget().getName()));
         }
         else {
-            assertEquals(to, endpoint.get("endpoint"));
+            assertEquals(to, endpoint.get("node"));
             if (!l.getOperationType().isEmpty()) {
                 assertEquals(l.getOperationType(), endpoint.get("type"));
             }
@@ -358,8 +358,9 @@ public class TranslatorTest {
         List<Map<String, Object>> endpoints = searchArray(requirements, "endpoint");
         
         for (Map<String, Object> endpoint : endpoints) {
-            if (endpoint.get("endpoint").equals(to)) {
-                return endpoint;
+            Map endpointValue = (Map) endpoint.get("endpoint");
+            if (endpointValue.get("node").equals(to)) {
+                return endpointValue;
             }
         }
         return null; 
