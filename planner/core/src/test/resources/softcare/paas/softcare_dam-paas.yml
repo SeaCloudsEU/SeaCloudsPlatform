@@ -363,25 +363,56 @@ topology_template:
       members:
       - Amazon_EC2_t2_micro_eu_central_1
       policies:
-      - brooklyn.location: aws-ec2:eu-central-1
+      - brooklyn.location:
+          "jclouds:aws-ec2":
+            region: eu-central-1
+            hardwareId: t2.micro
+            identity: <id>
+            credential: <key>
     add_brooklyn_location_Amazon_EC2_t2_micro_ap_northeast_1:
       members:
       - Amazon_EC2_t2_micro_ap_northeast_1
       policies:
-      - brooklyn.location: aws-ec2:ap-northeast-1
+      - brooklyn.location:
+          "jclouds:aws-ec2":
+            region: ap-northeast-1
+            hardwareId: t2.micro
+            identity: <id>
+            credential: <key>
     add_brooklyn_location_Forum:
       members:
       - Forum
       policies:
-      - brooklyn.location: cloudfoundry-instance
+      - brooklyn.location:
+          cloudfoundry:
+            user: <AKA_YOUR_USER_EMAIL>
+            password: <password>
+            org: <organization>
+            endpoint: <API_endpoint>
+            space: <space>
+            address: <platform_address>
     add_brooklyn_location_SoftcareWS:
       members:
       - SoftcareWS
       policies:
-      - brooklyn.location: cloudfoundry-instance
+      - brooklyn.location:
+          cloudfoundry:
+            user: <AKA_YOUR_USER_EMAIL>
+            password: <password>
+            org: <organization>
+            endpoint: <API_endpoint>
+            space: <space>
+            address: <platform_address>
     add_brooklyn_location_Softcare_dashboard:
       members:
       - Softcare_dashboard
       policies:
-      - brooklyn.location: cloudfoundry-instance
+      - brooklyn.location:
+          cloudfoundry:
+            user: <AKA_YOUR_USER_EMAIL>
+            password: <password>
+            org: <organization>
+            endpoint: <API_endpoint>
+            space: <space>
+            address: <platform_address>
 

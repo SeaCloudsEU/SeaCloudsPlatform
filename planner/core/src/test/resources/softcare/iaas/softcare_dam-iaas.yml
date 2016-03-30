@@ -582,25 +582,50 @@ topology_template:
       members:
       - Amazon_EC2_m3_medium_ap_southeast_2
       policies:
-      - brooklyn.location: aws-ec2:ap-southeast-2
+      - brooklyn.location:
+          "jclouds:aws-ec2":
+            region: ap-southeast-2
+            hardwareId: m3.medium
+            identity: <id>
+            credential: <key>
     add_brooklyn_location_Amazon_EC2_t2_medium_us_east_1:
       members:
       - Amazon_EC2_t2_medium_us_east_1
       policies:
-      - brooklyn.location: aws-ec2:us-east-1
+      - brooklyn.location:
+          "jclouds:aws-ec2":
+            region: us-east-1
+            hardwareId: t2.medium
+            identity: <id>
+            credential: <key>
     add_brooklyn_location_Amazon_EC2_t2_large_us_west_1:
       members:
       - Amazon_EC2_t2_large_us_west_1
       policies:
-      - brooklyn.location: aws-ec2:us-west-1
+      - brooklyn.location:
+          "jclouds:aws-ec2":
+            region: us-west-1
+            hardwareId: t2.large
+            identity: <id>
+            credential: <key>
     add_brooklyn_location_Amazon_EC2_m3_large_eu_central_1:
       members:
       - Amazon_EC2_m3_large_eu_central_1
       policies:
-      - brooklyn.location: aws-ec2:eu-central-1
+      - brooklyn.location:
+          "jclouds:aws-ec2":
+            region: eu-central-1
+            hardwareId: m3.large
+            identity: <id>
+            credential: <key>
     add_brooklyn_location_Amazon_EC2_m4_large_us_west_1:
       members:
       - Amazon_EC2_m4_large_us_west_1
       policies:
-      - brooklyn.location: aws-ec2:us-west-1
+      - brooklyn.location:
+          "jclouds:aws-ec2":
+            region: us-west-1
+            hardwareId: m4.large
+            identity: <id>
+            credential: <key>
 

@@ -29,6 +29,12 @@ public class ComputeNodeTemplate extends AbstractHostNodeTemplate {
     public static final String REGION = "region";
     public static final String HARDWARE_ID = "hardwareId";
 
+    public static final String ID_PROP_NAME = "identity";
+    public static final String ID_PROP_DAFAULT_VALUE = "<id>";
+
+    public static final String CREDENTIAL_PROP_NAME = "credential";
+    public static final String CREDENTIAL_PROP_DEFAULT_VALUE = "<key>";
+
     private static final List<String> SUPPORTED_TYPES =
             ImmutableList.of("tosca.nodes.Compute", "seaclouds.nodes.Compute");
 
@@ -47,7 +53,7 @@ public class ComputeNodeTemplate extends AbstractHostNodeTemplate {
 
     @Override
     public Map<String, Object> getLocationPolicyProperties() {
-        return createSimpleLocationPolicy();
+        return createLocationPolicy();
     }
 
     private Map<String, Object> createLocationPolicy() {
@@ -73,6 +79,8 @@ public class ComputeNodeTemplate extends AbstractHostNodeTemplate {
 
         locationProperties.put(REGION, region);
         locationProperties.put(HARDWARE_ID, hardwareId);
+        locationProperties.put(ID_PROP_NAME, ID_PROP_DAFAULT_VALUE);
+        locationProperties.put(CREDENTIAL_PROP_NAME, CREDENTIAL_PROP_DEFAULT_VALUE);
         return locationProperties;
     }
 

@@ -126,11 +126,21 @@ topology_template:
       - dependencies: {type: seaclouds.policies.dependencies}
     add_brooklyn_location_Amazon_EC2_c1_medium_us_west_2:
       policies:
-      - {brooklyn.location: 'aws-ec2:us-west-2'}
+      - brooklyn.location:
+          "jclouds:aws-ec2":
+            region: us-west-2
+            hardwareId: c1.medium
+            identity: <id>
+            credential: <key>
       members: [Amazon_EC2_c1_medium_us_west_2]
     add_brooklyn_location_Amazon_EC2_c1_medium_sa_east_1:
       policies:
-      - {brooklyn.location: 'aws-ec2:sa-east-1'}
+      - brooklyn.location:
+          "jclouds:aws-ec2":
+            region: sa-east-1
+            hardwareId: c1.medium
+            identity: <id>
+            credential: <key>
       members: [Amazon_EC2_c1_medium_sa_east_1]
     monitoringInformation:
       policies:
