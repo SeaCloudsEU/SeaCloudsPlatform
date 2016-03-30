@@ -21,7 +21,7 @@ import com.google.common.io.Resources;
 import eu.seaclouds.platform.planner.core.application.ApplicationMetadataGenerator;
 import eu.seaclouds.platform.planner.core.application.agreements.AgreementGenerator;
 import eu.seaclouds.platform.planner.core.application.decorators.MonitoringInformationDecorator;
-import eu.seaclouds.platform.planner.core.application.decorators.SeaCloudsManagmentPolicyDecorator;
+import eu.seaclouds.platform.planner.core.application.decorators.SeaCloudsManagementPolicyDecorator;
 import eu.seaclouds.platform.planner.core.application.decorators.SlaInformationDecorator;
 import eu.seaclouds.platform.planner.core.utils.YamlParser;
 import org.apache.brooklyn.util.text.Strings;
@@ -472,25 +472,25 @@ public class DamGeneratorTest {
         assertTrue(policies.get(0) instanceof Map);
         Map<String, Object> seacloudsManagementPolicy = (Map<String, Object>) policies.get(0);
         assertEquals(seacloudsManagementPolicy.size(), 1);
-        assertTrue(seacloudsManagementPolicy.containsKey(SeaCloudsManagmentPolicyDecorator.SEACLOUDS_APPLICATION_CONFIGURATION_POLICY));
+        assertTrue(seacloudsManagementPolicy.containsKey(SeaCloudsManagementPolicyDecorator.SEACLOUDS_APPLICATION_CONFIGURATION_POLICY));
 
         Map<String, Object> seacloudsManagementPolicyProperties = (Map<String, Object>)
-                seacloudsManagementPolicy.get(SeaCloudsManagmentPolicyDecorator.SEACLOUDS_APPLICATION_CONFIGURATION_POLICY);
+                seacloudsManagementPolicy.get(SeaCloudsManagementPolicyDecorator.SEACLOUDS_APPLICATION_CONFIGURATION_POLICY);
         assertEquals(seacloudsManagementPolicyProperties.size(), 12);
 
         assertEquals(seacloudsManagementPolicyProperties.get(DamGenerator.TYPE),
-                SeaCloudsManagmentPolicyDecorator.SEACLOUDS_MANAGEMENT_POLICY);
-        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagmentPolicyDecorator.SLA_ENDPOINT), SLA_ENDPOINT);
-        assertFalse(Strings.isBlank((String) seacloudsManagementPolicyProperties.get(SeaCloudsManagmentPolicyDecorator.SLA_AGREEMENT)));
-        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagmentPolicyDecorator.T4C_ENDPOINT), configBag.getMonitorEndpoint().toString());
-        assertFalse(Strings.isBlank((String) seacloudsManagementPolicyProperties.get(SeaCloudsManagmentPolicyDecorator.T4C_RULES)));
-        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagmentPolicyDecorator.INFLUXDB_ENDPOINT), configBag.getInfluxDbEndpoint().toString());
-        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagmentPolicyDecorator.INFLUXDB_DATABASE), INFLUXDB_DATABASE);
-        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagmentPolicyDecorator.INFLUXDB_USERNAME), INFLUXDB_USERNAME);
-        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagmentPolicyDecorator.INFLUXDB_PASSWORD), INFLUXDB_PASSWORD);
-        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagmentPolicyDecorator.GRAFANA_ENDPOINT), GRAFANA_ENDPOINT);
-        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagmentPolicyDecorator.GRAFANA_USERNAME), GRAFANA_USERNAME);
-        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagmentPolicyDecorator.GRAFANA_PASSWORD), GRAFANA_PASSWORD);
+                SeaCloudsManagementPolicyDecorator.SEACLOUDS_MANAGEMENT_POLICY);
+        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagementPolicyDecorator.SLA_ENDPOINT), SLA_ENDPOINT);
+        assertFalse(Strings.isBlank((String) seacloudsManagementPolicyProperties.get(SeaCloudsManagementPolicyDecorator.SLA_AGREEMENT)));
+        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagementPolicyDecorator.T4C_ENDPOINT), configBag.getMonitorEndpoint().toString());
+        assertFalse(Strings.isBlank((String) seacloudsManagementPolicyProperties.get(SeaCloudsManagementPolicyDecorator.T4C_RULES)));
+        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagementPolicyDecorator.INFLUXDB_ENDPOINT), configBag.getInfluxDbEndpoint().toString());
+        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagementPolicyDecorator.INFLUXDB_DATABASE), INFLUXDB_DATABASE);
+        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagementPolicyDecorator.INFLUXDB_USERNAME), INFLUXDB_USERNAME);
+        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagementPolicyDecorator.INFLUXDB_PASSWORD), INFLUXDB_PASSWORD);
+        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagementPolicyDecorator.GRAFANA_ENDPOINT), GRAFANA_ENDPOINT);
+        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagementPolicyDecorator.GRAFANA_USERNAME), GRAFANA_USERNAME);
+        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsManagementPolicyDecorator.GRAFANA_PASSWORD), GRAFANA_PASSWORD);
     }
 
     @SuppressWarnings("unchecked")

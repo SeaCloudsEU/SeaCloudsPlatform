@@ -34,9 +34,9 @@ import javax.xml.bind.Marshaller;
 import java.io.StringWriter;
 import java.util.Map;
 
-public class SeaCloudsManagmentPolicyDecorator implements ApplicationFacadeDecorator {
+public class SeaCloudsManagementPolicyDecorator implements ApplicationFacadeDecorator {
 
-    static Logger log = LoggerFactory.getLogger(SeaCloudsManagmentPolicyDecorator.class);
+    static Logger log = LoggerFactory.getLogger(SeaCloudsManagementPolicyDecorator.class);
 
     public static final String SLA_ENDPOINT = "slaEndpoint";
     public static final String SLA_AGREEMENT = "slaAgreement";
