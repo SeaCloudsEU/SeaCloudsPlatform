@@ -72,6 +72,9 @@ node_types:
         constraints:
         - greater_or_equal: '5.0'
         - less_or_equal: '5.6'
+      resource_type:
+        constraints:
+        - equal: platform
 groups:
   operation_www:
     members:
