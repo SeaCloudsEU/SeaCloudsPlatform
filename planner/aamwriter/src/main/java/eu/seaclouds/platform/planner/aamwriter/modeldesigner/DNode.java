@@ -56,6 +56,11 @@ public class DNode {
         public static final String TOMCAT = "webapp.tomcat.TomcatServer";
         public static final String TOMCAT8 = "webapp.tomcat.Tomcat8Server";
     }
+
+    public static final class Locations {
+        public static final String STATIC = "STATIC";
+        public static final String DYNAMIC = "DYNAMIC";
+    }
     
     public static final DNode NOT_FOUND = new DNode("[null]", "[null]");
 
@@ -77,6 +82,8 @@ public class DNode {
     private String benchmarkPlatform;
     private List<Map<String, String>> qos;
     private boolean frontend;
+    private String location;
+    private String locationOption;
 
     public DNode(JSONObject jnode, DGraph graph) {
         this.graph = graph;
@@ -110,6 +117,8 @@ public class DNode {
         benchmarkPlatform = extractStringFromMap("benchmark_platform", map);
         qos = (List) extractQosFromMap("qos", map);
         frontend = extractBooleanFromMap("frontend", map);
+        location = extractStringFromMap("location", map);
+        locationOption = extractStringFromMap("location_option", map);
         return map;
     }
     
@@ -260,5 +269,13 @@ public class DNode {
             result = (this.graph.getFrontendNode() == this);
         }
         return result;
+    }
+    
+    public String getLocation() {
+        return location;
+    }
+    
+    public String getLocationOption() {
+        return locationOption;
     }
 }

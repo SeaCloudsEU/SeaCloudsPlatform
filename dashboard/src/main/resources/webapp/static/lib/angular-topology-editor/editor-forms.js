@@ -77,9 +77,10 @@ var EditorForms = (function() {
 
     var location_static_options = {
         "": "",
-        "EUROPE": "Europe",
-        "AMERICA": "America",
-        "ASIA": "Asia"
+        "Europe": "Europe",
+        "America": "America",
+        "Asia": "Asia",
+        "Oceania": "Oceania"
     };
 
 

@@ -69,6 +69,9 @@
                 "db_name": "<db_name>",
                 "db_user": "<db_user>",
                 "db_password": "<db_password>",
+                "location": "STATIC",
+                "location_option": "AMERICA",
+                "infrastructure": "platform",
             }
         },
         {

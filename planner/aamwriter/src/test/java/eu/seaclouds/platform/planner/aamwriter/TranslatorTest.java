@@ -32,6 +32,7 @@ import eu.seaclouds.platform.planner.aamwriter.modelaam.Constraint;
 import eu.seaclouds.platform.planner.aamwriter.modelaam.Policy;
 import eu.seaclouds.platform.planner.aamwriter.modeldesigner.DGraph;
 import eu.seaclouds.platform.planner.aamwriter.modeldesigner.DLink;
+import eu.seaclouds.platform.planner.aamwriter.modeldesigner.DNode;
 import static org.testng.AssertJUnit.*;
 
 @SuppressWarnings({"unused", "rawtypes", "unchecked"})
@@ -296,6 +297,25 @@ public class TranslatorTest {
         }
     }
     
+    @Test
+    public void testLocationConstraint() {
+        
+        for (DNode n : graph.getNodes()) {
+            Map<String, Object> nodeType = nodeTypes.get("sc_req." + n.getName());
+            if (DNode.Locations.STATIC.equals(n.getLocation())) {
+                List<Map> constraints = getConstraints(nodeType, "continent");
+                assertNotNull(constraints);
+                assertTrue(constraints.size() > 0);
+                
+                String string = "equal";
+                Map constraint = searchFirstInArray(constraints, string);
+
+                assertNotNull(constraint);
+                assertEquals(n.getLocationOption(), constraint.get(string));
+            }
+        }
+    }
+    
     private Object getProperty(Map<String, Object> nodeTemplate, String propertyName) {
         Map properties = (Map)nodeTemplate.get("properties");
         Object actual = properties.get(propertyName);
@@ -387,6 +407,9 @@ public class TranslatorTest {
     private List<Map> getConstraints(Map<String, Object> m, String propertyName) {
         Map<String, Map> properties = (Map)m.get("properties");
         Map<String, List> property = properties.get(propertyName);
+        if (property == null) {
+            return null;
+        }
         List<Map> constraints = property.get("constraints");
         
         return constraints;
