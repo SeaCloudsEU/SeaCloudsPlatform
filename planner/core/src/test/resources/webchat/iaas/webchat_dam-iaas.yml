@@ -7,7 +7,14 @@ topology_template:
       type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
       properties: {language: JAVA, wars.root: 'http://search.maven.org/remotecontent?filepath=io/brooklyn/example/brooklyn-example-hello-world-sql-webapp/0.6.0/brooklyn-example-hello-world-sql-webapp-0.6.0.war'}
       requirements:
-      - {host: Amazon_EC2_c1_medium_us_west_2}
+      - host: Amazon_EC2_c1_medium_us_west_2
+      - dbConnection:
+          node: MessageDatabase
+          relationship: brooklyn.relationships.Configure
+          properties:
+            prop.collection: java.sysprops
+            prop.name: brooklyn.example.db.url
+            prop.value: $brooklyn:formatString("jdbc:%s%s?user=%s&password=%s", component("MessageDatabase").attributeWhenReady("datastore.url"), "visitors", "brooklyn", "br00k11n")
     MessageDatabase:
       type: org.apache.brooklyn.entity.database.mysql.MySqlNode
       properties:
@@ -15,6 +22,9 @@ topology_template:
           constraints:
           - {greater_or_equal: '5.0'}
           - {less_or_equal: '5.0'}
+        db_name: visitors
+        db_user: brooklyn
+        db_password: br00k11n
         creationScriptUrl: https://raw.githubusercontent.com/apache/incubator-brooklyn/master/brooklyn-server/launcher/src/test/resources/visitors-creation-script.sql
       requirements:
       - {host: Amazon_EC2_c1_medium_sa_east_1}
@@ -116,11 +126,21 @@ topology_template:
       - dependencies: {type: seaclouds.policies.dependencies}
     add_brooklyn_location_Amazon_EC2_c1_medium_us_west_2:
       policies:
-      - {brooklyn.location: 'aws-ec2:us-west-2'}
+      - brooklyn.location:
+          "jclouds:aws-ec2":
+            region: us-west-2
+            hardwareId: c1.medium
+            identity: <id>
+            credential: <key>
       members: [Amazon_EC2_c1_medium_us_west_2]
     add_brooklyn_location_Amazon_EC2_c1_medium_sa_east_1:
       policies:
-      - {brooklyn.location: 'aws-ec2:sa-east-1'}
+      - brooklyn.location:
+          "jclouds:aws-ec2":
+            region: sa-east-1
+            hardwareId: c1.medium
+            identity: <id>
+            credential: <key>
       members: [Amazon_EC2_c1_medium_sa_east_1]
     monitoringInformation:
       policies:

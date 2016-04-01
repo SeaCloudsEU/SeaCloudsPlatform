@@ -2,6 +2,7 @@ package eu.seaclouds.platform.planner.service;
 
 import com.codahale.metrics.annotation.Timed;
 import eu.seaclouds.platform.planner.core.DamGenerator;
+import eu.seaclouds.platform.planner.core.DamGeneratorConfigBag;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -76,10 +77,8 @@ public class DamGenResource {
         };
     }
 
-    @POST
-    @Timed
-    public DamGeneratorResponse damGenPost(String adp) {
-        DamGenerator damGenerator = new DamGenerator.Builder()
+    private DamGeneratorConfigBag getDamGeneratorConfigBag(){
+        return new DamGeneratorConfigBag.Builder()
                 .monitorUrl(monitorGeneratorURL)
                 .monitorPort(monitorGeneratorPort)
                 .slaUrl(slaGeneratorURL)
@@ -92,25 +91,19 @@ public class DamGenResource {
                 .grafanaPassword(grafanaPassword)
                 .grafanaEndpoint(grafanaEndpoint)
                 .build();
+    }
+
+    @POST
+    @Timed
+    public DamGeneratorResponse damGenPost(String adp) {
+        DamGenerator damGenerator = new DamGenerator(getDamGeneratorConfigBag());
         return new DamGeneratorResponse(damGenerator.generateDam(adp));
     }
 
     @GET
     @Timed
     public DamGeneratorResponse damgen(@QueryParam("adp") String adp) {
-        DamGenerator damGenerator = new DamGenerator.Builder()
-                .monitorUrl(monitorGeneratorURL)
-                .monitorPort(monitorGeneratorPort)
-                .slaUrl(slaGeneratorURL)
-                .influxdbUrl(influxdbURL)
-                .influxdbPort(influxdbPort)
-                .influxdbDatabase(influxdbDatabase)
-                .influxdbUsername(influxdbUsername)
-                .influxdbPassword(influxdbPassword)
-                .grafanaUsername(grafanaUsername)
-                .grafanaPassword(grafanaPassword)
-                .grafanaEndpoint(grafanaEndpoint)
-                .build();
+        DamGenerator damGenerator = new DamGenerator(getDamGeneratorConfigBag());
         return new DamGeneratorResponse(damGenerator.generateDam(adp));
     }
 

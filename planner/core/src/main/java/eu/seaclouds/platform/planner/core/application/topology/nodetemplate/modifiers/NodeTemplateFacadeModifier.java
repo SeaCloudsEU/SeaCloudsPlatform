@@ -1,7 +1,3 @@
-package eu.seaclouds.platform.planner.core;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Copyright 2014 SeaClouds
  * Contact: SeaClouds
@@ -18,14 +14,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class ApplicationMonitorId {
-    public String id;
+package eu.seaclouds.platform.planner.core.application.topology.nodetemplate.modifiers;
 
-    public ApplicationMonitorId() {}
 
-    @JsonProperty
-    public void setId(String id) { this.id = id; }
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplate;
 
-    @JsonProperty
-    public String getId() { return this.id; }
+/**
+ * A NodeTemplateFacadeModifier applies a set of changes to an NodeTemplate according to Deployer
+ * reqirements
+ */
+public interface NodeTemplateFacadeModifier {
+
+    void apply(NodeTemplate entitySpec);
+
 }
+
+
+

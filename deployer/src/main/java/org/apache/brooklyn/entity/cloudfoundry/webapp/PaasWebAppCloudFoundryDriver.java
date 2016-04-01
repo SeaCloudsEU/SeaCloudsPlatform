@@ -65,7 +65,7 @@ public abstract class PaasWebAppCloudFoundryDriver extends PaasEntityCloudFoundr
         if(!Strings.isBlank(getEntity().getConfig(CloudFoundryWebApp.APPLICATION_NAME))){
             applicationName = getEntity().getConfig(CloudFoundryWebApp.APPLICATION_NAME);
         } else {
-            applicationName = "cf-app" + Identifiers.makeRandomId(8);
+            applicationName = "cf-app-" + Identifiers.makeRandomId(8);
         }
         applicationUrl = getEntity().getConfig(CloudFoundryWebApp.APPLICATION_URL);
     }

@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.seaclouds.common.tosca.ToscaSerializer;
 import eu.seaclouds.planner.matchmaker.Matchmaker;
 import eu.seaclouds.planner.matchmaker.Pair;
+import eu.seaclouds.platform.planner.core.utils.HttpHelper;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;

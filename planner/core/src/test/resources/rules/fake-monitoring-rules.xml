@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<monitoringRules xmlns="http://www.modaclouds.eu/xsd/1.0/monitoring_rules_schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.modaclouds.eu/xsd/1.0/monitoring_rules_schema">
+    <!-- Monitoring rule id pattern appid_toscalocationname_metric -->
+    <monitoringRule id="1234567_db_vm_cpu_utilization" timeStep="10" timeWindow="10">
+        <monitoredTargets>
+            <monitoredTarget type="1234567_db_vm" class="VM"/>
+        </monitoredTargets>
+        <collectedMetric metricName="CPUUtilization">
+            <parameter name="samplingTime">10</parameter>
+            <parameter name="samplingProbability">1</parameter>
+        </collectedMetric>
+        <actions>
+            <!-- Outputmetric pattern appid_toscalocationname_metricname_metric -->
+            <action name="OutputMetric">
+                <parameter name="metric">1234567_db_vm_cpu_utilization_metric</parameter>
+                <parameter name="value">METRIC</parameter>
+                <parameter name="resourceId">ID</parameter>
+            </action>
+        </actions>
+    </monitoringRule>
+    <monitoringRule id="1234567_db_vm_ram_utilization" timeStep="10" timeWindow="10">
+        <monitoredTargets>
+            <monitoredTarget type="1234567_db_vm" class="VM"/>
+        </monitoredTargets>
+        <collectedMetric metricName="MemUsed">
+            <parameter name="samplingTime">10</parameter>
+            <parameter name="samplingProbability">1</parameter>
+        </collectedMetric>
+        <actions>
+            <action name="OutputMetric">
+                <parameter name="metric">1234567_db_vm_ram_utilization_metric</parameter>
+                <parameter name="value">METRIC</parameter>
+                <parameter name="resourceId">ID</parameter>
+            </action>
+        </actions>
+    </monitoringRule>
+</monitoringRules>

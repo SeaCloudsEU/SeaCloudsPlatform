@@ -117,11 +117,21 @@ topology_template:
     add_brooklyn_location_Amazon_EC2_m1_small_eu_central_1:
       members: [Amazon_EC2_m1_small_eu_central_1]
       policies:
-      - {brooklyn.location: 'aws-ec2:eu-central-1'}
+      - brooklyn.location:
+          "jclouds:aws-ec2":
+            region: eu-central-1
+            hardwareId: m1.small
+            identity: <id>
+            credential: <key>
     add_brooklyn_location_Amazon_EC2_m4_10xlarge_eu_west_1:
       members: [Amazon_EC2_m4_10xlarge_eu_west_1]
       policies:
-      - {brooklyn.location: 'aws-ec2:eu-west-1'}
+      - brooklyn.location:
+          "jclouds:aws-ec2":
+            region: eu-west-1
+            hardwareId: m4.10xlarge
+            identity: <id>
+            credential: <key>
     monitoringInformation:
       members: [application]
       policies:
