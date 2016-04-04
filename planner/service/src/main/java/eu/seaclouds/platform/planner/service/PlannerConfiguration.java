@@ -45,6 +45,24 @@ public class PlannerConfiguration extends Configuration{
     @NotEmpty
     private String filterOfferings;
 
+    @NotEmpty
+    private String influxdbDatabase;
+
+    @NotEmpty
+    private String influxdbUsername;
+
+    @NotEmpty
+    private String influxdbPassword;
+
+    @NotEmpty
+    private String grafanaUsername;
+
+    @NotEmpty
+    private String grafanaPassword;
+
+    @NotEmpty
+    private String grafanaEndpoint;
+
     @JsonProperty("monitorGeneratorPort")
     public void setMonitorGeneratorPort(String monitorGeneratorPort) { this.monitorGeneratorPort = monitorGeneratorPort; }
 
@@ -93,4 +111,39 @@ public class PlannerConfiguration extends Configuration{
     @JsonProperty("filterOfferings")
     public String getFilterOfferings() { return this.filterOfferings; }
 
+    @JsonProperty("influxdbDatabase")
+    public void setInfluxdbDatabase(String influxdbDatabase) { this.influxdbDatabase = influxdbDatabase; }
+
+    @JsonProperty("influxdbDatabase")
+    public String getInfluxdbDatabase() { return this.influxdbDatabase; }
+
+    @JsonProperty("influxdbUsername")
+    public void setInfluxdbUsername(String influxdbUsername) { this.influxdbUsername = influxdbUsername; }
+
+    @JsonProperty("influxdbUsername")
+    public String getInfluxdbUsername() { return this.influxdbUsername; }
+
+    @JsonProperty("influxdbPassword")
+    public void setInfluxdbPassword(String influxdbPassword) { this.influxdbPassword = influxdbPassword; }
+
+    @JsonProperty("influxdbPassword")
+    public String getInfluxdbPassword() { return this.influxdbPassword; }
+
+    @JsonProperty("grafanaUsername")
+    public void setGrafanaUsername(String grafanaUsername) { this.grafanaUsername = grafanaUsername; }
+
+    @JsonProperty("grafanaUsername")
+    public String getGrafanaUsername() { return this.grafanaUsername; }
+
+    @JsonProperty("grafanaPassword")
+    public void setGrafanaPassword(String grafanaPassword) { this.grafanaPassword = grafanaPassword; }
+
+    @JsonProperty("grafanaPassword")
+    public String getGrafanaPassword() { return this.grafanaPassword; }
+
+    @JsonProperty("grafanaEndpoint")
+    public void setGrafanaEndpoint(String grafanaEndpoint) { this.grafanaEndpoint = grafanaEndpoint; }
+
+    @JsonProperty("grafanaEndpoint")
+    public String getGrafanaEndpoint() { return this.grafanaEndpoint; }
 }

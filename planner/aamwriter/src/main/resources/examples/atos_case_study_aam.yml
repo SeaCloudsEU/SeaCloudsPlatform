@@ -9,8 +9,11 @@ topology_template:
       properties:
         language: JAVA
       requirements:
-      - endpoint: webservices
-        type: seaclouds.relation.connection.endpoint.host
+      - endpoint:
+          node: webservices
+          type: seaclouds.relation.connection.endpoint.host
+          properties:
+            prop.name: connurl
     webservices:
       type: sc_req.webservices
       properties:
@@ -21,8 +24,11 @@ topology_template:
           - greater_or_equal: '7'
           - less_or_equal: '8'
       requirements:
-      - endpoint: db1
-        type: seaclouds.relations.databaseconnections.jdbc
+      - endpoint:
+          node: db1
+          type: seaclouds.relations.databaseconnections.jdbc
+          properties:
+            prop.name: connurl
     db1:
       type: sc_req.db1
       properties:
@@ -107,4 +113,4 @@ groups:
     - db1
     policies:
     - dependencies: {}
-
+

@@ -30,6 +30,7 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 //Version of September 2015
 public class YAMLmodulesOptimizerParser {
 
+   private static final boolean DEFAULT_SCALABILITY = false;
    static Logger log = LoggerFactory.getLogger(YAMLmodulesOptimizerParser.class);
 
    public static boolean moduleHasModuleRequirements(String moduleName, Map<String, Object> groups) {
@@ -148,7 +149,8 @@ public class YAMLmodulesOptimizerParser {
    /**
     * @param moduleName
     * @param groups
-    * @return the name of the benchmark platform where the module was tested for execution time
+    * @return the name of the benchmark platform where the module was tested for
+    *         execution time
     */
    @SuppressWarnings("unchecked")
    public static String getMeasuredPerformanceHost(String moduleName, Map<String, Object> groups) {
@@ -158,9 +160,7 @@ public class YAMLmodulesOptimizerParser {
       Map<String, Object> qoSinfoOfGroupOfModule = YAMLgroupsOptimizerParser.getQoSinfoOfMemberName(moduleName, groups);
 
       if (qoSinfoOfGroupOfModule == null) {
-         if (log.isDebugEnabled()) {
-            log.debug("There has not been found info of QoS for module called " + moduleName);
-         }
+         log.debug("There has not been found info of QoS for module called {}", moduleName);
          return null;
       }
 
@@ -170,9 +170,9 @@ public class YAMLmodulesOptimizerParser {
 
       // not found There were qos properties but not the information of teh
       // machine tested
-      if (log.isDebugEnabled()) {
-         log.debug("Module had qos info but it did not contain information of the platform where it was executed");
-      }
+
+      log.debug("Module had qos info but it did not contain information of the platform where it was executed");
+
       return null;
    }
 
@@ -232,7 +232,7 @@ public class YAMLmodulesOptimizerParser {
       // that are members of each of the groups on which
       // the group of modulename belongs
 
-      ArrayList<String> dependentModules = new ArrayList<String>();
+      List<String> dependentModules = new ArrayList<String>();
 
       List<String> dependentGroups = (List<String>) YAMLgroupsOptimizerParser.getListDependentGroupsOfModule(moduleName,
             groups);
@@ -357,24 +357,42 @@ public class YAMLmodulesOptimizerParser {
 
    public static boolean getScalabilityCapabilitiesOfModule(Map<String, Object> modules, String elementName) {
       try {
-         Map<String, Object> moduleInfo = (Map<String, Object>) modules.get(elementName);
-         Map<String, Object> moduleProperties = (Map<String, Object>) moduleInfo
-               .get(TOSCAkeywords.MODULE_PROPERTIES_TAG);
-         boolean moduleCanScale = (boolean) moduleProperties.get(TOSCAkeywords.MODULE_AUTOSCALE_PROPERTY);
-         return moduleCanScale;
-      } catch (Exception e) {
+         Map<String, Object> moduleInfo;
+         if (modules.containsKey(elementName)) {
+            moduleInfo = (Map<String, Object>) modules.get(elementName);
+         } else {
+            // not specified the scalability. Default value for not specified is
+            // DEFAUT_SCALABILITY;
+            return DEFAULT_SCALABILITY;
+         }
+
+         Map<String, Object> moduleProperties;
+         if (moduleInfo.containsKey(TOSCAkeywords.MODULE_PROPERTIES_TAG)) {
+            moduleProperties = (Map<String, Object>) moduleInfo.get(TOSCAkeywords.MODULE_PROPERTIES_TAG);
+         } else {
+            // not specified the scalability. Default value for not specified is
+            // DEFAUT_SCALABILITY;
+            return DEFAULT_SCALABILITY;
+         }
+         if(moduleProperties.containsKey(TOSCAkeywords.MODULE_AUTOSCALE_PROPERTY)){
+            return (boolean) moduleProperties.get(TOSCAkeywords.MODULE_AUTOSCALE_PROPERTY);
+         }else {
+            // not specified the scalability. Default value for not specified is
+            // DEFAUT_SCALABILITY;
+            return DEFAULT_SCALABILITY;
+         }
+         
+      } catch (ClassCastException e) {
          // Some part did not work looking in the definition of scaling.
          // Probably because it was not defined.
-         if (log.isDebugEnabled()) {
-            log.debug("For module " + elementName
-                  + " it was not found information in the AAM regarding its possibility to scale");
-         }
-         // Returning the default value "true" for seeing policies generated
+         log.debug("For module {} it was not found information in the AAM regarding its possibility to scale",
+               elementName);
+         
       }
-      return true;
+   // Returning the default value // DEFAUT_SCALABILITY 
+      return DEFAULT_SCALABILITY;
    }
 
-   
    /**
     * @param moduleName
     * @param modulesMap
@@ -397,9 +415,9 @@ public class YAMLmodulesOptimizerParser {
       return null;
    }
 
-   
    /**
-    * @param moduleInfo (information of the module, excluding the name of the module)
+    * @param moduleInfo
+    *           (information of the module, excluding the name of the module)
     * @return The type declared in the node template passed as parameter
     */
    public static String getModuleTypeFromModuleInfo(Map<String, Object> moduleInfo) {
@@ -410,11 +428,11 @@ public class YAMLmodulesOptimizerParser {
       }
    }
 
-   
    /**
     * @param modulesMap
     * @param moduleName
-    * @return the information of the node_template with key moduleName (the key is included)
+    * @return the information of the node_template with key moduleName (the key
+    *         is included)
     */
    public static Entry<String, Object> getModuleInfoFromModulesMap(Map<String, Object> modulesMap, String moduleName) {
       if (modulesMap.containsKey(moduleName)) {

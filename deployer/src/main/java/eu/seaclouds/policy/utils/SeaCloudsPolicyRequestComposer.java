@@ -1,6 +1,7 @@
 package eu.seaclouds.policy.utils;
 
 import eu.seaclouds.policy.SeaCloudsManagementPolicy;
+import org.apache.brooklyn.util.text.Strings;
 
 public class SeaCloudsPolicyRequestComposer {
 
@@ -91,7 +92,7 @@ public class SeaCloudsPolicyRequestComposer {
         }
 
         // Remove last ,
-        rowOptions = rowOptions.substring(0, rowOptions.length() - 1);
+        Strings.removeFromEnd(rowOptions, ",");
         return globalGrafanaOptionsJSON + rowOptions + "] } }";
     }
 

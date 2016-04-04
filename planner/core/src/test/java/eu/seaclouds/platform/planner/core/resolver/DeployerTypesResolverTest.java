@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core;
+package eu.seaclouds.platform.planner.core.resolver;
 
 import com.google.common.io.Resources;
 import org.testng.annotations.Test;
@@ -56,7 +56,7 @@ public class DeployerTypesResolverTest {
         assertNotNull(typesResolver.getNodeTypeDefinition("target.NodeType3"));
 
         assertTrue(typesResolver.getNodeTypeDefinition("target.NodeType1") instanceof Map);
-        Map<String, Object> typeDefinition = (Map<String, Object>)typesResolver
+        Map<String, Object> typeDefinition = (Map<String, Object>) typesResolver
                 .getNodeTypeDefinition("target.NodeType1");
         assertEquals(typeDefinition.get("derived_from"), "tosca.nodes.Root");
     }
@@ -89,7 +89,6 @@ public class DeployerTypesResolverTest {
         assertNull(typesResolver.resolveRelationshipType("source.RelationshipType_X"));
     }
 
-
     public void testResolvingPolicyType() throws URISyntaxException, IOException {
         DeployerTypesResolver typesResolver = new DeployerTypesResolver(Resources
                 .getResource(TYPES_TEST_MAPPING).toURI().toString());
@@ -97,10 +96,7 @@ public class DeployerTypesResolverTest {
         assertEquals(typesResolver.resolvePolicyType("source.policy1"), "target.policy1");
         assertEquals(typesResolver.resolvePolicyType("source.policy2"), "target.policy2");
         assertNull(typesResolver.resolvePolicyType("source.policyX"));
-
-
     }
 
-
-
 }
+

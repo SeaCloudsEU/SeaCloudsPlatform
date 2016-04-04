@@ -62,13 +62,14 @@ public class Topology {
    }
 
    public TopologyElement getInitialElement() {
-      //if the InitialElement attribute is set. Return it.
-      if(initialElement!=null){
+      // if the InitialElement attribute is set. Return it.
+      if (initialElement != null) {
          return initialElement;
       }
-      //The initial element was not set. We assume that The initial element is such one that is not called by
+      // The initial element was not set. We assume that The initial element is
+      // such one that is not called by
       // anyone.
-      
+
       for (TopologyElement pointed : modules) {
          boolean isInitial = true;
 
@@ -81,6 +82,7 @@ public class Topology {
          }
 
          if (isInitial) {
+            initialElement = pointed;
             return pointed;
          }
 
@@ -91,8 +93,8 @@ public class Topology {
       return null;
    }
 
-   public int indexOf(TopologyElement initialElement) {
-      return modules.indexOf(initialElement);
+   public int indexOf(TopologyElement element) {
+      return modules.indexOf(element);
    }
 
    public void replaceElementName(String modName, String newName) {
@@ -116,14 +118,15 @@ public class Topology {
    public void replaceElementsIndexes(TopologyElement element, int toIndex) {
       int targetIndex = modules.indexOf(element);
       if (log.isDebugEnabled()) {
-         if(modules==null){
+         if (modules == null) {
             log.warn("Modules in topology points to NULL");
          }
-         if(element==null){
+         if (element == null) {
             log.warn("Element to search in topology points to NULL");
          }
          log.debug("The topology consists of " + modules.size() + " modules. Replacing index " + toIndex + " with "
-               + targetIndex + ". The element name whose index was searched was " + element.getName() + "and the topology was composed of modules: " + toString());
+               + targetIndex + ". The element name whose index was searched was " + element.getName()
+               + "and the topology was composed of modules: " + toString());
       }
       TopologyElement replaced = modules.set(toIndex, element);
       modules.set(targetIndex, replaced);
@@ -138,6 +141,33 @@ public class Topology {
 
    public TopologyElement getElementIndex(int index) {
       return modules.get(index);
+   }
+
+   public boolean modulesHavePerformanceInformation() {
+
+      TopologyElement initial = getInitialElement();
+
+      return moduleOrDependenciesHavePerformanceInformationRecursive(initial);
+   }
+
+   /**
+    * @param element
+    * @return whether any among the input element or its dependencies (deep)
+    *         contain information required for the performance evaluation
+    */
+   private boolean moduleOrDependenciesHavePerformanceInformationRecursive(TopologyElement element) {
+
+      if (element.hasPerformanceInformation()) {
+         return true;
+      }
+
+      List<TopologyElementCalled> dependences = element.getDependences();
+      for (TopologyElementCalled elementCalled : dependences) {
+         if (moduleOrDependenciesHavePerformanceInformationRecursive(elementCalled.getElement())) {
+            return true;
+         }
+      }
+      return false;
    }
 
    public boolean contains(String elementName) {
@@ -216,14 +246,12 @@ public class Topology {
    }
 
    public void setInitialElementByElementName(String moduleName) {
-     if(moduleName==null){
-        initialElement=null;
-     }
-     else{
-        initialElement=getModule(moduleName);
-     }
-     
-      
+      if (moduleName == null) {
+         initialElement = null;
+      } else {
+         initialElement = getModule(moduleName);
+      }
+
    }
 
 }

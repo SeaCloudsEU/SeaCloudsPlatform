@@ -63,7 +63,7 @@
             "target": "webservices",
             "properties": {
                 "calls": "2",
-                "credentials_file": "",
+                "env_var": "connurl",
                 "operation_type": "seaclouds.relation.connection.endpoint.host"
             }
         },
@@ -72,7 +72,7 @@
             "target": "db1",
             "properties": {
                 "calls": "1",
-                "credentials_file": "",
+                "env_var": "connurl",
                 "operation_type": "seaclouds.relations.databaseconnections.jdbc"
             }
         }

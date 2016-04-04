@@ -94,7 +94,7 @@ groups:
     policies:
     - QoSInfo: {execution_time: 200 ms, benchmark_platform: Amazon_EC2_m3_xlarge_eu_central_1}
     - dependencies: {operation_webservices: '2'}
-    - QoSRequirements:
+    - AppQoSRequirements:
         response_time: {less_than: 2000.0 ms}
         availability: {greater_than: 0.98}
         cost: {less_or_equal: 200.0 euros_per_month}
@@ -106,7 +106,7 @@ groups:
     policies:
     - QoSInfo: {execution_time: 100 ms, benchmark_platform: Amazon_EC2_m3_xlarge_eu_central_1}
     - dependencies: {operation_db1: '1'}
-    - QoSRequirements:
+    - AppQoSRequirements:
         availability: {greater_than: 0.96}
   operation_db1:
     members: [db1]

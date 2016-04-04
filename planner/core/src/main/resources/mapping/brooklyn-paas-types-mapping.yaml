@@ -9,6 +9,7 @@ mapping.node_types:
   seaclouds.nodes.webapp.tomcat.Tomcat8Server: org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
   seaclouds.nodes.ControlledDynamicWebAppCluster: org.apache.brooklyn.entity.cloudfoundry.webapp.java.JavaCloudFoundryPaasWebApp
   seaclouds.nodes.php.httpd.PhpHttpdServer: org.apache.brooklyn.entity.cloudfoundry.webapp.php.PhpCloudFoundryPaasWebApp
+  seaclouds.nodes.Platform.Cloud_Foundry: seaclouds.nodes.Platform.Cloud_Foundry
 
 mapping.policy_types:
   seaclouds.policies.autoscaling.AutoScalerPolicy: org.apache.brooklyn.policy.autoscaling.AutoScalerPolicy
