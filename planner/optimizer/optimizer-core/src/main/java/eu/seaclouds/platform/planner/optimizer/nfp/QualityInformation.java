@@ -49,6 +49,9 @@ public class QualityInformation {
       setResponseTimeSecs(resp / 1000.0);
    }
 
+   public void disableResponseTimeRequirement(){
+      this.respTime=0.0;
+   }
    public boolean existResponseTimeRequirement() {
       return respTime != 0.0;
    }
