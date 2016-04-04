@@ -26,7 +26,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.seaclouds.platform.planner.optimizer.CloudOffer;
 import eu.seaclouds.platform.planner.optimizer.Solution;
 import eu.seaclouds.platform.planner.optimizer.SuitableOptions;
 import eu.seaclouds.platform.planner.optimizer.Topology;

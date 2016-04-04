@@ -30,6 +30,7 @@ import eu.seaclouds.platform.planner.optimizer.nfp.QualityInformation;
 //Version of September 2015
 public class YAMLmodulesOptimizerParser {
 
+   private static final boolean DEFAULT_SCALABILITY = false;
    static Logger log = LoggerFactory.getLogger(YAMLmodulesOptimizerParser.class);
 
    public static boolean moduleHasModuleRequirements(String moduleName, Map<String, Object> groups) {
@@ -361,8 +362,8 @@ public class YAMLmodulesOptimizerParser {
             moduleInfo = (Map<String, Object>) modules.get(elementName);
          } else {
             // not specified the scalability. Default value for not specified is
-            // true;
-            return true;
+            // DEFAUT_SCALABILITY;
+            return DEFAULT_SCALABILITY;
          }
 
          Map<String, Object> moduleProperties;
@@ -370,15 +371,15 @@ public class YAMLmodulesOptimizerParser {
             moduleProperties = (Map<String, Object>) moduleInfo.get(TOSCAkeywords.MODULE_PROPERTIES_TAG);
          } else {
             // not specified the scalability. Default value for not specified is
-            // true;
-            return true;
+            // DEFAUT_SCALABILITY;
+            return DEFAULT_SCALABILITY;
          }
          if(moduleProperties.containsKey(TOSCAkeywords.MODULE_AUTOSCALE_PROPERTY)){
             return (boolean) moduleProperties.get(TOSCAkeywords.MODULE_AUTOSCALE_PROPERTY);
          }else {
             // not specified the scalability. Default value for not specified is
-            // true;
-            return true;
+            // DEFAUT_SCALABILITY;
+            return DEFAULT_SCALABILITY;
          }
          
       } catch (ClassCastException e) {
@@ -386,10 +387,10 @@ public class YAMLmodulesOptimizerParser {
          // Probably because it was not defined.
          log.debug("For module {} it was not found information in the AAM regarding its possibility to scale",
                elementName);
-
-         // Returning the default value "true" for seeing policies generated
+         
       }
-      return true;
+   // Returning the default value // DEFAUT_SCALABILITY 
+      return DEFAULT_SCALABILITY;
    }
 
    /**

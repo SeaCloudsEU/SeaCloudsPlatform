@@ -26,10 +26,10 @@ import org.slf4j.LoggerFactory;
 
 public class Topology {
 
-   static Logger                 log = LoggerFactory.getLogger(Topology.class);
+   static Logger log = LoggerFactory.getLogger(Topology.class);
 
    private List<TopologyElement> modules;
-   private TopologyElement       initialElement;
+   private TopologyElement initialElement;
 
    public Topology() {
       modules = new ArrayList<TopologyElement>();
