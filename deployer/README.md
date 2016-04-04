@@ -32,7 +32,7 @@ SeaClouds Deployer has been developed to operate with Brooklyn 0.9.0-SNAPSHOT ve
 Then, SeaClouds deployer jar that was generated during project building has to be added to a Brooklyn installation. The jar should be added to `$BROOKLYN_HOME/bin/lib/dropins` folder.
 
 In order to enable TOSCA support in Brooklyn, it is necessary to add
-[cloudfoundry/brooklyn-tosca](https://github.com/cloudsoft/brooklyn-tosca) plugin. Then, to add TOSCA support to SeaClouds Deployer, it is necessary to build [kiuby88/brooklyn-tosca seaclouds-integration branch](https://github.com/kiuby88/brooklyn-tosca/tree/integration/seaclouds-integration). This branch contains a simple customization which allows brooklyn-tosca to be build with all required dependencies.
+[cloudfoundry/brooklyn-tosca](https://github.com/cloudsoft/brooklyn-tosca) plugin. Then, to add TOSCA support to SeaClouds Deployer, it is necessary to build [kiuby88/brooklyn-tosca temporal-integration branch](https://github.com/seacloudseu/brooklyn-tosca/tree/integration/temporal-integration). This branch contains a simple customization which allows brooklyn-tosca to be build with all required dependencies.
 
 
 
