@@ -18,18 +18,17 @@
  */
 package eu.seaclouds.location.cloudfoundry;
 
-import org.apache.brooklyn.entity.cloudfoundry.webapp.php.PhpCloudFoundryPaasWebApp;
-import org.apache.brooklyn.location.cloudfoundry.PaasLocationConfig;
 import com.google.common.collect.ImmutableList;
 import org.apache.brooklyn.api.entity.EntitySpec;
 import org.apache.brooklyn.core.entity.Attributes;
 import org.apache.brooklyn.core.entity.lifecycle.Lifecycle;
 import org.apache.brooklyn.core.entity.trait.Startable;
+import org.apache.brooklyn.entity.cloudfoundry.webapp.php.PhpCloudFoundryPaasWebApp;
+import org.apache.brooklyn.location.cloudfoundry.PaasLocationConfig;
 import org.apache.brooklyn.test.Asserts;
 import org.apache.brooklyn.util.exceptions.PropagatedRuntimeException;
 import org.testng.annotations.Test;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
@@ -40,6 +39,7 @@ import static org.testng.Assert.assertTrue;
 public class PhpWebCloudFoundryLiveTest extends AbstractCloudFoundryPaasLocationLiveTest {
 
     private final String APPLICATION_URL = "classpath://phpHelloWorld.zip";
+
 
     @Test(groups = {"Live"})
     protected void deployApplicationTest() throws Exception {
@@ -74,7 +74,7 @@ public class PhpWebCloudFoundryLiveTest extends AbstractCloudFoundryPaasLocation
     protected void stopApplicationTest() throws Exception {
         final PhpCloudFoundryPaasWebApp server = app.
                 createAndManageChild(EntitySpec.create(PhpCloudFoundryPaasWebApp.class)
-                        .configure("application-name", "stopped"+APPLICATION_NAME)
+                        .configure("application-name", "stopped" + APPLICATION_NAME)
                         .configure("application-url", APPLICATION_URL)
                         .location(cloudFoundryPaasLocation));
 
@@ -96,7 +96,7 @@ public class PhpWebCloudFoundryLiveTest extends AbstractCloudFoundryPaasLocation
     protected void wrongApplicationOnFireStatusTest() throws Exception {
         final PhpCloudFoundryPaasWebApp server = app.
                 createAndManageChild(EntitySpec.create(PhpCloudFoundryPaasWebApp.class)
-                        .configure("application-name", "wrong-"+APPLICATION_NAME)
+                        .configure("application-name", "wrong-" + APPLICATION_NAME)
                         .configure("application-path", APPLICATION_URL + "wrong")
                         .location(cloudFoundryPaasLocation));
 
