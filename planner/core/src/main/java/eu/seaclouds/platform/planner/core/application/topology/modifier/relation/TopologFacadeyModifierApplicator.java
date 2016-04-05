@@ -38,7 +38,8 @@ public class TopologFacadeyModifierApplicator implements TopologyModifierApplica
                 (TopologyTemplateModifier) new JdbcPaasRelationModifier(),
                 (TopologyTemplateModifier) new EndpointIaasRelationModifier(),
                 (TopologyTemplateModifier) new EndpointPaasRelationModifier(),
-                (TopologyTemplateModifier) new PhpDatabaseIaaSRelationModifier()
+                (TopologyTemplateModifier) new PhpDatabaseIaaSRelationModifier(),
+                (TopologyTemplateModifier) new PhpDatabasePaaSRelationModifier()
         );
     }
 
