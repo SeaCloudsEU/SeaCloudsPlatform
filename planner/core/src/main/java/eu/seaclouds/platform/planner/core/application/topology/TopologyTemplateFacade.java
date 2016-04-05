@@ -18,7 +18,7 @@ package eu.seaclouds.platform.planner.core.application.topology;
 
 
 import eu.seaclouds.platform.planner.core.DamGenerator;
-import eu.seaclouds.platform.planner.core.application.topology.modifier.TopologyModifierApplication;
+import eu.seaclouds.platform.planner.core.application.topology.modifier.relation.TopologyModifierApplication;
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.AbstractNodeTemplate;
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplate;
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplateFactory;

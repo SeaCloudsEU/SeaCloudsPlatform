@@ -14,20 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core.application.topology.modifier;
+package eu.seaclouds.platform.planner.core.application.topology.modifier.relation;
 
 
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplate;
 
 import java.util.Map;
 
-public class EndpointIaasRelationModifier extends AbstractEndpointRelationModifier {
+public class EndpointPaasRelationModifier extends AbstractEndpointRelationModifier {
 
-    private static final String PROP_COLLECTION_VALUE = "java.sysprops";
+    private static final String PROP_COLLECTION_VALUE = "env";
 
     @Override
     protected boolean nodeTemplateCanBeModified(NodeTemplate nodeTemplate) {
-        return topologyTemplate.isDeployedOnIaaS(nodeTemplate.getNodeTemplateId());
+        return topologyTemplate.isDeployedOnPaaS(nodeTemplate.getNodeTemplateId());
     }
 
     @Override

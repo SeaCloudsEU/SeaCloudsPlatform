@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core.application.topology.modifier;
+package eu.seaclouds.platform.planner.core.application.topology.modifier.relation;
 
 
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplate;
 
 import java.util.Map;
 
-public class EndpointPaasRelationModifier extends AbstractEndpointRelationModifier {
+public class JdbcPaasRelationModifier extends AbstractJdbcRelationModifier {
 
     private static final String PROP_COLLECTION_VALUE = "env";
 
