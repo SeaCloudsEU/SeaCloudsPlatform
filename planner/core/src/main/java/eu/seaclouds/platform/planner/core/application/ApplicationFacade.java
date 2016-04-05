@@ -22,7 +22,7 @@ import eu.seaclouds.platform.planner.core.DamGenerator;
 import eu.seaclouds.platform.planner.core.DamGeneratorConfigBag;
 import eu.seaclouds.platform.planner.core.application.agreements.AgreementGenerator;
 import eu.seaclouds.platform.planner.core.application.topology.TopologyTemplateFacade;
-import eu.seaclouds.platform.planner.core.application.topology.modifier.TopologFacadeyModifierApplicator;
+import eu.seaclouds.platform.planner.core.application.topology.modifier.relation.TopologFacadeyModifierApplicator;
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplate;
 import eu.seaclouds.platform.planner.core.utils.YamlParser;
 import org.apache.brooklyn.util.collections.MutableMap;

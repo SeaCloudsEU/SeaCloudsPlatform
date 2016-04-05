@@ -19,9 +19,6 @@ package org.apache.brooklyn.entity.php.httpd;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.apache.brooklyn.entity.php.PhpWebAppSshDriver;
 import org.apache.brooklyn.entity.software.base.AbstractSoftwareProcessSshDriver;
 import org.apache.brooklyn.entity.software.base.lifecycle.ScriptHelper;
@@ -29,6 +26,10 @@ import org.apache.brooklyn.location.ssh.SshMachineLocation;
 import org.apache.brooklyn.util.text.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class PhpHttpdSshDriver extends PhpWebAppSshDriver implements PhpHttpdDriver {
 
@@ -63,7 +64,7 @@ public class PhpHttpdSshDriver extends PhpWebAppSshDriver implements PhpHttpdDri
         return getEntity().getConfig(PhpHttpdServer.DEPLOY_RUN_DIR);
     }
 
-    
+
     @Override
     public void install() {
         super.install();
@@ -94,10 +95,11 @@ public class PhpHttpdSshDriver extends PhpWebAppSshDriver implements PhpHttpdDri
         LOG.info("Installing Apache Server {}", new Object[]{getEntity()});
         List<String> commands = ImmutableList.<String>builder().add("sudo apt-get install -y --allow-unauthenticated apache2").build();
         result = newScript(INSTALLING).body.append(commands).execute();
-        if (result != 0)
+        if (result != 0) {
             log.warn("Problem installing {} for {}: result {}", new Object[]{entity, result});
-        else
+        } else {
             log.info("Installed {} for {} commands {}", new Object[]{result, entity, commands});
+        }
         return result;
     }
 
@@ -113,13 +115,14 @@ public class PhpHttpdSshDriver extends PhpWebAppSshDriver implements PhpHttpdDri
                         configureHttpPort(),
                         apacheService(ServiceCommands.RELOAD),
                         installPhp(),
-                        apacheService(ServiceCommands.RESTART)
+                        apacheService(ServiceCommands.RESTART),
+                        restartApacheServer()
                 ).gatherOutput(true);
         customizeScript.execute();
         LOG.debug("Customizing Apache: \n{}", customizeScript.getResultStdout());
         getEntity().deployInitialApplications();
     }
-    
+
     private String disableCurrentDeployRunDir() {
         StringBuilder stringBuilder = new StringBuilder();
         String result = String.format(
@@ -131,7 +134,7 @@ public class PhpHttpdSshDriver extends PhpWebAppSshDriver implements PhpHttpdDri
                         "\n",
                 getEntity().getConfigurationDir(),
                 getEntity().getSitesAvailableFolder());
-        
+
         return result;
     }
 
@@ -152,6 +155,7 @@ public class PhpHttpdSshDriver extends PhpWebAppSshDriver implements PhpHttpdDri
                         "ErrorLog ${APACHE_LOG_DIR} /error-" + targetName + ".log\n" +
                         "CustomLog ${APACHE_LOG_DIR} /access-" + targetName + ".log combined\n" +
                         "</VirtualHost>\n" +
+                        "%s" +
                         "EOT'\n" +
                         "%s\n",
                 getEntity().getConfigurationDir(),
@@ -159,8 +163,23 @@ public class PhpHttpdSshDriver extends PhpWebAppSshDriver implements PhpHttpdDri
                 getEntity().getSiteConfigurationFile(),
                 getEntity().getHttpPort(),
                 getEntity().getDeployRunDir(),
+                getSetEnvVariablesDeclaration(),
                 changePermissionsOfFolder(getEntity().getDeployRunDir() + "/" + targetName));
         return result;
+    }
+
+    private String getSetEnvVariablesDeclaration() {
+        String vaiablesDeclarations = Strings.EMPTY;
+        for (Map.Entry<String, String> envEntry : getEntity().getPhpEnvVariables().entrySet()) {
+            String envDeclaration =
+                    getSetEnvVariableConfiguration(envEntry.getKey(), envEntry.getValue()) + "\n";
+            vaiablesDeclarations = vaiablesDeclarations.concat(envDeclaration);
+        }
+        return vaiablesDeclarations;
+    }
+
+    private String getSetEnvVariableConfiguration(String envName, String envValue) {
+        return "SetEnv " + envName + " " + envValue;
     }
 
     private String createConfigurationFile() {
@@ -173,10 +192,10 @@ public class PhpHttpdSshDriver extends PhpWebAppSshDriver implements PhpHttpdDri
         return result;
     }
 
-    private String resolveConfigName(String inputName){
+    private String resolveConfigName(String inputName) {
         String result;
-        if (Strings.isEmpty(inputName)){
-            result =  getEntity().getAppName() + ".conf";
+        if (Strings.isEmpty(inputName)) {
+            result = getEntity().getAppName() + ".conf";
         } else if (!inputName.endsWith(".conf")) {
             result = inputName + ".conf";
         } else {
@@ -185,7 +204,7 @@ public class PhpHttpdSshDriver extends PhpWebAppSshDriver implements PhpHttpdDri
         getEntity().setSiteConfigurationFile(result); // Updating the sensor
         return result;
     }
-    
+
     private String createFolderDeployRunDir() {
         return "mkdir -p " + getRunDir() + "\n";
     }
@@ -236,18 +255,17 @@ public class PhpHttpdSshDriver extends PhpWebAppSshDriver implements PhpHttpdDri
     //TODO refactos using the strategy pattern
     private String installPhp() {
         log.debug("Installing PHP v", new Object[]{getEntity().getPhpVersion()});
-        if(getEntity().getPhpVersion().equals("5.4")){
+        if (getEntity().getPhpVersion().equals("5.4")) {
             return instalPhp54v();
-        }
-        else {
+        } else {
             return installPhpSuggestedVersionByDefault();
         }
     }
 
     private String instalPhp54v() {
         String result = String.format(
-                "sudo add-apt-repository -y ppa:ondrej/php5-oldstable"+"\n" +
-                        "sudo apt-get update"+"\n"+
+                "sudo add-apt-repository -y ppa:ondrej/php5-oldstable" + "\n" +
+                        "sudo apt-get update" + "\n" +
                         "%s",
                 installPhpSuggestedVersionByDefault());
         return result;
@@ -261,7 +279,7 @@ public class PhpHttpdSshDriver extends PhpWebAppSshDriver implements PhpHttpdDri
         return result;
     }
 
-    
+
     //TODO
     @Override
     public void launch() {
@@ -274,9 +292,9 @@ public class PhpHttpdSshDriver extends PhpWebAppSshDriver implements PhpHttpdDri
         super.deployGitResource(url, targetName);
         newScript(CUSTOMIZING)
                 .body.append(
-                    addAvailableSitesConfiguration(targetName),
-                    apacheService(ServiceCommands.RELOAD),
-                    enableAvailableDeploymentRunDir())
+                addAvailableSitesConfiguration(targetName),
+                apacheService(ServiceCommands.RELOAD),
+                enableAvailableDeploymentRunDir())
                 .execute();
         postDeploymentConfiguration(getEntity().getDeployRunDir() + "/" + targetName);
         return targetName;
@@ -287,9 +305,9 @@ public class PhpHttpdSshDriver extends PhpWebAppSshDriver implements PhpHttpdDri
         super.deployTarballResource(url, targetName);
         newScript(CUSTOMIZING)
                 .body.append(
-                        addAvailableSitesConfiguration(targetName),
-                        apacheService(ServiceCommands.RELOAD),
-                        enableAvailableDeploymentRunDir())
+                addAvailableSitesConfiguration(targetName),
+                apacheService(ServiceCommands.RELOAD),
+                enableAvailableDeploymentRunDir())
                 .execute();
         postDeploymentConfiguration(getEntity().getDeployRunDir() + "/" + targetName);
         return targetName;
@@ -323,7 +341,7 @@ public class PhpHttpdSshDriver extends PhpWebAppSshDriver implements PhpHttpdDri
     private void postDeploymentConfiguration(String targetNameApplication) {
         String configFile = targetNameApplication + "/" + getEntity().getConfigurationFile();
         String configTemplate = targetNameApplication + "/" + getEntity().getConfigTemplate();
-        if (!Strings.isEmpty(configTemplate)){
+        if (!Strings.isEmpty(configTemplate)) {
             copyTemplateToFile(configTemplate, configFile);
             processPhpTemplate(configFile);
         } else if (!Strings.isEmpty(getEntity().getConfigurationFile())) {
@@ -343,29 +361,33 @@ public class PhpHttpdSshDriver extends PhpWebAppSshDriver implements PhpHttpdDri
             for (String configurationParameter : configurationParameters) {
                 command = String.format(
                         "sudo sed -i.tmp 's/define([ ]*'\\''%s'\\''[ ]*,[ ]*'\\''[^']*'\\''[ ]*);/define('\\''%s'\\'' , '\\''%s'\\'');/g' %s",
-                        configurationParameter, 
-                        configurationParameter, 
-                        escapeString(databaseParameters.get(configurationParameter)), 
+                        configurationParameter,
+                        configurationParameter,
+                        escapeString(databaseParameters.get(configurationParameter)),
                         pathFile);
                 log.debug("Executing replacing command: " + command);
                 getMachine().execCommands("processingPhpConfigTemplate", ImmutableList.of(command));
             }
         }
     }
-    
-    private void copyTemplateToFile(String from, String to){
+
+    private void copyTemplateToFile(String from, String to) {
         getMachine().execCommands("copying config template to file", ImmutableList.of("sudo cp " + from + " " + to));
     }
 
     private String escapeString(String s) {
         return s.replace("/", "\\/");
     }
-    
-    private String apacheService(String command){
+
+    private String apacheService(String command) {
         return "sudo service apache2 " + command;
     }
-    
-    public static class ServiceCommands{
+
+    private String restartApacheServer() {
+        return "/etc/init.d/apache2 restart";
+    }
+
+    public static class ServiceCommands {
         static String START = "start";
         static String STOP = "stop";
         static String RELOAD = "reload";

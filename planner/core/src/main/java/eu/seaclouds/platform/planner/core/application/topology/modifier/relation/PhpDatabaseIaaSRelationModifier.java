@@ -14,13 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core.application.topology.modifier;
+package eu.seaclouds.platform.planner.core.application.topology.modifier.relation;
 
 
-import eu.seaclouds.platform.planner.core.application.topology.TopologyTemplateFacade;
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplate;
 
-public interface TopologyModifierApplication {
+import java.util.Map;
 
-    void applyModifiers(NodeTemplate nodeTemplate, TopologyTemplateFacade topologyTemplate);
+public class PhpDatabaseIaaSRelationModifier extends AbstractPhpDatabaseRelationModifier {
+
+    private static final String PROP_COLLECTION_VALUE = "php.env.variables";
+
+    @Override
+    protected boolean nodeTemplateCanBeModified(NodeTemplate nodeTemplate) {
+        return topologyTemplate.isDeployedOnIaaS(nodeTemplate.getNodeTemplateId());
+    }
+
+    @Override
+    protected String getPropCollection(Map<String, Object> requirementValues) {
+        return PROP_COLLECTION_VALUE;
+    }
 }

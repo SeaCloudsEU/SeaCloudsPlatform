@@ -17,12 +17,15 @@
 package org.apache.brooklyn.entity.php.httpd;
 
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import org.apache.brooklyn.api.catalog.Catalog;
 import org.apache.brooklyn.api.entity.ImplementedBy;
 import org.apache.brooklyn.api.objs.HasShortName;
 import org.apache.brooklyn.api.sensor.AttributeSensor;
 import org.apache.brooklyn.config.ConfigKey;
 import org.apache.brooklyn.core.config.ConfigKeys;
+import org.apache.brooklyn.core.config.MapConfigKey;
 import org.apache.brooklyn.core.sensor.BasicAttributeSensorAndConfigKey;
 import org.apache.brooklyn.core.sensor.Sensors;
 import org.apache.brooklyn.entity.php.PhpWebAppService;
@@ -68,6 +71,11 @@ public interface PhpHttpdServer extends PhpWebAppSoftwareProcess, PhpWebAppServi
     @SetFromFlag("server.status.url")
     ConfigKey<String> SERVER_STATUS_URL =
             ConfigKeys.newConfigKey("httpd.monitor.url", "Relative path showing default server status", "server-status?auto");
+
+    @SetFromFlag("php.env.variables")
+    MapConfigKey<String> PHP_ENV_VARIABLES =
+            new MapConfigKey<String>(String.class, "http.php.env.variables",
+                    "PHP env variables properties", ImmutableMap.<String, String>of());
 
     @SetFromFlag("monitor.url.isUp")
     AttributeSensor<Boolean> SERVER_STATUS_IS_UP =

@@ -14,13 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core.application.topology.modifier;
+package eu.seaclouds.platform.planner.core.application.topology.modifier.relation;
 
-import eu.seaclouds.platform.planner.core.application.topology.TopologyTemplateFacade;
-import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplate;
+public class PhpUriStringBuilder {
 
-public interface TopologyTemplateModifier {
+    public static String buildConnectionString(String targetId, String dbName, String dbUSer, String dbPass) {
+        return "$brooklyn:formatString(\"mysql://%s:%s@%s:%s/%s\", " +
+                "\"" + dbUSer + "\", " +
+                "\"" + dbPass + "\", " +
+                "component(\"" + targetId + "\").attributeWhenReady(\"host.address\"), " +
+                "component(\"" + targetId + "\").attributeWhenReady(\"mysql.port\"), " +
+                "\"" + dbName + "\")";
 
-    public void apply(NodeTemplate nodeTemplate, TopologyTemplateFacade topologyTemplateFacade);
-
+    }
 }
