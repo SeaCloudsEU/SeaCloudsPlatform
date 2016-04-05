@@ -42,7 +42,7 @@ public class PhpYamlTest {
     public void deployWebappWithServicesFromYaml(){
         SimpleYamlLauncher launcher = new SimpleYamlLauncher();
         launcher.setShutdownAppsOnExit(true);
-        Application app = launcher.launchAppYaml("php-helloworld.yaml").getApplication();
+        Application app = launcher.launchAppYaml("php-helloworld-tarball.yaml").getApplication();
 
         final PhpHttpdServer server = (PhpHttpdServer)
                 findEntityChildByDisplayName(app, "PHP-HTTPD Server");

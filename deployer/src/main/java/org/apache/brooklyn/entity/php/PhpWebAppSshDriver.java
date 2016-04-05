@@ -143,7 +143,9 @@ public abstract class PhpWebAppSshDriver extends AbstractSoftwareProcessSshDrive
         if (copyResult != 0)
             log.error("Problem deploying {} to {}:{} for {}: result {}", url, getHostname(), deployTargetDir, entity, copyResult);
 
-        int extractResult = extractTarballResource(deployTargetDir, tarballResourceName);
+        String targetFolder = deployTargetDir + targetName;
+
+        int extractResult = extractTarballResource(deployTargetDir, tarballResourceName, targetFolder);
 
         if (extractResult != 0)
             log.error("Problem extracting {} in {} result {} for {}", tarballResourceName, deployTargetDir, extractResult, entity);
@@ -166,9 +168,18 @@ public abstract class PhpWebAppSshDriver extends AbstractSoftwareProcessSshDrive
         }
     }
 
-    private int extractTarballResource(String deployTargetDir, String tarballResourceName) {
-        String extractCommand = String.format("sudo tar xzfv %s%s -C %s", deployTargetDir, tarballResourceName, deployTargetDir);
+    private int extractTarballResource(String deployTargetDir, String tarballResourceName, String targeFolder) {
+        createTarballTargetFolder(targeFolder);
+        String extractCommand = String.format("sudo tar xzfv %s%s -C %s --strip-components 1", deployTargetDir, tarballResourceName, targeFolder);
         return getMachine().execCommands("extract tarball resource", ImmutableList.of(extractCommand));
+    }
+
+    private void createTarballTargetFolder(String targetFolder){
+        String createFolderCommand = String.format("sudo mkdir -p %s", targetFolder);
+        int resultOfCommand = getMachine().execCommands("create target folder", ImmutableList.of(createFolderCommand));
+        if (resultOfCommand != 0) {
+            log.warn("Problem with folder tarball creation {}", resultOfCommand);
+        }
     }
 
     @Override

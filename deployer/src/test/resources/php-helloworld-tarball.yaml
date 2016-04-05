@@ -1,0 +1,7 @@
+name: PHP HelloWorld
+services:
+- serviceType: org.apache.brooklyn.entity.php.httpd.PhpHttpdServer
+  name: PHP-HTTPD Server
+  location: aws-ec2:us-west-2
+  tarball.url: "https://s3-us-west-2.amazonaws.com/seaclouds-usescases-artifacts/php/phpHelloWorld.tgz"
+
