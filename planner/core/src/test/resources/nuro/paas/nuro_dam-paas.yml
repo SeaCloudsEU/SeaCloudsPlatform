@@ -23,12 +23,12 @@ topology_template:
         creationScriptUrl: https://www.dropbox.com/s/rp7owcgyhaa692f/create.sql?dl=1
       type: org.apache.brooklyn.entity.database.mysql.MySqlNode
     php:
+      type: org.apache.brooklyn.entity.cloudfoundry.webapp.php.PhpCloudFoundryPaasWebApp
       properties:
         language: PHP
         autoscale: false
         application-url: https://seaclDem:seaclouds@bitbucket.org/seaclDem/nuro-casestudy.git
-      type: org.apache.brooklyn.entity.cloudfoundry.webapp.php.PhpCloudFoundryPaasWebApp
-      
+
     Amazon_EC2_c3_2xlarge_ap_southeast_2:
       properties:
         num_cpus: 8
