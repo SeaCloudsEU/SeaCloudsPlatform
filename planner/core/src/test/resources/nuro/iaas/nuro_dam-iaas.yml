@@ -13,12 +13,22 @@ topology_template:
           - {greater_or_equal: '5.1'}
           - {less_or_equal: '5.5'}
         git.url: https://seaclDem:seaclouds@bitbucket.org/seaclDem/nuro-casestudy.git
-        credentials_file: db.props
       requirements:
       - {host: Amazon_EC2_m1_small_eu_central_1}
+      - dbConnection:
+          node: db
+          relationship: brooklyn.relationships.Configure
+          properties:
+            prop.collection: php.env.variables
+            prop.name: db_connection_uri
+            prop.value: $brooklyn:formatString("mysql://%s:%s@%s:%s/%s", "brooklyn", "br00k11n", component("db").attributeWhenReady("host.address"), component("db").attributeWhenReady("mysql.port"), "database1")
+
     db:
       type: org.apache.brooklyn.entity.database.mysql.MySqlNode
       properties:
+        db_name: database1
+        db_user: brooklyn
+        db_password: br00k11n
         autoscale: false
         mysql_version:
           constraints:

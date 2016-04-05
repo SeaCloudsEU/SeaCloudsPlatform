@@ -14,13 +14,20 @@ topology_template:
           constraints:
           - greater_or_equal: '5.1'
           - less_or_equal: '5.5'
-        credentials_file: db.props
       requirements:
       - instancesPOC: 4
         host: Amazon_EC2_m1_small_eu_central_1
+      - endpoint:
+          node: db
+          type: seaclouds.relations.databaseconnections.php
+          properties:
+            prop.name: db_connection_uri
     db:
       type: sc_req.db
       properties:
+        db_name: database1
+        db_user: brooklyn
+        db_password: br00k11n
         autoscale: false
         mysql_version:
           constraints:
