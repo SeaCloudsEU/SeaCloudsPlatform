@@ -14,24 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core.application.topology.modifier;
+package eu.seaclouds.platform.planner.core.application.topology.modifier.relation;
 
-
+import eu.seaclouds.platform.planner.core.application.topology.TopologyTemplateFacade;
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplate;
 
-import java.util.Map;
+public interface TopologyTemplateModifier {
 
-public class JdbcPaasRelationModifier extends AbstractJdbcRelationModifier {
+    public void apply(NodeTemplate nodeTemplate, TopologyTemplateFacade topologyTemplateFacade);
 
-    private static final String PROP_COLLECTION_VALUE = "env";
-
-    @Override
-    protected boolean nodeTemplateCanBeModified(NodeTemplate nodeTemplate) {
-        return topologyTemplate.isDeployedOnPaaS(nodeTemplate.getNodeTemplateId());
-    }
-
-    @Override
-    protected String getPropCollection(Map<String, Object> requirementValues) {
-        return PROP_COLLECTION_VALUE;
-    }
 }

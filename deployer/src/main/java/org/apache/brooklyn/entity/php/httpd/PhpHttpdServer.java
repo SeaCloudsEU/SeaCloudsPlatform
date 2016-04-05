@@ -76,7 +76,7 @@ public interface PhpHttpdServer extends PhpWebAppSoftwareProcess, PhpWebAppServi
     MapConfigKey<String> PHP_ENV_VARIABLES =
             new MapConfigKey<String>(String.class, "http.php.env.variables",
                     "PHP env variables properties", ImmutableMap.<String, String>of());
-    
+
     @SetFromFlag("monitor.url.isUp")
     AttributeSensor<Boolean> SERVER_STATUS_IS_UP =
             Sensors.newBooleanSensor("webapp.monitor.up", "Httpd status service is up and running");
