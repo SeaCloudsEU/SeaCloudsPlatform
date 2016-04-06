@@ -49,7 +49,7 @@ public class PhpHttpdServerIntegrationTest {
 
     private TestApplication app;
     private String gitRepoURLApp="https://github.com/kiuby88/phpHelloWorld.git";
-    private String tarballResourceUrl="https://s3-us-west-2.amazonaws.com/seaclouds-usescases-artifacts/php/phpHelloWorld.tgz";
+    private String tarballResourceUrl="https://github.com/kiuby88/SeaCloudsPlatform/raw/feature/php-relations/deployer/src/test/resources/phpHelloWorld.tar.gz";
 
     @BeforeMethod(alwaysRun=true)
     public void setUp() throws Exception {

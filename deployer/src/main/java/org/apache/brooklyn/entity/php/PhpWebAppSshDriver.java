@@ -169,8 +169,16 @@ public abstract class PhpWebAppSshDriver extends AbstractSoftwareProcessSshDrive
     }
 
     private int extractTarballResource(String deployTargetDir, String tarballResourceName, String targeFolder) {
+        String extractCommand;
+
         createTarballTargetFolder(targeFolder);
-        String extractCommand = String.format("sudo tar xzfv %s%s -C %s --strip-components 1", deployTargetDir, tarballResourceName, targeFolder);
+
+        if (!isTarballAZip(tarballResourceName)) {
+            extractCommand = String.format("sudo tar xzfv %s%s -C %s --strip-components 1", deployTargetDir, tarballResourceName, targeFolder);
+        } else {
+            getMachine().execCommands("install unzip", ImmutableList.of("sudo apt-get install -y unzip"));
+            extractCommand = String.format("sudo unzip -a %s%s -d %s", deployTargetDir, tarballResourceName, targeFolder);
+        }
         return getMachine().execCommands("extract tarball resource", ImmutableList.of(extractCommand));
     }
 
@@ -180,6 +188,10 @@ public abstract class PhpWebAppSshDriver extends AbstractSoftwareProcessSshDrive
         if (resultOfCommand != 0) {
             log.warn("Problem with folder tarball creation {}", resultOfCommand);
         }
+    }
+
+    private boolean isTarballAZip(String tarballResourceName) {
+        return tarballResourceName.toLowerCase().endsWith(".zip");
     }
 
     @Override

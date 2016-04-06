@@ -19,7 +19,6 @@
 package org.apache.brooklyn.entity.cloudfoundry;
 
 
-import org.apache.brooklyn.location.cloudfoundry.CloudFoundryPaasLocation;
 import org.apache.brooklyn.api.entity.Entity;
 import org.apache.brooklyn.api.entity.ImplementedBy;
 import org.apache.brooklyn.api.sensor.AttributeSensor;
@@ -30,6 +29,7 @@ import org.apache.brooklyn.core.entity.BrooklynConfigKeys;
 import org.apache.brooklyn.core.entity.lifecycle.Lifecycle;
 import org.apache.brooklyn.core.entity.trait.Startable;
 import org.apache.brooklyn.core.sensor.Sensors;
+import org.apache.brooklyn.location.cloudfoundry.CloudFoundryPaasLocation;
 import org.apache.brooklyn.util.core.flags.SetFromFlag;
 import org.apache.brooklyn.util.time.Duration;
 

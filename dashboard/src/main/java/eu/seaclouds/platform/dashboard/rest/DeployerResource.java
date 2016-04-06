@@ -76,8 +76,8 @@ public class DeployerResource implements Resource {
                 dataStore.addSeaCloudsApplicationData(seaCloudsApplication);
                 return Response.ok(seaCloudsApplication).build();
             } catch (Exception e) {
-                LOG.error(e.getMessage());
-                return Response.status(Response.Status.BAD_REQUEST).build();
+                LOG.error(e.getMessage(), e);
+                return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
             }
         }
     }

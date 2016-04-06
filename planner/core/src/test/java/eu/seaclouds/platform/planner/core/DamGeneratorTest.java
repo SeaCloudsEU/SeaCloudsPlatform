@@ -216,6 +216,119 @@ public class DamGeneratorTest {
                 expectedGroups.get("add_brooklyn_location_php"));
     }
 
+    @Test(enabled = true)
+    @SuppressWarnings("unchecked")
+    public void testSplittedNuroGenerationForIaaS() throws Exception {
+        String adp = new Scanner(new File(Resources.getResource("splitted-nuro/iaas/splittednuro_adp-iaas.yml").toURI())).useDelimiter("\\Z").next();
+
+        dam = damGenerator.generateDam(adp);
+        template = YamlParser.load(dam);
+
+        testMetadataTemplate(template);
+
+        String expectedDamString = new Scanner(new File(Resources.getResource("splitted-nuro/iaas/splittednuro_dam-iaas.yml").toURI())).useDelimiter("\\Z").next();
+        Map<String, Object> expectedDam = YamlParser.load(expectedDamString);
+
+        assertNotNull(template);
+
+        Map<String, Object> generatedTopologyTemplate = (Map<String, Object>) template.get(DamGenerator.TOPOLOGY_TEMPLATE);
+        Map<String, Object> expectedTopologyTemplate = (Map<String, Object>) expectedDam.get(DamGenerator.TOPOLOGY_TEMPLATE);
+
+        Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
+        Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
+
+        assertEquals(generatedNodeTemplates.size(), 12);
+
+        assertEquals(generatedNodeTemplates.get("nuro-gui"), expectedNodeTemplates.get("nuro-gui"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_nuro-gui"), expectedNodeTemplates.get("modacloudsDc_nuro-gui"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_nuro-gui"), expectedNodeTemplates.get("seacloudsDc_nuro-gui"));
+
+
+        assertEquals(generatedNodeTemplates.get("nuro-api"), expectedNodeTemplates.get("nuro-api"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_nuro-api"), expectedNodeTemplates.get("modacloudsDc_nuro-api"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_nuro-api"), expectedNodeTemplates.get("seacloudsDc_nuro-api"));
+
+        assertEquals(generatedNodeTemplates.get("db"), expectedNodeTemplates.get("db"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_db"), expectedNodeTemplates.get("modacloudsDc_db"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_db"), expectedNodeTemplates.get("seacloudsDc_db"));
+
+        assertEquals(generatedNodeTemplates.get("Amazon_EC2_m4_large_us_west_1"), expectedNodeTemplates.get("Amazon_EC2_m4_large_us_west_1"));
+        assertEquals(generatedNodeTemplates.get("Amazon_EC2_c3_large_ap_northeast_1"), expectedNodeTemplates.get("Amazon_EC2_c3_large_ap_northeast_1"));
+        assertEquals(generatedNodeTemplates.get("Amazon_EC2_r3_large_us_west_2"), expectedNodeTemplates.get("Amazon_EC2_r3_large_us_west_2"));
+
+
+        Map<String, Object> generatedGroups = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.GROUPS);
+        Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
+        testSeaCloudsPolicy(generatedGroups);
+        testMonitoringConfiguration(generatedGroups);
+
+        assertEquals(generatedGroups.get("operation_db"), expectedGroups.get("operation_db"));
+        assertEquals(generatedGroups.get("operation_nuro-api"), expectedGroups.get("operation_nuro-api"));
+        assertEquals(generatedGroups.get("operation_nuro-gui"), expectedGroups.get("operation_nuro-gui"));
+
+
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_m4_large_us_west_1"),
+                expectedGroups.get("add_brooklyn_location_Amazon_EC2_m4_large_us_west_1"));
+
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_c3_large_ap_northeast_1"),
+                expectedGroups.get("add_brooklyn_location_Amazon_EC2_c3_large_ap_northeast_1"));
+
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_r3_large_us_west_2"),
+                expectedGroups.get("add_brooklyn_location_Amazon_EC2_r3_large_us_west_2"));
+    }
+
+    @Test(enabled = true)
+    @SuppressWarnings("unchecked")
+    public void testSplittedNuroGenerationForPaaS() throws Exception {
+        String adp = new Scanner(new File(Resources.getResource("splitted-nuro/paas/splittednuro_adp-paas.yml").toURI())).useDelimiter("\\Z").next();
+
+        dam = damGenerator.generateDam(adp);
+        template = YamlParser.load(dam);
+
+        testMetadataTemplate(template);
+
+        String expectedDamString = new Scanner(new File(Resources.getResource("splitted-nuro/paas/splittednuro_dam-paas.yml").toURI())).useDelimiter("\\Z").next();
+        Map<String, Object> expectedDam = YamlParser.load(expectedDamString);
+
+        assertNotNull(template);
+
+        Map<String, Object> generatedTopologyTemplate = (Map<String, Object>) template.get(DamGenerator.TOPOLOGY_TEMPLATE);
+        Map<String, Object> expectedTopologyTemplate = (Map<String, Object>) expectedDam.get(DamGenerator.TOPOLOGY_TEMPLATE);
+
+        Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
+        Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
+
+        assertEquals(generatedNodeTemplates.size(), 7);
+
+        assertEquals(generatedNodeTemplates.get("nuro-gui"), expectedNodeTemplates.get("nuro-gui"));
+        assertEquals(generatedNodeTemplates.get("nuro-api"), expectedNodeTemplates.get("nuro-api"));
+        assertEquals(generatedNodeTemplates.get("nuro-pma"), expectedNodeTemplates.get("nuro-pma"));
+
+        assertEquals(generatedNodeTemplates.get("db"), expectedNodeTemplates.get("db"));
+        assertEquals(generatedNodeTemplates.get("modacloudsDc_db"), expectedNodeTemplates.get("modacloudsDc_db"));
+        assertEquals(generatedNodeTemplates.get("seacloudsDc_db"), expectedNodeTemplates.get("seacloudsDc_db"));
+
+        assertEquals(generatedNodeTemplates.get("Amazon_EC2_t2_small_eu_west_1"), expectedNodeTemplates.get("Amazon_EC2_t2_small_eu_west_1"));
+
+        Map<String, Object> generatedGroups = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.GROUPS);
+        Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
+        testSeaCloudsPolicy(generatedGroups);
+        testMonitoringConfiguration(generatedGroups);
+
+        assertEquals(generatedGroups.get("operation_db"), expectedGroups.get("operation_db"));
+        assertEquals(generatedGroups.get("operation_nuro-api"), expectedGroups.get("operation_nuro-api"));
+        assertEquals(generatedGroups.get("operation_nuro-gui"), expectedGroups.get("operation_nuro-gui"));
+
+
+        assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_t2_small_eu_west_1"),
+                expectedGroups.get("add_brooklyn_location_Amazon_EC2_t2_small_eu_west_1"));
+
+
+        assertEquals(generatedGroups.get("add_brooklyn_location_nuro-api"), expectedGroups.get("add_brooklyn_location_nuro-api"));
+        assertEquals(generatedGroups.get("add_brooklyn_location_nuro-gui"), expectedGroups.get("add_brooklyn_location_nuro-gui"));
+        assertEquals(generatedGroups.get("add_brooklyn_location_nuro-pma"), expectedGroups.get("add_brooklyn_location_nuro-pma"));
+    }
+
     @Test
     @SuppressWarnings("unchecked")
     public void testSoftcareGenerationForIaaS() throws Exception {

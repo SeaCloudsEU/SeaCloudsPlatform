@@ -277,7 +277,7 @@ public abstract class CloudFoundryEntityImpl extends AbstractEntity implements C
     }
 
     public void waitForServiceUp() {
-        Duration timeout = getConfig(BrooklynConfigKeys.START_TIMEOUT);
+        Duration timeout = getConfig(START_TIMEOUT);
         waitForServiceUp(timeout);
     }
 

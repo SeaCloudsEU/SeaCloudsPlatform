@@ -250,7 +250,7 @@ public abstract class PaasWebAppCloudFoundryDriver extends PaasEntityCloudFoundr
         String domainUri=null;
         CloudApplication application = getClient().getApplication(applicationName);
         if(application != null){
-             domainUri = "http://"+application.getUris().get(0);
+             domainUri = "https://"+application.getUris().get(0);
         }
         return domainUri;
     }
