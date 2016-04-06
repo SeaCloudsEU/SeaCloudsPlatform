@@ -3,6 +3,7 @@ package eu.seaclouds.monitor.monitoringdamgenerator.adpparsing;
 import it.polimi.tower4clouds.rules.MonitoringRules;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,18 +16,27 @@ public class Module {
     private Host host;
     private String port = "8080";
     private String type;
-
+    private Map<String, String> monitoringEnvVars;
     private List<Map<String, Object>> dataCollectors;
     private MonitoringRules monitoringRules;
 
     public Module() {
         dataCollectors = new ArrayList<Map<String, Object>>();
+        monitoringEnvVars = new HashMap<String, String>();
         monitoringRules = new MonitoringRules();
     }
 
     public void addApplicationMonitoringRules(MonitoringRules toAdd) {
         this.monitoringRules.getMonitoringRules().addAll(
                 toAdd.getMonitoringRules());
+    }
+        
+    public void addMonitoringEnvVar(String key, String value){
+        this.monitoringEnvVars.put(key, value);
+    }
+    
+    public Map<String, String> getMonitoringEnvVars(){
+        return monitoringEnvVars;
     }
 
     public void addDataCollector(Map<String, Object> toAdd) {

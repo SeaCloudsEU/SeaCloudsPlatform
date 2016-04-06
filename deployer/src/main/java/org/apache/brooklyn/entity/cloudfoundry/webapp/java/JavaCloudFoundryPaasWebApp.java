@@ -40,11 +40,6 @@ public interface JavaCloudFoundryPaasWebApp extends CloudFoundryWebApp, Resizabl
             "cloudFoundryWebApp.application.buildpack", "URL of the required buildpack",
             "https://github.com/cloudfoundry/java-buildpack.git");
 
-    @SetFromFlag("java.sysprops")
-    MapConfigKey<String> JAVA_SYSPROPS = new MapConfigKey<String>(String.class,
-            "cloudfoundry.java.sysprops",
-            "System properties to be passed to the buildpack");
-
     @SetFromFlag("jm.resource")
     ConfigKey<String> MAIN_MONITOR_RESOURCE = ConfigKeys.newStringConfigKey(
             "app.monitor.resource", "Main resource that will be used to monitor the app",

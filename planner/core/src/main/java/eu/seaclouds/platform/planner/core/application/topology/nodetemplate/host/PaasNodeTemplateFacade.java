@@ -84,5 +84,20 @@ public class PaasNodeTemplateFacade implements HostNodeTemplate {
         return nodeTemplate.getPropertyValue(propertyName);
     }
 
+    @Override
+    public void updateProperties(Map<String, Object> properties) {
+        nodeTemplate.updateProperties(properties);
+    }
+
+    @Override
+    public void addProperty(String propertyId, Object updatingValue) {
+        nodeTemplate.addProperty(propertyId, updatingValue);
+    }
+
+    @Override
+    public void removeProperty(String propertyName) {
+        nodeTemplate.removeProperty(propertyName);
+    }
+
 
 }

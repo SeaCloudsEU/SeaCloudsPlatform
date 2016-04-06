@@ -5,7 +5,16 @@ topology_template:
   node_templates:
     Chat:
       type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
-      properties: {language: JAVA, wars.root: 'http://search.maven.org/remotecontent?filepath=io/brooklyn/example/brooklyn-example-hello-world-sql-webapp/0.6.0/brooklyn-example-hello-world-sql-webapp-0.6.0.war'}
+      properties:
+        language: JAVA
+        wars.root: 'http://search.maven.org/remotecontent?filepath=io/brooklyn/example/brooklyn-example-hello-world-sql-webapp/0.6.0/brooklyn-example-hello-world-sql-webapp-0.6.0.war'
+        java.sysprops:
+          MODULE_ID: Chat
+          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP: 52.48.187.2
+          MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT: '8170'
+          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT: '8170'
+          METRICS: ResponseTime
+          MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 52.48.187.2
       requirements:
       - host: Amazon_EC2_c1_medium_us_west_2
       - dbConnection:
@@ -53,29 +62,6 @@ topology_template:
       type: seaclouds.nodes.Datacollector
       requirements:
       - {host: Amazon_EC2_c1_medium_us_west_2}
-    javaAppDc_Chat:
-      interfaces:
-        Standard: {start: 'https://s3-eu-west-1.amazonaws.com/java-app-dc-start-script/installJavaAppDc.sh'}
-      properties:
-        installLatch: $brooklyn:component("Chat").attributeWhenReady("service.isUp")
-        env: {MODULE_ID: Chat, MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP: 52.48.187.2, MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT: '8170',
-          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT: '8170', METRICS: ResponseTime, MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 52.48.187.2}
-      type: seaclouds.nodes.Datacollector
-      requirements:
-      - {host: Amazon_EC2_c1_medium_us_west_2}
-    seacloudsDc_Chat:
-      interfaces:
-        Standard: {start: 'https://s3-eu-west-1.amazonaws.com/seaclouds-dc/installSeaCloudsDc.sh'}
-      properties:
-        shell.env: {MODULE_PORT: '8080', MODULE_IP: '$brooklyn:component("Chat").attributeWhenReady("host.address")',
-          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP: 52.48.187.2, MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT: '8170',
-          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID: Chat_ID, MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT: '8086',
-          METRICS: AppAvailability, MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 52.48.187.2,
-          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE: Chat}
-        installLatch: $brooklyn:component("Chat").attributeWhenReady("service.isUp")
-      type: seaclouds.nodes.Datacollector
-      requirements:
-      - {host: Amazon_EC2_c1_medium_us_west_2}
     modacloudsDc_MessageDatabase:
       interfaces:
         Standard: {start: 'https://s3-eu-west-1.amazonaws.com/modacloudsdc-start-script/installModacloudsDc.sh'}
@@ -85,19 +71,6 @@ topology_template:
           MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID: MessageDatabase_ID, MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT: '8086',
           METRICS: AverageCpuUtilization;AverageRamUtilization, MODACLOUDS_TOWER4CLOUDS_RESOURCES_KEEP_ALIVE_PERIOD: '25',
           MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 52.48.187.2, MODACLOUDS_TOWER4CLOUDS_VM_TYPE: Amazon_EC2_c1_medium_sa_east_1,
-          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE: MessageDatabase}
-        installLatch: $brooklyn:component("MessageDatabase").attributeWhenReady("service.isUp")
-      type: seaclouds.nodes.Datacollector
-      requirements:
-      - {host: Amazon_EC2_c1_medium_sa_east_1}
-    seacloudsDc_MessageDatabase:
-      interfaces:
-        Standard: {start: 'https://s3-eu-west-1.amazonaws.com/seaclouds-dc/installSeaCloudsDc.sh'}
-      properties:
-        shell.env: {MODULE_PORT: '8080', MODULE_IP: '$brooklyn:component("MessageDatabase").attributeWhenReady("host.address")',
-          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP: 52.48.187.2, MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT: '8170',
-          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID: MessageDatabase_ID, MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT: '8086',
-          METRICS: AppAvailability, MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 52.48.187.2,
           MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE: MessageDatabase}
         installLatch: $brooklyn:component("MessageDatabase").attributeWhenReady("service.isUp")
       type: seaclouds.nodes.Datacollector

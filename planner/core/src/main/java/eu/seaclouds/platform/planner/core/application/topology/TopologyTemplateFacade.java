@@ -126,17 +126,34 @@ public class TopologyTemplateFacade {
     }
 
     @SuppressWarnings("unchecked")
-    public void updateNoExistNodeTemplate(Map<String, Object> adp) {
-        //TODO: it could be better create a new Template
+    public void updateNodeTemplates(Map<String, Object> adp){
         topologyTemplate = (Map<String, Object>) adp.get(DamGenerator.TOPOLOGY_TEMPLATE);
         originalNodeTemplates = (Map<String, Object>) topologyTemplate.get(DamGenerator.NODE_TEMPLATES);
+        updateNoExistNodeTemplate(adp);
+        updateNodeTemplatesProperties(adp);
+    }
 
+    private void updateNoExistNodeTemplate(Map<String, Object> adp) {
         for (Map.Entry<String, Object> newNodeTemplate : originalNodeTemplates.entrySet()) {
             String nodeTemplateId = newNodeTemplate.getKey();
-            if (!contained(newNodeTemplate.getKey())) {
+            if (!contained(nodeTemplateId)) {
                 NodeTemplate nodeTemplate =
                         NodeTemplateFactory.createNodeTemplate(adp, nodeTemplateId);
                 addNodeTemplate(nodeTemplateId, nodeTemplate);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void updateNodeTemplatesProperties(Map<String, Object> adp){
+        for (Map.Entry<String, Object>  entry : originalNodeTemplates.entrySet()) {
+            String nodeTemplateId = entry.getKey();
+            Map<String, Object> nodeTemplateFromAdp = (Map<String, Object>) entry.getValue();
+            Map<String, Object> properties =
+                    (Map<String, Object>) nodeTemplateFromAdp.get(DamGenerator.PROPERTIES);
+
+            if (contained(nodeTemplateId)) {
+                 getNodeTemplates().get(nodeTemplateId).updateProperties(properties);
             }
         }
     }

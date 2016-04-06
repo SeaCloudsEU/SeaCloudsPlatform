@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
 import eu.seaclouds.platform.planner.core.DamGenerator;
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.host.ComputeNodeTemplate;
+import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.modifiers.IaasJavaEnvVariablesModifier;
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.modifiers.JavaPaasArtifactsModifier;
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.modifiers.PhpPaasArtifactsModifier;
 import eu.seaclouds.platform.planner.core.resolver.DeployerTypesResolver;
@@ -102,10 +103,9 @@ public class AbstractNodeTemplate implements NodeTemplate {
     }
 
     private void applyModifiers() {
-        PhpPaasArtifactsModifier phpPaasArtifactsModifier = new PhpPaasArtifactsModifier();
-        phpPaasArtifactsModifier.apply(this);
-        JavaPaasArtifactsModifier javaPaasArtifactsModifier = new JavaPaasArtifactsModifier();
-        javaPaasArtifactsModifier.apply(this);
+        new PhpPaasArtifactsModifier().apply(this);
+        new JavaPaasArtifactsModifier().apply(this);
+        new IaasJavaEnvVariablesModifier().apply(this);
     }
 
     private void initNodeTypes() {
@@ -299,6 +299,24 @@ public class AbstractNodeTemplate implements NodeTemplate {
     @Override
     public Object getPropertyValue(String propertyName) {
         return properties.get(propertyName);
+    }
+
+    @Override
+    public void updateProperties(Map<String, Object> properties) {
+        if(properties != null){
+            this.properties = properties;
+            customize();
+        }
+    }
+
+    @Override
+    public void addProperty(String propertyId, Object updatingValue) {
+        this.properties.put(propertyId, updatingValue);
+    }
+
+    @Override
+    public void removeProperty(String propertyName) {
+        this.properties.remove(propertyName);
     }
 
     @Override
