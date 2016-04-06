@@ -127,7 +127,9 @@ public class Translator {
         
         
         /*
-         * If PaaS, set *_support for software requirements: language, container, category
+         * If PaaS, 
+         * - set *_support for software requirements: language, container, category
+         * - set location constraint if set to static
          */
         if (isPlatformEligible(dnode)) {
             /*
@@ -150,11 +152,16 @@ public class Translator {
                     moduleType.addSupportItemConstraintProperty(supportItem + "_support");
                 }
             }
+            if (DNode.Locations.STATIC.equals(dnode.getLocation())) {
+                Constraint constraint = buildContinentConstraint(dnode.getLocationOption());
+                moduleType.addConstrainedProperty("continent", constraint);
+            }
         }
         /*
          * If IaaS, 
          *   - set location, disk size, mem size in node_type
          *   - set language, category, versions in node_template
+         *   - set location constraint if set to static
          */
         if (isComputeEligible(dnode)) {
             if (!"".equals(dnode.getNumCpus())) {
@@ -164,6 +171,10 @@ public class Translator {
             if (!"".equals(dnode.getDiskSize())) {
                 Constraint constraint = buildGreaterEqualsConstraint(dnode.getDiskSize());
                 moduleType.addConstrainedProperty("disk_size", constraint);
+            }
+            if (DNode.Locations.STATIC.equals(dnode.getLocation())) {
+                Constraint constraint = buildContinentConstraint(dnode.getLocationOption());
+                moduleType.addConstrainedProperty("continent", constraint);
             }
         }
         /*
@@ -336,6 +347,12 @@ public class Translator {
     
     private Constraint buildGreaterEqualsConstraint(String threshold) {
         Constraint result = new Constraint(Constraint.Names.GE, threshold);
+        
+        return result;
+    }
+    
+    private Constraint buildContinentConstraint(String continent) {
+        Constraint result = new Constraint(Constraint.Names.EQ, continent);
         
         return result;
     }
