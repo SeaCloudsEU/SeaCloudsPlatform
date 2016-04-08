@@ -58,13 +58,6 @@ limitations under the License.
     </build>
     <dependencies>
         <dependency>
-            <groupId>eu.seaclouds-project</groupId>
-            <artifactId>toscamodel</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
         </dependency>

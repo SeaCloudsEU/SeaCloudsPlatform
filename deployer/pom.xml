@@ -42,43 +42,31 @@
             <artifactId>brooklyn-core</artifactId>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-software-database</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-software-base</artifactId>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-software-webapp</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.brooklyn</groupId>
-            <artifactId>brooklyn-software-database</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.cloudfoundry</groupId>
             <artifactId>cloudfoundry-client-lib</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.openshift</groupId>
             <artifactId>openshift-java-client</artifactId>
         </dependency>
-
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
-
         <dependency>
             <groupId>eu.seaclouds-project</groupId>
             <artifactId>sla-tools</artifactId>
@@ -89,9 +77,7 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-
         </dependency>
-
         <dependency>
             <groupId>it.polimi.tower4clouds</groupId>
             <artifactId>rules</artifactId>
@@ -126,34 +112,23 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <!-- includes testng and useful logging for tests -->
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-test-support</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <!-- includes testng and useful logging for tests -->
-            <groupId>org.apache.brooklyn</groupId>
-            <artifactId>brooklyn-software-database</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-core</artifactId>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-launcher</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <!-- this gives us flexible and easy-to-use logging; just edit logback-custom.xml! -->
             <groupId>org.apache.brooklyn</groupId>
