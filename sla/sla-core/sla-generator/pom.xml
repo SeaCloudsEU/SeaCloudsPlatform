@@ -22,7 +22,7 @@
     <parent>
         <groupId>eu.seaclouds-project</groupId>
         <artifactId>sla-core</artifactId>
-        <version>0.8.0-SNAPSHOT</version>
+        <version>1.0.0-rc1</version>
     </parent>
     <artifactId>sla-generator</artifactId>
     <packaging>jar</packaging>
