@@ -57,11 +57,13 @@
         <dependency>
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-software-webapp</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.brooklyn</groupId>
             <artifactId>brooklyn-software-database</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
