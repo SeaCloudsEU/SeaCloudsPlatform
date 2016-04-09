@@ -2,8 +2,14 @@
 # # vi: set ft=ruby :
 
 # Specify minimum Vagrant version and Vagrant API version
-Vagrant.require_version ">= 1.6.0"
+Vagrant.require_version ">= 1.8.1"
 VAGRANTFILE_API_VERSION = "2"
+
+# Update OS (Debian/RedHat based only)
+UPDATE_OS_CMD = "(sudo apt-get update && sudo apt-get -y upgrade) || (sudo yum -y update)"
+
+# Autocorrect Port Clashes
+DEFAULT_AUTOCORRECT = false
 
 # Require YAML module
 require 'yaml'
