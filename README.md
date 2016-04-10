@@ -27,22 +27,7 @@ Own Nodes (BYON) and to all the IaaS provider supported by [Apache jclouds](http
 
 Make sure you have [Vagrant](https://www.vagrantup.com/), [Virtualbox](https://www.virtualbox.org/)
 
-## Deploying SeaClouds on BYON
-
-- Configure your local environment:
-```bash
-cd $SEACLOUDS_HOME/byon
-vagrant up
-```
-This spins up a virtual environment, made up of 2 VMs `brooklyn` and `seaclouds1`, that are accessible at `10.10.10.100` and `10.10.10.101`, respectively. 
-**Note that deploying on BYON requires at least 4 GB of RAM available and a quad-core CPU with hardware virtualization support.**
-
-- Point your favourite browser at `http://10.10.10.100:8081`
-- Select `SeaClouds Platform on BYON` application from Apache Brooklyn dropdown menu
-- Click on `Finish` button.
-
-
-## Deploying SeaClouds on the cloud
+Unless you are running on Ubuntu 12.04.1 64bit server, you may want to setup you local environment first.
 
 - Configure your local environment:
 ```bash
@@ -50,6 +35,17 @@ cd $SEACLOUDS_HOME/byon
 vagrant up brooklyn
 ```
 This spins up an Apache Brooklyn server accessible at `http://10.10.10.100:8081`.
+
+## Deploying SeaClouds on BYON
+
+- Point your favourite browser at `http://10.10.10.100:8081`
+- Select `SeaClouds Platform on BYON` application from Apache Brooklyn dropdown menu
+- Click on `Finish` button.
+
+**Notice**: all the SeaClouds services will report a URL similar to http://127.0.0.1:3000
+To reach it from your browser, you have to reach http:10.10.10.100:3000 instead.
+
+## Deploying SeaClouds on the cloud
 
 - Point your favourite browser at `http://10.10.10.100:8081`
 - Select `SeaClouds platform` application from Apache Brooklyn dropdown menu

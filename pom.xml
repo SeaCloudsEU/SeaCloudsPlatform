@@ -201,10 +201,6 @@
             <id>deib-polimi-releases</id>
             <url>https://github.com/deib-polimi/deib-polimi-mvn-repo/raw/master/releases</url>
         </repository>
-        <repository>
-            <id>apache-brooklyn-staging</id>
-            <url>https://repository.apache.org/content/repositories/orgapachebrooklyn-1020</url>
-        </repository>
     </repositories>
 
     <distributionManagement>

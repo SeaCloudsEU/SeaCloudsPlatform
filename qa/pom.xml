@@ -48,7 +48,7 @@
                                         <argument>--localBrooklynProperties</argument>
                                         <argument>${project.basedir}/../byon/files/brooklyn.properties</argument>
                                     </arguments>
-                                    <blueprint>${project.basedir}/src/main/resources/seaclouds-on-travis.yaml</blueprint>
+                                    <blueprint>${project.basedir}/src/main/resources/seaclouds-on-localhost.yaml</blueprint>
                                     <sensor>service.isUp</sensor>
                                 </configuration>
                             </execution>
