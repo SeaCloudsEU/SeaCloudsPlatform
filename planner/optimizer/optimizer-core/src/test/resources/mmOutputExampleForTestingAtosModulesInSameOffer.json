@@ -1,0 +1,13 @@
+[ {
+  "webservices" : [ {
+    "1489560623223993896" : "Amazon_EC2_m3_xlarge_eu_central_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_m3_xlarge_eu_central_1\n  properties: {resource_type: compute, hardwareId: m3.xlarge, location: 'aws:ec2',\n    region: eu-central-1, performance: 90, availability: 0.9995, country: Germany,\n    city: FRANKFURT, cost: 0.385 USD/hour, disk_size: 80, num_disks: 2, num_cpus: 4,\n    ram: 15, disk_type: ssd}\n"
+  } ]
+}, {
+  "db1" : [ {
+    "1489560623223993896" : "Amazon_EC2_m3_xlarge_eu_central_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_m3_xlarge_eu_central_1\n  properties: {resource_type: compute, hardwareId: m3.xlarge, location: 'aws:ec2',\n    region: eu-central-1, performance: 90, availability: 0.9995, country: Germany,\n    city: FRANKFURT, cost: 0.385 USD/hour, disk_size: 80, num_disks: 2, num_cpus: 4,\n    ram: 15, disk_type: ssd}\n"
+  }  ]
+}, {
+  "www" : [  {
+    "1489560623223993896" : "Amazon_EC2_m3_xlarge_eu_central_1:\n  type: seaclouds.Nodes.Compute.Amazon_EC2_m3_xlarge_eu_central_1\n  properties: {resource_type: compute, hardwareId: m3.xlarge, location: 'aws:ec2',\n    region: eu-central-1, performance: 90, availability: 0.9995, country: Germany,\n    city: FRANKFURT, cost: 0.385 USD/hour, disk_size: 80, num_disks: 2, num_cpus: 4,\n    ram: 15, disk_type: ssd}\n"
+  } ]
+  } ]

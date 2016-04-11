@@ -38,14 +38,14 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
    // "Note: this class has a natural ordering that is inconsistent with
    // equals."
 
-   private static final double COMPARATOR_LIMIT = 1000.0;
+   private static final double  COMPARATOR_LIMIT = 1000.0;
 
-   static Logger log = LoggerFactory.getLogger(Solution.class);
+   static Logger                log              = LoggerFactory.getLogger(Solution.class);
 
-   private Map<String, String> modName_ModOption;
+   private Map<String, String>  modName_ModOption;
    private Map<String, Integer> modName_NumInstances;
-   private double solutionFitness = 0.0;
-   private QualityInformation solutionQuality;
+   private double               solutionFitness  = 0.0;
+   private QualityInformation   solutionQuality;
 
    public Solution() {
       modName_ModOption = new HashMap<String, String>();
@@ -69,10 +69,9 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
       modName_NumInstances.put(name, numInstances);
    }
 
-  public String getCloudOfferNameForModule(String key) {
+   public String getCloudOfferNameForModule(String key) {
       return modName_ModOption.get(key);
    }
-
 
    public int getCloudInstancesForModule(String key) {
       try {
@@ -97,7 +96,9 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
    public void modifyNumInstancesOfModule(String modulename, int newInstances) {
 
       if (!modName_NumInstances.containsKey(modulename)) {
-         log.error("trying to modify the number of instances of a module which does not exist. The name of the module searched was {}", modulename);
+         log.error(
+               "trying to modify the number of instances of a module which does not exist. The name of the module searched was {}",
+               modulename);
       } else {
          modName_NumInstances.put(modulename, newInstances);
       }
@@ -139,8 +140,8 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
       }
 
       sol.solutionFitness = this.solutionFitness;
-      sol.solutionQuality=null;
-      if(this.solutionQuality!=null){
+      sol.solutionQuality = null;
+      if (this.solutionQuality != null) {
          sol.solutionQuality = new QualityInformation(this.solutionQuality);
       }
       return sol;
@@ -174,8 +175,10 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
                return false;
             }
          } catch (Exception E) {
-            //some comparison went wrong, but modname existed (given by the order of the AND)
-            //Solutions are not equal (one should be consistent and the other should not). 
+            // some comparison went wrong, but modname existed (given by the
+            // order of the AND)
+            // Solutions are not equal (one should be consistent and the other
+            // should not).
             return false;
          }
       }
@@ -191,7 +194,7 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
    public boolean isContainedIn(Solution[] sols) {
 
       for (int i = 0; i < sols.length; i++) {
-         if (this.equals(sols[i])) {
+         if (this.equalsIgnoringNumInstances(sols[i])) {
             return true;
          }
       }
@@ -199,13 +202,43 @@ public class Solution implements Iterable<String>, Comparable<Solution> {
 
    }
 
+   private boolean equalsIgnoringNumInstances(Solution s) {
+
+      if (s == null) {
+         return false;
+      }
+      if (s == this) {
+         return true;
+      }
+
+      if (this.size() != s.size()) {
+         return false;
+      }
+      for (String modname : this) {
+         try {
+            if (!(s.containsModuleName(modname)
+                  && s.getCloudOfferNameForModule(modname).equals(this.getCloudOfferNameForModule(modname)))) {
+               return false;
+            }
+         } catch (Exception E) {
+            // some comparison went wrong, but modname existed (given by the
+            // order of the AND)
+            // Solutions are not equal (one should be consistent and the other
+            // should not).
+            return false;
+         }
+      }
+
+      return true;
+   }
+
    // ITERATOR //Iterates over names of modules
    @Override
    public Iterator<String> iterator() {
       Iterator<String> it = new Iterator<String>() {
 
-         private Set<Entry<String, String>> entries = modName_ModOption.entrySet();
-         Iterator<Entry<String, String>> iteratorSet = entries.iterator();
+         private Set<Entry<String, String>> entries     = modName_ModOption.entrySet();
+         Iterator<Entry<String, String>>    iteratorSet = entries.iterator();
 
          @Override
          public boolean hasNext() {
