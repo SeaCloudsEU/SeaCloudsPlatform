@@ -14,6 +14,10 @@
 
 var Credentials = (function() {
 
+    var LOCATION_GROUP = "add_brooklyn_location_";
+    var LOCATION_POLICY = "brooklyn.location";
+    var TYPE_CLOUD = Types.Cloud.name;
+
     var activeform = undefined;
     var amazonform = Object.create(Forms.Form);
     var userpwdform = Object.create(Forms.Form);
@@ -23,7 +27,7 @@ var Credentials = (function() {
     var form_by_provider = {
         "aws-ec2": amazonform,
         "openshift": userpwdform,
-        "CloudFoundry": cloudfoundryform,
+        "cloudfoundry": cloudfoundryform,
     };
 
     var canvas;
@@ -41,7 +45,7 @@ var Credentials = (function() {
 
         popovertitle: function(i) {
             var result = this.name;
-            if (this.type == "Cloud") {
+            if (this.type == TYPE_CLOUD) {
                 result += "&nbsp;&nbsp;&nbsp;" +
                     '<button type="button" class="popover-edit" data-action="edit" data-nodeindex="' + i + '">' +
                     '<span aria-hidden="true" class="fa fa-edit"></span></button>';
@@ -253,13 +257,92 @@ var Credentials = (function() {
      * Returns a topology from a DAM.
      */
     function to_topology(rawdam) {
+
         var cloud_prefixes = [
                 "seaclouds.nodes.Platform",
                 "tosca.nodes.Platform",
                 "seaclouds.nodes.Compute",
                 "tosca.nodes.Compute"
         ];
-        var dam = jsyaml.safeLoad(rawdam);
+
+        /*
+         * Creates node templates for PaaS clouds and hosts PaaS-deployed
+         * modules in these PaaS clouds.
+         * One cloud is created for each PaaS-deployed module
+         */
+        function preprocess(dam) {
+
+            function search_requirement_host(node_template) {
+                var requirements =
+                    (node_template.requirements || []).
+                    filter(function(requirement) {
+                        return requirement.host !== undefined;
+                    });
+                return requirements[0];
+            }
+
+            /*
+             * Finds brooklynlocation group for the node_template and
+             * return the name of brooklyn.location inside policies.
+             */
+            function findlocationfor(node_template_name) {
+                var result = undefined;
+
+                var locationgroupname =
+                    Object.keys(dam.topology_template.groups).
+                    filter(function(groupname) {
+                        return groupname == LOCATION_GROUP + node_template_name;
+                    })[0];
+                var group = dam.topology_template.groups[locationgroupname];
+                if (group !== undefined) {
+                    var brooklynpolicy =
+                        group.policies.filter(function(policy) {
+                            return policy[LOCATION_POLICY];
+                        })[0];
+                    var brooklynlocation = brooklynpolicy[LOCATION_POLICY];
+                    result = Object.keys(brooklynlocation)[0];
+                }
+                return result;
+            }
+
+            function add_cloud_template(location, cloud_template_name) {
+                var properties = {
+                    location: location
+                }
+                var cloud_template = {
+                    type: "tosca.nodes.Platform",
+                    properties: properties
+                }
+                dam.topology_template.node_templates[cloud_template_name] = cloud_template;
+            }
+
+            var counter = 0;
+            Object.keys(dam.topology_template.node_templates).
+                forEach(function(node_template_name) {
+                    var node_template = dam.topology_template.node_templates[node_template_name];
+                    var ttype = topology_type_by_node_template(node_template);
+                    if (node_template.requirements === undefined) {
+                        node_template.requirements = [];
+                    }
+                    var requirement_host = search_requirement_host(node_template);
+                    /*
+                     * Found a PaaS module
+                     */
+                    if (ttype !== Types.Cloud && requirement_host == undefined) {
+                        var location_name = findlocationfor(node_template_name);
+
+                        var cloud_template_name = location_name + counter;
+                        add_cloud_template(location_name, cloud_template_name);
+                        counter++;
+
+                        node_template.requirements.push({
+                            host: cloud_template_name
+                        });
+                    }
+
+                });
+            return dam;
+        }
 
         function node_type_is_provider(node_type_name) {
             var result = cloud_prefixes.some(function(prefix) {
@@ -294,6 +377,9 @@ var Credentials = (function() {
             return false;
         }
 
+        var dam = jsyaml.safeLoad(rawdam);
+        dam = preprocess(dam);
+
         var topology = {
             "nodes": [],
             "links": []
@@ -319,6 +405,7 @@ var Credentials = (function() {
             topology.nodes.push(tnode);
             nodemap[name] = tnode;
         });
+
         /*
          * Create topology links
          */
@@ -359,8 +446,6 @@ var Credentials = (function() {
      *
      */
     function store_credentials_in_dam(rawdam) {
-        var LOCATION_GROUP = "add_brooklyn_location_";
-        var LOCATION_POLICY = "brooklyn.location";
 
         /*
          * If the content of brooklyn.location is a string,
