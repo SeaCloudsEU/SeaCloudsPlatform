@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.seaclouds.platform.planner.core.application.topology.modifier;
+package eu.seaclouds.platform.planner.core.application.topology.modifier.relation;
 
 import com.google.common.collect.ImmutableList;
 import eu.seaclouds.platform.planner.core.DamGenerator;
@@ -22,11 +22,15 @@ import eu.seaclouds.platform.planner.core.DamGenerator;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractEndpointRelationModifier extends AbstractRelationModifier {
+public abstract class AbstractJdbcRelationModifier extends AbstractRelationModifier {
 
-    public static final String SUPPORTED_RELATIONS = "seaclouds.relation.connection.endpoint.host";
-    private static final String RELATION_NAME = "endpoint_configuration";
-    private static final String POINTED_ATTRIBUTE = "webapp.url";
+    public static final String SUPPORTED_RELATIONS = "seaclouds.relations.databaseconnections.jdbc";
+    public static final List<String> VALID_TARGET_NODES_TYPES =
+            ImmutableList.of("org.apache.brooklyn.entity.database.mysql.MySqlNode");
+
+    private static final String DB_NAME_PROPERTY_NAME = "db_name";
+    private static final String DB_USER_PROPERTY_NAME = "db_user";
+    private static final String DB_PASSWORD_PROPERTY_NAME = "db_password";
 
     @Override
     protected List<String> getSupportedRelationTypes() {
@@ -35,7 +39,7 @@ public abstract class AbstractEndpointRelationModifier extends AbstractRelationM
 
     @Override
     protected boolean isValidTargetNode(Map<String, Object> requirement) {
-        return true;
+        return VALID_TARGET_NODES_TYPES.contains(getNodeTargetType(requirement));
     }
 
     @Override
@@ -54,14 +58,19 @@ public abstract class AbstractEndpointRelationModifier extends AbstractRelationM
 
     @Override
     protected String getRelationName() {
-        return RELATION_NAME;
+        return "dbConnection";
     }
 
     @SuppressWarnings("unchecked")
     private String createPropertyValue(Map<String, Object> requirement) {
         String targetId = getTargetNodeId(requirement);
-        return "$brooklyn:component(\"" + targetId + "\")" +
-                ".attributeWhenReady(\"" + POINTED_ATTRIBUTE + "\")";
+        String dbName = (String) topologyTemplate.getPropertyValue(targetId, DB_NAME_PROPERTY_NAME);
+        String dbUSer = (String) topologyTemplate.getPropertyValue(targetId, DB_USER_PROPERTY_NAME);
+        String dbPass = (String) topologyTemplate
+                .getPropertyValue(targetId, DB_PASSWORD_PROPERTY_NAME);
+
+        return JdbcStringBuilder
+                .buildConnectionString(targetId, nodeTemplate.getType(), dbName, dbUSer, dbPass);
     }
 
 }

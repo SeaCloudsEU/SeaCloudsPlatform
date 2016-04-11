@@ -1,0 +1,189 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: nuro-complex-iaas (WITHOUT RESPONSE TIME REQUIREMENT)
+imports:
+- tosca-normative-types:1.0.0.wd06-SNAPSHOT
+topology_template:
+  node_templates:
+    db:
+      type: sc_req.db
+      properties:
+        db_name: database1
+        db_user: brooklyn
+        db_password: br00k11n
+        autoscale: false
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5'
+          - less_or_equal: '5.6'
+      artifacts:
+      - creationScriptUrl: https://www.dropbox.com/s/rp7owcgyhaa692f/create.sql?dl=1
+        type: tosca.artifacts.File
+      requirements:
+      - host: Amazon_EC2_m4_large_us_west_1
+        instancesPOC: 3
+    nuro-api:
+      type: sc_req.nuro-api
+      properties:
+        language: PHP
+        autoscale: false
+        php_version:
+          constraints:
+          - greater_or_equal: '5.1'
+          - less_or_equal: '5.5'
+      artifacts:
+      - tarball.url: https://s3-us-west-2.amazonaws.com/seaclouds-usescases-artifacts/php/paas/splitted/nuro-api.zip
+        type: tosca.artifacts.File
+      requirements:
+      - endpoint:
+          node: db
+          type: seaclouds.relations.databaseconnections.php
+          properties:
+            prop.name: db_connection_uri
+      - host: Amazon_EC2_r3_large_us_west_2
+        instancesPOC: 1
+    nuro-gui:
+      type: sc_req.nuro-gui
+      properties:
+        language: PHP
+        autoscale: false
+        php_version:
+          constraints:
+          - greater_or_equal: '5.1'
+          - less_or_equal: '5.5'
+      artifacts:
+      - tarball.url: https://s3-us-west-2.amazonaws.com/seaclouds-usescases-artifacts/php/paas/splitted/nuro-gui.zip
+        type: tosca.artifacts.File
+      requirements:
+      - endpoint:
+          node: nuro-api
+          type: seaclouds.relation.connection.endpoint.host
+          properties:
+            prop.name: nuro_api_uri
+      - host: Amazon_EC2_c3_large_ap_northeast_1
+        instancesPOC: 2
+    Amazon_EC2_m4_large_us_west_1:
+      type: seaclouds.nodes.Compute.Amazon_EC2
+      properties:
+        num_cpus: 2
+        country: United States
+        performance: 47
+        cost: 0.17
+        hardwareId: m4.large
+        city: SAN JOSE
+        resource_type: compute
+        location: aws-ec2
+        availability: 0.9995
+        region: us-west-1
+        ram: 8
+        continent: America
+    Amazon_EC2_c3_large_ap_northeast_1:
+      type: seaclouds.nodes.Compute.Amazon_EC2
+      properties:
+        num_cpus: 2
+        country: Japan
+        cost: 0.12
+        city: TOKYO
+        resource_type: compute
+        disk_size: 32
+        availability: 0.9995
+        performance: 47
+        hardwareId: c3.large
+        disk_type: ssd
+        location: aws-ec2
+        num_disks: 2
+        region: ap-northeast-1
+        ram: 3.75
+        continent: Asia
+    Amazon_EC2_r3_large_us_west_2:
+      type: seaclouds.nodes.Compute.Amazon_EC2
+      properties:
+        num_cpus: 2
+        country: United States
+        cost: 0.19
+        city: PORTLAND
+        resource_type: compute
+        disk_size: 32
+        availability: 0.9995
+        performance: 46
+        hardwareId: r3.large
+        disk_type: ssd
+        location: aws-ec2
+        num_disks: 1
+        region: us-west-2
+        ram: 15
+        continent: America
+node_types:
+  sc_req.db:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      resource_type:
+        constraints:
+        - equal: compute
+  sc_req.nuro-api:
+    derived_from: seaclouds.nodes.php.httpd.PhpHttpdServer
+    properties:
+      resource_type:
+        constraints:
+        - equal: compute
+  sc_req.nuro-gui:
+    derived_from: seaclouds.nodes.php.httpd.PhpHttpdServer
+    properties:
+      resource_type:
+        constraints:
+        - equal: compute
+  seaclouds.nodes.Compute:
+    derived_from: tosca.nodes.Compute
+    description: Custom compute
+    properties:
+      hardwareId:
+        required: false
+        type: string
+groups:
+  operation_db:
+    members:
+    - db
+    policies:
+    - QoSInfo:
+        execution_time: 100 ms
+        benchmark_platform: Amazon_EC2_m1_medium_us_east_1
+    - dependencies: {}
+    - QoSRequirements:
+        AppAvailable:
+          greater_than: 99.0
+  operation_nuro-api:
+    members:
+    - nuro-api
+    policies:
+    - QoSInfo:
+        execution_time: 4 ms
+        benchmark_platform: Amazon_EC2_m1_medium_us_east_1
+    - dependencies:
+        operation_db: ''
+    - AppQoSRequirements:
+        response_time:
+          less_than: 2000.0 ms
+        availability:
+          greater_than: 0.99
+        cost:
+          less_or_equal: 1000.0 euros_per_month
+        workload:
+          less_or_equal: 24000.0 req_per_min
+    - QoSRequirements:
+        AppAvailable:
+          greater_than: 99.0
+    - ExpectedQualityPOC:
+        expectedAvailabilityPOC: 0.9994997500000625
+        fitnessPOC: 22.467546371158186
+        expectedCostPOC: 676.8
+  operation_nuro-gui:
+    members:
+    - nuro-gui
+    policies:
+    - QoSInfo:
+        execution_time: 100 ms
+        benchmark_platform: Amazon_EC2_m1_medium_us_east_1
+    - dependencies:
+        operation_nuro-api: ''
+    - QoSRequirements:
+        AppAvailable:
+          greater_than: 99.0

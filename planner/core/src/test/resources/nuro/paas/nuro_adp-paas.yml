@@ -7,9 +7,9 @@ topology_template:
     db:
       type: sc_req.db
       properties:
-        db_name: databaseName
-        db_user: user123
-        db_password: paas123
+        db_name: database1
+        db_user: brooklyn
+        db_password: br00k11n
         autoscale: false
         mysql_version:
           constraints:
@@ -27,11 +27,17 @@ topology_template:
         language: PHP
         autoscale: false
       artifacts:
-      - git.url: https://seaclDem:seaclouds@bitbucket.org/seaclDem/nuro-casestudy.git
+      - tarball.url: https://s3-us-west-2.amazonaws.com/seaclouds-usescases-artifacts/php/paas/nuro-app-pass.zip
         type: tosca.artifacts.File
       requirements:
       - host: Cloud_Foundry
         instancesPOC: 1
+      - endpoint:
+          node: db
+          type: seaclouds.relations.databaseconnections.php
+          properties:
+            prop.name: db_connection_uri
+
     Amazon_EC2_c3_2xlarge_ap_southeast_2:
       type: seaclouds.nodes.Compute.Amazon_EC2
       properties:

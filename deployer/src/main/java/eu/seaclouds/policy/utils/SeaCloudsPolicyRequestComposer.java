@@ -92,7 +92,7 @@ public class SeaCloudsPolicyRequestComposer {
         }
 
         // Remove last ,
-        Strings.removeFromEnd(rowOptions, ",");
+        rowOptions = Strings.removeFromEnd(rowOptions, ",");
         return globalGrafanaOptionsJSON + rowOptions + "] } }";
     }
 

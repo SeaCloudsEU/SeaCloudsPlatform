@@ -19,10 +19,6 @@ package org.apache.brooklyn.entity.php.httpd;
 
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 import org.apache.brooklyn.api.entity.Entity;
 import org.apache.brooklyn.api.sensor.Enricher;
 import org.apache.brooklyn.core.entity.Attributes;
@@ -35,6 +31,11 @@ import org.apache.brooklyn.feed.http.HttpValueFunctions;
 import org.apache.brooklyn.util.guava.Functionals;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 
 public class PhpHttpdServerImpl extends PhpWebAppSoftwareProcessImpl implements PhpHttpdServer {
@@ -106,6 +107,10 @@ public class PhpHttpdServerImpl extends PhpWebAppSoftwareProcessImpl implements 
     
     public String getConfigurationFile() {
         return getConfig(CONFIG_FILE);
+    }
+
+    public Map<String, String> getPhpEnvVariables(){
+        return getConfig(PhpHttpdServer.PHP_ENV_VARIABLES);
     }
 
     public Map<String, String> getDbConnectionConfigParams() {

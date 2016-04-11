@@ -1,0 +1,242 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+description: splitted-nuro-app-paas
+imports:
+- tosca-normative-types:1.0.0.wd06-SNAPSHOT
+topology_template:
+  node_templates:
+    db:
+      type: sc_req.db
+      properties:
+        db_name: database1
+        db_user: brooklyn
+        db_password: br00k11n
+        autoscale: false
+        mysql_version:
+          constraints:
+          - greater_or_equal: '5'
+          - less_or_equal: '5.6'
+      artifacts:
+      - creationScriptUrl: https://www.dropbox.com/s/rp7owcgyhaa692f/create.sql?dl=1
+        type: tosca.artifacts.File
+      requirements:
+      - host: Amazon_EC2_t2_small_eu_west_1
+        instancesPOC: 1
+    nuro-api:
+      type: sc_req.nuro-api
+      properties:
+        language: PHP
+        autoscale: false
+      artifacts:
+      - tarball.url: https://s3-us-west-2.amazonaws.com/seaclouds-usescases-artifacts/php/paas/splitted/nuro-api.zip
+        type: tosca.artifacts.File
+      requirements:
+      - endpoint:
+          node: db
+          type: seaclouds.relations.databaseconnections.php
+          properties:
+            prop.name: db_connection_uri
+      - host: Cloud_Foundry
+        instancesPOC: 2
+    nuro-gui:
+      type: sc_req.nuro-gui
+      properties:
+        language: PHP
+        autoscale: false
+      artifacts:
+      - tarball.url: https://s3-us-west-2.amazonaws.com/seaclouds-usescases-artifacts/php/paas/splitted/nuro-gui.zip
+        type: tosca.artifacts.File
+      requirements:
+      - endpoint:
+          node: nuro-api
+          type: seaclouds.relation.connection.endpoint.host
+          properties:
+            prop.name: nuro_api_uri
+      - host: Cloud_Foundry
+        instancesPOC: 4
+
+    nuro-pma:
+      type: sc_req.nuro-pma
+      properties:
+        language: PHP
+        autoscale: false
+      artifacts:
+      - tarball.url: https://s3-us-west-2.amazonaws.com/seaclouds-usescases-artifacts/php/paas/splitted/php-my-admin.zip
+        type: tosca.artifacts.File
+      requirements:
+      - endpoint:
+          node: db
+          type: seaclouds.relations.databaseconnections.php
+          properties:
+            prop.name: db_connection_uri
+      - host: Cloud_Foundry
+        instancesPOC: 2
+
+
+    Amazon_EC2_t2_small_eu_west_1:
+      type: seaclouds.nodes.Compute.Amazon_EC2
+      properties:
+        num_cpus: 1
+        country: Ireland
+        performance: 21
+        cost: 0.037
+        hardwareId: t2.small
+        city: DUBLIN
+        resource_type: compute
+        location: aws-ec2
+        availability: 0.9995
+        region: eu-west-1
+        ram: 2
+        continent: Europe
+    Cloud_Foundry:
+      type: seaclouds.nodes.Platform.Cloud_Foundry
+      properties:
+        node_support: true
+        go_support: true
+        tomcat_version: 7
+        private_hosting: true
+        resource_type: platform
+        tomcat_support: true
+        auto_scaling: false
+        public_hosting: false
+        java_support: true
+        horizontal_scaling: true
+        ruby_support: true
+        python_support: true
+        scala_support: true
+        vertical_scaling: true
+        location: cloudfoundry-instance
+        go_version: 1.4
+        php_support: true
+        performance: 192
+        availability: 0.99871
+        cost: 0.04
+node_types:
+  sc_req.db:
+    derived_from: seaclouds.nodes.database.mysql.MySqlNode
+    properties:
+      resource_type:
+        constraints:
+        - equal: compute
+  sc_req.nuro-api:
+    derived_from: seaclouds.nodes.php.httpd.PhpHttpdServer
+    properties:
+      php_support:
+        constraints:
+        - equal: true
+      php_version:
+        constraints:
+        - greater_or_equal: '5.1'
+        - less_or_equal: '5.5'
+      resource_type:
+        constraints:
+        - equal: platform
+  sc_req.nuro-gui:
+    derived_from: seaclouds.nodes.php.httpd.PhpHttpdServer
+    properties:
+      php_support:
+        constraints:
+        - equal: true
+      php_version:
+        constraints:
+        - greater_or_equal: '5.1'
+        - less_or_equal: '5.5'
+      resource_type:
+        constraints:
+        - equal: platform
+
+  sc_req.nuro-pma:
+    derived_from: seaclouds.nodes.php.httpd.PhpHttpdServer
+    properties:
+      php_support:
+        constraints:
+        - equal: true
+      php_version:
+        constraints:
+        - greater_or_equal: '5.1'
+        - less_or_equal: '5.5'
+      resource_type:
+        constraints:
+        - equal: platform
+
+  seaclouds.nodes.Compute:
+    derived_from: tosca.nodes.Compute
+    description: Custom compute
+    properties:
+      hardwareId:
+        required: false
+        type: string
+groups:
+  operation_db:
+    members:
+    - db
+    policies:
+    - QoSInfo:
+        execution_time: 100 ms
+        benchmark_platform: Amazon_EC2_m1_medium_us_east_1
+    - dependencies: {}
+    - QoSRequirements:
+        AppAvailable:
+          greater_than: 90.0
+    - autoscaling:
+        autoscaler.resizeDownStabilizationDelay: 120000
+        maxPoolSize: 32
+        metric: seaclouds.metrics.requestPerNode
+        minPoolSize: 1
+        metricUpperBound: .inf
+        type: seaclouds.policies.autoscaling.AutoScalerPolicy
+        metricLowerBound: .inf
+  operation_nuro-api:
+    members:
+    - nuro-api
+    policies:
+    - QoSInfo:
+        execution_time: 100 ms
+        benchmark_platform: Amazon_EC2_m1_medium_us_east_1
+    - dependencies:
+        operation_db: ''
+    - QoSRequirements:
+        AppAvailable:
+          greater_than: 90.0
+    - autoscaling:
+        autoscaler.resizeDownStabilizationDelay: 120000
+        maxPoolSize: 2
+        metric: seaclouds.metrics.requestPerNode
+        minPoolSize: 1
+        metricUpperBound: 200.0
+        type: seaclouds.policies.autoscaling.AutoScalerPolicy
+        metricLowerBound: 100.0
+  operation_nuro-gui:
+    members:
+    - nuro-gui
+    policies:
+    - QoSInfo:
+        execution_time: 100 ms
+        benchmark_platform: Amazon_EC2_m1_small_us_east_1
+    - dependencies:
+        operation_db: ''
+        operation_nuro-api: ''
+    - AppQoSRequirements:
+        response_time:
+          less_than: 200.0 ms
+        availability:
+          greater_than: 0.99
+        cost:
+          less_or_equal: 1000.0 euros_per_month
+        workload:
+          less_or_equal: 24000.0 req_per_min
+    - QoSRequirements:
+        AppAvailable:
+          greater_than: 90.0
+    - ExpectedQualityPOC:
+        expectedAvailabilityPOC: 0.9994983367292822
+        fitnessPOC: 44.9477290651349
+        expectedCostPOC: 199.44000000000003
+        expectedExecutionTimePOC: 0.2
+    - autoscaling:
+        autoscaler.resizeDownStabilizationDelay: 120000
+        maxPoolSize: 4
+        metric: seaclouds.metrics.requestPerNode
+        minPoolSize: 1
+        metricUpperBound: 100.0
+        type: seaclouds.policies.autoscaling.AutoScalerPolicy
+        metricLowerBound: 50.0

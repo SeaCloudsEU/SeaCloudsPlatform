@@ -9,26 +9,35 @@ imports:
 topology_template:
   node_templates:
     db:
+      type: org.apache.brooklyn.entity.database.mysql.MySqlNode
       requirements:
       - host: Amazon_EC2_c3_2xlarge_ap_southeast_2
       properties:
-        db_name: databaseName
-        db_user: user123
-        db_password: paas123
+        db_name: database1
+        db_user: brooklyn
+        db_password: br00k11n
         autoscale: false
         mysql_version:
           constraints:
           - greater_or_equal: '5'
           - less_or_equal: '5.6'
         creationScriptUrl: https://www.dropbox.com/s/rp7owcgyhaa692f/create.sql?dl=1
-      type: org.apache.brooklyn.entity.database.mysql.MySqlNode
+
     php:
+      type: org.apache.brooklyn.entity.cloudfoundry.webapp.php.PhpCloudFoundryPaasWebApp
       properties:
         language: PHP
         autoscale: false
-        application-url: https://seaclDem:seaclouds@bitbucket.org/seaclDem/nuro-casestudy.git
-      type: org.apache.brooklyn.entity.cloudfoundry.webapp.php.PhpCloudFoundryPaasWebApp
-      
+        application-url: "https://s3-us-west-2.amazonaws.com/seaclouds-usescases-artifacts/php/paas/nuro-app-pass.zip"
+      requirements:
+      - dbConnection:
+          node: db
+          relationship: brooklyn.relationships.Configure
+          properties:
+            prop.collection: env
+            prop.name: db_connection_uri
+            prop.value: $brooklyn:formatString("mysql://%s:%s@%s:%s/%s", "brooklyn", "br00k11n", component("db").attributeWhenReady("host.address"), component("db").attributeWhenReady("mysql.port"), "database1")
+
     Amazon_EC2_c3_2xlarge_ap_southeast_2:
       properties:
         num_cpus: 8
