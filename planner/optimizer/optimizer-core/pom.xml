@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>eu.seaclouds-project</groupId>
 		<artifactId>optimizer</artifactId>
-		<version>1.0.0</version>
+		<version>1.1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>optimizer-core</artifactId>
 	<name>optimizer-core</name>
