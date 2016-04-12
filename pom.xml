@@ -16,12 +16,11 @@
        limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.seaclouds-project</groupId>
     <artifactId>platform</artifactId>
-    <version>0.8.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <modules>
         <module>common</module>
         <module>deployer</module>
@@ -83,7 +82,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <includedTestGroups/>
+        <includedTestGroups />
         <excludedTestGroups>Integration,Live</excludedTestGroups>
 
         <!-- Dependencies -->
@@ -171,7 +170,7 @@
         <url>https://github.com/SeaCloudsEU/SeaCloudsPlatform/</url>
         <connection>scm:git:https://github.com/SeaCloudsEU/SeaCloudsPlatform.git</connection>
         <developerConnection>scm:git:git@github.com:SeaCloudsEU/SeaCloudsPlatform.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>1.0.0</tag>
     </scm>
 
     <repositories>
@@ -321,11 +320,11 @@
                             <!-- Checks for whitespace                               -->
                             <!-- See http://checkstyle.sf.net/config_whitespace.html -->
                             <module name="FileTabCharacter">
-                                <property name="eachLine" value="true"/>
+                                <property name="eachLine" value="true" />
                             </module>
                             <module name="TreeWalker">
                                 <module name="IllegalImport">
-                                    <property name="illegalPkgs" value="com.google.api.client.repackaged"/>
+                                    <property name="illegalPkgs" value="com.google.api.client.repackaged" />
                                 </module>
                             </module>
                         </module>
@@ -632,7 +631,7 @@
                 <groupId>com.smoketurner</groupId>
                 <artifactId>dropwizard-swagger</artifactId>
                 <version>${dropwizard-swagger.version}</version>
-                <exclusions></exclusions>
+                <exclusions />
             </dependency>
 
             <dependency>
