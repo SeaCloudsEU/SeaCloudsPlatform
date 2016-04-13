@@ -27,22 +27,7 @@ Own Nodes (BYON) and to all the IaaS provider supported by [Apache jclouds](http
 
 Make sure you have [Vagrant](https://www.vagrantup.com/), [Virtualbox](https://www.virtualbox.org/)
 
-## Deploying SeaClouds on BYON
-
-- Configure your local environment:
-```bash
-cd $SEACLOUDS_HOME/byon
-vagrant up
-```
-This spins up a virtual environment, made up of 2 VMs `brooklyn` and `seaclouds1`, that are accessible at `10.10.10.100` and `10.10.10.101`, respectively. 
-**Note that deploying on BYON requires at least 4 GB of RAM available and a quad-core CPU with hardware virtualization support.**
-
-- Point your favourite browser at `http://10.10.10.100:8081`
-- Select `SeaClouds Platform on BYON` application from Apache Brooklyn dropdown menu
-- Click on `Finish` button.
-
-
-## Deploying SeaClouds on the cloud
+Unless you are running on Ubuntu 12.04.1 64bit server, you may want to setup you local environment first.
 
 - Configure your local environment:
 ```bash
@@ -51,15 +36,26 @@ vagrant up brooklyn
 ```
 This spins up an Apache Brooklyn server accessible at `http://10.10.10.100:8081`.
 
+## Deploying SeaClouds on BYON
+
+- Point your favourite browser at `http://10.10.10.100:8081`
+- Select `SeaClouds Platform on BYON` application from Apache Brooklyn dropdown menu
+- Click on `Finish` button.
+
+**Notice**: all the SeaClouds services will report a URL similar to http://127.0.0.1:3000
+To reach it from your browser, you have to reach http:10.10.10.100:3000 instead.
+
+## Deploying SeaClouds on the cloud
+
 - Point your favourite browser at `http://10.10.10.100:8081`
 - Select `SeaClouds platform` application from Apache Brooklyn dropdown menu
 - Edit `location` specifying the cloud provider and the credentials to use it, in the YAML format.
 - Click on `Finish` button
 
 
-## SeaClouds release 0.7.0-M19
+## SeaClouds release 1.0.0
 
-A detailed description of [0.7.0-M19](https://github.com/SeaCloudsEU/SeaCloudsPlatform/releases/tag/0.7.0-M19) SeaClouds release including:
+A detailed description of SeaClouds [1.0.0](https://github.com/SeaCloudsEU/SeaCloudsPlatform/releases/tag/1.0.0) release including:
 - SeaClouds components and their interactions
 - A guide to get an install SeaClouds Platform
 - An example of how to use SeaClouds Platform and exploit its capabilities and the capabilies of each of its components
@@ -75,11 +71,6 @@ If you want to help us with the development of this project please read carefull
 When deploying SeaClouds platform an [Apache Brooklyn](http://brooklyn.io) instance will be started on your
 workstation, accessible at `http://localhost:8081` by default. Please double-check in nohup.out the correct url.
 
-You may need to update the `privateKeyFile` property in the blueprint to the actual path.
-By default, it points to `./seaclouds_id_rsa`.
-
-Notice, if you are a `Windows` user, you may need to specify the absolute path to reach the `seaclouds_id_rsa` file on your filesystem.
-
 For more information, please visit [Apache Brooklyn](https://brooklyn.incubator.apache.org/download/index.html)
 
 How to release it!
@@ -87,11 +78,11 @@ How to release it!
 In order to release a new version:
 
 - `mvn clean install` If everything is ok:
-- `mvn -DdryRun=true release:prepare -DreleaseVersion=0.7.0-M19 -Dtag=0.7.0-M19 -DdevelopmentVersion=0.8.0-SNAPSHOT` and wait for a message like `Release preparation simulation complete.`
+- `mvn -DdryRun=true release:prepare -DreleaseVersion=1.0.0 -Dtag=1.0.0 -DdevelopmentVersion=1.1.0-SNAPSHOT` and wait for a message like `Release preparation simulation complete.`
 
 Then:
 - `mvn release:clean`
-- `mvn release:prepare -DreleaseVersion=0.7.0-M19 -Dtag=0.7.0-M19 -DdevelopmentVersion=0.8.0-SNAPSHOT`
+- `mvn release:prepare -DreleaseVersion=1.0.0 -Dtag=1.0.0 -DdevelopmentVersion=1.1.0-SNAPSHOT`
 - `mvn release:perform`
 
 - test the staging repository, and finally promote release it!

@@ -1,25 +1,26 @@
 ---
 - name: brooklyn
   box: ubuntu/trusty64
-  ram: 1024
+  ram: 2048
   cpus: 1
   ip: 10.10.10.100
   forwarded_ports:
    - guest: 8081
      host: 8081
   shell:
-    - curl -o apache-brooklyn-0.9.0-SNAPSHOT-bin.tar.gz -s -S -L "https://repository.apache.org/service/local/artifact/maven/redirect?r=snapshots&g=org.apache.brooklyn&a=brooklyn-dist&v=0.9.0-SNAPSHOT&c=dist&e=tar.gz"
-    - tar zxf apache-brooklyn-0.9.0-SNAPSHOT-bin.tar.gz
-    - sudo sh -c 'export DEBIAN_FRONTEND=noninteractive; apt-get update; apt-get install --yes openjdk-7-jre-headless'
+    - curl -o apache-brooklyn-dist-0.9.0-dist.tar.gz -s -S -L "http://search.maven.org/remotecontent?filepath=org/apache/brooklyn/brooklyn-dist/0.9.0/brooklyn-dist-0.9.0-dist.tar.gz"
+    - tar zxf apache-brooklyn-dist-0.9.0-dist.tar.gz
+    - ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
+    - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+    - echo "Host localhost" >> ~/.ssh/config
+    - echo "    StrictHostKeyChecking no" >> ~/.ssh/config
+    - ssh-keyscan -t rsa localhost >> ~/.ssh/known_hosts
+    - chmod g-rw,o-rw ~/.ssh/*
+    - sudo sh -c 'export DEBIAN_FRONTEND=noninteractive; apt-get update; apt-get install --yes openjdk-7-jre-headless haveged'
     - sudo ln -s /vagrant/files/brooklyn.service /etc/systemd/system/brooklyn.service
     - mkdir -p /home/vagrant/.brooklyn
     - cp /vagrant/files/brooklyn.properties /home/vagrant/.brooklyn/
     - cp /vagrant/files/seaclouds-catalog.bom /home/vagrant/.brooklyn/
     - chmod 600 /home/vagrant/.brooklyn/brooklyn.properties
-    - nohup brooklyn-dist-0.9.0-SNAPSHOT/bin/brooklyn launch --catalogAdd /home/vagrant/.brooklyn/seaclouds-catalog.bom &
-- name: seaclouds1
-  box: ubuntu/trusty64
-  ram: 3072
-  cpus: 4
-  ip: 10.10.10.101
+    - nohup brooklyn-dist-0.9.0/bin/brooklyn launch --catalogAdd /home/vagrant/.brooklyn/seaclouds-catalog.bom &
 ...
