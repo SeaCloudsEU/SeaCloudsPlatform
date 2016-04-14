@@ -318,7 +318,7 @@ brooklyn.catalog:
         sudo dpkg -i influxdb_0.8.9_amd64.deb
 
       customize.command: |
-        sudo service influxdb start
+        sudo service influxdb restart
         tee ./customize-influxdb.sh <<EOF
         curl -X POST 'http://localhost:8086/cluster_admins/root?u=root&p=root' -d '{"password": "$INFLUXDB_DB_PASSWORD"}'
         curl -X POST 'http://localhost:8086/db?u=$INFLUXDB_DB_USER&p=$INFLUXDB_DB_PASSWORD' -d '{"name": "$INFLUXDB_DB_NAME"}'
@@ -328,7 +328,7 @@ brooklyn.catalog:
         sudo service influxdb stop
 
       launch.command: |
-        sudo service influxdb start
+        sudo service influxdb restart
         pidof influxdb > $PID_FILE
 
       stop.command: |
