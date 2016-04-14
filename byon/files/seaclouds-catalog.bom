@@ -283,6 +283,11 @@ brooklyn.catalog:
     name: seaclouds-discoverer-db
     item:
       type: org.apache.brooklyn.entity.nosql.mongodb.MongoDBServer
+      brooklyn.config:
+        templates.install:
+          classpath://mongoimport.sh: /tmp/mongoimport.sh
+      post.launch.command: |
+        mongoimport --db DrACO_DB --collection offerings --drop --file offerings.json
 
   - id: seaclouds-influxdb
     name: InfluxDB
