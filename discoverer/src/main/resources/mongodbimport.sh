@@ -1,1 +1,0 @@
-${driver.installdir}/bin/mongoimport "$@"
