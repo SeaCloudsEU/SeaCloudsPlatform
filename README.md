@@ -40,7 +40,8 @@ This spins up an Apache Brooklyn server accessible at `http://10.10.10.100:8081`
 
 - Point your favourite browser at `http://10.10.10.100:8081`
 - Select `SeaClouds Platform on BYON` application from Apache Brooklyn dropdown menu
-- Click on `Finish` button.
+- Click on `YAML Composer` button.
+- Finally click `Deploy` button.
 
 **Notice**: all the SeaClouds services will report a URL similar to http://127.0.0.1:3000
 To reach it from your browser, you have to reach http:10.10.10.100:3000 instead.
@@ -49,8 +50,9 @@ To reach it from your browser, you have to reach http:10.10.10.100:3000 instead.
 
 - Point your favourite browser at `http://10.10.10.100:8081`
 - Select `SeaClouds platform` application from Apache Brooklyn dropdown menu
-- Edit `location` specifying the cloud provider and the credentials to use it, in the YAML format.
-- Click on `Finish` button
+- Click on `YAML Composer` button.
+- Edit `location`section specifying the cloud provider and the credentials to use it, in the YAML format.
+- Click on `Deploy` button
 
 
 ## SeaClouds release 1.0.0

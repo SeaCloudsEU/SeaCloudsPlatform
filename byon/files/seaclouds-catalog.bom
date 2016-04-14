@@ -428,7 +428,7 @@ brooklyn.catalog:
       - type: seaclouds-planner
         name: seaclouds-planner
         brooklyn.config:
-          planner.discoverer.url: $brooklyn:formatString("http://%s%s", $brooklyn:component("discoverer").attributeWhenReady("host.address"), $brooklyn:component("discoverer").config("http.port"))
+          planner.discoverer.url: $brooklyn:formatString("http://%s:%s/", $brooklyn:component("discoverer").attributeWhenReady("host.address"), $brooklyn:component("discoverer").config("http.port"))
           planner.sla_generator.url: $brooklyn:component("sla-core").attributeWhenReady("main.uri")
           planner.grafana.url: $brooklyn:component("grafana").attributeWhenReady("host.address")
         launch.latch: $brooklyn:component("deployer").attributeWhenReady("service.isUp")
