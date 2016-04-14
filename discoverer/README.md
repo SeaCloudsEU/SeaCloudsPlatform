@@ -7,6 +7,10 @@ Those information are a TOSCA YAML representation (following the [SeaClouds Disc
 # Installing and running SeaClouds Discoverer
 The easiest way to install and run this component is explained in SeaClouds [README.md](../README.md).
 
+SeaClouds provides a list of prefetched offerings in case of troubles with remote resources. To intialize the Discoverer with such list you need to import [offerings.json](./src/main/resources/offerings.json) into MongoDB as follows:
+
+`mongoimport --db DrACO_DB --collection offerings --drop --file offerings.json`
+
 ## Requirements
 Running SeaClouds Discoverer only requires Java 7 (or greater) installed on the target machine. Among with the software requirements, it also needs:
 
