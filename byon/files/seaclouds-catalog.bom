@@ -288,9 +288,9 @@ brooklyn.catalog:
           DB: DrACO_DB
           COLLECTION: offerings
           FILE: https://raw.githubusercontent.com/SeaCloudsEU/SeaCloudsPlatform/master/discoverer/src/main/resources/offerings.json
-        post.launch.command: |
-          curl -o offering.json -s -S -L "https://raw.githubusercontent.com/SeaCloudsEU/SeaCloudsPlatform/master/discoverer/src/main/resources/offerings.json"
-          ${EXPANDEDINSTALL_DIR}/bin/mongoimport --db ${DB} --collection ${COLLECTION} --drop --file offering.json
+      post.launch.command: |
+        curl -o offering.json -s -S -L "https://raw.githubusercontent.com/SeaCloudsEU/SeaCloudsPlatform/master/discoverer/src/main/resources/offerings.json"
+        ${EXPANDEDINSTALL_DIR}/bin/mongoimport --db ${DB} --collection ${COLLECTION} --drop --file offering.json
 
   - id: seaclouds-influxdb
     name: InfluxDB
