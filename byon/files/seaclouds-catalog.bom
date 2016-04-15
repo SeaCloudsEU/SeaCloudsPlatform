@@ -530,10 +530,11 @@ brooklyn.catalog:
       - type: seaclouds-planner
         name: seaclouds-planner
         brooklyn.config:
-          planner.discoverer.url: $brooklyn:formatString("http://%s%s", $brooklyn:component("discoverer").attributeWhenReady("host.address"), $brooklyn:component("discoverer").config("http.port"))
-          planner.sla_generator.url: $brooklyn:component("sla-core").attributeWhenReady("main.uri")
+          planner.discoverer.url: $brooklyn:formatString("http://%s:%s/", $brooklyn:component("discoverer").attributeWhenReady("host.address"), $brooklyn:component("discoverer").config("http.port"))
+          planner.sla_generator.url: $brooklyn:formatString("http://%s:%s", $brooklyn:component("sla-core").attributeWhenReady("host.address"), $brooklyn:component("sla-core").attributeWhenReady("http.port"))
           planner.grafana.url: $brooklyn:component("grafana").attributeWhenReady("host.address")
-        launch.latch: $brooklyn:component("deployer").attributeWhenReady("service.isUp")
+          planner.monitor_manager.url: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
+          planner.monitor_manager.port: $brooklyn:component("monitor-manager").config("monitor.manager.port")
       - type: seaclouds-deployer
         name: seaclouds-deployer
         brooklyn.config:
@@ -542,6 +543,7 @@ brooklyn.catalog:
       - type: org.apache.brooklyn.entity.webapp.tomcat.TomcatServer
         name: seaclouds-sla-service
         id: sla-core
+        war: https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project&a=sla-service&v=LATEST&e=war
         brooklyn.config:
           jmx.enabled: false
           java.sysprops:
@@ -549,7 +551,7 @@ brooklyn.catalog:
               DB_USERNAME: "atossla"
               DB_PASSWORD: "_atossla_"
               MONITOR_METRICS_URL: $brooklyn:formatString("http://%s:%s/v1/metrics", component("monitor-manager").attributeWhenReady("host.address"), component("monitor-manager").config("monitor.manager.port"))
-              SLA_URL: $brooklyn:formatString("%s", component("sla-core").attributeWhenReady("host.address"), component("sla-core").attributeWhenReady("http.port"))
+              SLA_URL: $brooklyn:formatString("http://%s:%s", component("sla-core").attributeWhenReady("host.address"), component("sla-core").attributeWhenReady("http.port"))
       - type: org.apache.brooklyn.entity.database.postgresql.PostgreSqlNode
         name: seaclouds-sla-db
         id: sla-db
@@ -579,7 +581,6 @@ brooklyn.catalog:
         id: discoverer
         brooklyn.config:
           discoverer.db.host: $brooklyn:component("discoverer-db").attributeWhenReady("host.address")
-        launch.latch: $brooklyn:component("discoverer-db").attributeWhenReady("service.isUp")
       - type: seaclouds-discoverer-db
         name: seaclouds-discoverer-db
         id: discoverer-db
