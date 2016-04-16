@@ -118,11 +118,16 @@
                         scope.canvas = Canvas();
                         scope.canvas.init(uniqid, canvasOptions);
                         Status.init(scope.canvas);
+								Status.fromjson(scope.topology);
 
-                        scope.$watch('topology', function (newValue) {
-                            Status.fromjson(scope.topology);
-                            scope.canvas.restart();
-                        });
+								scope.$watch('topology', function (newValue) {
+									for (var i=0; i<newValue.nodes.length; i++)
+									{
+										 scope.canvas.getnodebyname(newValue.nodes[i].name).properties.status = newValue.nodes[i].properties.status;
+									}
+									scope.canvas.restart();
+								});
+                        
                     }
 
                     $timeout(function () {
