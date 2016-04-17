@@ -59,6 +59,7 @@ var TopologyEditorUtils = (function() {
                 })
             }
         }
+        parentTopology.applicationId = brooklynEntity.applicationId;
         return parentTopology;
     }
 

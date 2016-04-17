@@ -119,10 +119,19 @@
                         scope.canvas.init(uniqid, canvasOptions);
                         Status.init(scope.canvas);
 
+                        var currentAppId = "";
                         scope.$watch('topology', function (newValue) {
-                            Status.fromjson(scope.topology);
+                            if (currentAppId !== newValue.applicationId) {
+                                Status.fromjson(scope.topology);
+                                currentAppId = newValue.applicationId;
+                            }
+                            for (var i = 0; i < newValue.nodes.length; i++)
+                            {
+                                scope.canvas.getnodebyname(newValue.nodes[i].name).properties.status = newValue.nodes[i].properties.status;
+                            }
                             scope.canvas.restart();
                         });
+                        
                     }
 
                     $timeout(function () {
