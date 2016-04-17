@@ -140,3 +140,88 @@ angular.module('seacloudsDashboard.applications.application.sla', ['datatables',
         }
 
     });
+
+var SlaUtil = (function() {
+    /*
+     * TODO: atob and btoa unsafe in unicode strings.
+     */
+
+    function insert_agreement(rawdam, agreement) {
+        var dam = jsyaml.safeLoad(rawdam);
+        var base64agreement = window.btoa(agreement);
+        try {
+            dam
+                .topology_template
+                .groups
+                .seaclouds_configuration_policy
+                .policies[0]
+                .configuration
+                .slaAgreement = base64agreement;
+
+        } catch(e) {
+            console.warn("Could not insert agreement into dam");
+        }
+        return jsyaml.safeDump(dam);
+    }
+
+    function extract_agreement(rawdam) {
+        var dam = jsyaml.safeLoad(rawdam);
+        try {
+            var base64agreement = dam
+                .topology_template
+                .groups
+                .seaclouds_configuration_policy
+                .policies[0]
+                .configuration
+                .slaAgreement;
+
+        } catch(e) {
+            console.warn("Could not extract agreement from dam");
+            base64agreement = "";
+        }
+
+        var rawxml = window.atob(base64agreement);
+        var xml = format_xml(rawxml);
+        return xml;
+    }
+
+    /*
+     * From https://gist.github.com/sente/1083506
+     */
+    function format_xml(xml) {
+        var formatted = '';
+        var reg = /(>)(<)(\/*)/g;
+        xml = xml.replace(reg, '$1\r\n$2$3');
+        var pad = 0;
+        jQuery.each(xml.split('\r\n'), function(index, node) {
+            var indent = 0;
+            if (node.match( /.+<\/\w[^>]*>$/ )) {
+                indent = 0;
+            } else if (node.match( /^<\/\w/ )) {
+                if (pad != 0) {
+                    pad -= 1;
+                }
+            } else if (node.match( /^<\w[^>]*[^\/]>.*$/ )) {
+                indent = 1;
+            } else {
+                indent = 0;
+            }
+
+            var padding = '';
+            for (var i = 0; i < pad; i++) {
+                padding += '  ';
+            }
+
+            formatted += padding + node + '\r\n';
+            pad += indent;
+        });
+
+        return formatted;
+    }
+
+    return {
+        insert_agreement: insert_agreement,
+        extract_agreement: extract_agreement,
+        format_xml: format_xml
+    };
+})();
