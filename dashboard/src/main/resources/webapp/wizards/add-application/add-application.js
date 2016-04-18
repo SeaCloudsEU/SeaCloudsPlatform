@@ -50,6 +50,11 @@ angular.module('seacloudsDashboard.wizards.addApplication', ['ngRoute', 'angular
 
         var processRequirementsPhase = function(){
             $scope.currentStep++;
+            var wizardData = $scope.applicationWizardData;
+            if (wizardData.initialTopology != "") {
+                wizardData.topology = JSON.parse(wizardData.initialTopology);
+                wizardData.initialTopology = "";
+            }
         }
 
         var processDesignPhase = function(){
