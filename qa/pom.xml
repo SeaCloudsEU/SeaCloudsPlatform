@@ -16,7 +16,6 @@
         </dependency>
     </dependencies>
 
-
     <profiles>
         <profile>
             <id>integration</id>
