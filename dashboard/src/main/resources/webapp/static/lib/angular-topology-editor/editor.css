@@ -15,7 +15,7 @@ circle.node.starting{
     stroke-dasharray: 5px;
 }
 
-circle.node.on-fire{
+circle.node.on_fire{
     stroke: #F33F3F;
 }
 
