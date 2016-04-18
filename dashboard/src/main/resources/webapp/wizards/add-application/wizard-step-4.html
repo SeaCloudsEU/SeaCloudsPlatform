@@ -25,9 +25,18 @@
     <div class="col-lg-6">
         <h3>
             <small>TOSCA Deployable Application Model</small>
+            <a href="" ng-show="!showdam" ng-click="showdam=!showdam">+</a>
+            <a href="" ng-show="showdam" ng-click="showdam=!showdam">-</a>
         </h3>
         <ui-codemirror class="codemirror-height-lg" ui-codemirror-opts="codemirrorDamOptions"
-                       ng-model="applicationWizardData.finalDam"></ui-codemirror>
+                       ng-model="applicationWizardData.finalDam" ng-show="showdam"></ui-codemirror>
+        <h3>
+            <small>SLA Agreement</small>
+            <a href="" ng-show="!showagreement" ng-click="showagreement=!showagreement">+</a>
+            <a href="" ng-show="showagreement" ng-click="showagreement=!showagreement">-</a>
+        </h3>
+        <ui-codemirror class="codemirror-height-lg" ui-codemirror-opts="codemirrorXmlOptions"
+                       ng-show="showagreement" ng-model="applicationWizardData.agreement"></ui-codemirror>
     </div>
 
 </div>
