@@ -7,6 +7,9 @@
   forwarded_ports:
    - guest: 8081
      host: 8081
+   - guest: 8000
+     host: 8000
+     autocorrect: true
   shell:
     - curl -o apache-brooklyn-dist-0.9.0-dist.tar.gz -s -S -L "http://search.maven.org/remotecontent?filepath=org/apache/brooklyn/brooklyn-dist/0.9.0/brooklyn-dist-0.9.0-dist.tar.gz"
     - tar zxf apache-brooklyn-dist-0.9.0-dist.tar.gz
