@@ -34,6 +34,6 @@ elif [ "$TRAVIS_BRANCH" != "$BRANCH" ]; then
 else
   echo "Deploying snapshot..."
   export MAVEN_OPTS="-Xmx3000m"
-  mvn --quiet clean deploy --settings=".buildscript/settings.xml" -Dmaven.test.skip=true
+  mvn --quiet clean source:jar javadoc:jar deploy --settings=".buildscript/settings.xml" -Dmaven.test.skip=true
   echo "Snapshot deployed!"
 fi
