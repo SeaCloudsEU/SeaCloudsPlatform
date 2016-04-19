@@ -573,6 +573,12 @@ var Canvas = (function() {
         });
     }
 
+    function getoutlinks(source) {
+        return _search_all(links, function(link) {
+            return link.source === source;
+        });
+    }
+
     function addnode(node) {
         _addnode(node);
         firechange();
@@ -616,6 +622,17 @@ var Canvas = (function() {
         }
     }
 
+    function _search_all(array, filter) {
+        var result = [];
+        for (var i = 0; i < array.length; i++) {
+            var item = array[i];
+
+            if (filter(item)) {
+                result.push(item);
+            }
+        }
+        return result;
+    }
 
     function _remove(array, filter) {
         for (var i = 0; i < array.length; ) {
@@ -740,6 +757,7 @@ var Canvas = (function() {
         getnodebyname: getnodebyname,
         getlink: getlink,
         getlinkbynodes: getlinkbynodes,
+        getoutlinks: getoutlinks,
         addnode: addnode,
         addlink: addlink,
         linknodes: linknodes,
