@@ -17,21 +17,15 @@
 
 package eu.seaclouds.platform.dashboard.proxy;
 
-import com.google.common.io.Resources;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import eu.seaclouds.platform.dashboard.DashboardTestApplication;
 import eu.seaclouds.platform.dashboard.DashboardTestConfiguration;
 import io.dropwizard.testing.DropwizardTestSupport;
-import org.apache.commons.io.FileUtils;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 

@@ -14,7 +14,6 @@
  *      See the License for the specific language governing permissions and
  *      limitations under the License.
  */
-
 package eu.seaclouds.policy;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -201,9 +200,7 @@ public class SeaCloudsManagementPolicy extends AbstractPolicy {
     public void setEntity(EntityLocal entity) {
         super.setEntity(entity);
 
-        // SeaCloudsInitializerPolicy should only be attached to Application
         if (!entity.getApplication().equals(entity)) {
-            //TODO: Check if this exception stops the deployment process
             throw new RuntimeException("SeaCloudsInitializerPolicy must be attached to an application");
         }
 
