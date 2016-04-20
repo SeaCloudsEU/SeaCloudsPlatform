@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<wsag:Agreement xmlns:sla="http://sla.atos.eu" xmlns:wsag="http://www.ggf.org/namespaces/ws-agreement" wsag:AgreementId="43113dd0-4ad2-425e-acfe-8c87b35e2514">
+  <wsag:Name>user-seaclouds-evaluation</wsag:Name>
+  <wsag:Context>
+    <wsag:AgreementInitiator>user</wsag:AgreementInitiator>
+    <wsag:AgreementResponder>seaclouds</wsag:AgreementResponder>
+    <wsag:ServiceProvider>AgreementResponder</wsag:ServiceProvider>
+    <wsag:ExpirationTime>2017-04-08T16:04:55+0000</wsag:ExpirationTime>
+    <wsag:TemplateId>e02b7055-29b8-46f6-a5d9-15143e5d0b9a</wsag:TemplateId>
+    <sla:Service>evaluation</sla:Service>
+  </wsag:Context>
+  <wsag:Terms>
+    <wsag:All>
+      <wsag:ServiceDescriptionTerm/>
+      <wsag:GuaranteeTerm wsag:Name="respTimeSLARule___SoftcareGUI">
+        <wsag:ServiceScope wsag:ServiceName="service">softcare-gui</wsag:ServiceScope>
+        <wsag:ServiceLevelObjective>
+          <wsag:KPITarget>
+            <wsag:KPIName>softcare-gui/AverageResponseTimeInternalComponent</wsag:KPIName>
+            <wsag:CustomServiceLevel>{"constraint": "ResponseTimeViolation_SoftcareGUI NOT_EXISTS", "qos": "METRIC LE 200.0" }</wsag:CustomServiceLevel>
+          </wsag:KPITarget>
+        </wsag:ServiceLevelObjective>
+      </wsag:GuaranteeTerm>
+      <wsag:GuaranteeTerm wsag:Name="appAvailableSLARule___SoftcareGUI">
+        <wsag:ServiceScope wsag:ServiceName="service">softcare-gui</wsag:ServiceScope>
+        <wsag:ServiceLevelObjective>
+          <wsag:KPITarget>
+            <wsag:KPIName>softcare-gui/PaaSModuleAvailability</wsag:KPIName>
+            <wsag:CustomServiceLevel>{"constraint": "AppAvailabilityViolation_SoftcareGUI NOT_EXISTS", "qos": "METRIC GE 0.99" }</wsag:CustomServiceLevel>
+          </wsag:KPITarget>
+        </wsag:ServiceLevelObjective>
+      </wsag:GuaranteeTerm>
+    </wsag:All>
+  </wsag:Terms>
+</wsag:Agreement>
