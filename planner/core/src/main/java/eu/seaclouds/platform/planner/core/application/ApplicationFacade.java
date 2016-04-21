@@ -93,7 +93,7 @@ public class ApplicationFacade {
     public void addMonitoringInfo(MonitoringInfo monitoringInfo) {
         this.monitoringInfo = monitoringInfo;
         template = YamlParser.load(monitoringInfo.getReturnedAdp());
-        topologyTemplate.updateNoExistNodeTemplate(template);
+        topologyTemplate.updateNodeTemplates(template);
         updateNodeTemplates();
     }
 
@@ -143,7 +143,6 @@ public class ApplicationFacade {
     private void applyTopologyModifiers() {
         topologyTemplate.applyModifierApplicator(new TopologFacadeyModifierApplicator());
     }
-
 
     private void addPoliciesLocations() {
         Map<String, Object> locationGroups = topologyTemplate.getLocationPoliciesGroups();

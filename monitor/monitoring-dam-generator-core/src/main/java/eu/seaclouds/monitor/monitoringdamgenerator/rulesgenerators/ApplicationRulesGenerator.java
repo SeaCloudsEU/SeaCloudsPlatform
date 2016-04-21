@@ -54,24 +54,7 @@ public class ApplicationRulesGenerator {
         toReturn.getMonitoringRules().addAll(
                 generateAvailabilityRule(module).getMonitoringRules());
 
-        toReturn.getMonitoringRules().addAll(
-                generateCheckStatusRule(module).getMonitoringRules());
-
         return toReturn;
-    }
-
-    private MonitoringRules generateCheckStatusRule(Module module) {
-
-        logger.info("Generating rules required for the replanning process for module "
-                + module.getModuleName());
-
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("samplingTime", "10");
-        return RuleSchemaGenerator.fillMonitoringRuleSchema("checkStatusRule___"
-                + module.getModuleName(), "10", "10", "InternalComponent",
-                module.getModuleName(), "isAppOnFire", parameters, null, null,
-                null, "ApplicationStatus_" + module.getModuleName());
-
     }
 
     private MonitoringRules generateResponseTimeSlaRule(Module module) {

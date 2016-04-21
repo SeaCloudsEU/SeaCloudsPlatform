@@ -114,5 +114,3 @@ groups:
     - dependencies: {}
     - QoSInfo: {execution_time: 50 ms, benchmark_platform: Amazon_EC2_m3_xlarge_eu_central_1}
 ReconfigurationsPOC: {}
-
-

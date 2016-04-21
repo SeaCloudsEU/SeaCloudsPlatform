@@ -148,14 +148,12 @@ public class DamGeneratorTest {
         Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
         Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
 
-        assertEquals(generatedNodeTemplates.size(), 8);
+        assertEquals(generatedNodeTemplates.size(), 6);
         assertEquals(generatedNodeTemplates.get("www"), expectedNodeTemplates.get("www"));
         assertEquals(generatedNodeTemplates.get("db"), expectedNodeTemplates.get("db"));
 
         assertEquals(generatedNodeTemplates.get("modacloudsDc_www"), expectedNodeTemplates.get("modacloudsDc_www"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_www"), expectedNodeTemplates.get("seacloudsDc_www"));
         assertEquals(generatedNodeTemplates.get("modacloudsDc_db"), expectedNodeTemplates.get("modacloudsDc_db"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_db"), expectedNodeTemplates.get("seacloudsDc_db"));
 
         assertEquals(generatedNodeTemplates.get("Amazon_EC2_m1_small_eu_central_1"), expectedNodeTemplates.get("Amazon_EC2_m1_small_eu_central_1"));
         assertEquals(generatedNodeTemplates.get("Amazon_EC2_m4_10xlarge_eu_west_1"), expectedNodeTemplates.get("Amazon_EC2_m4_10xlarge_eu_west_1"));
@@ -192,12 +190,11 @@ public class DamGeneratorTest {
         Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
         Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
 
-        assertEquals(generatedNodeTemplates.size(), 5);
+        assertEquals(generatedNodeTemplates.size(), 4);
         assertEquals(generatedNodeTemplates.get("php"), expectedNodeTemplates.get("php"));
         assertEquals(generatedNodeTemplates.get("db"), expectedNodeTemplates.get("db"));
 
         assertEquals(generatedNodeTemplates.get("modacloudsDc_db"), expectedNodeTemplates.get("modacloudsDc_db"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_db"), expectedNodeTemplates.get("seacloudsDc_db"));
 
         assertEquals(generatedNodeTemplates.get("Amazon_EC2_c3_2xlarge_ap_southeast_2"),
                 expectedNodeTemplates.get("Amazon_EC2_c3_2xlarge_ap_southeast_2"));
@@ -237,25 +234,20 @@ public class DamGeneratorTest {
         Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
         Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
 
-        assertEquals(generatedNodeTemplates.size(), 12);
+        assertEquals(generatedNodeTemplates.size(), 9);
 
         assertEquals(generatedNodeTemplates.get("nuro-gui"), expectedNodeTemplates.get("nuro-gui"));
         assertEquals(generatedNodeTemplates.get("modacloudsDc_nuro-gui"), expectedNodeTemplates.get("modacloudsDc_nuro-gui"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_nuro-gui"), expectedNodeTemplates.get("seacloudsDc_nuro-gui"));
-
 
         assertEquals(generatedNodeTemplates.get("nuro-api"), expectedNodeTemplates.get("nuro-api"));
         assertEquals(generatedNodeTemplates.get("modacloudsDc_nuro-api"), expectedNodeTemplates.get("modacloudsDc_nuro-api"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_nuro-api"), expectedNodeTemplates.get("seacloudsDc_nuro-api"));
 
         assertEquals(generatedNodeTemplates.get("db"), expectedNodeTemplates.get("db"));
         assertEquals(generatedNodeTemplates.get("modacloudsDc_db"), expectedNodeTemplates.get("modacloudsDc_db"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_db"), expectedNodeTemplates.get("seacloudsDc_db"));
 
         assertEquals(generatedNodeTemplates.get("Amazon_EC2_m4_large_us_west_1"), expectedNodeTemplates.get("Amazon_EC2_m4_large_us_west_1"));
         assertEquals(generatedNodeTemplates.get("Amazon_EC2_c3_large_ap_northeast_1"), expectedNodeTemplates.get("Amazon_EC2_c3_large_ap_northeast_1"));
         assertEquals(generatedNodeTemplates.get("Amazon_EC2_r3_large_us_west_2"), expectedNodeTemplates.get("Amazon_EC2_r3_large_us_west_2"));
-
 
         Map<String, Object> generatedGroups = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.GROUPS);
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
@@ -298,7 +290,7 @@ public class DamGeneratorTest {
         Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
         Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
 
-        assertEquals(generatedNodeTemplates.size(), 7);
+        assertEquals(generatedNodeTemplates.size(), 6);
 
         assertEquals(generatedNodeTemplates.get("nuro-gui"), expectedNodeTemplates.get("nuro-gui"));
         assertEquals(generatedNodeTemplates.get("nuro-api"), expectedNodeTemplates.get("nuro-api"));
@@ -306,7 +298,6 @@ public class DamGeneratorTest {
 
         assertEquals(generatedNodeTemplates.get("db"), expectedNodeTemplates.get("db"));
         assertEquals(generatedNodeTemplates.get("modacloudsDc_db"), expectedNodeTemplates.get("modacloudsDc_db"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_db"), expectedNodeTemplates.get("seacloudsDc_db"));
 
         assertEquals(generatedNodeTemplates.get("Amazon_EC2_t2_small_eu_west_1"), expectedNodeTemplates.get("Amazon_EC2_t2_small_eu_west_1"));
 
@@ -319,10 +310,8 @@ public class DamGeneratorTest {
         assertEquals(generatedGroups.get("operation_nuro-api"), expectedGroups.get("operation_nuro-api"));
         assertEquals(generatedGroups.get("operation_nuro-gui"), expectedGroups.get("operation_nuro-gui"));
 
-
         assertEquals(generatedGroups.get("add_brooklyn_location_Amazon_EC2_t2_small_eu_west_1"),
                 expectedGroups.get("add_brooklyn_location_Amazon_EC2_t2_small_eu_west_1"));
-
 
         assertEquals(generatedGroups.get("add_brooklyn_location_nuro-api"), expectedGroups.get("add_brooklyn_location_nuro-api"));
         assertEquals(generatedGroups.get("add_brooklyn_location_nuro-gui"), expectedGroups.get("add_brooklyn_location_nuro-gui"));
@@ -350,30 +339,22 @@ public class DamGeneratorTest {
         Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
         Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
 
-        assertEquals(generatedNodeTemplates.size(), 23);
+        assertEquals(generatedNodeTemplates.size(), 15);
 
         assertEquals(generatedNodeTemplates.get("Softcare_dashboard"), expectedNodeTemplates.get("Softcare_dashboard"));
         assertEquals(generatedNodeTemplates.get("modacloudsDc_Softcare_dashboard"), expectedNodeTemplates.get("modacloudsDc_Softcare_dashboard"));
-        assertEquals(generatedNodeTemplates.get("javaAppDc_Softcare_dashboard"), expectedNodeTemplates.get("javaAppDc_Softcare_dashboard"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_Softcare_dashboard"), expectedNodeTemplates.get("seacloudsDc_Softcare_dashboard"));
 
         assertEquals(generatedNodeTemplates.get("Forum"), expectedNodeTemplates.get("Forum"));
         assertEquals(generatedNodeTemplates.get("modacloudsDc_Forum"), expectedNodeTemplates.get("modacloudsDc_Forum"));
-        assertEquals(generatedNodeTemplates.get("javaAppDc_Forum"), expectedNodeTemplates.get("javaAppDc_Forum"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_Forum"), expectedNodeTemplates.get("seacloudsDc_Forum"));
 
         assertEquals(generatedNodeTemplates.get("SoftcareWS"), expectedNodeTemplates.get("SoftcareWS"));
         assertEquals(generatedNodeTemplates.get("modacloudsDc_SoftcareWS"), expectedNodeTemplates.get("modacloudsDc_SoftcareWS"));
-        assertEquals(generatedNodeTemplates.get("javaAppDc_SoftcareWS"), expectedNodeTemplates.get("javaAppDc_SoftcareWS"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_SoftcareWS"), expectedNodeTemplates.get("seacloudsDc_SoftcareWS"));
 
         assertEquals(generatedNodeTemplates.get("ForumDB"), expectedNodeTemplates.get("ForumDB"));
         assertEquals(generatedNodeTemplates.get("modacloudsDc_ForumDB"), expectedNodeTemplates.get("modacloudsDc_ForumDB"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_ForumDB"), expectedNodeTemplates.get("seacloudsDc_ForumDB"));
 
         assertEquals(generatedNodeTemplates.get("SoftcareDB"), expectedNodeTemplates.get("SoftcareDB"));
         assertEquals(generatedNodeTemplates.get("modacloudsDc_SoftcareDB"), expectedNodeTemplates.get("modacloudsDc_SoftcareDB"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_SoftcareDB"), expectedNodeTemplates.get("seacloudsDc_SoftcareDB"));
 
         assertEquals(generatedNodeTemplates.get("Amazon_EC2_m3_medium_ap_southeast_2"), expectedNodeTemplates.get("Amazon_EC2_m3_medium_ap_southeast_2"));
         assertEquals(generatedNodeTemplates.get("Amazon_EC2_t2_medium_us_east_1"), expectedNodeTemplates.get("Amazon_EC2_t2_medium_us_east_1"));
@@ -433,7 +414,7 @@ public class DamGeneratorTest {
         Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
         Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
 
-        assertEquals(generatedNodeTemplates.size(), 11);
+        assertEquals(generatedNodeTemplates.size(), 9);
 
         assertEquals(generatedNodeTemplates.get("Softcare_dashboard"), expectedNodeTemplates.get("Softcare_dashboard"));
         assertEquals(generatedNodeTemplates.get("Forum"), expectedNodeTemplates.get("Forum"));
@@ -441,11 +422,9 @@ public class DamGeneratorTest {
 
         assertEquals(generatedNodeTemplates.get("ForumDB"), expectedNodeTemplates.get("ForumDB"));
         assertEquals(generatedNodeTemplates.get("modacloudsDc_ForumDB"), expectedNodeTemplates.get("modacloudsDc_ForumDB"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_ForumDB"), expectedNodeTemplates.get("seacloudsDc_ForumDB"));
 
         assertEquals(generatedNodeTemplates.get("SoftcareDB"), expectedNodeTemplates.get("SoftcareDB"));
         assertEquals(generatedNodeTemplates.get("modacloudsDc_SoftcareDB"), expectedNodeTemplates.get("modacloudsDc_SoftcareDB"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_SoftcareDB"), expectedNodeTemplates.get("seacloudsDc_SoftcareDB"));
 
         assertEquals(generatedNodeTemplates.get("Amazon_EC2_t2_micro_eu_central_1"), expectedNodeTemplates.get("Amazon_EC2_t2_micro_eu_central_1"));
         assertEquals(generatedNodeTemplates.get("Amazon_EC2_t2_micro_ap_northeast_1"), expectedNodeTemplates.get("Amazon_EC2_t2_micro_ap_northeast_1"));
@@ -502,15 +481,12 @@ public class DamGeneratorTest {
         Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
         Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
 
-        assertEquals(generatedNodeTemplates.size(), 9);
+        assertEquals(generatedNodeTemplates.size(), 6);
         assertEquals(generatedNodeTemplates.get("Chat"), expectedNodeTemplates.get("Chat"));
         assertEquals(generatedNodeTemplates.get("MessageDatabase"), expectedNodeTemplates.get("MessageDatabase"));
 
         assertEquals(generatedNodeTemplates.get("modacloudsDc_Chat"), expectedNodeTemplates.get("modacloudsDc_Chat"));
-        assertEquals(generatedNodeTemplates.get("javaAppDc_Chat"), expectedNodeTemplates.get("javaAppDc_Chat"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_Chat"), expectedNodeTemplates.get("seacloudsDc_Chat"));
         assertEquals(generatedNodeTemplates.get("modacloudsDc_MessageDatabase"), expectedNodeTemplates.get("modacloudsDc_MessageDatabase"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_MessageDatabase"), expectedNodeTemplates.get("seacloudsDc_MessageDatabase"));
 
         assertEquals(generatedNodeTemplates.get("Amazon_EC2_c1_medium_sa_east_1"), expectedNodeTemplates.get("Amazon_EC2_c1_medium_sa_east_1"));
         assertEquals(generatedNodeTemplates.get("Amazon_EC2_c1_medium_us_west_2"), expectedNodeTemplates.get("Amazon_EC2_c1_medium_us_west_2"));
@@ -547,12 +523,11 @@ public class DamGeneratorTest {
         Map<String, Object> generatedNodeTemplates = (Map<String, Object>) generatedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
         Map<String, Object> expectedNodeTemplates = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.NODE_TEMPLATES);
 
-        assertEquals(generatedNodeTemplates.size(), 5);
+        assertEquals(generatedNodeTemplates.size(), 4);
         assertEquals(generatedNodeTemplates.get("tomcat_server"), expectedNodeTemplates.get("tomcat_server"));
         assertEquals(generatedNodeTemplates.get("db"), expectedNodeTemplates.get("db"));
 
         assertEquals(generatedNodeTemplates.get("modacloudsDc_db"), expectedNodeTemplates.get("modacloudsDc_db"));
-        assertEquals(generatedNodeTemplates.get("seacloudsDc_db"), expectedNodeTemplates.get("seacloudsDc_db"));
 
         assertEquals(generatedNodeTemplates.get("Amazon_EC2_c3_xlarge_ap_southeast_2"), expectedNodeTemplates.get("Amazon_EC2_c3_xlarge_ap_southeast_2"));
 

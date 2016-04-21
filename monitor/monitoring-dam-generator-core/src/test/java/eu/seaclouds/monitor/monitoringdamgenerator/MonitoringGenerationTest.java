@@ -19,7 +19,7 @@ public class MonitoringGenerationTest {
 
 
     private static final double EXPECTED_RESPONSE_TIME_THRESHOLD = 2000.0;
-    private static final double EXPECTED_AVAILABILITY_THRESHOLD = 0.96;
+    private static final double EXPECTED_AVAILABILITY_THRESHOLD = 0.98;
     private static final String TEST_PORT = "8080";
 
 
@@ -41,68 +41,62 @@ public class MonitoringGenerationTest {
             String ruleType = rule.getId().split("___")[0];
             String nodeTemplateId = rule.getId().split("___")[1];
             
-            switch (ruleType) {
-
-            case "respTimeRule":
-                parametersTest.clear();
-                parametersTest.put("samplingProbability", "1");
-                TestUtils.testRule(rule, "10", "10", "InternalComponent",
-                        nodeTemplateId,
-                        "AverageResponseTimeInternalComponent",
-                        parametersTest, null, null, null,
-                        "ResponseTime_" + nodeTemplateId);
-                break;
-
-            case "respTimeSLARule":
-                parametersTest.clear();
-                parametersTest.put("samplingProbability", "1");
-                TestUtils.testRule(rule, "10", "10", "InternalComponent",
-                        nodeTemplateId,
-                        "AverageResponseTimeInternalComponent",
-                        parametersTest, null, null, "METRIC > "
-                                + EXPECTED_RESPONSE_TIME_THRESHOLD,
-                        "ResponseTimeViolation_" + nodeTemplateId);
-                break;
-                
-            case "appAvailableSLARule":
-                parametersTest.clear();
-                parametersTest.put("samplingProbability", "1");
-                TestUtils.testRule(rule, "10", "10", "InternalComponent",
-                        nodeTemplateId,
-                        "PaaSModuleAvailability",
-                        parametersTest, null, null, "METRIC < "
-                                + EXPECTED_AVAILABILITY_THRESHOLD,
-                        "AppAvailabilityViolation_" + nodeTemplateId);
-                break;
-
-            case "checkStatusRule":
-                parametersTest.clear();
-                parametersTest.put("samplingTime", "10");
-                TestUtils.testRule(rule, "10", "10", "InternalComponent",
-                        nodeTemplateId, "isAppOnFire", parametersTest,
-                        null, null, null,
-                        "ApplicationStatus_" + nodeTemplateId);
-                break;
-
-            case "cpuRule":
-                parametersTest.clear();
-                parametersTest.put("samplingTime", "10");
-                parametersTest.put("samplingProbability", "1");
-                TestUtils.testRule(rule, "10", "10", "VM",
-                        nodeTemplateId, "CPUUtilization",
-                        parametersTest, "Average", "VM", null,
-                        "AverageCpuUtilization_" + nodeTemplateId);
-                break;
-
-            case "ramRule":
-                parametersTest.clear();
-                parametersTest.put("samplingTime", "10");
-                parametersTest.put("samplingProbability", "1");
-                TestUtils.testRule(rule, "10", "10", "VM",
-                        nodeTemplateId, "MemUsed",
-                        parametersTest, "Average", "VM", null,
-                        "AverageRamUtilization_" + nodeTemplateId);
-                break;
+            if(nodeTemplateId.equals("www")){
+    
+                switch (ruleType) {
+    
+                case "respTimeRule":
+                    parametersTest.clear();
+                    parametersTest.put("samplingProbability", "1");
+                    TestUtils.testRule(rule, "10", "10", "InternalComponent",
+                            nodeTemplateId,
+                            "AverageResponseTimeInternalComponent",
+                            parametersTest, null, null, null,
+                            "ResponseTime_" + nodeTemplateId);
+                    break;
+    
+                case "respTimeSLARule":
+                    parametersTest.clear();
+                    parametersTest.put("samplingProbability", "1");
+                    TestUtils.testRule(rule, "10", "10", "InternalComponent",
+                            nodeTemplateId,
+                            "AverageResponseTimeInternalComponent",
+                            parametersTest, null, null, "METRIC > "
+                                    + EXPECTED_RESPONSE_TIME_THRESHOLD,
+                            "ResponseTimeViolation_" + nodeTemplateId);
+                    break;
+                    
+                case "appAvailableSLARule":
+                    parametersTest.clear();
+                    parametersTest.put("samplingProbability", "1");
+                    TestUtils.testRule(rule, "10", "10", "InternalComponent",
+                            nodeTemplateId,
+                            "PaaSModuleAvailability",
+                            parametersTest, null, null, "METRIC < "
+                                    + EXPECTED_AVAILABILITY_THRESHOLD,
+                            "AppAvailabilityViolation_" + nodeTemplateId);
+                    break;
+    
+                case "cpuRule":
+                    parametersTest.clear();
+                    parametersTest.put("samplingTime", "10");
+                    parametersTest.put("samplingProbability", "1");
+                    TestUtils.testRule(rule, "10", "10", "VM",
+                            nodeTemplateId, "CPUUtilization",
+                            parametersTest, "Average", "VM", null,
+                            "AverageCpuUtilization_" + nodeTemplateId);
+                    break;
+    
+                case "ramRule":
+                    parametersTest.clear();
+                    parametersTest.put("samplingTime", "10");
+                    parametersTest.put("samplingProbability", "1");
+                    TestUtils.testRule(rule, "10", "10", "VM",
+                            nodeTemplateId, "MemUsed",
+                            parametersTest, "Average", "VM", null,
+                            "AverageRamUtilization_" + nodeTemplateId);
+                    break;
+                }
             }
         }
         

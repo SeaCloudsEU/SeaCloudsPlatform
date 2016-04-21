@@ -76,25 +76,6 @@ topology_template:
       type: seaclouds.nodes.Datacollector
       requirements:
       - host: Amazon_EC2_c3_2xlarge_ap_southeast_2
-    seacloudsDc_db:
-      interfaces:
-        Standard:
-          start: https://s3-eu-west-1.amazonaws.com/seaclouds-dc/installSeaCloudsDc.sh
-      properties:
-        shell.env:
-          MODULE_PORT: '8080'
-          MODULE_IP: $brooklyn:component("db").attributeWhenReady("host.address")
-          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP: 52.48.187.2
-          MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT: '8170'
-          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID: db_ID
-          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT: '8086'
-          METRICS: AppAvailability
-          MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 52.48.187.2
-          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE: db
-        installLatch: $brooklyn:component("db").attributeWhenReady("service.isUp")
-      type: seaclouds.nodes.Datacollector
-      requirements:
-      - host: Amazon_EC2_c3_2xlarge_ap_southeast_2
   groups:
     operation_db:
       members:

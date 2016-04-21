@@ -61,18 +61,6 @@ topology_template:
           METRICS: AverageCpuUtilization;AverageRamUtilization, MODACLOUDS_TOWER4CLOUDS_VM_TYPE: Amazon_EC2_m1_small_eu_central_1,
           MODACLOUDS_TOWER4CLOUDS_DC_SYNC_PERIOD: '10', MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 52.48.187.2,
           MODACLOUDS_TOWER4CLOUDS_VM_ID: Amazon_EC2_m1_small_eu_central_1_ID}
-    seacloudsDc_www:
-      requirements:
-      - {host: Amazon_EC2_m1_small_eu_central_1}
-      interfaces:
-        Standard: {start: 'https://s3-eu-west-1.amazonaws.com/seaclouds-dc/installSeaCloudsDc.sh'}
-      type: seaclouds.nodes.Datacollector
-      properties:
-        installLatch: $brooklyn:component("www").attributeWhenReady("service.isUp")
-        shell.env: {MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT: '8170', MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID: www_ID,
-          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP: 52.48.187.2, MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT: '8086',
-          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE: www, METRICS: NUROServerLastThirtySecondsAverageRunTime;NUROServerLastThirtySecondsPlayerCount;NUROServerLastThirtySecondsRequestCount;NUROServerLastThirtySecondsAverageThroughput;AppAvailability,
-          MODULE_PORT: '8080', MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 52.48.187.2, MODULE_IP: '$brooklyn:component("www").attributeWhenReady("host.address")'}
     modacloudsDc_db:
       requirements:
       - {host: Amazon_EC2_m4_10xlarge_eu_west_1}
@@ -87,18 +75,6 @@ topology_template:
           METRICS: AverageCpuUtilization;AverageRamUtilization, MODACLOUDS_TOWER4CLOUDS_VM_TYPE: Amazon_EC2_m4_10xlarge_eu_west_1,
           MODACLOUDS_TOWER4CLOUDS_DC_SYNC_PERIOD: '10', MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 52.48.187.2,
           MODACLOUDS_TOWER4CLOUDS_VM_ID: Amazon_EC2_m4_10xlarge_eu_west_1_ID}
-    seacloudsDc_db:
-      requirements:
-      - {host: Amazon_EC2_m4_10xlarge_eu_west_1}
-      interfaces:
-        Standard: {start: 'https://s3-eu-west-1.amazonaws.com/seaclouds-dc/installSeaCloudsDc.sh'}
-      type: seaclouds.nodes.Datacollector
-      properties:
-        installLatch: $brooklyn:component("db").attributeWhenReady("service.isUp")
-        shell.env: {MODACLOUDS_TOWER4CLOUDS_MANAGER_PORT: '8170', MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_ID: db_ID,
-          MODACLOUDS_TOWER4CLOUDS_INFLUXDB_IP: 52.48.187.2, MODACLOUDS_TOWER4CLOUDS_INFLUXDB_PORT: '8086',
-          MODACLOUDS_TOWER4CLOUDS_INTERNAL_COMPONENT_TYPE: db, METRICS: AppAvailability,
-          MODULE_PORT: '8080', MODACLOUDS_TOWER4CLOUDS_MANAGER_IP: 52.48.187.2, MODULE_IP: '$brooklyn:component("db").attributeWhenReady("host.address")'}
   groups:
     operation_www:
       members: [www]
