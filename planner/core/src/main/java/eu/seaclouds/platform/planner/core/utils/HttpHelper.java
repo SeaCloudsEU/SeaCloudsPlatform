@@ -28,7 +28,9 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -98,6 +100,26 @@ public class HttpHelper {
             log.error("ClientProtocolException", e);
         } catch (UnsupportedEncodingException e) {
             log.error("UnsupportedEncodingException", e);
+        } catch (IOException e) {
+            log.error("IOException", e);
+        }
+
+        return result;
+    }
+
+
+    public String postEntity(String restPath, HttpEntity entity) {
+        log.info("Posting request for " + this.serviceURL + restPath);
+
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        HttpPost httpPost = new HttpPost(prepareRequestURL(restPath));
+        httpPost.setEntity(entity);
+        String result = "";
+
+        try {
+            HttpResponse response = httpClient.execute(httpPost);
+            result = EntityUtils.toString(response.getEntity());
         } catch (IOException e) {
             log.error("IOException", e);
         }

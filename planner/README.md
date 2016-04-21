@@ -24,6 +24,14 @@ file. The configuration info are:
 - slaGeneratorURL: is the SLA Component URL and port in the format http://{ip}:{port}/
 - deployableProviders is the list of providers that the Deployer component is able to deploy (by default ["openstack-nova","openstack-keystone","openstack-nova-ec2", "byon", "sts", "elasticstack", "cloudstack", "rackspace-cloudidentity","aws-ec2","gogrid","elastichosts-lon-p","elastichosts-sat-p","elastichosts-lon-b","openhosting-east1","serverlove-z1-man","skalicloud-sdg-my","go2cloud-jhb1","softlayer","hpcloud-compute","rackspace-cloudservers-us","rackspace-cloudservers-uk","azurecompute","google-compute-engine","CloudFoundry"])
 - filterOfferings is a boolean flag that enables the filter of non deployable providers for the matching process (default is false)
+- influxdbURL is the InfluxDB service URL 
+- influxdbPort is the InlfuxDB service port
+- influxdbDatabase is the database name on InfluxDB service
+- influxdbUsername is the username on InfluxDB service
+- influxdbPassword is the password on InfluxDB service
+- grafanaEndpoint is Grafana service URL and port in the format http://{ip}:{port}/
+- grafanaUsername is the username on Grafana service
+- grafanaPassword is the password on Grafana service
 
 All the configuration info are required.
 

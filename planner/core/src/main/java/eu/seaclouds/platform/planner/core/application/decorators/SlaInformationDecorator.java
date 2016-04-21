@@ -16,6 +16,7 @@
  */
 package eu.seaclouds.platform.planner.core.application.decorators;
 
+import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
 import eu.seaclouds.platform.planner.core.DamGenerator;
 import eu.seaclouds.platform.planner.core.application.ApplicationFacade;
 import eu.seaclouds.platform.planner.core.application.agreements.AgreementGenerator;
@@ -38,7 +39,7 @@ public class SlaInformationDecorator implements ApplicationFacadeDecorator {
     public void apply(ApplicationFacade applicationFacade) {
         this.applicationFacade = applicationFacade;
         this.agreementGenerator = applicationFacade.getAgreementGenerator();
-        String agreementId = agreementGenerator.generateAgreeemntId(applicationFacade.templateToString());
+        String agreementId = agreementGenerator.generateAgreeemntId(applicationFacade.templateToString(), applicationFacade.getMonitoringInfo());
         applicationFacade.addSlaInformation(agreementId);
         addApplicationInfo(agreementId);
     }

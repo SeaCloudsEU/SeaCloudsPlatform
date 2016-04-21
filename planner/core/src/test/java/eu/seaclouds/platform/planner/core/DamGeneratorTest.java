@@ -18,12 +18,14 @@ package eu.seaclouds.platform.planner.core;
 
 import com.google.common.collect.Iterators;
 import com.google.common.io.Resources;
+import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
 import eu.seaclouds.platform.planner.core.application.ApplicationMetadataGenerator;
 import eu.seaclouds.platform.planner.core.application.agreements.AgreementGenerator;
 import eu.seaclouds.platform.planner.core.application.decorators.MonitoringInformationDecorator;
 import eu.seaclouds.platform.planner.core.application.decorators.SeaCloudsManagementPolicyDecorator;
 import eu.seaclouds.platform.planner.core.application.decorators.SlaInformationDecorator;
 import eu.seaclouds.platform.planner.core.utils.YamlParser;
+import it.polimi.tower4clouds.rules.MonitoringRules;
 import org.apache.brooklyn.util.text.Strings;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -37,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
@@ -72,7 +75,7 @@ public class DamGeneratorTest {
     public void setUp() throws URISyntaxException, FileNotFoundException {
         MockitoAnnotations.initMocks(this);
 
-        when(fakeAgreementGenerator.generateAgreeemntId((anyString())))
+        when(fakeAgreementGenerator.generateAgreeemntId((anyString()), (MonitoringInfo) anyObject()))
                 .thenReturn(FAKE_AGREEMENT_ID);
         String fakeAgreement = new Scanner(new File(Resources.getResource("agreements/mock_test_agreement.xml").toURI())).useDelimiter("\\Z").next();
         when(fakeAgreementGenerator.getAgreement(anyString())).thenReturn(fakeAgreement);

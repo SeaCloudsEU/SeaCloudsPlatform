@@ -18,16 +18,25 @@ package eu.seaclouds.platform.planner.core.application.agreements;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
 import eu.seaclouds.platform.planner.core.application.ApplicationMonitorId;
 import eu.seaclouds.platform.planner.core.utils.HttpHelper;
 import eu.seaclouds.platform.planner.core.utils.YamlParser;
+import it.polimi.tower4clouds.rules.MonitoringRules;
 import org.apache.brooklyn.util.collections.MutableList;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -45,11 +54,18 @@ public class AgreementGenerator {
         this.slaUrl = slaUrl;
     }
 
-    public String generateAgreeemntId(String templateDescription) {
+    public String generateAgreeemntId(String templateDescription, MonitoringInfo monitoringInfo) {
         String result = null;
+        String monitoring = serializeToXml(monitoringInfo);
         Map<String, Object> template = YamlParser.load(templateDescription);
+
+        HttpEntity httpEntity = MultipartEntityBuilder.create()
+                .addTextBody("dam", YamlParser.dump(template))
+                .addTextBody("rules", monitoring)
+                .build();
+
         String slaInfoResponse = new HttpHelper(slaUrl)
-                .postInBody(SLA_GEN_OP, YamlParser.dump(template));
+                .postEntity(SLA_GEN_OP, httpEntity);
         checkNotNull(slaInfoResponse, "Error getting SLA info");
         try {
             ApplicationMonitorId applicationMonitoringId = new ObjectMapper()
@@ -66,6 +82,26 @@ public class AgreementGenerator {
                 new BasicNameValuePair("templateId", applicationMonitorId));
         return new HttpHelper(slaUrl).getRequest(GET_AGREEMENT_OP, paremeters);
 
+    }
+
+    private static String serializeToXml(MonitoringInfo monitoringInfo) {
+        StringWriter sw = new StringWriter();
+        JAXBContext jaxbContext;
+        String marshalledMonitoringRules = null;
+        try {
+            jaxbContext = JAXBContext.newInstance(MonitoringRules.class);
+            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+            jaxbMarshaller.marshal(monitoringInfo.getApplicationMonitoringRules(), sw);
+            marshalledMonitoringRules = sw.toString();
+        } catch (JAXBException e) {
+            log.error("Monitoring rules {} can not be marshalled by addSeaCloudsPolicy in " +
+                            "DamGenerator",
+                    monitoringInfo.getApplicationMonitoringRules());
+        }
+
+        return marshalledMonitoringRules;
     }
 
 }
