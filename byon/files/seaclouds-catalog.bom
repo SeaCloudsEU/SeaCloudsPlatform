@@ -409,6 +409,55 @@ brooklyn.catalog:
             enricher.targetSensor: $brooklyn:sensor("main.uri")
             enricher.targetValue: $brooklyn:formatString("http://%s:%s", $brooklyn:attributeWhenReady("host.address"), $brooklyn:config("http.port"))
 
+  - id: seaclouds-data-collector
+    name: SeaCloudsDc
+    description: SeaClouds Data Collector 
+    item:
+      type: org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess
+      id: seacloudsdc
+      name: SeaClouds Data Collector
+
+      brooklyn.config:
+        runtimeFiles:
+          https://oss.sonatype.org/content/repositories/snapshots/eu/seaclouds-project/monitor/seaclouds-data-collector/1.1.0-SNAPSHOT/seaclouds-data-collector-1.1.0-20160421.085909-4.jar : seaclouds-dc.jar
+        http.port: 8176
+
+      shell.env:
+        SEACLOUDS_DC_PORT: $brooklyn:config("http.port")
+        MANAGER_IP: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
+        MANAGER_PORT: $brooklyn:component("monitor-manager").config("monitor.manager.port")
+        DC_SYNC_PERIOD: "10"
+        RESOURCES_KEEP_ALIVE_PERIOD: "25"
+
+      provisioning.properties:
+        osFamily: ubuntu
+        required.ports:
+        - 8176
+
+      launch.command: |
+        sudo apt-get update -y
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated tzdata openjdk-7-jdk wget curl
+        tee ./config.yaml  <<EOF
+        server:
+          type: simple
+          applicationContextPath: /
+          connector:
+            type: http
+            port: ${SEACLOUDS_DC_PORT}
+        manager_ip: ${MANAGER_IP}
+        manager_port: ${MANAGER_PORT}
+        dc_sync_period: ${DC_SYNC_PERIOD}
+        resources_keep_alive_period: ${RESOURCES_KEEP_ALIVE_PERIOD}
+        EOF
+
+        nohup java -jar seaclouds-dc.jar server ./config.yaml > seaclouds-dc.log 2>&1 &
+        echo $! > $PID_FILE
+
+      checkRunning.command: |
+        ps auxw | grep seaclouds-dc | grep -v grep > /dev/null
+
+      stop.command: |
+        sudo kill $(sudo lsof -t -i:8176)
 
   - id: seaclouds-platform-on-byon
     name: "SeaClouds Platform"
@@ -489,6 +538,10 @@ brooklyn.catalog:
           influxdb.config.db.name: tower4clouds
           influxdb.config.db.password: seaclouds
         install.latch: $brooklyn:component("discoverer").attributeWhenReady("service.isUp")
+      - type: seaclouds-data-collector
+        id: seaclouds-dc
+        name: seaclouds-dc
+        install.latch: $brooklyn:component("monitor-manager").attributeWhenReady("service.isUp")
       - type: seaclouds-discoverer
         name: seaclouds-discoverer
         id: discoverer
@@ -572,6 +625,10 @@ brooklyn.catalog:
         brooklyn.config:
           influxdb.config.db.name: tower4clouds
           influxdb.config.db.password: seaclouds
+      - type: seaclouds-data-collector
+        id: seaclouds-dc
+        name: seaclouds-dc
+        install.latch: $brooklyn:component("monitor-manager").attributeWhenReady("service.isUp")
       - type: seaclouds-discoverer
         name: seaclouds-discoverer
         id: discoverer
