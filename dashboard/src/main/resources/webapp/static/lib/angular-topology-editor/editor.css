@@ -8,6 +8,7 @@ circle.node {
 
 circle.node.running {
     stroke: #2E9E2E;
+    fill: rgba(5, 232, 5, 0.51);
 }
 
 circle.node.starting{
@@ -17,6 +18,7 @@ circle.node.starting{
 
 circle.node.on_fire{
     stroke: #F33F3F;
+    fill: rgba(255,5,0,0.51);
 }
 
 circle.node.frontend {
