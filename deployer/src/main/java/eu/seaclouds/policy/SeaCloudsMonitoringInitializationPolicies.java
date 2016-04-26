@@ -16,11 +16,10 @@
  */
 package eu.seaclouds.policy;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Optional;
-import com.google.common.net.MediaType;
-import eu.seaclouds.policy.utils.SeaCloudsDcRequestDto;
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.brooklyn.api.entity.Application;
 import org.apache.brooklyn.api.entity.Entity;
 import org.apache.brooklyn.api.entity.EntityLocal;
@@ -45,14 +44,19 @@ import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Optional;
+import com.google.common.net.MediaType;
+
+import eu.seaclouds.policy.utils.SeaCloudsDcRequestDto;
 
 
 public class SeaCloudsMonitoringInitializationPolicies extends AbstractPolicy {
 
     private static final Logger LOG = LoggerFactory.getLogger(SeaCloudsMonitoringInitializationPolicies.class);
+
+    private static final String RESOURCES = "/resource";
 
     private static final ConfigKey<String> TOSCA_ID = ConfigKeys.newStringConfigKey("tosca.template.id");
 
@@ -153,7 +157,7 @@ public class SeaCloudsMonitoringInitializationPolicies extends AbstractPolicy {
 
         private void postSeaCloudsDcConfiguration(String requestBody) {
 
-            URI apiEndpoint = URI.create(getConfig(SEACLOUDS_DC_ENDPOINT));
+            URI apiEndpoint = URI.create(getConfig(SEACLOUDS_DC_ENDPOINT) + RESOURCES);
 
             Map<String, String> headers = MutableMap.of(
                     HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString(),

@@ -14,21 +14,18 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 
 public class SeaCloudsMonitoringInitializationPolicyLiveTest
-        extends SeaCloudsManagementPolicyLiveTest {
+        extends AbstractSeaCloudsPoliciesLiveTests {
 
     private static final Logger log = LoggerFactory.getLogger(SeaCloudsMonitoringInitializationPolicyLiveTest.class);
 
-    private static final String SEACLOUDS_DC_ENDPOINT = "http://52.48.187.2:8176/resource";
-    private static final String SERVICE_ID = "serviceY";
+    private static final String SERVICE_ID = "service";
 
     @Test(groups = {"Live"})
     public void testAttachPolicyToApplication() {
         app.createAndManageChild(EntitySpec.create(SeaCloudsMonitoringInitializationPolicyTest.TestSoftwareWithSensors.class)
                 .configure(BrooklynCampConstants.PLAN_ID, SERVICE_ID));
-        app.policies().add(getPolicySpec());
         app.policies().add(getMonitoringPolicy(ImmutableList.of(SERVICE_ID)));
 
         app.start(ImmutableList.of(loc));

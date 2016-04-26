@@ -40,6 +40,7 @@ public abstract class AbstractSeaCloudsPoliciesLiveTests {
     public static final String GRAFANA_ENDPOINT = "http://52.48.187.2:3000";
     public static final String GRAFANA_USERNAME = "admin";
     public static final String GRAFANA_PASSWORD = "admin";
+    public static final String SEACLOUDS_DC_ENDPOINT = "http://52.48.187.2:8176/";
 
     protected SshMachineLocation loc;
     protected ManagementContext managementContext;
@@ -62,9 +63,5 @@ public abstract class AbstractSeaCloudsPoliciesLiveTests {
             app.stop();
         }
     }
-
-    public abstract String getBase64Agreement();
-
-    public abstract String getBase64Rules();
 
 }

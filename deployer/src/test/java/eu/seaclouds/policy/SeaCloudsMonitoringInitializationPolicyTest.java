@@ -85,7 +85,7 @@ public class SeaCloudsMonitoringInitializationPolicyTest {
     @Test
     public void testAttachPolicyToApplicationMock() {
 
-        HttpUrl serverUrl = mockWebServer.url("/resource");
+        HttpUrl serverUrl = mockWebServer.url("/");
 
         mockWebServer.enqueue(new MockResponse()
                 .setHeader(HttpHeaders.ACCEPT, MediaType.JSON_UTF_8.toString())
