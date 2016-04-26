@@ -81,12 +81,10 @@ public class SeaCloudsManagementPolicyLiveTest extends AbstractSeaCloudsPolicies
                 .configure(SeaCloudsManagementPolicy.GRAFANA_PASSWORD, GRAFANA_PASSWORD);
     }
 
-    @Override
     public String getBase64Agreement() {
         return BASE64_AGREEMENT;
     }
 
-    @Override
     public String getBase64Rules() {
         return BASE64_RULES;
     }
