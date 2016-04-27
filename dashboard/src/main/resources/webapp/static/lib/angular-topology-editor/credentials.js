@@ -476,6 +476,27 @@ var Credentials = (function() {
             }
         }
 
+        function get_cloudnode_for_group(group) {
+            var cloudnode = undefined;
+
+            var tnodename = group.members[0];
+            var tnode = canvas.getnodebyname(tnodename);
+            if (tnode.type === TYPE_CLOUD) {
+                cloudnode = tnode;
+            }
+            else {
+                var link = canvas.getoutlinks(tnode)[0];
+                if (link === undefined) {
+                    console.error("No link from " + tnodename + " to a cloud. Check DAM");
+                    cloudnode = undefined;
+                }
+                else {
+                    cloudnode = link.target;
+                }
+            }
+            return cloudnode;
+        }
+
         var dam = jsyaml.safeLoad(rawdam);
         var canvas = this.canvas;
         Object.keys(dam.topology_template.groups).
@@ -484,22 +505,23 @@ var Credentials = (function() {
             }).
             forEach(function(groupname) {
                 var group = dam.topology_template.groups[groupname];
-                var tnodename = groupname.substr(LOCATION_GROUP.length);
+                var cloudnode = get_cloudnode_for_group(group);
 
-                if (group.policies) {
+                if (cloudnode === undefined) {
+                    console.warn("Could not find cloud for group " + groupname);
+                }
+                else if (group.policies) {
                     for (var i = 0; i < group.policies.length; i++) {
                         var policy = group.policies[i];
                         if (policy[LOCATION_POLICY]) {
-                            var tnode = canvas.getnodebyname(tnodename);
-
                             var location_policy = fix_or_get_location(policy);
 
-                            Object.keys(tnode.properties).
+                            Object.keys(cloudnode.properties).
                             filter(function(name) {
                                 return name != "location";
                             }).
                             forEach(function(name) {
-                                var value = tnode.properties[name];
+                                var value = cloudnode.properties[name];
                                 location_policy[name] = (value !== undefined)? value : "";
                             });
                             break;
