@@ -25,10 +25,13 @@ import eu.seaclouds.platform.planner.core.application.topology.TopologyTemplateF
 import eu.seaclouds.platform.planner.core.application.topology.modifier.relation.TopologFacadeyModifierApplicator;
 import eu.seaclouds.platform.planner.core.application.topology.nodetemplate.NodeTemplate;
 import eu.seaclouds.platform.planner.core.utils.YamlParser;
+
+import org.apache.brooklyn.util.collections.MutableList;
 import org.apache.brooklyn.util.collections.MutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 
 public class ApplicationFacade {
@@ -207,6 +210,18 @@ public class ApplicationFacade {
             }
         }
         setNodeTypes(usedNodeTemplates);
+    }
+
+    public List<String> filterNodeTypesByPropertyAndValues(String property, List<Object> allowedValues){
+        List<String> result = MutableList.of();
+        for(String nodeTemplateId : topologyTemplate.getNodeTemplates().keySet()) {
+            Object foundValue = topologyTemplate.getPropertyValue(nodeTemplateId, property);
+            if(allowedValues.contains(foundValue)){
+                result.add(nodeTemplateId);
+            }
+
+        }
+        return result;
     }
 
 }
