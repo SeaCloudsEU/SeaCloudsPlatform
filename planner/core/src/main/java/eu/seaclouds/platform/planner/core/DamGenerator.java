@@ -46,6 +46,8 @@ public class DamGenerator {
     public static final String SEACLOUDS_APPLICATION_CONFIGURATION =
             "seaclouds_configuration_policy";
 
+    public static final String SEACLOUDS_MONITORING_INITIALIZATION = "seaclouds_monitoring_configuration";
+
     public static final String REQUIREMENTS = "requirements";
     public static final String HOST = "host";
     private final DamGeneratorConfigBag configBag;

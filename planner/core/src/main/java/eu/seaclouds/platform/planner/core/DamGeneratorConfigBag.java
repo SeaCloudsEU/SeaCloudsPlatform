@@ -17,16 +17,18 @@
 package eu.seaclouds.platform.planner.core;
 
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.apache.brooklyn.util.exceptions.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 public class DamGeneratorConfigBag {
 
     static Logger log = LoggerFactory.getLogger(DamGeneratorConfigBag.class);
+
+    private static final String SEACLOUDS_DC_PORT = "8176";
 
     private String monitorUrl;
     private String monitorPort;
@@ -41,6 +43,7 @@ public class DamGeneratorConfigBag {
     private String grafanaEndpoint;
     private URL monitorEndPoint;
     private URL influxDbEndpoint;
+    private String seacloudsDcEndPoint;
 
     public DamGeneratorConfigBag(Builder builder) {
         this.monitorUrl = builder.monitorUrl;
@@ -60,6 +63,12 @@ public class DamGeneratorConfigBag {
     private void init() {
         monitorEndPoint = createMonitoringEndpoint();
         influxDbEndpoint = createInfluxDbEndpoint();
+        seacloudsDcEndPoint = createSeaCloudsDcEndpoint();
+    }
+
+    private String createSeaCloudsDcEndpoint() {
+        return "http://" + monitorUrl + ":" + SEACLOUDS_DC_PORT;
+
     }
 
     private URL createMonitoringEndpoint() {
@@ -127,6 +136,10 @@ public class DamGeneratorConfigBag {
         return grafanaEndpoint;
     }
 
+    public String getSeacloudsDcEndPoint(){
+        return seacloudsDcEndPoint;
+    }
+
     public URL getMonitorEndpoint() {
         return monitorEndPoint;
     }
@@ -135,10 +148,12 @@ public class DamGeneratorConfigBag {
         return influxDbEndpoint;
     }
 
+
     public static class Builder {
 
         private String monitorUrl;
         private String monitorPort;
+        private String seacloudsDCEndpoint;
         private String slaUrl;
         private String influxdbUrl;
         private String influxdbPort;
