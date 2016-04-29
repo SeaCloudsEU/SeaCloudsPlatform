@@ -453,6 +453,28 @@ brooklyn.catalog:
         nohup java -jar seaclouds-dc.jar server ./config.yaml > seaclouds-dc.log 2>&1 &
         echo $! > $PID_FILE
 
+      post.launch.command: |
+        curl -X POST http://localhost:$MANAGER_PORT/v1/monitoring-rules -d '
+          <monitoringRules xmlns="http://www.modaclouds.eu/xsd/1.0/monitoring_rules_schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.modaclouds.eu/xsd/1.0/monitoring_rules_schema">
+              <monitoringRule id="internalComponentRTRule" timeStep="2" timeWindow="2">
+                  <monitoredTargets>
+                      <monitoredTarget class="Method"/>
+                  </monitoredTargets>
+                  <collectedMetric metricName="EffectiveResponseTime">
+                      <parameter name="samplingProbability">1</parameter>
+                  </collectedMetric>
+                  <metricAggregation groupingClass="InternalComponent" aggregateFunction="Average"/>
+                  <actions>
+                      <action name="OutputMetric">
+                          <parameter name="metric">AverageResponseTimeInternalComponent</parameter>
+                          <parameter name="value">METRIC</parameter>
+                          <parameter name="resourceId">ID</parameter>
+                      </action>
+                  </actions>
+              </monitoringRule>
+          </monitoringRules>
+        '
+
       checkRunning.command: |
         ps auxw | grep seaclouds-dc | grep -v grep > /dev/null
 
@@ -513,8 +535,8 @@ brooklyn.catalog:
         name: seaclouds-sla-db
         id: sla-db
         brooklyn.config:
-          creationScriptUrl: https://raw.githubusercontent.com/SeaCloudsEU/SeaCloudsPlatform/60ae47c3cdf50412cf5541c4f089e59433823a53/sla/sla-core/sla-repository/src/main/resources/sql/01database.sql
-        install.latch: $brooklyn:component("monitor-manager").attributeWhenReady("service.isUp")
+          creationScriptUrl: https://raw.githubusercontent.com/SeaCloudsEU/sla-core/e1d3bd4dec27236cfdefa1eae81d38db3dcd11da/sla-repository/src/main/resources/sql/01database.sql
+        install.latch: $brooklyn:component("seaclouds-dc").attributeWhenReady("service.isUp")
       - type: seaclouds-monitor-manager
         name: seaclouds-monitor-manager
         brooklyn.config:
@@ -541,7 +563,7 @@ brooklyn.catalog:
       - type: seaclouds-data-collector
         id: seaclouds-dc
         name: seaclouds-dc
-        install.latch: $brooklyn:component("monitor-manager").attributeWhenReady("service.isUp")
+        launch.latch: $brooklyn:component("monitor-manager").attributeWhenReady("service.isUp")
       - type: seaclouds-discoverer
         name: seaclouds-discoverer
         id: discoverer
@@ -628,7 +650,6 @@ brooklyn.catalog:
       - type: seaclouds-data-collector
         id: seaclouds-dc
         name: seaclouds-dc
-        install.latch: $brooklyn:component("monitor-manager").attributeWhenReady("service.isUp")
       - type: seaclouds-discoverer
         name: seaclouds-discoverer
         id: discoverer
