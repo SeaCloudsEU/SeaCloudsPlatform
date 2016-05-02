@@ -18,11 +18,13 @@
 package eu.seaclouds.platform.dashboard.rest;
 
 import eu.atos.sla.parser.data.GuaranteeTermsStatus;
+import eu.atos.sla.parser.data.Penalty;
 import eu.atos.sla.parser.data.Violation;
 import eu.atos.sla.parser.data.wsag.Agreement;
 import eu.atos.sla.parser.data.wsag.GuaranteeTerm;
 import eu.seaclouds.platform.dashboard.model.SeaCloudsApplicationData;
 import eu.seaclouds.platform.dashboard.model.SeaCloudsApplicationDataStorage;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -66,5 +68,20 @@ public class SlaResourceTest extends AbstractResourceTest<SlaResource>{
         }
     }
 
+    @Test
+    public void testGetPenalties() throws Exception {
+        Agreement agreement = (Agreement) resource.getAgreement(applicationData.getSeaCloudsApplicationId())
+                .getEntity();
+
+        for(GuaranteeTerm term :  agreement.getTerms().getAllTerms().getGuaranteeTerms()){
+            List<Penalty> entity = (List<Penalty>) 
+                    resource.getPenalties(applicationData.getSeaCloudsApplicationId(), term.getName())
+                    .getEntity();
+            assertNotNull(entity);
+            for (Penalty p : entity) {
+                assertNotNull(p);
+            }
+        }
+    }
 
 }

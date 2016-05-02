@@ -91,6 +91,9 @@ seacloudsDashboard.factory('SeaCloudsApi', function ($http) {
         getAgreementTermViolations: function (seaCloudsId, termName) {
             return $http.get("/api/sla/agreements/" + seaCloudsId + "/terms/" + termName + "/violations");
         },
+        getAgreementTermPenalties: function (seaCloudsId, termName) {
+            return $http.get("/api/sla/agreements/" + seaCloudsId + "/terms/" + termName + "/penalties");
+        },
         getAamFromDesigner: function (designerTopology) {
             return $http.post("/api/aamwriter/translate", designerTopology);
         },
@@ -108,4 +111,3 @@ seacloudsDashboard.controller('GlobalCtrl', function ($scope, Page, SeaCloudsApi
     $scope.Page = Page;
     $scope.SeaCloudsApi = SeaCloudsApi;
 });
-

@@ -82,6 +82,7 @@ angular.module('seacloudsDashboard.applications.application.sla', ['datatables',
         var selectedTermIndex;
         var selectedTermName;
         var selectedTermViolations;
+        var selectedTermPenalties;
         var rawAgreementVisible;
 
         $scope.codemirror = { agreement:  "RAW Agreement visualizer is not ready yet."};
@@ -111,6 +112,13 @@ angular.module('seacloudsDashboard.applications.application.sla', ['datatables',
                     // Handle error
                 })
 
+            $scope.SeaCloudsApi.getAgreementTermPenalties($scope.seaCloudsApplicationId, name).
+                success(function (penalties) {
+                    selectedTermPenalties = penalties;
+                }).
+                error(function () {
+                    // Handle error
+                });
         }
 
         $scope.getActiveTermName = function () {
@@ -120,6 +128,11 @@ angular.module('seacloudsDashboard.applications.application.sla', ['datatables',
         $scope.getActiveTermViolations = function () {
             return selectedTermViolations;
         }
+
+        $scope.getActiveTermPenalties = function () {
+            return selectedTermPenalties;
+        }
+
         $scope.getSlaTermQoS = function () {
             if ($scope.agreement) {
                 var obj = JSON.parse($scope.agreement.terms.allTerms.guaranteeTerms[selectedTermIndex].serviceLevelObjetive.kpitarget.customServiceLevel);

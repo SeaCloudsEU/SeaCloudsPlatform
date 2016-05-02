@@ -110,7 +110,43 @@ public class SlaResource implements Resource{
         }
     }
 
+    
+    @GET
+    @Timed
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("agreements/{seaCloudsId}/terms/{termName}/penalties")
+    @ApiOperation(value="Get SLA Agreement Term Penalties for a particular SeaClouds Application Id and Term Name")
+    public Response getPenalties(@PathParam("seaCloudsId") String seaCloudsId, @PathParam("termName") String termName) {
+        if (seaCloudsId == null || termName == null) {
+            LOG.error("Missing input parameters");
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+        } else {
+            SeaCloudsApplicationData seaCloudsApplicationData = dataStore.getSeaCloudsApplicationDataById(seaCloudsId);
 
+            if (seaCloudsApplicationData == null) {
+                LOG.error("Application " + seaCloudsId + " not found");
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+
+            if(seaCloudsApplicationData.getAgreementId() == null){
+                LOG.error("Application " + seaCloudsId + " doesn't contain any agreement");
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            Agreement agreement = sla.getAgreement(seaCloudsApplicationData.getAgreementId());
+            GuaranteeTerm term = null;
+            for (GuaranteeTerm termItem : agreement.getTerms().getAllTerms().getGuaranteeTerms()) {
+                if(termItem.getName().equalsIgnoreCase(termName)){
+                    term = termItem;
+                    break;
+                }
+            }
+
+            return Response.ok(sla.getGuaranteeTermPenalties(agreement, term)).build();
+        }
+    }
+
+    
     @GET
     @Timed
     @Produces(MediaType.APPLICATION_JSON)

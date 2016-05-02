@@ -32,6 +32,7 @@ public interface TestFixtures {
     String AGREEMENT_PATH_JSON = "fixtures/agreement.json";
     String AGREEMENT_STATUS_PATH_JSON = "fixtures/agreement-status.json";
     String VIOLATIONS_JSON_PATH = "fixtures/violations.json";
+    String PENALTIES_JSON_PATH = "fixtures/penalties.json";
 
     // Monitor fixtures
     String MONITORING_RULES_PATH = "fixtures/monitoring-rules.xml";

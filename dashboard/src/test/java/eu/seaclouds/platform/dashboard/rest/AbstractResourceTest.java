@@ -18,7 +18,9 @@
 package eu.seaclouds.platform.dashboard.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import eu.atos.sla.parser.data.GuaranteeTermsStatus;
+import eu.atos.sla.parser.data.Penalty;
 import eu.atos.sla.parser.data.Violation;
 import eu.atos.sla.parser.data.wsag.Agreement;
 import eu.atos.sla.parser.data.wsag.GuaranteeTerm;
@@ -28,6 +30,7 @@ import eu.seaclouds.platform.dashboard.util.ObjectMapperHelpers;
 import eu.seaclouds.platform.dashboard.utils.TestFixtures;
 import eu.seaclouds.platform.dashboard.utils.TestUtils;
 import it.polimi.tower4clouds.rules.MonitoringRules;
+
 import org.apache.brooklyn.rest.domain.ApplicationSummary;
 import org.apache.brooklyn.rest.domain.EntitySummary;
 import org.apache.brooklyn.rest.domain.SensorSummary;
@@ -38,6 +41,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 
 import javax.xml.bind.JAXBException;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -64,6 +68,7 @@ public abstract class AbstractResourceTest<T extends Resource> {
     private Agreement agreement;
     private GuaranteeTermsStatus agreementStatus;
     private List<Violation> agreementTermViolations;
+    private List<Penalty> agreementTermPenalties;
     private MonitoringRules monitoringRules;
     private String topology;
     private String adp;
@@ -96,7 +101,8 @@ public abstract class AbstractResourceTest<T extends Resource> {
         agreementStatus = ObjectMapperHelpers.JsonToObject(
                 TestUtils.getStringFromPath(TestFixtures.AGREEMENT_STATUS_PATH_JSON), GuaranteeTermsStatus.class);
         agreementTermViolations = ObjectMapperHelpers.JsonToObjectCollection(TestUtils.getStringFromPath(TestFixtures.VIOLATIONS_JSON_PATH), Violation.class);
-
+        agreementTermPenalties = ObjectMapperHelpers.JsonToObjectCollection(
+                TestUtils.getStringFromPath(TestFixtures.PENALTIES_JSON_PATH), Penalty.class);
         monitoringRules = ObjectMapperHelpers.XmlToObject(TestUtils.getStringFromPath(TestFixtures.MONITORING_RULES_PATH), MonitoringRules.class);
         topology = TestUtils.getStringFromPath(TestFixtures.DESIGNER_TOPOLOGY);
 
@@ -131,6 +137,7 @@ public abstract class AbstractResourceTest<T extends Resource> {
         when(slaProxy.getAgreementStatus(Matchers.<Agreement>any())).thenReturn(agreementStatus);
         when(slaProxy.getAgreementStatus(anyString())).thenReturn(agreementStatus);
         when(slaProxy.getGuaranteeTermViolations(Matchers.<Agreement>any(), Matchers.<GuaranteeTerm>any())).thenReturn(agreementTermViolations);
+        when(slaProxy.getGuaranteeTermPenalties(Matchers.<Agreement>any(), Matchers.<GuaranteeTerm>any())).thenReturn(agreementTermPenalties);
         when(slaProxy.notifyRulesReady(Matchers.<Agreement>any())).thenReturn(RANDOM_STRING);
         when(slaProxy.removeAgreement(anyString())).thenReturn(RANDOM_STRING);
     }

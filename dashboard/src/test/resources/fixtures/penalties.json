@@ -1,0 +1,35 @@
+[
+    {
+        "agreementId": "agreement01",
+        "datetime": "2016-05-01T20:45:57+0000",
+        "definition": {
+            "expression": "35",
+            "type": "discount",
+            "unit": "%",
+            "validity": "P1D"
+        },
+        "uuid": "5f555df5-c764-4d43-a065-be83d194769a"
+    },
+    {
+        "agreementId": "agreement01",
+        "datetime": "2016-05-01T20:45:54+0000",
+        "definition": {
+            "expression": "35",
+            "type": "discount",
+            "unit": "%",
+            "validity": "P1D"
+        },
+        "uuid": "0e03664d-3409-4c70-b159-8304d1d5121d"
+    },
+    {
+        "agreementId": "agreement01",
+        "datetime": "2016-05-01T20:44:41+0000",
+        "definition": {
+            "expression": "35",
+            "type": "discount",
+            "unit": "%",
+            "validity": "P1D"
+        },
+        "uuid": "277f0e11-5e49-419f-b111-5edb61e6d729"
+    }
+]
