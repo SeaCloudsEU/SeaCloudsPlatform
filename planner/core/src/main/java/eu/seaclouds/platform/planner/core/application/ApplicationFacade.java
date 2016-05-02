@@ -212,7 +212,7 @@ public class ApplicationFacade {
         setNodeTypes(usedNodeTemplates);
     }
 
-    public List<String> filterNodeTypesByPropertyAndValues(String property, List<Object> allowedValues){
+    public List<String> filterNodeTemplatesByPropertyAndValues(String property, List<Object> allowedValues){
         List<String> result = MutableList.of();
         for(String nodeTemplateId : topologyTemplate.getNodeTemplates().keySet()) {
             Object foundValue = topologyTemplate.getPropertyValue(nodeTemplateId, property);

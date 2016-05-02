@@ -28,7 +28,6 @@ import com.google.common.collect.ImmutableList;
 import eu.seaclouds.platform.planner.core.DamGenerator;
 import eu.seaclouds.platform.planner.core.DamGeneratorConfigBag;
 import eu.seaclouds.platform.planner.core.application.ApplicationFacade;
-import eu.seaclouds.platform.planner.core.application.agreements.AgreementGenerator;
 
 public class SeaCloudsMonitoringInitializerPolicyDecorator implements ApplicationFacadeDecorator {
 
@@ -68,7 +67,7 @@ public class SeaCloudsMonitoringInitializerPolicyDecorator implements Applicatio
         seaCloudsPolicyConfiguration.put(DamGenerator.TYPE, SEACLOUDS_MONITORING_POLICY);
         seaCloudsPolicyConfiguration.put(SEACLOUDS_DC_ENDPOINT, configBag.getSeacloudsDcEndPoint());
         seaCloudsPolicyConfiguration.put(TARGET_NODES,
-                applicationFacade.filterNodeTypesByPropertyAndValues(TARGET_PROPERTY, getAllowedTargetValues()));
+                applicationFacade.filterNodeTemplatesByPropertyAndValues(TARGET_PROPERTY, getAllowedTargetValues()));
 
         Map<String, Object> seaCloudsPolicy = MutableMap.of();
         seaCloudsPolicy.put(SEACLOUDS_APPLICATION_CONFIGURATION_POLICY, seaCloudsPolicyConfiguration);

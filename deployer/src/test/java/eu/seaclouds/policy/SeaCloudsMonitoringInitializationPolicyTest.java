@@ -75,11 +75,11 @@ public class SeaCloudsMonitoringInitializationPolicyTest {
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() throws Exception {
+        mockWebServer.shutdown();
         log.info("Destroy all {}", new Object[]{this});
         if (app != null) {
             Entities.destroyAll(app.getManagementContext());
         }
-        mockWebServer.shutdown();
     }
 
     @Test(enabled = true)
