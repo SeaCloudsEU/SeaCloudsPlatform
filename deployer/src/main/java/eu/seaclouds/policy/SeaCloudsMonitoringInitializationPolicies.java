@@ -83,7 +83,8 @@ public class SeaCloudsMonitoringInitializationPolicies extends AbstractPolicy {
             throw new RuntimeException("SeaCloudsMonitoringInitializationPolicies must be attached " +
                     "to an application");
         }
-        entity.subscriptions().subscribe(entity, Attributes.SERVICE_STATE_ACTUAL, new LifecycleListener());
+        LifecycleListener listener = new LifecycleListener();
+        entity.subscriptions().subscribe(entity, Attributes.SERVICE_STATE_ACTUAL, listener);
     }
 
     private Optional<Entity> findChildEntityByPlanId(Application app, String planId) {
@@ -113,9 +114,17 @@ public class SeaCloudsMonitoringInitializationPolicies extends AbstractPolicy {
     }
 
     private class LifecycleListener implements SensorEventListener<Lifecycle> {
+
+        private boolean configured;
+
+        public LifecycleListener(){
+            configured = false;
+        }
+
         @Override
         public void onEvent(SensorEvent<Lifecycle> event) {
-            if (event.getValue().equals(Lifecycle.RUNNING)) {
+            if (event.getValue().equals(Lifecycle.RUNNING) && !configured) {
+                configured = true;
                 configureMontiroringForTargetEntities();
             }
         }
@@ -179,8 +188,7 @@ public class SeaCloudsMonitoringInitializationPolicies extends AbstractPolicy {
             }
             return Strings.EMPTY;
         }
-
-
+        
     }
 
 }
