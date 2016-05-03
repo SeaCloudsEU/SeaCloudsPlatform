@@ -31,6 +31,7 @@ public abstract class AbstractSeaCloudsPoliciesLiveTests {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractSeaCloudsPoliciesLiveTests.class);
 
+    //TODO: use mock
     public static final String SLA_ENDPOINT = "http://52.36.119.104:9003";
     public static final String T4C_ENDPOINT = "http://52.48.187.2:8170";
     public static final String INFLUXDB_ENDPOINT = "http://52.48.187.2:8086";

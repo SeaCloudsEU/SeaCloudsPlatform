@@ -46,7 +46,8 @@ public class SeaCloudsManagementPolicyLiveTest extends AbstractSeaCloudsPolicies
         app.start(ImmutableList.of(loc));
     }
 
-    @Test(groups = {"Live"})
+    //TODO: use mock here
+    @Test(groups = {"Live"}, enabled = false)
     public void testAttachPolicyToApplication() {
         app.createAndManageChild(EntitySpec.create(EmptySoftwareProcess.class));
         app.policies().add(getPolicySpec());
