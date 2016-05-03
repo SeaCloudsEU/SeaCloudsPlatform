@@ -2,14 +2,13 @@ coverage:
   precision: 2
   round: down
   range: "70...100"
-  status:
 
   status:
-    #changes: false
-    #project: false
-    project:
-      target: auto
-      if_no_uploads: error
+    changes: false
+    project: false
+    #project:
+    #  target: auto
+    #  if_no_uploads: error
 
     patch: false
     #patch:
