@@ -20,7 +20,6 @@ package eu.seaclouds.location.cloudfoundry;
 
 import org.apache.brooklyn.api.entity.Application;
 import org.apache.brooklyn.api.entity.Entity;
-import org.apache.brooklyn.api.policy.Policy;
 import org.apache.brooklyn.api.sensor.AttributeSensor;
 import org.apache.brooklyn.camp.brooklyn.BrooklynCampConstants;
 import org.apache.brooklyn.core.entity.Attributes;
@@ -34,7 +33,6 @@ import org.apache.brooklyn.test.Asserts;
 import org.apache.brooklyn.util.text.Strings;
 import org.testng.annotations.Test;
 
-import java.util.Collection;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
