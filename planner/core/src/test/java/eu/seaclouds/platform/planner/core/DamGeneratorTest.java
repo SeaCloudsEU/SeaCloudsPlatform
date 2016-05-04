@@ -16,6 +16,7 @@
  */
 package eu.seaclouds.platform.planner.core;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.common.io.Resources;
 import eu.seaclouds.monitor.monitoringdamgenerator.MonitoringInfo;
@@ -23,9 +24,12 @@ import eu.seaclouds.platform.planner.core.application.ApplicationMetadataGenerat
 import eu.seaclouds.platform.planner.core.application.agreements.AgreementGenerator;
 import eu.seaclouds.platform.planner.core.application.decorators.MonitoringInformationDecorator;
 import eu.seaclouds.platform.planner.core.application.decorators.SeaCloudsManagementPolicyDecorator;
+import eu.seaclouds.platform.planner.core.application.decorators.SeaCloudsMonitoringInitializerPolicyDecorator;
 import eu.seaclouds.platform.planner.core.application.decorators.SlaInformationDecorator;
 import eu.seaclouds.platform.planner.core.utils.YamlParser;
 import it.polimi.tower4clouds.rules.MonitoringRules;
+
+import org.apache.brooklyn.util.collections.MutableSet;
 import org.apache.brooklyn.util.text.Strings;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -35,9 +39,11 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
@@ -120,13 +126,14 @@ public class DamGeneratorTest {
                 (Map<String, Object>) topologyTemplate.get(DamGenerator.GROUPS);
 
         assertNotNull(topologyGroups);
-        assertEquals(topologyGroups.size(), 7);
+        assertEquals(topologyGroups.size(), 8);
         assertTrue(topologyGroups.containsKey("operation_www"));
         assertTrue(topologyGroups.containsKey("operation_db"));
         assertTrue(topologyGroups.containsKey("add_brooklyn_location_Amazon_EC2_m1_small_eu_central_1"));
         assertTrue(topologyGroups.containsKey("add_brooklyn_location_Amazon_EC2_m4_10xlarge_eu_west_1"));
         assertTrue(topologyGroups.containsKey("monitoringInformation"));
         assertTrue(topologyGroups.containsKey("sla_gen_info"));
+        assertTrue(topologyGroups.containsKey("seaclouds_monitoring_configuration"));
         testSeaCloudsPolicy(topologyGroups);
     }
 
@@ -165,6 +172,7 @@ public class DamGeneratorTest {
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
         testSeaCloudsPolicy(generatedGroups);
         testMonitoringConfiguration(generatedGroups);
+        testMonitorInitializationPolicy(generatedGroups, ImmutableList.of("www"));
 
         assertEquals(generatedGroups.get("operation_www"), expectedGroups.get("operation_www"));
         assertEquals(generatedGroups.get("operation_db"), expectedGroups.get("operation_db"));
@@ -206,6 +214,7 @@ public class DamGeneratorTest {
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
         testSeaCloudsPolicy(generatedGroups);
         testMonitoringConfiguration(generatedGroups);
+        testMonitorInitializationPolicy(generatedGroups, ImmutableList.of("php"));
 
         assertEquals(generatedGroups.get("operation_php"), expectedGroups.get("operation_php"));
         assertEquals(generatedGroups.get("operation_db"), expectedGroups.get("operation_db"));
@@ -256,6 +265,7 @@ public class DamGeneratorTest {
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
         testSeaCloudsPolicy(generatedGroups);
         testMonitoringConfiguration(generatedGroups);
+        testMonitorInitializationPolicy(generatedGroups, ImmutableList.of("nuro-gui", "nuro-api"));
 
         assertEquals(generatedGroups.get("operation_db"), expectedGroups.get("operation_db"));
         assertEquals(generatedGroups.get("operation_nuro-api"), expectedGroups.get("operation_nuro-api"));
@@ -299,6 +309,7 @@ public class DamGeneratorTest {
         assertEquals(generatedNodeTemplates.get("nuro-api"), expectedNodeTemplates.get("nuro-api"));
         assertEquals(generatedNodeTemplates.get("nuro-pma"), expectedNodeTemplates.get("nuro-pma"));
 
+
         assertEquals(generatedNodeTemplates.get("db"), expectedNodeTemplates.get("db"));
         assertEquals(generatedNodeTemplates.get("modacloudsDc_db"), expectedNodeTemplates.get("modacloudsDc_db"));
 
@@ -308,6 +319,7 @@ public class DamGeneratorTest {
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
         testSeaCloudsPolicy(generatedGroups);
         testMonitoringConfiguration(generatedGroups);
+        testMonitorInitializationPolicy(generatedGroups, ImmutableList.of("nuro-gui", "nuro-api", "nuro-pma"));
 
         assertEquals(generatedGroups.get("operation_db"), expectedGroups.get("operation_db"));
         assertEquals(generatedGroups.get("operation_nuro-api"), expectedGroups.get("operation_nuro-api"));
@@ -370,8 +382,9 @@ public class DamGeneratorTest {
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
         testSeaCloudsPolicy(generatedGroups);
         testMonitoringConfiguration(generatedGroups);
+        testMonitorInitializationPolicy(generatedGroups, ImmutableList.of("Softcare_dashboard", "Forum", "SoftcareWS"));
 
-        assertEquals(generatedGroups.size(), 13);
+        assertEquals(generatedGroups.size(), 14);
         assertEquals(generatedGroups.get("operation_ForumDB"), expectedGroups.get("operation_ForumDB"));
         assertEquals(generatedGroups.get("operation_SoftcareDB"), expectedGroups.get("operation_SoftcareDB"));
         assertEquals(generatedGroups.get("operation_Forum"), expectedGroups.get("operation_Forum"));
@@ -436,8 +449,9 @@ public class DamGeneratorTest {
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
         testSeaCloudsPolicy(generatedGroups);
         testMonitoringConfiguration(generatedGroups);
+        testMonitorInitializationPolicy(generatedGroups, ImmutableList.of("Softcare_dashboard", "Forum", "SoftcareWS"));
 
-        assertEquals(generatedGroups.size(), 13);
+        assertEquals(generatedGroups.size(), 14);
         assertEquals(generatedGroups.get("operation_ForumDB"), expectedGroups.get("operation_ForumDB"));
         assertEquals(generatedGroups.get("operation_SoftcareDB"), expectedGroups.get("operation_SoftcareDB"));
         assertEquals(generatedGroups.get("operation_Forum"), expectedGroups.get("operation_Forum"));
@@ -498,6 +512,7 @@ public class DamGeneratorTest {
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
         testSeaCloudsPolicy(generatedGroups);
         testMonitoringConfiguration(generatedGroups);
+        testMonitorInitializationPolicy(generatedGroups, ImmutableList.of("Chat"));
 
         assertEquals(generatedGroups.get("operation_Chat"), expectedGroups.get("operation_Chat"));
         assertEquals(generatedGroups.get("operation_MessageDatabase"), expectedGroups.get("operation_MessageDatabase"));
@@ -538,6 +553,7 @@ public class DamGeneratorTest {
         Map<String, Object> expectedGroups = (Map<String, Object>) expectedTopologyTemplate.get(DamGenerator.GROUPS);
         testSeaCloudsPolicy(generatedGroups);
         testMonitoringConfiguration(generatedGroups);
+        testMonitorInitializationPolicy(generatedGroups, ImmutableList.of("tomcat_server"));
 
         assertEquals(generatedGroups.get("operation_db"), expectedGroups.get("operation_db"));
         assertEquals(generatedGroups.get("operation_tomcat_server"), expectedGroups.get("operation_tomcat_server"));
@@ -643,5 +659,46 @@ public class DamGeneratorTest {
         assertTrue(imports.contains(ApplicationMetadataGenerator.TOSCA_NORMATIVE_TYPES + ":" + ApplicationMetadataGenerator.TOSCA_NORMATIVE_TYPES_VERSION));
         assertTrue(imports.contains(ApplicationMetadataGenerator.SEACLOUDS_NODE_TYPES + ":" + ApplicationMetadataGenerator.SEACLOUDS_NODE_TYPES_VERSION));
     }
+
+    @SuppressWarnings("unchecked")
+    private void testMonitorInitializationPolicy(Map<String, Object> groups, List<String> targetNodes) {
+        assertNotNull(groups);
+        assertTrue(groups.containsKey(DamGenerator.SEACLOUDS_MONITORING_INITIALIZATION));
+        Map<String, Object> policyGroup = (Map<String, Object>) groups
+                .get(DamGenerator.SEACLOUDS_MONITORING_INITIALIZATION);
+
+        assertTrue(policyGroup.containsKey(DamGenerator.MEMBERS));
+        assertTrue(policyGroup.get(DamGenerator.MEMBERS) instanceof List);
+        assertTrue(((List) policyGroup.get(DamGenerator.MEMBERS)).isEmpty());
+
+        assertTrue(policyGroup.containsKey(DamGenerator.POLICIES));
+        assertTrue(policyGroup.get(DamGenerator.POLICIES) instanceof List);
+        List<Object> policies = (List<Object>) policyGroup.get(DamGenerator.POLICIES);
+
+        assertEquals(policies.size(), 1);
+        assertTrue(policies.get(0) instanceof Map);
+        Map<String, Object> seacloudsManagementPolicy = (Map<String, Object>) policies.get(0);
+        assertEquals(seacloudsManagementPolicy.size(), 1);
+        assertTrue(seacloudsManagementPolicy.containsKey(SeaCloudsManagementPolicyDecorator.SEACLOUDS_APPLICATION_CONFIGURATION_POLICY));
+
+        Map<String, Object> seacloudsManagementPolicyProperties = (Map<String, Object>)
+                seacloudsManagementPolicy.get(SeaCloudsManagementPolicyDecorator.SEACLOUDS_APPLICATION_CONFIGURATION_POLICY);
+        assertEquals(seacloudsManagementPolicyProperties.size(), 3);
+
+        assertEquals(seacloudsManagementPolicyProperties.get(DamGenerator.TYPE),
+                SeaCloudsMonitoringInitializerPolicyDecorator.SEACLOUDS_MONITORING_POLICY);
+
+        assertEquals(seacloudsManagementPolicyProperties.get(SeaCloudsMonitoringInitializerPolicyDecorator.SEACLOUDS_DC_ENDPOINT), configBag.getSeacloudsDcEndPoint());
+        Set<String> expectedNodes = MutableSet.copyOf((List<String>) seacloudsManagementPolicyProperties.get(SeaCloudsMonitoringInitializerPolicyDecorator.TARGET_NODES));
+        Set<String> foundNodes = MutableSet.copyOf(targetNodes);
+        assertEquals(expectedNodes, foundNodes);
+
+
+
+
+
+    }
+
+
 
 }

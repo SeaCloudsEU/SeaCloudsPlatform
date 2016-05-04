@@ -392,6 +392,11 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.brooklyn</groupId>
+                <artifactId>brooklyn-camp</artifactId>
+                <version>${brooklyn.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.brooklyn</groupId>
                 <artifactId>brooklyn-software-base</artifactId>
                 <version>${brooklyn.version}</version>
             </dependency>
