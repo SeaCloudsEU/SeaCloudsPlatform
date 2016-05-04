@@ -460,11 +460,11 @@ brooklyn.catalog:
               MONITOR_METRICS_URL: $brooklyn:formatString("http://%s:%s/v1/metrics", component("monitor-manager").attributeWhenReady("host.address"), component("monitor-manager").config("monitor.manager.port"))
               SLA_URL: $brooklyn:formatString("http://%s:%s", component("sla-core").attributeWhenReady("host.address"), component("sla-core").attributeWhenReady("http.port"))
         setup.latch: $brooklyn:component("sla-db").attributeWhenReady("service.isUp")
-      - type: org.apache.brooklyn.entity.database.postgresql.PostgreSqlNode
+      - type: org.apache.brooklyn.entity.database.mysql.MySqlNode
         name: seaclouds-sla-db
         id: sla-db
         brooklyn.config:
-          creationScriptUrl: https://raw.githubusercontent.com/SeaCloudsEU/sla-core/e1d3bd4dec27236cfdefa1eae81d38db3dcd11da/sla-repository/src/main/resources/sql/01database.sql
+          creationScriptUrl: https://raw.githubusercontent.com/SeaCloudsEU/SeaCloudsPlatform/60ae47c3cdf50412cf5541c4f089e59433823a53/sla/sla-core/sla-repository/src/main/resources/sql/01database.sql
         install.latch: $brooklyn:component("monitor-manager").attributeWhenReady("service.isUp")
       - type: seaclouds-monitor-manager
         name: seaclouds-monitor-manager
@@ -548,11 +548,11 @@ brooklyn.catalog:
               DB_PASSWORD: "_atossla_"
               MONITOR_METRICS_URL: $brooklyn:formatString("http://%s:%s/v1/metrics", component("monitor-manager").attributeWhenReady("host.address"), component("monitor-manager").config("monitor.manager.port"))
               SLA_URL: $brooklyn:formatString("http://%s:%s", component("sla-core").attributeWhenReady("host.address"), component("sla-core").attributeWhenReady("http.port"))
-      - type: org.apache.brooklyn.entity.database.postgresql.PostgreSqlNode
+      - type: org.apache.brooklyn.entity.database.mysql.MySqlNode
         name: seaclouds-sla-db
         id: sla-db
         brooklyn.config:
-          creationScriptUrl: https://raw.githubusercontent.com/SeaCloudsEU/sla-core/e1d3bd4dec27236cfdefa1eae81d38db3dcd11da/sla-repository/src/main/resources/sql/01database.sql
+          creationScriptUrl: https://raw.githubusercontent.com/SeaCloudsEU/SeaCloudsPlatform/60ae47c3cdf50412cf5541c4f089e59433823a53/sla/sla-core/sla-repository/src/main/resources/sql/01database.sql
       - type: seaclouds-monitor-manager
         name: seaclouds-monitor-manager
         brooklyn.config:
