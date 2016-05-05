@@ -19,6 +19,7 @@ package eu.seaclouds.platform.dashboard.proxy;
 
 
 import eu.atos.sla.parser.data.GuaranteeTermsStatus;
+import eu.atos.sla.parser.data.Penalty;
 import eu.atos.sla.parser.data.Violation;
 import eu.atos.sla.parser.data.wsag.Agreement;
 import eu.atos.sla.parser.data.wsag.GuaranteeTerm;
@@ -153,6 +154,29 @@ public class SlaProxy extends AbstractProxy {
                 .buildGet().invoke().readEntity(String.class);
         try {
             return mapper.readValue(json, new TypeReference<List<Violation>>(){});
+        } catch (IOException e) {
+            /*
+             * TODO: Change Runtime for a DashboardException
+             */
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Creates proxied HTTP GET request to SeaClouds SLA core which retrieves the Agreement Term Penalties
+     * @param agreement which contains the guaranteeTerm to fetch
+     * @param guaranteeTerm to check penalties
+     * @return the list of Penalties for this <Agreement, GuaranteeTerm> pair
+     */
+    public List<Penalty> getGuaranteeTermPenalties(Agreement agreement, GuaranteeTerm guaranteeTerm) {
+        String path = String.format("/penalties?agreementId=%s&guaranteeTerm=%s", 
+                agreement.getAgreementId(), guaranteeTerm.getName());
+        String json = getJerseyClient().target(getEndpoint() + path).request()
+                .header("Accept", MediaType.APPLICATION_JSON)
+                .header("Content-Type", MediaType.APPLICATION_JSON)
+                .buildGet().invoke().readEntity(String.class);
+        try {
+            return mapper.readValue(json, new TypeReference<List<Penalty>>(){});
         } catch (IOException e) {
             /*
              * TODO: Change Runtime for a DashboardException

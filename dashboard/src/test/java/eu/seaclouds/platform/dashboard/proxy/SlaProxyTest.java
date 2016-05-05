@@ -18,15 +18,20 @@
 package eu.seaclouds.platform.dashboard.proxy;
 
 import com.squareup.okhttp.mockwebserver.MockResponse;
+
 import eu.atos.sla.parser.data.GuaranteeTermsStatus;
+import eu.atos.sla.parser.data.Penalty;
 import eu.atos.sla.parser.data.wsag.Agreement;
 import eu.atos.sla.parser.data.wsag.GuaranteeTerm;
 import eu.seaclouds.platform.dashboard.util.ObjectMapperHelpers;
 import eu.seaclouds.platform.dashboard.utils.TestFixtures;
 import eu.seaclouds.platform.dashboard.utils.TestUtils;
+
 import org.testng.annotations.Test;
 
 import javax.ws.rs.core.MediaType;
+
+import java.util.List;
 import java.util.UUID;
 
 import static org.testng.AssertJUnit.assertEquals;
@@ -151,4 +156,26 @@ public class SlaProxyTest extends AbstractProxyTest<SlaProxy> {
 
     }
 
+    @Test
+    public void testGetAgreementPenalties() throws Exception {
+        String violationJson =  TestUtils.getStringFromPath(TestFixtures.PENALTIES_JSON_PATH);
+
+        String agreementJson = TestUtils.getStringFromPath(TestFixtures.AGREEMENT_PATH_JSON);
+        Agreement agreement = ObjectMapperHelpers.JsonToObject(agreementJson, Agreement.class);
+
+        for(int i = 0; i < agreement.getTerms().getAllTerms().getGuaranteeTerms().size(); i++){
+            getMockWebServer().enqueue(new MockResponse()
+                            .setBody(violationJson)
+                            .setHeader("Accept", MediaType.APPLICATION_JSON)
+                            .setHeader("Content-Type", MediaType.APPLICATION_JSON)
+            );
+        }
+
+        // GuaranteeTerm doesn't implement equals(), so we are going to check not null
+        for(GuaranteeTerm term : agreement.getTerms().getAllTerms().getGuaranteeTerms()){
+            List<Penalty> penalties = getProxy().getGuaranteeTermPenalties(agreement, term);
+            assertNotNull(penalties);
+        }
+
+    }
 }

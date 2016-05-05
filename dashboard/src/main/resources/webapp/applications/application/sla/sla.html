@@ -104,6 +104,30 @@
                                 </tr>
                                 </tbody>
                             </table>
+                            <strong>Penalties</strong>
+                            <table datatable="" dt-options="dtOptions" class="table table-striped compact"
+                                   cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th>
+                                        <small>Date</small>
+                                    </th>
+                                    <th>
+                                        <small>Value</small>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="penalty in getActiveTermPenalties()">
+                                    <td>
+                                        <small>{{penalty.datetime}}</small>
+                                    </td>
+                                    <td>
+                                        <small>{{penalty.definition}}</small>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
