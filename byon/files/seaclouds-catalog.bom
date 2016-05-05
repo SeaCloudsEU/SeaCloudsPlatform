@@ -419,7 +419,7 @@ brooklyn.catalog:
 
       brooklyn.config:
         runtimeFiles:
-          https://oss.sonatype.org/content/repositories/snapshots/eu/seaclouds-project/monitor/seaclouds-data-collector/1.1.0-SNAPSHOT/seaclouds-data-collector-1.1.0-20160421.085909-4.jar : seaclouds-dc.jar
+          https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project.monitor&a=seaclouds-data-collector&v=LATEST&e=jar : seaclouds-dc.jar
         http.port: 8176
 
       shell.env:
