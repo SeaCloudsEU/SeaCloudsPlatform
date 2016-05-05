@@ -115,7 +115,7 @@ brooklyn.catalog:
              port: ${PLANNER_PORT}
          discovererURL: ${DISCOVERER_URL}
          slaGeneratorURL: ${SLA_GENERATOR_URL}
-         deployableProviders: ["openstack-nova","openstack-keystone","openstack-nova-ec2", "byon", "sts", "elasticstack", "cloudstack", "rackspace-cloudidentity","aws-ec2","gogrid","elastichosts-lon-p","elastichosts-sat-p","elastichosts-lon-b","openhosting-east1","serverlove-z1-man","skalicloud-sdg-my","go2cloud-jhb1","softlayer","hpcloud-compute","rackspace-cloudservers-us","rackspace-cloudservers-uk","azurecompute","google-compute-engine","CloudFoundry"]
+         deployableProviders: ["openstack-nova","openstack-keystone","openstack-nova-ec2", "byon", "sts", "elasticstack", "cloudstack", "rackspace-cloudidentity","aws-ec2","gogrid","elastichosts-lon-p","elastichosts-sat-p","elastichosts-lon-b","openhosting-east1","serverlove-z1-man","skalicloud-sdg-my","go2cloud-jhb1","softlayer","hpcloud-compute","rackspace-cloudservers-us","rackspace-cloudservers-uk","azurecompute","google-compute-engine","cloudfoundry-instance"]
          filterOfferings: true
          influxdbPort: 8086
          influxdbURL: ${INFLUXDB_URL}
@@ -123,7 +123,7 @@ brooklyn.catalog:
          influxdbUsername: root
          influxdbPassword: root
          grafanaUsername: admin
-         grafanaPassword: admin
+         grafanaPassword: seaclouds
          grafanaEndpoint: ${GRAFANA_URL}
          monitorGeneratorURL: ${MONITOR_GENERATOR_URL}
          monitorGeneratorPort: ${MONITOR_GENERATOR_PORT}
@@ -227,7 +227,7 @@ brooklyn.catalog:
         brooklynnode.webconsole.nosecurity: true
         brooklynnode.classpath:
           - https://s3-eu-west-1.amazonaws.com/seaclouds-deployer/deployer-0.9.0-20161104.131956.jar
-          - https://s3-eu-west-1.amazonaws.com/tosca-temporal-integration/deployer-brooklyn-tosca-transformer-0.9.0-20162904.141834.jar
+          - https://s3-eu-west-1.amazonaws.com/tosca-temporal-integration/deployer-brooklyn-tosca-transformer-0.9.0-20160405.185149.jar
       brooklyn.enrichers:
         - enricherType: org.apache.brooklyn.enricher.stock.Transformer
           brooklyn.config:
@@ -508,9 +508,10 @@ brooklyn.catalog:
         brooklyn.config:
           planner.discoverer.url: $brooklyn:formatString("http://%s:%s/", $brooklyn:component("discoverer").attributeWhenReady("host.address"), $brooklyn:component("discoverer").config("http.port"))
           planner.sla_generator.url: $brooklyn:formatString("http://%s:%s", $brooklyn:component("sla-core").attributeWhenReady("host.address"), $brooklyn:component("sla-core").attributeWhenReady("http.port"))
-          planner.grafana.url: $brooklyn:component("grafana").attributeWhenReady("host.address")
+          planner.grafana.url: $brooklyn:formatString("http://%s:%s/", $brooklyn:component("grafana").attributeWhenReady("host.address"), $brooklyn:component("grafana").config("http.port"))
           planner.monitor_manager.url: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
           planner.monitor_manager.port: $brooklyn:component("monitor-manager").config("monitor.manager.port")
+          planner.influxdb.url: $brooklyn:component("influxdb").attributeWhenReady("host.address")
         launch.latch: $brooklyn:component("deployer").attributeWhenReady("service.isUp")
       - type: seaclouds-deployer
         name: seaclouds-deployer
@@ -535,7 +536,7 @@ brooklyn.catalog:
         name: seaclouds-sla-db
         id: sla-db
         brooklyn.config:
-          creationScriptUrl: https://raw.githubusercontent.com/SeaCloudsEU/sla-core/e1d3bd4dec27236cfdefa1eae81d38db3dcd11da/sla-repository/src/main/resources/sql/01database.sql
+          creationScriptUrl: https://raw.githubusercontent.com/SeaCloudsEU/SeaCloudsPlatform/60ae47c3cdf50412cf5541c4f089e59433823a53/sla/sla-core/sla-repository/src/main/resources/sql/01database.sql
         install.latch: $brooklyn:component("seaclouds-dc").attributeWhenReady("service.isUp")
       - type: seaclouds-monitor-manager
         name: seaclouds-monitor-manager
