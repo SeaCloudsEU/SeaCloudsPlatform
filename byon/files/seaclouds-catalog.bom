@@ -115,7 +115,7 @@ brooklyn.catalog:
              port: ${PLANNER_PORT}
          discovererURL: ${DISCOVERER_URL}
          slaGeneratorURL: ${SLA_GENERATOR_URL}
-         deployableProviders: ["openstack-nova","openstack-keystone","openstack-nova-ec2", "byon", "sts", "elasticstack", "cloudstack", "rackspace-cloudidentity","aws-ec2","gogrid","elastichosts-lon-p","elastichosts-sat-p","elastichosts-lon-b","openhosting-east1","serverlove-z1-man","skalicloud-sdg-my","go2cloud-jhb1","softlayer","hpcloud-compute","rackspace-cloudservers-us","rackspace-cloudservers-uk","azurecompute","google-compute-engine","CloudFoundry"]
+         deployableProviders: ["openstack-nova","openstack-keystone","openstack-nova-ec2", "byon", "sts", "elasticstack", "cloudstack", "rackspace-cloudidentity","aws-ec2","gogrid","elastichosts-lon-p","elastichosts-sat-p","elastichosts-lon-b","openhosting-east1","serverlove-z1-man","skalicloud-sdg-my","go2cloud-jhb1","softlayer","hpcloud-compute","rackspace-cloudservers-us","rackspace-cloudservers-uk","azurecompute","google-compute-engine","cloudfoundry-instance"]
          filterOfferings: true
          influxdbPort: 8086
          influxdbURL: ${INFLUXDB_URL}
@@ -123,7 +123,7 @@ brooklyn.catalog:
          influxdbUsername: root
          influxdbPassword: root
          grafanaUsername: admin
-         grafanaPassword: admin
+         grafanaPassword: seaclouds
          grafanaEndpoint: ${GRAFANA_URL}
          monitorGeneratorURL: ${MONITOR_GENERATOR_URL}
          monitorGeneratorPort: ${MONITOR_GENERATOR_PORT}
@@ -227,7 +227,7 @@ brooklyn.catalog:
         brooklynnode.webconsole.nosecurity: true
         brooklynnode.classpath:
           - https://s3-eu-west-1.amazonaws.com/seaclouds-deployer/deployer-0.9.0-20161104.131956.jar
-          - https://s3-eu-west-1.amazonaws.com/tosca-temporal-integration/deployer-brooklyn-tosca-transformer-0.9.0-20162904.141834.jar
+          - https://s3-eu-west-1.amazonaws.com/tosca-temporal-integration/deployer-brooklyn-tosca-transformer-0.9.0-20160405.185149.jar
       brooklyn.enrichers:
         - enricherType: org.apache.brooklyn.enricher.stock.Transformer
           brooklyn.config:
@@ -409,6 +409,77 @@ brooklyn.catalog:
             enricher.targetSensor: $brooklyn:sensor("main.uri")
             enricher.targetValue: $brooklyn:formatString("http://%s:%s", $brooklyn:attributeWhenReady("host.address"), $brooklyn:config("http.port"))
 
+  - id: seaclouds-data-collector
+    name: SeaCloudsDc
+    description: SeaClouds Data Collector 
+    item:
+      type: org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess
+      id: seacloudsdc
+      name: SeaClouds Data Collector
+
+      brooklyn.config:
+        runtimeFiles:
+          https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=eu.seaclouds-project.monitor&a=seaclouds-data-collector&v=LATEST&e=jar : seaclouds-dc.jar
+        http.port: 8176
+
+      shell.env:
+        SEACLOUDS_DC_PORT: $brooklyn:config("http.port")
+        MANAGER_IP: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
+        MANAGER_PORT: $brooklyn:component("monitor-manager").config("monitor.manager.port")
+        DC_SYNC_PERIOD: "10"
+        RESOURCES_KEEP_ALIVE_PERIOD: "25"
+
+      provisioning.properties:
+        osFamily: ubuntu
+        required.ports:
+        - 8176
+
+      launch.command: |
+        sudo apt-get update -y
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated tzdata openjdk-7-jdk wget curl
+        tee ./config.yaml  <<EOF
+        server:
+          type: simple
+          applicationContextPath: /
+          connector:
+            type: http
+            port: ${SEACLOUDS_DC_PORT}
+        manager_ip: ${MANAGER_IP}
+        manager_port: ${MANAGER_PORT}
+        dc_sync_period: ${DC_SYNC_PERIOD}
+        resources_keep_alive_period: ${RESOURCES_KEEP_ALIVE_PERIOD}
+        EOF
+
+        nohup java -jar seaclouds-dc.jar server ./config.yaml > seaclouds-dc.log 2>&1 &
+        echo $! > $PID_FILE
+
+      post.launch.command: |
+        curl -X POST http://localhost:$MANAGER_PORT/v1/monitoring-rules -d '
+          <monitoringRules xmlns="http://www.modaclouds.eu/xsd/1.0/monitoring_rules_schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.modaclouds.eu/xsd/1.0/monitoring_rules_schema">
+              <monitoringRule id="internalComponentRTRule" timeStep="2" timeWindow="2">
+                  <monitoredTargets>
+                      <monitoredTarget class="Method"/>
+                  </monitoredTargets>
+                  <collectedMetric metricName="EffectiveResponseTime">
+                      <parameter name="samplingProbability">1</parameter>
+                  </collectedMetric>
+                  <metricAggregation groupingClass="InternalComponent" aggregateFunction="Average"/>
+                  <actions>
+                      <action name="OutputMetric">
+                          <parameter name="metric">AverageResponseTimeInternalComponent</parameter>
+                          <parameter name="value">METRIC</parameter>
+                          <parameter name="resourceId">ID</parameter>
+                      </action>
+                  </actions>
+              </monitoringRule>
+          </monitoringRules>
+        '
+
+      checkRunning.command: |
+        ps auxw | grep seaclouds-dc | grep -v grep > /dev/null
+
+      stop.command: |
+        sudo kill $(sudo lsof -t -i:8176)
 
   - id: seaclouds-platform-on-byon
     name: "SeaClouds Platform"
@@ -437,9 +508,10 @@ brooklyn.catalog:
         brooklyn.config:
           planner.discoverer.url: $brooklyn:formatString("http://%s:%s/", $brooklyn:component("discoverer").attributeWhenReady("host.address"), $brooklyn:component("discoverer").config("http.port"))
           planner.sla_generator.url: $brooklyn:formatString("http://%s:%s", $brooklyn:component("sla-core").attributeWhenReady("host.address"), $brooklyn:component("sla-core").attributeWhenReady("http.port"))
-          planner.grafana.url: $brooklyn:component("grafana").attributeWhenReady("host.address")
+          planner.grafana.url: $brooklyn:formatString("http://%s:%s/", $brooklyn:component("grafana").attributeWhenReady("host.address"), $brooklyn:component("grafana").config("http.port"))
           planner.monitor_manager.url: $brooklyn:component("monitor-manager").attributeWhenReady("host.address")
           planner.monitor_manager.port: $brooklyn:component("monitor-manager").config("monitor.manager.port")
+          planner.influxdb.url: $brooklyn:component("influxdb").attributeWhenReady("host.address")
         launch.latch: $brooklyn:component("deployer").attributeWhenReady("service.isUp")
       - type: seaclouds-deployer
         name: seaclouds-deployer
@@ -465,7 +537,7 @@ brooklyn.catalog:
         id: sla-db
         brooklyn.config:
           creationScriptUrl: https://raw.githubusercontent.com/SeaCloudsEU/SeaCloudsPlatform/60ae47c3cdf50412cf5541c4f089e59433823a53/sla/sla-core/sla-repository/src/main/resources/sql/01database.sql
-        install.latch: $brooklyn:component("monitor-manager").attributeWhenReady("service.isUp")
+        install.latch: $brooklyn:component("seaclouds-dc").attributeWhenReady("service.isUp")
       - type: seaclouds-monitor-manager
         name: seaclouds-monitor-manager
         brooklyn.config:
@@ -489,6 +561,10 @@ brooklyn.catalog:
           influxdb.config.db.name: tower4clouds
           influxdb.config.db.password: seaclouds
         install.latch: $brooklyn:component("discoverer").attributeWhenReady("service.isUp")
+      - type: seaclouds-data-collector
+        id: seaclouds-dc
+        name: seaclouds-dc
+        launch.latch: $brooklyn:component("monitor-manager").attributeWhenReady("service.isUp")
       - type: seaclouds-discoverer
         name: seaclouds-discoverer
         id: discoverer
@@ -572,6 +648,9 @@ brooklyn.catalog:
         brooklyn.config:
           influxdb.config.db.name: tower4clouds
           influxdb.config.db.password: seaclouds
+      - type: seaclouds-data-collector
+        id: seaclouds-dc
+        name: seaclouds-dc
       - type: seaclouds-discoverer
         name: seaclouds-discoverer
         id: discoverer
