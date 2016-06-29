@@ -87,12 +87,23 @@ public class SeaCloudsMonitoringInitializationPolicies extends AbstractPolicy {
         entity.subscriptions().subscribe(entity, Attributes.SERVICE_STATE_ACTUAL, listener);
     }
 
-    private Optional<Entity> findChildEntityByPlanId(Application app, String planId) {
+    private Optional<Entity> findChildEntityByPlanId(Entity app, String planId) {
         for (Entity child : app.getChildren()) {
+            Optional<Entity> subChild = Optional.absent();
             if (isCampPlanIdOfEntity(child, planId)
                     || isToscaIdPlanOfEntity(child, planId)) {
-                return Optional.of(child);
+                subChild = Optional.of(child);
             }
+
+            if ((child.getChildren() != null)
+                    && (!child.getChildren().isEmpty())
+                    && (!subChild.isPresent())) {
+                subChild = findChildEntityByPlanId(child, planId);
+            }
+            if (subChild.isPresent()) {
+                return subChild;
+            }
+
         }
         return Optional.absent();
     }
@@ -117,7 +128,7 @@ public class SeaCloudsMonitoringInitializationPolicies extends AbstractPolicy {
 
         private boolean configured;
 
-        public LifecycleListener(){
+        public LifecycleListener() {
             configured = false;
         }
 
@@ -188,7 +199,7 @@ public class SeaCloudsMonitoringInitializationPolicies extends AbstractPolicy {
             }
             return Strings.EMPTY;
         }
-        
+
     }
 
 }

@@ -37,6 +37,7 @@ import org.apache.brooklyn.core.entity.trait.Startable;
 import org.apache.brooklyn.core.test.entity.TestApplication;
 import org.apache.brooklyn.entity.software.base.EmptySoftwareProcess;
 import org.apache.brooklyn.entity.software.base.EmptySoftwareProcessImpl;
+import org.apache.brooklyn.entity.software.base.SoftwareProcess;
 import org.apache.brooklyn.location.ssh.SshMachineLocation;
 import org.apache.brooklyn.test.Asserts;
 import org.apache.http.HttpHeaders;
@@ -49,6 +50,7 @@ import org.testng.annotations.Test;
 import java.net.URI;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 public class SeaCloudsMonitoringInitializationPolicyTest {
@@ -117,10 +119,65 @@ public class SeaCloudsMonitoringInitializationPolicyTest {
 
         Asserts.succeedsEventually(new Runnable() {
             public void run() {
+                assertNotNull(app.getAttribute(SeaCloudsMonitoringInitializationPolicies.MONITORING_CONFIGURED));
+                assertTrue(app.getAttribute(SeaCloudsMonitoringInitializationPolicies.MONITORING_CONFIGURED));
                 assertTrue(app.getAttribute(Startable.SERVICE_UP));
                 assertTrue(childX.getAttribute(Startable.SERVICE_UP));
                 assertTrue(childY.getAttribute(Startable.SERVICE_UP));
+            }
+        });
+    }
+
+
+    @Test(enabled = true)
+    public void testAttachMonitorPolicyToApplicationWithSubChildrenMock() {
+
+        HttpUrl serverUrl = mockWebServer.url("/");
+
+        mockWebServer.enqueue(new MockResponse()
+                .setHeader(HttpHeaders.ACCEPT, MediaType.JSON_UTF_8.toString())
+                .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString()));
+
+        mockWebServer.enqueue(new MockResponse()
+                .setHeader(HttpHeaders.ACCEPT, MediaType.JSON_UTF_8.toString())
+                .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString()));
+
+        mockWebServer.enqueue(new MockResponse()
+                .setHeader(HttpHeaders.ACCEPT, MediaType.JSON_UTF_8.toString())
+                .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString()));
+
+        final TestSoftwareWithSensors childX = app.createAndManageChild(
+                EntitySpec.create(TestSoftwareWithSensors.class)
+                        .configure(BrooklynCampConstants.PLAN_ID, "childX"));
+
+        final TestSoftwareWithSensors childY = app.createAndManageChild(
+                EntitySpec.create(TestSoftwareWithSensors.class)
+                        .configure(BrooklynCampConstants.PLAN_ID, "childY"));
+
+        app.createAndManageChild(
+                EntitySpec.create(EmptySoftwareProcess.class)
+                        .configure(BrooklynCampConstants.PLAN_ID, "childZ")
+                        .configure(SoftwareProcess.CHILDREN_STARTABLE_MODE, SoftwareProcess.ChildStartableMode.FOREGROUND)
+                        .child(
+                                EntitySpec.create(TestSoftwareWithSensors.class)
+                                        .configure(BrooklynCampConstants.PLAN_ID, "childZz")));
+
+        app.policies().add(PolicySpec.create(SeaCloudsMonitoringInitializationPolicies.class)
+                .configure(SeaCloudsMonitoringInitializationPolicies.TARGET_ENTITIES, ImmutableList.of("childX", "childY", "childZz"))
+                .configure(SeaCloudsMonitoringInitializationPolicies.SEACLOUDS_DC_ENDPOINT, serverUrl.toString()));
+
+        app.start(ImmutableList.of(loc));
+
+        assertTrue(Iterables.getOnlyElement(app.policies()) instanceof SeaCloudsMonitoringInitializationPolicies);
+
+        Asserts.succeedsEventually(new Runnable() {
+            public void run() {
+                assertNotNull(app.getAttribute(SeaCloudsMonitoringInitializationPolicies.MONITORING_CONFIGURED));
                 assertTrue(app.getAttribute(SeaCloudsMonitoringInitializationPolicies.MONITORING_CONFIGURED));
+                assertTrue(app.getAttribute(Startable.SERVICE_UP));
+                assertTrue(childX.getAttribute(Startable.SERVICE_UP));
+                assertTrue(childY.getAttribute(Startable.SERVICE_UP));
+                assertEquals(mockWebServer.getRequestCount(), 3);
             }
         });
     }
